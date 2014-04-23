@@ -1,0 +1,157 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="vertical" 
+        >
+        
+
+        <LinearLayout
+            android:id="@+id/overview_linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bag_selector"
+             >
+
+            <ImageView
+                android:id="@+id/overview_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/upcoming" 
+                />
+
+            <TextView
+                android:id="@+id/overview_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="@string/overview"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="17.3dp" 
+                android:textColor="@color/line_white"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/devider1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_black" />
+
+        <LinearLayout
+            android:id="@+id/account_linearlayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal" 
+             android:background="@drawable/bag_selector"
+            >
+
+            <ImageView
+                android:id="@+id/account_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/calendar" />
+
+            <TextView
+                android:id="@+id/account_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="@string/account"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="17.3dp"
+                android:textColor="@color/line_white"/>
+        </LinearLayout>
+        
+        <View
+            android:id="@+id/devider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_black" />
+        
+
+        <LinearLayout
+            android:id="@+id/report_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal" 
+             android:background="@drawable/bag_selector">
+
+            <ImageView
+                android:id="@+id/report_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/account" />
+
+            <TextView
+                android:id="@+id/report_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="@string/report"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="17.3dp" 
+                 android:textColor="@color/line_white"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/devider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_black" />
+
+        <LinearLayout
+            android:id="@+id/bills_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:orientation="horizontal" 
+             android:background="@drawable/bag_selector">
+
+            <ImageView
+                android:id="@+id/bills_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="25dp"
+                android:src="@drawable/report" />
+
+            <TextView
+                android:id="@+id/bills_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="15dp"
+                android:text="@string/bills"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="17.3dp" 
+                 android:textColor="@color/line_white"/>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/devider4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/line_black" />
+    </LinearLayout>
+
+</android.support.v4.widget.DrawerLayout>

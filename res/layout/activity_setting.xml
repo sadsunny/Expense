@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <TextView
+            android:id="@+id/general_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:layout_marginLeft="7.3dp"
+            android:layout_marginRight="16dip"
+            android:paddingBottom="3dp"
+            android:paddingRight="8dip"
+            android:text="@string/general_label"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#FFAAAAAA"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/line_label1"
+            android:layout_width="match_parent"
+            android:layout_height="1.8dp"
+            android:background="@color/black_gray" />
+
+        <RelativeLayout
+            android:id="@+id/general_rel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/pass_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="@string/general_label"
+                android:textAppearance="?android:attr/textAppearance"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label2"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/payee_rel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/currency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="@string/payee_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label2"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/category_rel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/currency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="@string/category_label"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
