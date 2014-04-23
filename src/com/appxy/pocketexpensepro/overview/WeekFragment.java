@@ -1,12 +1,16 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
+import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -24,7 +28,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class WeekFragment extends Fragment {
+public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -40,19 +44,18 @@ public class WeekFragment extends Fragment {
 	private GridViewAdapter mAdapter;
 	private List<Map<String, Object>> mDataList;
 	private Thread mThread;
-
+	private long selectedDate;
+	private int offset;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
 			case MSG_SUCCESS:
-				
-				Log.v("mtest", "end");
-				Log.v("mtest", "mDataList1112231"+mDataList);
-				
+
 				if (mDataList != null) {
 					mAdapter.setDate(mDataList);
+					mAdapter.setChoosedTime(selectedDate);
 					mAdapter.notifyDataSetChanged();
-					Log.v("mtest", "mDataList111"+mDataList);
 				}
 
 				break;
@@ -65,9 +68,6 @@ public class WeekFragment extends Fragment {
 		}
 	};
 
-	public interface OnWeekSelectedListener {
-		public void OnWeekSelected(long selectedDate);
-	}
 
 	private static OnWeekSelectedListener mWeekCallBackListener = new OnWeekSelectedListener() {
 
@@ -82,7 +82,6 @@ public class WeekFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		this.mActivity = activity;
-
 		try {
 			weekCallBack = (OnWeekSelectedListener) activity;
 		} catch (ClassCastException e) {
@@ -103,8 +102,8 @@ public class WeekFragment extends Fragment {
 		super.setUserVisibleHint(isVisibleToUser);
 
 		if (isVisibleToUser) {
-			int offset = position - MID_VALUE;
-			weekCallBack.OnWeekSelected(getFirstDayByOffset(offset));
+			
+				weekCallBack.OnWeekSelected(selectedDate);
 		}
 	}
 
@@ -117,7 +116,8 @@ public class WeekFragment extends Fragment {
 		if (bundle != null) {
 			position = bundle.getInt("position");
 		}
-
+		offset = position - MID_VALUE;
+		selectedDate = getFirstDayByOffset(offset);
 	}
 
 	@Override
@@ -129,59 +129,53 @@ public class WeekFragment extends Fragment {
 		mGridView = (GridView) view.findViewById(R.id.mGridView);
 		mAdapter = new GridViewAdapter(mActivity);
 		mGridView.setAdapter(mAdapter);
-
+		mGridView.setOnItemClickListener(mListener);
 		mDataList = new ArrayList<Map<String, Object>>();
 		
-		int offset = position - MID_VALUE;
-		long firstDayDate = getWeekByOffset(offset);
-		mDataList.clear();
-		
-		for (int i = 0; i < 7; i++) {
-			Map<String, Object> mMap = new HashMap<String, Object>();
-			mMap.put("weekTime", firstDayDate);
-			firstDayDate = firstDayDate+DAYMILLIS;
-			mDataList.add(mMap);
+		if (mThread == null) {
+			mThread = new Thread(mTask);
+			mThread.start();
 		}
-		
-		mAdapter.setDate(mDataList);
-		mAdapter.notifyDataSetChanged();
-		
-		mGridView.setOnItemClickListener(mListener);
-		
-//		if (mThread == null) {
-//			mThread = new Thread(mTask);
-//			mThread.start();
-//		}
-		
 		return view;
 	}
-	
+
 	private OnItemClickListener mListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> paramAdapterView,
 				View paramView, int paramInt, long paramLong) {
 			// TODO Auto-generated method stub
-			long choosedTime = (Long) mDataList.get(paramInt).get("weekTime");
-			weekCallBack.OnWeekSelected(choosedTime);
+			selectedDate = (Long) mDataList.get(paramInt).get("weekTime");
+			weekCallBack.OnWeekSelected(selectedDate);
+			mAdapter.setChoosedTime(selectedDate);
+			mAdapter.notifyDataSetChanged();
 		}
 	};
+
+	public String turnToDate(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yy, EEE HH:mm:ss");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
 
 	public Runnable mTask = new Runnable() {
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			int offset = position - MID_VALUE;
-			long firstDayDate = getFirstDayByOffset(offset);
-			mDataList.clear();
 			
+			long firstDayDate = getWeekByOffset(offset);
+			mDataList.clear();
+
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
 				mMap.put("weekTime", firstDayDate);
-				firstDayDate = firstDayDate+DAYMILLIS;
+				firstDayDate = firstDayDate + DAYMILLIS;
 				mDataList.add(mMap);
 			}
+			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -189,6 +183,11 @@ public class WeekFragment extends Fragment {
 	public long getFirstDayByOffset(int offset) {
 
 		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+
 		long returnDate = calendar.getTimeInMillis();
 
 		if (offset == 0) {
@@ -203,19 +202,30 @@ public class WeekFragment extends Fragment {
 
 		return returnDate;
 	}
-	
+
 	public long getWeekByOffset(int offset) {
 
 		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
 		long returnDate = calendar.getTimeInMillis();
 
-			long offsetDate = offset * 7 * DAYMILLIS;
-			calendar.setTimeInMillis(returnDate + offsetDate);
-			calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-			calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-			returnDate = calendar.getTimeInMillis();
+		long offsetDate = offset * 7 * DAYMILLIS;
+		calendar.setTimeInMillis(returnDate + offsetDate);
+		calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+		calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+		returnDate = calendar.getTimeInMillis();
 
 		return returnDate;
+	}
+
+	@Override
+	public void OnUpdateWeekSelect(long selectedDate) {
+		// TODO Auto-generated method stub
+		mAdapter.setChoosedTime(selectedDate);
+		mAdapter.notifyDataSetChanged();
 	}
 
 }

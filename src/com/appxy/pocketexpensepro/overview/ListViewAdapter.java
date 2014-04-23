@@ -101,6 +101,7 @@ public class ListViewAdapter extends BaseAdapter {
 
 		}
 		
+		
 		viewholder.currency_textView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
 		viewholder.amount_textView.setText((String)mData.get(position).get("amount"));

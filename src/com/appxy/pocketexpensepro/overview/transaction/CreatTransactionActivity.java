@@ -457,6 +457,11 @@ public class CreatTransactionActivity extends Activity {
 						   long row = TransactionDao.insertTransactionAll(CreatTransactionActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, categoryId, childTransactionsDefault+"", expenseAccountDefault , accountId, 0,payeeId); 
 						}
 					}
+					
+					Intent intent = new Intent();
+					intent.putExtra("done", 1);
+					setResult(6, intent);
+					finish();
 
 					finish();
 				}

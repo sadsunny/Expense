@@ -6,6 +6,9 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
+import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
 import android.app.Activity;
@@ -27,7 +30,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class OverviewFragment extends Fragment implements MainActivity.OnUpdateListListener {
+public class OverviewFragment extends Fragment implements OnUpdateListListener{
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
 	private static final int MSG_SUCCESS = 1;
@@ -42,6 +45,8 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 	private ListViewAdapter mListViewAdapter;
 	private Thread mThread;
 	private long selectedDate;
+	private int viewPagerPosition;
+	private OnBackTimeListener onBackTimeListener;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -70,6 +75,12 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
+		try {
+			onBackTimeListener = (OnBackTimeListener) activity;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(activity.toString()
+					+ "must implement OnWeekSelectedListener");
+		}
 	}
 
 	@Override
@@ -77,7 +88,7 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		Log.v("mtest", "1onCreate");
+		
 	}
 
 	@Override
@@ -92,12 +103,12 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 				mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(mViewPagerAdapter);
 		mViewPager.setCurrentItem(MID_VALUE);
-
+		viewPagerPosition = MID_VALUE;
 		mViewPager
 				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
-
+						viewPagerPosition = position;
 					}
 
 					@Override
@@ -136,7 +147,8 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mDataList = OverViewDao.selectTransactionByTime(mActivity, selectedDate);
+			mDataList = OverViewDao.selectTransactionByTime(mActivity,
+					selectedDate);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -152,6 +164,7 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 		public android.support.v4.app.Fragment getItem(int arg0) {
 			// TODO Auto-generated method stub
 			WeekFragment weekFragment = new WeekFragment();
+			weekFragment.setTargetFragment(weekFragment, arg0);
 			if (arg0 >= 0 && arg0 < 20000) {
 
 				Bundle bundle = new Bundle();
@@ -198,15 +211,25 @@ public class OverviewFragment extends Fragment implements MainActivity.OnUpdateL
 	}
 
 	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 6:
+
+			if (data != null) {
+				mViewPager.setAdapter(mViewPagerAdapter);
+				mViewPager.setCurrentItem(viewPagerPosition);
+				onBackTimeListener.OnBackTime(selectedDate);
+			}
+			break;
+		}
+	}
+
+	@Override
 	public void OnUpdateList(long selectedDate) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		mDataList = OverViewDao.selectTransactionByTime(mActivity, selectedDate);
-		mListViewAdapter.setAdapterDate(mDataList);
-		mListViewAdapter.notifyDataSetChanged();
-		
-		Log.v("mdb", "shauxui mDataList" +mDataList);
-		Log.v("mdb", "selectedDate back to fragment" +selectedDate);
 		mHandler.post(mTask);
 	}
 

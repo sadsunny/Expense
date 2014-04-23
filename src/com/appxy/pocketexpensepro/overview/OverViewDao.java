@@ -14,7 +14,7 @@ import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 
 public class OverViewDao {
 	
-	private final static long DAYMILLIS = 86400000L;
+	private final static long DAYMILLIS = 86400000L-1;
 	
 	public static SQLiteDatabase getConnection(Context context) {
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
@@ -26,9 +26,8 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+time+" and a.dateTime <= "+time+DAYMILLIS+" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a where a.dateTime = "+time+" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
-		
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
 
@@ -53,6 +52,7 @@ public class OverViewDao {
 			mMap.put("dateTime", dateTime);
 			mMap.put("isClear", isClear);
 			mMap.put("photoName", photoName);
+			mMap.put("notes", notes);
 			mMap.put("recurringType", recurringType);
 			mMap.put("category", category);
 			mMap.put("childTransactions", childTransactions);

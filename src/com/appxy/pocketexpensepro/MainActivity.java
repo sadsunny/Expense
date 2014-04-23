@@ -8,6 +8,10 @@ import java.util.Date;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
+import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
+import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.overview.WeekFragment;
@@ -15,6 +19,7 @@ import com.appxy.pocketexpensepro.overview.WeekFragment;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
@@ -31,7 +36,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class MainActivity extends FragmentActivity implements  WeekFragment.OnWeekSelectedListener{
+public class MainActivity extends FragmentActivity implements
+		OnWeekSelectedListener, OnBackTimeListener {
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -47,20 +53,23 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 	private android.support.v4.app.FragmentManager fragmentManager;
 	private OnUpdateListListener onUpdateListListener;
 	private OverviewFragment overviewFragment;
-	
+
 	private final static long DAYMILLIS = 86400000L;
-	
+
 	private long selectedDate;
-	
-	public interface OnUpdateListListener {
-		public void OnUpdateList(long selectedDate);
-	}
-	
+	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		long returnDate = calendar.getTimeInMillis();
 
 		mTitle = mDrawerTitle = getTitle();
 		mLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
@@ -69,9 +78,10 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 		mReportLinearLayout = (LinearLayout) findViewById(R.id.report_linearLayout);
 		mBillsLinearLayout = (LinearLayout) findViewById(R.id.bills_linearLayout);
 		fragmentManager = getSupportFragmentManager();
-		
+
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,GravityCompat.START);
+		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
+				GravityCompat.START);
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// getActionBar().setDisplayShowHomeEnabled(false);
@@ -102,13 +112,14 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 		mBillsLinearLayout.setOnClickListener(mClickListener);
 
 		overviewFragment = new OverviewFragment();
-		FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+		FragmentTransaction fragmentTransaction1 = fragmentManager
+				.beginTransaction();
 		fragmentTransaction1.replace(R.id.content_frame, overviewFragment);
 		fragmentTransaction1.commit();
 		mDrawerLayout.closeDrawer(mLinearLayout);
 
 	}
-	
+
 	public View.OnClickListener mClickListener = new View.OnClickListener() {
 
 		@Override
@@ -116,44 +127,44 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 			switch (v.getId()) {
 			case R.id.overview_linearlayout:
 
-				overviewFragment = new OverviewFragment();
-				FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
-				fragmentTransaction1.replace(R.id.content_frame, overviewFragment);
-				fragmentTransaction1.commit();
 				mDrawerLayout.closeDrawer(mLinearLayout);
+				overviewFragment = new OverviewFragment();
+				FragmentTransaction fragmentTransaction1 = fragmentManager
+						.beginTransaction();
+				fragmentTransaction1.replace(R.id.content_frame,
+						overviewFragment);
+				fragmentTransaction1.commit();
 
 				break;
 			case R.id.account_linearlayout:
 
+				mDrawerLayout.closeDrawer(mLinearLayout);
 				AccountsFragment accountFragment = new AccountsFragment();
 				FragmentTransaction fragmentTransaction2 = fragmentManager
 						.beginTransaction();
 				fragmentTransaction2.replace(R.id.content_frame,
 						accountFragment);
 				fragmentTransaction2.commit();
-				mDrawerLayout.closeDrawer(mLinearLayout);
 
 				break;
 			case R.id.report_linearLayout:
-				Log.v("mtest", "report_linearLayout");
+
 				break;
 			case R.id.bills_linearLayout:
-				
+
+				mDrawerLayout.closeDrawer(mLinearLayout);
 				BillsFragment billsFragment = new BillsFragment();
 				FragmentTransaction fragmentTransaction4 = fragmentManager
 						.beginTransaction();
-				fragmentTransaction4.replace(R.id.content_frame,
-						billsFragment);
+				fragmentTransaction4.replace(R.id.content_frame, billsFragment);
 				fragmentTransaction4.commit();
-				mDrawerLayout.closeDrawer(mLinearLayout);
+
 				break;
 			default:
 				break;
 			}
 		}
 	};
-	
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -224,23 +235,23 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
-	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK && AccountsFragment.sortCheck ==1 ) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && AccountsFragment.sortCheck == 1) {
 			AccountsFragment.sortCheck = 0;
-			
+
 			if (AccountsFragment.item1 != null) {
-				
-			AccountsFragment.item1.setVisible(true);
-			AccountsFragment.item0.setVisible(false);
-			AccountsFragment.c.setSortEnabled(false);
-			AccountsFragment.mListView.setLongClickable(true);
-			AccountsFragment.mAccountsListViewAdapter.sortIsChecked(-1);
-			AccountsFragment.mAccountsListViewAdapter.notifyDataSetChanged();
-			
-			return true;
+
+				AccountsFragment.item1.setVisible(true);
+				AccountsFragment.item0.setVisible(false);
+				AccountsFragment.c.setSortEnabled(false);
+				AccountsFragment.mListView.setLongClickable(true);
+				AccountsFragment.mAccountsListViewAdapter.sortIsChecked(-1);
+				AccountsFragment.mAccountsListViewAdapter
+						.notifyDataSetChanged();
+
+				return true;
 			}
 		}
 		return super.onKeyDown(keyCode, event);
@@ -250,9 +261,19 @@ public class MainActivity extends FragmentActivity implements  WeekFragment.OnWe
 	public void OnWeekSelected(long selectedDate) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		onUpdateListListener = (OnUpdateListListener)overviewFragment;
-		onUpdateListListener.OnUpdateList(selectedDate);
-		Log.v("mdb", "selectedDate back" +selectedDate);
+		onUpdateListListener = (OnUpdateListListener) overviewFragment;
+		onUpdateListListener.OnUpdateList(this.selectedDate);
 	}
 	
+	
+
+	@Override
+	public void OnBackTime(long selectedDate) {
+		// TODO Auto-generated method stub
+		this.selectedDate = selectedDate;
+		Fragment fragement = getSupportFragmentManager().findFragmentByTag(10000+""); 
+		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener)fragement;
+		onUpdateWeekSelectListener.OnUpdateWeekSelect(this.selectedDate);
+	}
+
 }

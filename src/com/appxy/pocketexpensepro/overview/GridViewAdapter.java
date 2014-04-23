@@ -8,6 +8,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
@@ -27,17 +28,26 @@ public class GridViewAdapter extends BaseAdapter {
 	private int mSelect = 0;
 	private int mBack = -1;
 	private List<Map<String, Object>> mList;
-	
+	private long choosedTime;
+
 	public GridViewAdapter(Context context) {
 		this.context = context;
 	}
-	
+
 	public void setDate(List<Map<String, Object>> mList) {
 		this.mList = mList;
 	}
+	
+	public void setChoosedTime(long chooseTime) {
+		this.choosedTime = chooseTime;
+	}
+
 	@Override
 	public int getCount() {
-		return 7;
+		if (mList == null || mList.size() == 0) {
+			return 0;
+		}
+		return mList.size();
 	}
 
 	@Override
@@ -50,14 +60,15 @@ public class GridViewAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return position;
 	}
-	
+
 	public int getWeekItemWidth() {
 		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 
-		return dm.widthPixels/7;
+		return dm.widthPixels / 7;
 	}
 
 	// create view method
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getView(int position, View view, ViewGroup viewgroup) {
 		ViewHolder viewHolder;
@@ -65,21 +76,33 @@ public class GridViewAdapter extends BaseAdapter {
 			viewHolder = new ViewHolder();
 			LayoutInflater inflater = LayoutInflater.from(context);
 			view = inflater.inflate(R.layout.week_item, null);
-			
-			viewHolder.mLayout = (RelativeLayout) view.findViewById(R.id.RelativeLayout1);
-			viewHolder.dateTextView = (TextView) view.findViewById(R.id.date_text);
-			viewHolder.expenseTextView = (TextView) view.findViewById(R.id.expense_text);
-			viewHolder.incomeTextView = (TextView) view.findViewById(R.id.income_text);
+
+			viewHolder.mLayout = (RelativeLayout) view
+					.findViewById(R.id.RelativeLayout1);
+			viewHolder.dateTextView = (TextView) view
+					.findViewById(R.id.date_text);
+			viewHolder.expenseTextView = (TextView) view
+					.findViewById(R.id.expense_text);
+			viewHolder.incomeTextView = (TextView) view
+					.findViewById(R.id.income_text);
 			view.setTag(viewHolder);
-			// view.setPadding(-5,-5, -5,-5); 
+			// view.setPadding(-5,-5, -5,-5);
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
 		}
-		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewHolder.mLayout.getLayoutParams();   
-		relativeParams.width = getWeekItemWidth();       
+		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewHolder.mLayout
+				.getLayoutParams();
+		relativeParams.width = getWeekItemWidth();
 		viewHolder.mLayout.setLayoutParams(relativeParams);
+
+		long todayTime = (Long) mList.get(position).get("weekTime");
+		viewHolder.dateTextView.setText(turnToDate(todayTime));
 		
-		viewHolder.dateTextView.setText(turnToDate ( (Long)mList.get(position).get("weekTime") ));
+		if (choosedTime == todayTime) {
+			viewHolder.mLayout.setBackgroundResource(R.color.blue);
+		} else {
+			viewHolder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
+		}
 
 		return view;
 	}
