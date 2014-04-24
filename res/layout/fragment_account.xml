@@ -9,7 +9,7 @@
         android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="@color/line_white"
+        android:background="@color/blue"
         android:orientation="horizontal" >
 
         <LinearLayout
@@ -128,7 +128,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/line_white" >
+        android:background="@color/blue" >
 
         <LinearLayout
             android:id="@+id/tranfer_linearLayout"

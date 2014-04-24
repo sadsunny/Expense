@@ -866,8 +866,6 @@ public class AccountToTransactionActivity extends Activity {
 								.get(childPosition).get("amount")));
 			}
 
-			viewholder.amount_textView.setText((String) childList
-					.get(groupPosition).get(childPosition).get("amount"));
 
 			if (childPosition == 0) {
 				viewholder.mline_label.setVisibility(View.INVISIBLE);

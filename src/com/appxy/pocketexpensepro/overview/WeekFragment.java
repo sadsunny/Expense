@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,7 +29,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener{
+public class WeekFragment extends Fragment {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -46,7 +47,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	private Thread mThread;
 	private long selectedDate;
 	private int offset;
-	
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -67,7 +68,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			}
 		}
 	};
-
 
 	private static OnWeekSelectedListener mWeekCallBackListener = new OnWeekSelectedListener() {
 
@@ -91,19 +91,13 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
-		weekCallBack = mWeekCallBackListener;
-	}
-
-	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		// TODO Auto-generated method stub
 		super.setUserVisibleHint(isVisibleToUser);
 
 		if (isVisibleToUser) {
-			
-				weekCallBack.OnWeekSelected(selectedDate);
+
+			weekCallBack.OnWeekSelected(selectedDate);
 		}
 	}
 
@@ -118,6 +112,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		}
 		offset = position - MID_VALUE;
 		selectedDate = getFirstDayByOffset(offset);
+
 	}
 
 	@Override
@@ -131,12 +126,18 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(mListener);
 		mDataList = new ArrayList<Map<String, Object>>();
-		
+
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
 		return view;
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		weekCallBack = mWeekCallBackListener;
 	}
 
 	private OnItemClickListener mListener = new OnItemClickListener() {
@@ -152,30 +153,44 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		}
 	};
 
-	public String turnToDate(long mills) {
-
-		Date date2 = new Date(mills);
-		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yy, EEE HH:mm:ss");
-		String theDate = sdf.format(date2);
-		return theDate;
-	}
-
 	public Runnable mTask = new Runnable() {
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			
+
 			long firstDayDate = getWeekByOffset(offset);
 			mDataList.clear();
 
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
 				mMap.put("weekTime", firstDayDate);
+
+				List<Map<String, Object>> mTemList = OverViewDao.selectTransactionByTime(mActivity, firstDayDate);
+				BigDecimal b1 = new BigDecimal("0");
+				BigDecimal b2 = new BigDecimal("0");
+				for (Map<String, Object> iMap : mTemList) {
+					String amount = (String) iMap.get("amount");
+					int expenseAccount = (Integer) iMap.get("expenseAccount");
+					int incomeAccount = (Integer) iMap.get("incomeAccount");
+					BigDecimal b3 = new BigDecimal(amount);
+
+					if (expenseAccount > 0 && incomeAccount <= 0) {
+						b1 = b1.subtract(b3);
+					} 
+					else if (incomeAccount > 0 && expenseAccount <= 0) {
+						b2 = b2.add(b3);
+					}
+				}
+				double expense = b1.doubleValue();
+				double income = b2.doubleValue();
+				mMap.put("expense", expense);
+				mMap.put("income", income);
+
 				firstDayDate = firstDayDate + DAYMILLIS;
 				mDataList.add(mMap);
 			}
-			
+
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -219,13 +234,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		returnDate = calendar.getTimeInMillis();
 
 		return returnDate;
-	}
-
-	@Override
-	public void OnUpdateWeekSelect(long selectedDate) {
-		// TODO Auto-generated method stub
-		mAdapter.setChoosedTime(selectedDate);
-		mAdapter.notifyDataSetChanged();
 	}
 
 }

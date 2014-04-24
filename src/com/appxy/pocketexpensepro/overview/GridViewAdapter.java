@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -103,6 +104,15 @@ public class GridViewAdapter extends BaseAdapter {
 		} else {
 			viewHolder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
 		}
+		
+		viewHolder.expenseTextView.setTextColor(Color.RED);
+		viewHolder.incomeTextView.setTextColor(Color.GREEN);
+		
+		double expense =  (Double) mList.get(position).get("expense");
+		double income =  (Double) mList.get(position).get("income");
+		
+		viewHolder.expenseTextView.setText(MEntity.doublepoint2str(expense+""));
+		viewHolder.incomeTextView.setText(MEntity.doublepoint2str(income+""));
 
 		return view;
 	}

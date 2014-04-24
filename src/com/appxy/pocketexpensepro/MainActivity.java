@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
@@ -18,10 +19,14 @@ import com.appxy.pocketexpensepro.overview.WeekFragment;
 
 import android.os.Bundle;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -30,14 +35,19 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener {
+		OnWeekSelectedListener {
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -58,12 +68,15 @@ public class MainActivity extends FragmentActivity implements
 
 	private long selectedDate;
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
-
+	private int itemPosition = 0 ;
+	private ActionBar actionBar;
+	private OverViewNavigationListAdapter overViewNavigationListAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.HOUR, 0);
 		calendar.set(Calendar.MINUTE, 0);
@@ -117,9 +130,116 @@ public class MainActivity extends FragmentActivity implements
 		fragmentTransaction1.replace(R.id.content_frame, overviewFragment);
 		fragmentTransaction1.commit();
 		mDrawerLayout.closeDrawer(mLinearLayout);
+		
+		actionBar = this.getActionBar();
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		overViewNavigationListAdapter = new OverViewNavigationListAdapter(this, "OverView");
+//		actionBar.setListNavigationCallbacks(mNavigationListAdapter,new DropDownListenser());
 
 	}
 
+	
+	public class OverViewNavigationListAdapter extends BaseAdapter implements SpinnerAdapter {
+		
+	    private LayoutInflater mInflater;
+	    private String title;
+	    private List<String> content; 
+	    
+	    public OverViewNavigationListAdapter(Context context,String title){
+	    	this.mInflater = LayoutInflater.from(context);
+	    	this.title = title;
+	    }
+	    
+	    public void setDownItemData( List<String> itemStrings) {
+			this.content = itemStrings;
+		}
+	    
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			if (content == null) {
+				return 0;
+			} 
+			return content.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public long getItemId(int position) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			 ViewHolder viewholder = null;
+			 
+			 if(convertView == null)
+	         {
+				 viewholder = new ViewHolder();
+	             convertView = mInflater.inflate(R.layout.calender_getview, null);
+	             viewholder.mTextView = (TextView)convertView.findViewById(R.id.get_text);
+	             convertView.setTag(viewholder);
+	         }else
+	         {
+	        	 viewholder = (ViewHolder)convertView.getTag();
+	         }
+			 
+			 viewholder.mTextView.setText(title+" ");
+			 
+			return convertView;
+		}
+
+		
+		@Override
+		public View getDropDownView(int position, View convertView, ViewGroup parent) {
+			// TODO Auto-generated method stub
+			DropViewHolder viewholder = null;
+			 
+			 if(convertView == null)
+	         {
+				 viewholder = new DropViewHolder();
+	             convertView = mInflater.inflate(R.layout.getdropdownview, null);
+	             viewholder.mTextView1 = (TextView)convertView.findViewById(R.id.report_drop_text);
+//	             viewholder.lineView = (View)convertView.findViewById(R.id.blacklineview);
+	             convertView.setTag(viewholder);
+	         }else
+	         {
+	        	 viewholder = (DropViewHolder)convertView.getTag();
+	         }
+			 viewholder.mTextView1.setText(content.get(position));
+//			 
+//			 if (position == 2) {
+//				 viewholder.lineView.setVisibility(View.INVISIBLE);
+//			} else {
+//				 viewholder.lineView.setVisibility(View.VISIBLE);
+//			}
+			
+			 
+			return convertView;
+		}
+		
+		class ViewHolder
+	    {
+	        public TextView mTextView;
+	    }
+		
+		class DropViewHolder
+	    {
+	        public TextView mTextView1;
+	        public View lineView;
+	    }
+		
+	}
+	
 	public View.OnClickListener mClickListener = new View.OnClickListener() {
 
 		@Override
@@ -134,7 +254,11 @@ public class MainActivity extends FragmentActivity implements
 				fragmentTransaction1.replace(R.id.content_frame,
 						overviewFragment);
 				fragmentTransaction1.commit();
-
+				itemPosition = 0;
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(false);
+				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+				
 				break;
 			case R.id.account_linearlayout:
 
@@ -145,10 +269,15 @@ public class MainActivity extends FragmentActivity implements
 				fragmentTransaction2.replace(R.id.content_frame,
 						accountFragment);
 				fragmentTransaction2.commit();
-
+				itemPosition = 1;
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(true);
+				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				
 				break;
 			case R.id.report_linearLayout:
-
+				
+				itemPosition = 2;
 				break;
 			case R.id.bills_linearLayout:
 
@@ -158,7 +287,8 @@ public class MainActivity extends FragmentActivity implements
 						.beginTransaction();
 				fragmentTransaction4.replace(R.id.content_frame, billsFragment);
 				fragmentTransaction4.commit();
-
+				
+				itemPosition = 3;
 				break;
 			default:
 				break;
@@ -264,16 +394,6 @@ public class MainActivity extends FragmentActivity implements
 		onUpdateListListener = (OnUpdateListListener) overviewFragment;
 		onUpdateListListener.OnUpdateList(this.selectedDate);
 	}
-	
-	
 
-	@Override
-	public void OnBackTime(long selectedDate) {
-		// TODO Auto-generated method stub
-		this.selectedDate = selectedDate;
-		Fragment fragement = getSupportFragmentManager().findFragmentByTag(10000+""); 
-		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener)fragement;
-		onUpdateWeekSelectListener.OnUpdateWeekSelect(this.selectedDate);
-	}
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
@@ -38,7 +39,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 
 	private ViewPager mViewPager;
 	private FragmentActivity mActivity;
-	private ViewPagerAdapter mViewPagerAdapter;
+	public static ViewPagerAdapter mViewPagerAdapter;
 	private WeekFragment weekFragment;
 	private ListView mListView;
 	private List<Map<String, Object>> mDataList;
@@ -46,7 +47,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 	private Thread mThread;
 	private long selectedDate;
 	private int viewPagerPosition;
-	private OnBackTimeListener onBackTimeListener;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -57,7 +57,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 
 					mListViewAdapter.setAdapterDate(mDataList);
 					mListViewAdapter.notifyDataSetChanged();
-
 				}
 
 				break;
@@ -75,12 +74,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
-		try {
-			onBackTimeListener = (OnBackTimeListener) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ "must implement OnWeekSelectedListener");
-		}
 	}
 
 	@Override
@@ -98,9 +91,8 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 		View view = inflater.inflate(R.layout.fragment_overview, container,
 				false);
 
-		mViewPager = (ViewPager) view.findViewById(R.id.pager);
-		mViewPagerAdapter = new ViewPagerAdapter(
-				mActivity.getSupportFragmentManager());
+		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
+		mViewPagerAdapter = new ViewPagerAdapter(mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(mViewPagerAdapter);
 		mViewPager.setCurrentItem(MID_VALUE);
 		viewPagerPosition = MID_VALUE;
@@ -131,6 +123,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 				});
 
 		mListView = (ListView) view.findViewById(R.id.mListView);
+		mListView.setDividerHeight(0);
 		mListViewAdapter = new ListViewAdapter(mActivity);
 		mListView.setAdapter(mListViewAdapter);
 
@@ -149,15 +142,57 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 			// TODO Auto-generated method stub
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
+			reFillData(mDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
+	
+	public void reFillData(List<Map<String, Object>> mData) {
+
+		for (Map<String, Object> mMap : mData) {
+			int category = (Integer) mMap.get("category");
+			int payee = (Integer) mMap.get("payee");
+
+			if (category > 0) {
+				List<Map<String, Object>> mList = AccountDao.selectCategoryById(mActivity,
+								category);
+				if (mList != null) {
+					int iconName = (Integer) mList.get(0).get("iconName");
+					mMap.put("iconName", iconName);
+				} else {
+					mMap.put("iconName", 0);
+				}
+			} else {
+				mMap.put("iconName", 0); // 设置为not sure
+			}
+
+			if (payee > 0) {
+				List<Map<String, Object>> mList = AccountDao.selectPayeeById(mActivity, payee);
+				if (mList != null) {
+					String payeeName = (String) mList.get(0).get("name");
+					mMap.put("payeeName", payeeName);
+				} else {
+					mMap.put("payeeName", "--");
+				}
+			} else {
+				mMap.put("payeeName", "--");
+			}
+
+		}
+	}
 
 	public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
 		public ViewPagerAdapter(FragmentManager fm) {
 			super(fm);
 			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void setPrimaryItem(ViewGroup container, int position,
+				Object object) {
+			// TODO Auto-generated method stub
+			super.setPrimaryItem(container, position, object);
 		}
 
 		@Override
@@ -218,9 +253,9 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 		case 6:
 
 			if (data != null) {
+				
 				mViewPager.setAdapter(mViewPagerAdapter);
-				mViewPager.setCurrentItem(viewPagerPosition);
-				onBackTimeListener.OnBackTime(selectedDate);
+				mViewPager.setCurrentItem(viewPagerPosition); //类似于后台线程的方式去执行数据，所以直接执行下面的方法
 			}
 			break;
 		}

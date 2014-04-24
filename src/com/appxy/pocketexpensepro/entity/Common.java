@@ -2,6 +2,8 @@ package com.appxy.pocketexpensepro.entity;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -14,6 +16,14 @@ import com.appxy.pocketexpensepro.R;
 public class Common {
 	
 	public static int CURRENCY = 148;
+	
+	public static String turnToDate(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy, EEE HH:mm:ss");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
 	
 	public static String getRealPathFromURI(Uri contentUri, Context context) {
 		String[] proj = { MediaStore.Images.Media.DATA };
