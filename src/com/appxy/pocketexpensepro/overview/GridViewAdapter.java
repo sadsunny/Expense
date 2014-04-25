@@ -93,7 +93,7 @@ public class GridViewAdapter extends BaseAdapter {
 		}
 		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewHolder.mLayout
 				.getLayoutParams();
-		relativeParams.width = getWeekItemWidth();
+		relativeParams.width = getWeekItemWidth()+1;
 		viewHolder.mLayout.setLayoutParams(relativeParams);
 
 		long todayTime = (Long) mList.get(position).get("weekTime");

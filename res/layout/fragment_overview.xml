@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
         android:id="@+id/week_view"
@@ -70,28 +69,60 @@
             android:text="Sat" />
     </LinearLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/mPager"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:layout_below="@+id/week_view" />
-
-    <ListView
-        android:id="@+id/mListView"
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/mPager"
-        android:layout_marginBottom="60dp"
-        android:dividerHeight="0dp" >
-    </ListView>
+        android:layout_below="@+id/week_view" 
+        android:visibility="visible">
 
-    <LinearLayout
+        <android.support.v4.view.ViewPager
+            android:id="@+id/mPager"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_alignParentTop="true" />
+
+        <ListView
+            android:id="@+id/mListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mPager"
+            android:layout_marginBottom="60dp"
+            android:dividerHeight="0dp" >
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:alpha="0.6"
+            android:background="@color/blue"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout2"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:alpha="0.6"
-        android:background="@color/blue"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical" >
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/week_view" 
+        android:visibility="invisible">
+        
+         <GridView
+            android:id="@+id/mGridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
+            android:horizontalSpacing="0dp"
+            android:listSelector="@android:color/transparent"
+            android:numColumns="7"
+            android:stretchMode="columnWidth"
+            android:background="@color/calendar_bac"
+            android:verticalSpacing="0dp" 
+            android:layout_marginRight="-1.3dp"/>
+         
+         
+    </RelativeLayout>
 
 </RelativeLayout>

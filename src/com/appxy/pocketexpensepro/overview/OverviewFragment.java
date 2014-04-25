@@ -1,6 +1,10 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
@@ -8,6 +12,7 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
@@ -28,10 +33,12 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-public class OverviewFragment extends Fragment implements OnUpdateListListener{
+public class OverviewFragment extends Fragment implements OnUpdateListListener,OnChangeStateListener{
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
 	private static final int MSG_SUCCESS = 1;
@@ -47,7 +54,13 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 	private Thread mThread;
 	private long selectedDate;
 	private int viewPagerPosition;
-
+	private RelativeLayout weekLayout;
+	private RelativeLayout calendarLayout;
+	
+	private GridView mGridView;
+	private CalendarGridViewAdapter calendarGridViewAdapter;
+	public GregorianCalendar month;// calendar instances.
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -126,7 +139,19 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 		mListView.setDividerHeight(0);
 		mListViewAdapter = new ListViewAdapter(mActivity);
 		mListView.setAdapter(mListViewAdapter);
-
+		
+		weekLayout = (RelativeLayout)view.findViewById(R.id.RelativeLayout1); 
+		calendarLayout = (RelativeLayout)view.findViewById(R.id.RelativeLayout2); 
+		weekLayout.setVisibility(View.VISIBLE);
+		calendarLayout.setVisibility(View.INVISIBLE);
+		
+		Locale.setDefault(Locale.ENGLISH);
+		month = (GregorianCalendar) GregorianCalendar.getInstance();
+		
+	    mGridView = (GridView)view.findViewById(R.id.mGridview);
+	    calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
+	    mGridView.setAdapter(calendarGridViewAdapter);
+	    
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
@@ -266,6 +291,31 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener{
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
 		mHandler.post(mTask);
+		Log.v("mtest", "turnToDate selectedDate"+turnToDate(selectedDate));
+		month.setTimeInMillis(selectedDate);
+		calendarGridViewAdapter.refreshDays();
+		calendarGridViewAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void OnChangeState(int state) {
+		// TODO Auto-generated method stub
+		if (state == 0) {
+			weekLayout.setVisibility(View.VISIBLE);
+			calendarLayout.setVisibility(View.INVISIBLE);
+		}else {
+			weekLayout.setVisibility(View.INVISIBLE);
+			calendarLayout.setVisibility(View.VISIBLE);
+		}
+		
+	}
+	
+	public static String turnToDate(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy, HH:mm:ss");
+		String theDate = sdf.format(date2);
+		return theDate;
 	}
 
 }
