@@ -62,6 +62,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 		refreshDays();
 	}
+	
+	public void setDateTime(GregorianCalendar monthCalendar) {
+		month = monthCalendar;
+	}
 
 	public long getStringtoDate(String day) {
 		Calendar c = Calendar.getInstance();
@@ -161,7 +165,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		dayString.clear();
 		Locale.setDefault(Locale.ENGLISH);
 		pmonth = (GregorianCalendar) month.clone();
-		pmonth.set(GregorianCalendar.DAY_OF_MONTH, 1);
+//		pmonth.set(GregorianCalendar.DAY_OF_MONTH, 1);
 		Log.v("mtest", "refreshDays"+turnToDate(pmonth.getTimeInMillis()));
 		
 		// month start day. ie; sun, mon, etc

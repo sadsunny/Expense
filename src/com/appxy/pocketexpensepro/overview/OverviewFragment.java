@@ -147,7 +147,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,O
 		
 		Locale.setDefault(Locale.ENGLISH);
 		month = (GregorianCalendar) GregorianCalendar.getInstance();
-		
+		month.setTimeInMillis(month.getTimeInMillis());
 	    mGridView = (GridView)view.findViewById(R.id.mGridview);
 	    calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
 	    mGridView.setAdapter(calendarGridViewAdapter);
@@ -292,7 +292,10 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,O
 		this.selectedDate = selectedDate;
 		mHandler.post(mTask);
 		Log.v("mtest", "turnToDate selectedDate"+turnToDate(selectedDate));
-		month.setTimeInMillis(selectedDate);
+		
+		month.set(2014, 3, 1);
+		
+		calendarGridViewAdapter.setDateTime(month);
 		calendarGridViewAdapter.refreshDays();
 		calendarGridViewAdapter.notifyDataSetChanged();
 	}
