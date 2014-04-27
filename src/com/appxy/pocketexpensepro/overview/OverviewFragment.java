@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
@@ -63,6 +65,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	private GridView mGridView;
 	private CalendarGridViewAdapter calendarGridViewAdapter;
 	public GregorianCalendar month;// calendar instances.
+	private List<Map<String, Object>> mGridDataList;
 
 	public static SparseArray<Fragment> registeredFragments;
 
@@ -176,9 +179,17 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mDataList = OverViewDao.selectTransactionByTime(mActivity,
-					selectedDate);
+			mDataList = OverViewDao.selectTransactionByTime(mActivity,selectedDate);
 			reFillData(mDataList);
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(selectedDate);
+			
+			long beginTime = MEntity.getFirstDayOfMonthMillis(selectedDate);
+			long endTime = MEntity.getLastDayOfMonthMillis(selectedDate);
+					
+			mGridDataList = OverViewDao.selectTransactionByTimeBE(mActivity, beginTime, endTime);
+					
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -303,10 +314,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 
 			if (data != null) {
 
-				// mViewPager.setAdapter(mViewPagerAdapter);
-				// mViewPager.setCurrentItem(viewPagerPosition);
-				// //类似于后台线程的方式去执行数据，所以直接执行下面的方法
-				onBackTimeListener.OnBackTime(selectedDate,viewPagerPosition);
+				onBackTimeListener.OnBackTime(selectedDate,viewPagerPosition);//viewPagerPosition用于判断具体的fragment
 			}
 			break;
 		}
@@ -318,7 +326,8 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		this.selectedDate = selectedDate;
 		mHandler.post(mTask);
 		Log.v("mtest", "turnToDate selectedDate" + turnToDate(selectedDate));
-		month.setTimeInMillis(selectedDate);
+		
+		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(selectedDate));
 		calendarGridViewAdapter.refreshDays();
 		calendarGridViewAdapter.notifyDataSetChanged();
 	}

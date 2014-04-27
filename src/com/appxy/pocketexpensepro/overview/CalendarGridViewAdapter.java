@@ -130,6 +130,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
+		}else {
+			viewholder.dayView.setTextColor(Color.BLACK);
 		}
 		viewholder.dayView.setText(gridvalue);
 
@@ -189,6 +191,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			pmonthmaxset.add(GregorianCalendar.DATE, 1);
 			dayString.add(itemvalue);
 		}
+		Log.v("mtest", "dayString******"+dayString);
 	}
 
 	private int getMaxP() {
