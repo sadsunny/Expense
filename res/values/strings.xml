@@ -81,5 +81,7 @@
     <string name="to_account">TO ACCOUNT</string>
     <string name="balance_label">Balance: </string>
     <string name="out_label">Outstanding: </string>
+    <string name="budget_label">Budget Available</string>
+    <string name="budget">Budget</string>
 
 </resources>

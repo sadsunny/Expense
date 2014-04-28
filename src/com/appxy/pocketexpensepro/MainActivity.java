@@ -13,6 +13,7 @@ import com.appxy.pocketexpensepro.bills.BillsFragment;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
@@ -51,7 +52,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener {
+		OnWeekSelectedListener, OnBackTimeListener ,OnUpdateNavigationListener{
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -158,21 +159,24 @@ public class MainActivity extends FragmentActivity implements
 
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
+				overViewNavigationListAdapter.notifyDataSetChanged();
+				onChangeStateListener = (OnChangeStateListener) overviewFragment;
+				onChangeStateListener.OnChangeState(itemPosition);
 				
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
+				overViewNavigationListAdapter.notifyDataSetChanged();
+				onChangeStateListener = (OnChangeStateListener) overviewFragment;
+				onChangeStateListener.OnChangeState(itemPosition);
 			}
-			overViewNavigationListAdapter.notifyDataSetChanged();
 			
-			onChangeStateListener = (OnChangeStateListener) overviewFragment;
-			onChangeStateListener.OnChangeState(itemPosition);
 			
 			return false;
 
 		}
 	};
 
-	public static String turnToDate(long mills) {
+	public  String turnToDate(long mills) {
 
 		Date date2 = new Date(mills);
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM, yyyy");
@@ -442,6 +446,12 @@ public class MainActivity extends FragmentActivity implements
 		onUpdateWeekSelectListener =(OnUpdateWeekSelectListener) (OverviewFragment.registeredFragments.get(viewPagerPosition));
 		onUpdateWeekSelectListener.OnUpdateWeekSelect(selectedDate);
 		
+	}
+
+	@Override
+	public void OnUpdateNavigation(int itemPosition) {
+		// TODO Auto-generated method stub
+		actionBar.setSelectedNavigationItem(itemPosition);
 	}
 
 }

@@ -100,7 +100,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		if (isVisibleToUser) {
 
 			weekCallBack.OnWeekSelected(selectedDate);
-			Log.v("mtest", "setUserVisibleHint");
 			
 			if (mThread == null) {
 				mThread = new Thread(mTask);
@@ -121,8 +120,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		offset = position - MID_VALUE;
 		selectedDate = getFirstDayByOffset(offset);
 		
-		Log.v("mtest", "onCreate");
-
 	}
 
 	@Override
@@ -143,7 +140,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			mThread.start();
 		}
 		
-		Log.v("mtest", "onCreateView");
 		return view;
 	}
 

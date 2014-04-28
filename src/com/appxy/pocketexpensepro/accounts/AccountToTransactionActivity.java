@@ -549,7 +549,7 @@ public class AccountToTransactionActivity extends Activity {
 		return c.getTimeInMillis();
 	}
 
-	public void filterData(List<Map<String, Object>> mData) {// 过滤子类和父类
+	public void filterData(List<Map<String, Object>> mData) {// 根据时间过滤子类和父类
 
 		groupDataList.clear();
 		childrenAllDataList.clear();
@@ -558,12 +558,12 @@ public class AccountToTransactionActivity extends Activity {
 
 		for (Map<String, Object> mMap : mData) {
 			long dateTime = turnMillsToMonth((Long) mMap.get("dateTime"));
-
 			mDatelist.add(dateTime);
 		}
 
 		Iterator<Long> it1 = mDatelist.iterator();
 		Map<Long, Long> msp = new TreeMap<Long, Long>();
+		
 		while (it1.hasNext()) {
 			long obj = it1.next();
 			msp.put(obj, obj);

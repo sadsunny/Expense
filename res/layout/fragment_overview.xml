@@ -73,8 +73,8 @@
         android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/week_view" 
-        android:visibility="visible">
+        android:layout_below="@+id/week_view"
+        android:visibility="visible" >
 
         <android.support.v4.view.ViewPager
             android:id="@+id/mPager"
@@ -91,38 +91,113 @@
             android:dividerHeight="0dp" >
         </ListView>
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/budget_relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:alpha="0.6"
-            android:background="@color/blue"
-            android:orientation="vertical" >
-        </LinearLayout>
+            android:background="@color/top_bac" >
+
+            <TextView
+                android:id="@+id/budget_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/budget_label" />
+
+            <TextView
+                android:id="@+id/budget_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/zero_label"
+                 />
+
+            <TextView
+                android:id="@+id/currency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_toLeftOf="@+id/budget_amount"
+                android:text="@string/dollar" />
+
+            <ProgressBar
+                android:id="@+id/mProgressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="13dp"
+                android:layout_below="@+id/budget_amount"
+                android:layout_marginRight="12dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="5dp"
+                android:focusable="false"
+                android:max="50"
+                android:progress="30" 
+                android:progressDrawable="@drawable/progressbar_bac"/>
+            
+        </RelativeLayout>
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/RelativeLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/week_view" 
-        android:visibility="invisible">
-        
-         <GridView
+        android:layout_below="@+id/week_view"
+        android:visibility="invisible" >
+
+        <GridView
             android:id="@+id/mGridview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_gravity="center_horizontal"
+            android:layout_marginRight="-1.3dp"
+            android:background="@color/calendar_bac"
             android:horizontalSpacing="0dp"
             android:listSelector="@android:color/transparent"
             android:numColumns="7"
             android:stretchMode="columnWidth"
-            android:background="@color/calendar_bac"
-            android:verticalSpacing="0dp" 
-            android:layout_marginRight="-1.3dp"/>
-         
-         
+            android:verticalSpacing="0dp" />
+
+        <TextView
+            android:id="@+id/expense_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/income_txt"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="12dp" />
+
+        <TextView
+            android:id="@+id/income_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/devid_line"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="12dp" />
+
+        <View
+            android:id="@+id/devid_line"
+            android:layout_width="150dp"
+            android:layout_height="1dp"
+            android:layout_above="@+id/amount_txt"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:background="@color/black_gray" />
+
+        <TextView
+            android:id="@+id/amount_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="28dp"
+            android:layout_marginRight="12dp" />
     </RelativeLayout>
 
 </RelativeLayout>

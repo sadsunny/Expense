@@ -86,6 +86,12 @@
             android:name="com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity"
             android:label="@string/account" >
         </activity>
+        
+          <activity
+            android:name="com.appxy.pocketexpensepro.overview.BudgetActivity"
+            android:label="@string/budget" >
+        </activity>
+        
          <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountTransferActivity"
             android:label="@string/account" >

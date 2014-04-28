@@ -69,19 +69,11 @@ public class OverViewDao {
 		return mList;
 	}
 	
-<<<<<<< HEAD
-	public static List<Map<String, Object>> selectTransactionByTimeBE(Context context, long begtime , long endtime) { // Account查询
-		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
-		Map<String, Object> mMap;
-		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+begtime+" and a.dateTime =< "+endtime+" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
-=======
 	public static List<Map<String, Object>> selectTransactionByTimeBE(Context context, long beginTime, long endTime) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+beginTime+" and a.dateTime <= "+endTime+" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
->>>>>>> FETCH_HEAD
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

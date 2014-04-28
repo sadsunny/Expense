@@ -1,6 +1,8 @@
 package com.appxy.pocketexpensepro.overview;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.MEntity;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -29,7 +31,6 @@ import android.widget.TextView;
 @SuppressLint("ResourceAsColor")
 public class CalendarGridViewAdapter extends BaseAdapter {
 	private Context mContext;
-
 	private Calendar month;
 	public GregorianCalendar pmonth; // calendar instance for previous month
 	/**
@@ -47,10 +48,9 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	DateFormat df;
 
 	public static List<String> dayString;
-	private View previousView;
-
-	private String showDay;
-	public boolean showDayCheck = true;
+	private List<Map<String, Object>> mDataList;
+	private String checkDate;
+	private ArrayList<String> items;
 
 	public CalendarGridViewAdapter(Context c, GregorianCalendar monthCalendar) {
 
@@ -61,10 +61,27 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		month.set(GregorianCalendar.DAY_OF_MONTH, 1);
 		df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 		refreshDays();
+
+		this.items = new ArrayList<String>();
 	}
-	
-	public void setDateTime(GregorianCalendar monthCalendar) {
-		month = monthCalendar;
+
+	public void setDataList(List<Map<String, Object>> mDataList) {
+		this.mDataList = mDataList;
+		this.items.clear();
+		for (Map<String, Object> iMap : mDataList) {
+			long mDayDate = (Long) iMap.get("dateTime");
+			String mDayDateString = df.format(mDayDate);
+			this.items.add(mDayDateString);
+		}
+	}
+
+	public List<String> getCalendarItem() {
+		Log.v("mtest", "this.dayString ***" + this.dayString);
+		return this.dayString;
+	}
+
+	public void setCheckDat(long date) {
+		this.checkDate = df.format(date);
 	}
 
 	public long getStringtoDate(String day) {
@@ -83,19 +100,14 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		return dayString.size();
 	}
 
-	public List<String> getDayStrings() {
-		return dayString;
-	}
-
 	public Object getItem(int position) {
 		return dayString.get(position);
 	}
-	
+
 	public int getWeekItemWidth() {
 		DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
 		return dm.widthPixels / 7;
 	}
-
 
 	// create a new view for each item referenced by the Adapter
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -104,20 +116,28 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 		if (convertView == null) { // if it's not recycled, initialize some
 			// attributes
-			LayoutInflater vi = LayoutInflater.from(mContext);;
+			LayoutInflater vi = LayoutInflater.from(mContext);
+			;
 			convertView = vi.inflate(R.layout.fragment_calender_item, null);
 			viewholder = new ViewHolder();
 
-			viewholder.dayView = (TextView) convertView.findViewById(R.id.date_text);
-			viewholder.mLayout = (RelativeLayout) convertView.findViewById(R.id.RelativeLayout1);
+			viewholder.dayView = (TextView) convertView
+					.findViewById(R.id.date_text);
+			viewholder.mLayout = (RelativeLayout) convertView
+					.findViewById(R.id.RelativeLayout1);
+			viewholder.expenseTextView = (TextView) convertView
+					.findViewById(R.id.expense_text);
+			viewholder.incomeTextView = (TextView) convertView
+					.findViewById(R.id.income_text);
+
 			convertView.setTag(viewholder);
 		} else {
 			viewholder = (ViewHolder) convertView.getTag();
 		}
-		
+
 		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewholder.mLayout
 				.getLayoutParams();
-		relativeParams.width = getWeekItemWidth()+1;
+		relativeParams.width = getWeekItemWidth() + 1;
 		viewholder.mLayout.setLayoutParams(relativeParams);
 
 		// separates daystring into parts.
@@ -134,11 +154,40 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
-		}else {
+		} else {
 			viewholder.dayView.setTextColor(Color.BLACK);
 		}
 		viewholder.dayView.setText(gridvalue);
+		String everyDay = dayString.get(position); // 定位为当天
 
+		if (everyDay.equals(checkDate)) {
+			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
+		} else {
+			viewholder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
+		}
+
+		if (items != null && items.contains(everyDay)) { // 该位置表示当天
+
+			double expense = 0;
+			double income = 0;
+			for (Map<String, Object> iMap : mDataList) {
+				long mDayDate = (Long) iMap.get("dateTime");
+				String mDayDateString = df.format(mDayDate);
+
+				if (mDayDateString.equals(everyDay)) {
+					expense = (Double) iMap.get("expense");
+					income = (Double) iMap.get("income");
+				}
+			}
+
+			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
+			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income + ""));
+
+		} else {
+			viewholder.expenseTextView.setText("");
+			viewholder.incomeTextView.setText("");
+
+		}
 		return convertView;
 	}
 
@@ -149,11 +198,6 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		TextView incomeTextView;
 	}
 
-	public void setShowDay(String show, Boolean showCheck) {
-		this.showDay = show;
-		this.showDayCheck = showCheck;
-	}
-	
 	public static String turnToDate(long mills) {
 
 		Date date2 = new Date(mills);
@@ -167,9 +211,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		dayString.clear();
 		Locale.setDefault(Locale.ENGLISH);
 		pmonth = (GregorianCalendar) month.clone();
-//		pmonth.set(GregorianCalendar.DAY_OF_MONTH, 1);
-		Log.v("mtest", "refreshDays"+turnToDate(pmonth.getTimeInMillis()));
-		
+		Log.v("mtest", "refreshDays" + turnToDate(pmonth.getTimeInMillis()));
+
 		// month start day. ie; sun, mon, etc
 		firstDay = month.get(GregorianCalendar.DAY_OF_WEEK);
 		// finding number of weeks in current month.
@@ -195,7 +238,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			pmonthmaxset.add(GregorianCalendar.DATE, 1);
 			dayString.add(itemvalue);
 		}
-		Log.v("mtest", "dayString******"+dayString);
+		Log.v("mtest", "dayString******" + dayString);
 	}
 
 	private int getMaxP() {
