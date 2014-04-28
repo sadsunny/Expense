@@ -1,6 +1,8 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -168,10 +170,60 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,O
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
 			reFillData(mDataList);
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(selectedDate);
+			long firstDay = getFirstDayOfMonthMillis(calendar.get(GregorianCalendar.YEAR),calendar.get(GregorianCalendar.MONTH)+1);
+			long lastDay = getLastDayOfMonthMillis(calendar.get(GregorianCalendar.YEAR),calendar.get(GregorianCalendar.MONTH)+1);
+			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
 	
+	public static long getFirstDayOfMonthMillis(int year, int month) {   //锟斤拷取某锟斤拷某锟铰的碉拷一锟斤拷暮锟斤拷锟斤拷锟�
+        Calendar cal = Calendar.getInstance();   
+        cal.set(Calendar.YEAR, year);   
+        cal.set(Calendar.MONTH, month-1);
+        
+        cal.set(Calendar.DAY_OF_MONTH,cal.getMinimum(Calendar.DATE));
+        
+        String dateTime = new SimpleDateFormat( "MM-dd-yyyy").format(cal.getTime());
+        
+        Calendar c = Calendar.getInstance();
+
+        try {
+ 		c.setTime(new SimpleDateFormat( "MM-dd-yyyy").parse(dateTime));
+ 	 } catch (ParseException e) {
+ 		// TODO Auto-generated catch block
+ 		e.printStackTrace();
+ 	 }
+        return  c.getTimeInMillis();
+    } 
+	
+	 public static long getLastDayOfMonthMillis(int year, int month) {   //锟斤拷取某锟斤拷某锟铰碉拷锟斤拷锟揭伙拷锟侥猴拷锟斤拷锟斤拷
+	        Calendar cal = Calendar.getInstance();   
+	        cal.set(Calendar.YEAR, year);   
+	        cal.set(Calendar.MONTH, month-1); 
+//	        cal.set(Calendar.HOUR, 23);
+//	        cal.set(Calendar.MINUTE, 59);
+//	        cal.set(Calendar.SECOND, 59);
+	        
+	        cal.set(Calendar.DAY_OF_MONTH,cal.getActualMaximum(Calendar.DATE)); //xxx.set锟斤拷Calendar.DAY_OF_MONTH,12锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷为12锟斤拷..cal.getActualMaximum(Calendar.DATE)某锟斤拷某锟铰碉拷锟斤拷锟揭伙拷锟�   
+	        
+	        String dateTime = new SimpleDateFormat( "MM-dd-yyyy").format(cal.getTime());
+	        Calendar c = Calendar.getInstance();
+
+	       try {
+			c.setTime(new SimpleDateFormat( "MM-dd-yyyy").parse(dateTime));
+		 } catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		 }
+	     
+	       return  c.getTimeInMillis();
+	       
+	    } 
+	 
 	public void reFillData(List<Map<String, Object>> mData) {
 
 		for (Map<String, Object> mMap : mData) {
