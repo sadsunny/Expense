@@ -1,5 +1,10 @@
 # cache for current jar dependency. DO NOT EDIT.
 # format is <lastModified> <length> <SHA-1> <path>
 # Encoding is UTF-8
+<<<<<<< HEAD
 1392864540000 484258 bd6479f5dd592790607e0504e66e0f31c2b4d308 /Users/chydan/AndroidWorkPlace/Expense/libs/android-support-v4.jar
 1372334490000 484258 bd6479f5dd592790607e0504e66e0f31c2b4d308 /Users/chydan/AndroidWorkPlace/library/libs/android-support-v4.jar
+=======
+1398480340733 484258 bd6479f5dd592790607e0504e66e0f31c2b4d308 E:\Expense\libs\android-support-v4.jar
+1372334490000 484258 bd6479f5dd592790607e0504e66e0f31c2b4d308 E:\AndroidWorkspace\library\libs\android-support-v4.jar
+>>>>>>> FETCH_HEAD

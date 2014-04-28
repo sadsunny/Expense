@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
@@ -29,7 +31,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class WeekFragment extends Fragment {
+public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -98,6 +100,12 @@ public class WeekFragment extends Fragment {
 		if (isVisibleToUser) {
 
 			weekCallBack.OnWeekSelected(selectedDate);
+			Log.v("mtest", "setUserVisibleHint");
+			
+			if (mThread == null) {
+				mThread = new Thread(mTask);
+				mThread.start();
+			}
 		}
 	}
 
@@ -112,6 +120,8 @@ public class WeekFragment extends Fragment {
 		}
 		offset = position - MID_VALUE;
 		selectedDate = getFirstDayByOffset(offset);
+		
+		Log.v("mtest", "onCreate");
 
 	}
 
@@ -127,10 +137,13 @@ public class WeekFragment extends Fragment {
 		mGridView.setOnItemClickListener(mListener);
 		mDataList = new ArrayList<Map<String, Object>>();
 
+		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
+		
+		Log.v("mtest", "onCreateView");
 		return view;
 	}
 
@@ -160,7 +173,12 @@ public class WeekFragment extends Fragment {
 			// TODO Auto-generated method stub
 
 			long firstDayDate = getWeekByOffset(offset);
-			mDataList.clear();
+			if (mDataList == null) {
+				mDataList = new ArrayList<Map<String, Object>>();
+			} else {
+				mDataList.clear();
+			}
+		
 
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
@@ -234,6 +252,17 @@ public class WeekFragment extends Fragment {
 		returnDate = calendar.getTimeInMillis();
 
 		return returnDate;
+	}
+
+	@Override
+	public void OnUpdateWeekSelect(long selectedDate) {
+		// TODO Auto-generated method stub
+		this.selectedDate = selectedDate;
+	mHandler.post(mTask);
+	weekCallBack.OnWeekSelected(selectedDate);
+	
+//		mAdapter.setChoosedTime(selectedDate);
+//		mAdapter.notifyDataSetChanged();
 	}
 
 }

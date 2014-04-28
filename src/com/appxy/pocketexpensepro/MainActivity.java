@@ -51,7 +51,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener {
+		OnWeekSelectedListener, OnBackTimeListener {
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -68,7 +68,6 @@ public class MainActivity extends FragmentActivity implements
 	private OnUpdateListListener onUpdateListListener;
 	private OnChangeStateListener onChangeStateListener;
 	private OverviewFragment overviewFragment;
-
 	private final static long DAYMILLIS = 86400000L;
 
 	private long selectedDate;
@@ -434,6 +433,15 @@ public class MainActivity extends FragmentActivity implements
 
 		onUpdateListListener = (OnUpdateListListener) overviewFragment;
 		onUpdateListListener.OnUpdateList(this.selectedDate);
+	}
+
+	@Override
+	public void OnBackTime(long selectedDate, int viewPagerPosition) {
+		// TODO Auto-generated method stub
+		this.selectedDate = selectedDate;
+		onUpdateWeekSelectListener =(OnUpdateWeekSelectListener) (OverviewFragment.registeredFragments.get(viewPagerPosition));
+		onUpdateWeekSelectListener.OnUpdateWeekSelect(selectedDate);
+		
 	}
 
 }
