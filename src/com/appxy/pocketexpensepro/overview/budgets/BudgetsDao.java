@@ -22,7 +22,7 @@ public class BudgetsDao {
 		return db;
 	}
 	
-	public static long insertBudgetTemplate(Context context, double amount, int category) {
+	public static long insertBudgetTemplate(Context context, String amount, int category) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
@@ -31,7 +31,7 @@ public class BudgetsDao {
 		return row;
 	}
 	
-	public static long insertBudgetItem (Context context, double amount, int budgetTemplate) {
+	public static long insertBudgetItem (Context context, String amount, int budgetTemplate) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);

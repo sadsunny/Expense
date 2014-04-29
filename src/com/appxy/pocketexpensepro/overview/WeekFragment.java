@@ -104,6 +104,8 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			if (mThread == null) {
 				mThread = new Thread(mTask);
 				mThread.start();
+			}else {
+				mHandler.post(mTask);
 			}
 		}
 	}

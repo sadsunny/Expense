@@ -189,7 +189,7 @@ public class CreatBudgetsActivity extends Activity {
 
 	public Runnable mTask = new Runnable() {
 
-		@Override
+		@Override 
 		public void run() {
 			// TODO Auto-generated method stub
 			mDataList = BudgetsDao
@@ -228,11 +228,11 @@ public class CreatBudgetsActivity extends Activity {
 							int categoryId = (Integer) mDataList.get(i).get(
 									"_id");
 							long temId = BudgetsDao.insertBudgetTemplate(
-									CreatBudgetsActivity.this, amount,
+									CreatBudgetsActivity.this, amountString,
 									categoryId);
 							if (temId > 0) {
 								long itemId = BudgetsDao.insertBudgetItem(
-										CreatBudgetsActivity.this, amount,
+										CreatBudgetsActivity.this, amountString,
 										(int) temId);
 							}
 						}

@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +53,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.animation.AccelerateInterpolator;  
 
 public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		OnChangeStateListener {
@@ -90,6 +92,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	private RelativeLayout budgetRelativeLayout ;
 	private TextView budgeTextView;
 	private ProgressBar mProgressBar;
+	 private FixedSpeedScroller mScroller; 
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -169,6 +172,18 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 				mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(mViewPagerAdapter);
 		mViewPager.setCurrentItem(MID_VALUE);
+		
+//		 try {               
+//	            Field mField = ViewPager.class.getDeclaredField("mScroller");               
+//	            mField.setAccessible(true);     
+//	             //设置加速度 ，通过改变FixedSpeedScroller这个类中的mDuration来改变动画时间（如mScroller.setmDuration(mMyDuration);）    
+//	            mScroller = new FixedSpeedScroller(mViewPager.getContext(), new AccelerateInterpolator());           
+//	            mField.set(mViewPager, mScroller);           
+//	            } catch (Exception e) {           
+//	                e.printStackTrace();  
+//	            }   
+	    
+	
 		viewPagerPosition = MID_VALUE;
 
 		mViewPagerAdapter.getItem(MID_VALUE);
@@ -225,9 +240,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 						.get(paramInt));
 				calendarGridViewAdapter.setCheckDat(selectedDate);
 				calendarGridViewAdapter.notifyDataSetChanged();
-
-//				weekLayout.setVisibility(View.VISIBLE);
-//				calendarLayout.setVisibility(View.INVISIBLE);
 
 				int offset = MEntity.getOffsetByDay(selectedDate,
 						MEntity.getNowMillis());

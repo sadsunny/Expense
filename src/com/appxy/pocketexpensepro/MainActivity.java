@@ -141,7 +141,7 @@ public class MainActivity extends FragmentActivity implements
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		overViewNavigationListAdapter = new OverViewNavigationListAdapter(this);
 		overViewNavigationListAdapter.setChoosed(0);
-		overViewNavigationListAdapter.setTitle("OverView ");
+		overViewNavigationListAdapter.setTitle("Overview ");
 		overViewNavigationListAdapter.setSubTitle(turnToDate(todayLong));
 		List<String> itemStrings = new ArrayList<String>();
 		itemStrings.add("Week                    ");
@@ -208,7 +208,7 @@ public class MainActivity extends FragmentActivity implements
 
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 				overViewNavigationListAdapter.setChoosed(0);
-				overViewNavigationListAdapter.setTitle("OverView ");
+				overViewNavigationListAdapter.setTitle("Overview ");
 				overViewNavigationListAdapter
 						.setSubTitle(turnToDate(selectedDate));
 				List<String> itemStrings = new ArrayList<String>();

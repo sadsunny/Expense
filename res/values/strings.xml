@@ -83,5 +83,6 @@
     <string name="out_label">Outstanding: </string>
     <string name="budget_label">Budget Available</string>
     <string name="budget">Budget</string>
+    <string name="set_budget">Set Budget</string>
 
 </resources>
