@@ -11,6 +11,7 @@ import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActionBar.LayoutParams;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -235,6 +236,9 @@ public class CreatBudgetsActivity extends Activity {
 										CreatBudgetsActivity.this, amountString,
 										(int) temId);
 							}
+							Intent intent = new Intent();
+							intent.putExtra("done", 1);
+							setResult(4, intent);
 						}
 					}
 				}

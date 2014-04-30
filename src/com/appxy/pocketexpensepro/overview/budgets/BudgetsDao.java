@@ -31,6 +31,16 @@ public class BudgetsDao {
 		return row;
 	}
 	
+	public static long insertBudgetTransfer (Context context, String amount, int fromBudget, int toBudget) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("fromBudget", fromBudget);
+		cv.put("toBudget", toBudget);
+		long row = db.insert("BudgetTransfer", null, cv);
+		return row;
+	}
+	
 	public static long insertBudgetItem (Context context, String amount, int budgetTemplate) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();

@@ -148,4 +148,11 @@ public class MEntity {
 	     return nowMillis;
 	}
 	
+	public static String turnMilltoMonthYear(long milliSeconds) {// 将毫秒转化成固定格式的年月日
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM, yyyy");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		return formatter.format(calendar.getTime());
+	}
+	
 }

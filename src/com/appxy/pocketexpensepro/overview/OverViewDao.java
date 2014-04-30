@@ -162,8 +162,8 @@ public class OverViewDao {
 			mMap = new HashMap<String, Object>();
 			int _id = mCursor.getInt(0);
 			String amount = mCursor.getString(1);
-			int fromBudget = mCursor.getInt(7);
-			int toBudget = mCursor.getInt(8);
+			int fromBudget = mCursor.getInt(6);
+			int toBudget = mCursor.getInt(7);
 
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);

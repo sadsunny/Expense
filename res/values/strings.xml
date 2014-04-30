@@ -84,5 +84,7 @@
     <string name="budget_label">Budget Available</string>
     <string name="budget">Budget</string>
     <string name="set_budget">Set Budget</string>
+    <string name="from_budget">FROM BUDGET</string>
+    <string name="to_budget">TO BUDGET</string>
 
 </resources>

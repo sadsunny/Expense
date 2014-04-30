@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dip"
-            android:text="@string/from_account" />
+            android:text="@string/from_budget" />
 
         <Button
             android:id="@+id/from_btn"
@@ -43,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dip"
-            android:text="@string/to_account" />
+            android:text="@string/to_budget" />
 
         <Button
             android:id="@+id/to_btn"

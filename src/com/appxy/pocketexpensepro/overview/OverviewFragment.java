@@ -92,7 +92,10 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	private RelativeLayout budgetRelativeLayout ;
 	private TextView budgeTextView;
 	private ProgressBar mProgressBar;
-	 private FixedSpeedScroller mScroller; 
+	private FixedSpeedScroller mScroller; 
+	
+	private double budgetAmount;
+	private double transactionAmount;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -111,7 +114,12 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 				calendarGridViewAdapter.setCheckDat(selectedDate);
 				calendarGridViewAdapter.setDataList(mGridDataList);
 				calendarGridViewAdapter.notifyDataSetChanged();
-
+				
+				mProgressBar.setMax((int)budgetAmount);
+				mProgressBar.setProgress((int) transactionAmount);
+				
+				budgeTextView.setText((budgetAmount-transactionAmount)+"");
+				
 				break;
 
 			case MSG_FAILURE:
@@ -297,11 +305,64 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 			amount = b1.add(b2).doubleValue();
 
 			mGridDataList = filterDataByTime(mCalendarDataList);
+			
+			
+			List<Map<String, Object>>  mBudgetList = OverViewDao.selectBudget(mActivity);
+			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(mActivity);
+			Calendar todayCalendar = Calendar.getInstance();
+			long firstDay = MEntity.getFirstDayOfMonthMillis(todayCalendar.getTimeInMillis());
+			long lastDay = MEntity.getLastDayOfMonthMillis(todayCalendar.getTimeInMillis());
+			
+			BigDecimal budgetBig = new BigDecimal("0");
+			BigDecimal transactionBig = new BigDecimal("0");
+			for (Map<String, Object> iMap: mBudgetList) {
+				int _id = (Integer) iMap.get("_id");
+				String amount = (String) iMap.get("amount");
+				int category_id = (Integer) iMap.get("category");
+				
+				BigDecimal big1 = new BigDecimal(amount);
+				budgetBig = budgetBig.add(big1);
+				for (Map<String, Object> mMap: mTransferList) {
+					
+					int fromBudget = (Integer) mMap.get("fromBudget");
+					int toBudget = (Integer) mMap.get("toBudget");
+					String amountTransfer = (String) mMap.get("amount");
+					
+					BigDecimal big2 = new BigDecimal(amountTransfer);
+					if (_id == fromBudget) {
+						big1 = big1.subtract(big2);
+					} else if (_id == toBudget) {
+						big1 = big1.add(big2);
+					}
+				}
+				iMap.put("amount", big1.doubleValue()+"");
+				
+				BigDecimal bigz = new BigDecimal("0");
+				List<Map<String, Object>> mTransactionList = OverViewDao.selectTransactionByCategoryIdAndTime(mActivity, category_id, firstDay, lastDay) ;
+				for (Map<String, Object> tMap: mTransactionList){
+					
+					String tAmount = (String) tMap.get("amount");
+					int expenseAccount = (Integer) tMap.get("expenseAccount");
+					int incomeAccount = (Integer) tMap.get("incomeAccount");
+					BigDecimal big3 = new BigDecimal(tAmount);
+
+					if (expenseAccount > 0 && incomeAccount <= 0) {
+						bigz = bigz.add(big3);
+					} 
+				}
+				transactionBig = transactionBig.add(bigz);
+				double tAmount = bigz.doubleValue();
+				iMap.put("tAmount", tAmount+"");
+				
+			}
+			
+			budgetAmount = budgetBig.doubleValue();
+			transactionAmount = transactionBig.doubleValue();
 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
-
+	
 	public List<Map<String, Object>> filterDataByTime(
 			List<Map<String, Object>> mData) {// Transaction根据时间分类计算
 
@@ -492,6 +553,13 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 			if (data != null) {
 
 				onBackTimeListener.OnBackTime(selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+			}
+			break;
+		case 14:
+
+			if (data != null) {
+
+				mHandler.post(mTask);
 			}
 			break;
 		}

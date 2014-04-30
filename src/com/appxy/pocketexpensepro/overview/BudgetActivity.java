@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
@@ -22,6 +23,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -44,8 +47,8 @@ public class BudgetActivity extends Activity {
 	
 	private double budgetAmount;
 	private double transactionAmount;
-	
     private List<Map<String, Object>> mBudgetList;
+    private BudgetListApdater budgetListApdater;
     
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -54,6 +57,9 @@ public class BudgetActivity extends Activity {
 
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
+				budgetListApdater.setAdapterDate(mBudgetList);
+				budgetListApdater.notifyDataSetChanged();
+				leftTextView.setText((budgetAmount-transactionAmount)+"");
 				
 				break;
 
@@ -72,16 +78,47 @@ public class BudgetActivity extends Activity {
 		mInflater = LayoutInflater.from(this);
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setSubtitle("Apr, 2014");
+		Calendar calendar = Calendar.getInstance();
+		actionBar.setSubtitle(MEntity.turnMilltoMonthYear(calendar.getTimeInMillis()));
 
 		mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
 		leftTextView = (TextView) findViewById(R.id.budget_amount);
 		setBudgetLayout = (LinearLayout) findViewById(R.id.setbudget_linearLayout);
 		transferLayout = (LinearLayout) findViewById(R.id.transfer_linearLayout);
 		mListView = (ListView) findViewById(R.id.budget_listview);
+		budgetListApdater = new BudgetListApdater(this);
+		mListView.setAdapter(budgetListApdater);
+		mListView.setDividerHeight(0);
+		
+		setBudgetLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(BudgetActivity.this, CreatBudgetsActivity.class);
+				startActivityForResult(intent, 4);
+			}
+		});
+		
+		transferLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(BudgetActivity.this, BudgetTransferActivity.class);
+				startActivityForResult(intent, 15);
+				
+			}
+		});
 		
 		Thread mThread = new Thread(mTask);
 		mThread.start();
+		
+		Intent intent = new Intent();
+		intent.putExtra("done", 1);
+		setResult(14, intent);
 		
 	}
 
@@ -127,26 +164,20 @@ public class BudgetActivity extends Activity {
 					String tAmount = (String) tMap.get("amount");
 					int expenseAccount = (Integer) tMap.get("expenseAccount");
 					int incomeAccount = (Integer) tMap.get("incomeAccount");
-					BigDecimal b3 = new BigDecimal(amount);
+					BigDecimal b3 = new BigDecimal(tAmount);
 
 					if (expenseAccount > 0 && incomeAccount <= 0) {
 						bz = bz.add(b3);
-					} else if (incomeAccount > 0 && expenseAccount <= 0) {
-						bz = bz.add(b3);
-					}
+					} 
 				}
 				bt0 = bt0.add(bz);
 				double tAmount = bz.doubleValue();
 				iMap.put("tAmount", tAmount+"");
-				Log.v("mtest", "单个transactionAmount"+tAmount);
 				
 			}
 			
 			budgetAmount = b0.doubleValue();
 			transactionAmount = bt0.doubleValue();
-			
-			Log.v("mtest", "budgetAmount"+budgetAmount);
-			Log.v("mtest", "transactionAmount"+transactionAmount);
 			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
@@ -177,5 +208,27 @@ public class BudgetActivity extends Activity {
 
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 4:
+
+			if (data != null) {
+
+				mHandler.post(mTask);
+			}
+			break;
+		case 15:
+
+			if (data != null) {
+
+				mHandler.post(mTask);
+			}
+			break;
+		}
 	}
 }
