@@ -57,7 +57,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 
 				if (mDataList != null) {
 					mAdapter.setDate(mDataList);
-					mAdapter.setChoosedTime(selectedDate);
+					mAdapter.setChoosedTime(MainActivity.selectedDate);
 					mAdapter.notifyDataSetChanged();
 				}
 
@@ -99,7 +99,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 
 		if (isVisibleToUser) {
 
-			weekCallBack.OnWeekSelected(selectedDate);
+//			weekCallBack.OnWeekSelected(selectedDate);
 			
 			if (mThread == null) {
 				mThread = new Thread(mTask);

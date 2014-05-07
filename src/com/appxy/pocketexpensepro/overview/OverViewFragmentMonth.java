@@ -1,5 +1,8 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.util.Calendar;
+
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
@@ -59,11 +62,26 @@ public class OverViewFragmentMonth extends Fragment {
 		mViewPager.setCurrentItem(currentPosition);
 		viewPagerPosition = currentPosition;
 		
+		 final OnUpdateNavigationListener onUpdateNavigationListener;
+		 onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		mViewPager
 		.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageSelected(int position) {
 				viewPagerPosition = position;
+				
+				if (position == MID_VALUE) {
+					Calendar calendar1 = Calendar.getInstance();
+					calendar1.set(Calendar.HOUR_OF_DAY, 0);
+					calendar1.set(Calendar.MINUTE, 0);
+					calendar1.set(Calendar.SECOND, 0);
+					calendar1.set(Calendar.MILLISECOND, 0);
+					onUpdateNavigationListener.OnUpdateNavigation(calendar1.getTimeInMillis());
+				}else {
+					long theSelectedDate = MEntity.getMonthByOffset(position-MID_VALUE);
+					onUpdateNavigationListener.OnUpdateNavigation(theSelectedDate);
+				}
+				
 			}
 
 			@Override

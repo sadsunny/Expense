@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
@@ -70,15 +71,11 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 			switch (msg.what) {
 			case MSG_SUCCESS:
 				
-//				month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
-//				calendarGridViewAdapter.refreshDays();
-//				calendarGridViewAdapter.notifyDataSetChanged();
-
 				expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
 				incomeTextView.setText(MEntity.doublepoint2str(income + ""));
 				amountTextView.setText(MEntity.doublepoint2str(amount + ""));
 
-				calendarGridViewAdapter.setCheckDat(selectedDate);
+				calendarGridViewAdapter.setCheckDat(MainActivity.selectedDate);
 				calendarGridViewAdapter.setDataList(mGridDataList);
 				calendarGridViewAdapter.notifyDataSetChanged();
 
@@ -111,6 +108,8 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 			position = bundle.getInt("position");
 		}
 		offset = position - MID_VALUE;
+		selectedDate = MainActivity.selectedDate;
+		
 	}
 
 	@Override
@@ -122,12 +121,14 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 
 			// weekCallBack.OnWeekSelected(selectedDate);
 			//
-			// if (mThread == null) {
-			// mThread = new Thread(mTask);
-			// mThread.start();
-			// }else {
-			// mHandler.post(mTask);
-			// }
+			 if (mThread == null) {
+			 mThread = new Thread(mTask);
+			 mThread.start();
+			 }else {
+			 mHandler.post(mTask);
+			 }
+			 Log.v("mtest", "主actiivity中的日期"+MEntity.getMilltoDate(MainActivity.selectedDate));
+			 
 		}
 	}
 
@@ -141,15 +142,15 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 		expenseTextView = (TextView) view.findViewById(R.id.expense_txt);
 		incomeTextView = (TextView) view.findViewById(R.id.income_txt);
 		amountTextView = (TextView) view.findViewById(R.id.amount_txt);
-		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
+		
 
 		
 		Locale.setDefault(Locale.ENGLISH);
 		month = (GregorianCalendar) GregorianCalendar.getInstance();
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 		
-		Log.v("mtest", "offset"+offset);
-		Log.v("mtest", "offset代表的时间"+MEntity.getMilltoDate(getMonthByOffset(offset)));
+//		Log.v("mtest", "offset"+offset);
+//		Log.v("mtest", "offset代表的时间"+MEntity.getMilltoDate(getMonthByOffset(offset)));
 		
 		mGridView = (GridView) view.findViewById(R.id.mGridview);
 		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
@@ -173,7 +174,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 						MEntity.getNowMillis());
 
 				viewPagerPosition = MID_VALUE + offset;
-				onUpdateNavigationListener.OnUpdateNavigation(0);
+				onUpdateNavigationListener.OnUpdateNavigation(0, mChooseTime);
 			}
 		});
 		if (mThread == null) {

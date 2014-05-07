@@ -153,7 +153,9 @@ public class OverviewFragment extends Fragment implements
 		if (bundle != null) {
 			argumentsDate = bundle.getLong("selectedDate");
 		}
-		currentPosition = MID_VALUE + MEntity.getWeekOffsetByDay(argumentsDate, System.currentTimeMillis());
+		int mOffset = MEntity.getWeekOffsetByDay(argumentsDate, System.currentTimeMillis());
+		Log.v("mtest", "mOffset"+mOffset);
+		currentPosition = MID_VALUE + mOffset;
 		selectedDate = argumentsDate;
 	}
 
@@ -188,10 +190,26 @@ public class OverviewFragment extends Fragment implements
 		mViewPager.setCurrentItem(currentPosition);
 		
 		viewPagerPosition = currentPosition;
+		
+		 final OnUpdateNavigationListener onUpdateNavigationListener;
+		 onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						viewPagerPosition = position;
+						
+						if (position == MID_VALUE) {
+							Calendar calendar1 = Calendar.getInstance();
+							calendar1.set(Calendar.HOUR_OF_DAY, 0);
+							calendar1.set(Calendar.MINUTE, 0);
+							calendar1.set(Calendar.SECOND, 0);
+							calendar1.set(Calendar.MILLISECOND, 0);
+							onUpdateNavigationListener.OnUpdateNavigation(calendar1.getTimeInMillis());
+						}else {
+							long theSelectedDate = MEntity.getFirstDayByOffset(position-MID_VALUE);
+							onUpdateNavigationListener.OnUpdateNavigation(theSelectedDate);
+						}
+						
 					}
 
 					@Override
@@ -232,16 +250,6 @@ public class OverviewFragment extends Fragment implements
 		return view;
 	}
 	
-	
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		
-	}
-
-
 
 	public Runnable mTask = new Runnable() {
 

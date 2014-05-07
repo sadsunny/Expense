@@ -125,30 +125,9 @@ public class MEntity {
 
 		int offset = 0;
 		long firstDayOfWeek = getFirstDayByTime(beginTime);
-		long lastDayOfWeek = getLastDayByFirst(firstDayOfWeek);
-
-		if (choosedTime < firstDayOfWeek) {
-			
-			offset = (int) ((choosedTime - firstDayOfWeek) / (7 * DAYMILLIS));
-
-			long remainder = (firstDayOfWeek - choosedTime) % (7 * DAYMILLIS);
-			if (remainder > 0) {
-				offset = offset - 1;
-			}
-			
-		} else if (choosedTime > lastDayOfWeek) {
-
-			offset = (int) ((choosedTime - lastDayOfWeek) / (7 * DAYMILLIS));
-
-			long remainder = (choosedTime - lastDayOfWeek) % (7 * DAYMILLIS);
-			if (remainder > 0) {
-				offset = offset + 1;
-			}
-
-		} else {
-			offset = 0;
-		}
-
+		long lastDayOfWeek = getFirstDayByTime(choosedTime);
+		offset = (int) ((lastDayOfWeek - firstDayOfWeek) / (7 * DAYMILLIS));
+		
 		return offset;
 	}
 	
