@@ -19,15 +19,21 @@ import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
+import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
+import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -47,6 +53,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -55,14 +62,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.animation.AccelerateInterpolator;  
 
-public class OverviewFragment extends Fragment implements OnUpdateListListener,
-		OnChangeStateListener {
+public class OverviewFragment extends Fragment implements 
+		OnChangeStateListener,OnUpdateListListener {
+	
+//	 try {               
+//    Field mField = ViewPager.class.getDeclaredField("mScroller");               
+//    mField.setAccessible(true);     
+//     //设置加速度 ，通过改变FixedSpeedScroller这个类中的mDuration来改变动画时间（如mScroller.setmDuration(mMyDuration);）    
+//    mScroller = new FixedSpeedScroller(mViewPager.getContext(), new AccelerateInterpolator());           
+//    mField.set(mViewPager, mScroller);           
+//    } catch (Exception e) {           
+//        e.printStackTrace();  
+//    }   
+	
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
-	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
+	private static final int MSG_SUCCESS = 1;
 
 	private ViewPager mViewPager;
+	
 	private FragmentActivity mActivity;
 	public  ViewPagerAdapter mViewPagerAdapter;
 	private WeekFragment weekFragment;
@@ -73,20 +92,8 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	private long selectedDate;
 	private int viewPagerPosition;
 	private RelativeLayout weekLayout;
-	private RelativeLayout calendarLayout;
 	private OnBackTimeListener onBackTimeListener;
 
-	private GridView mGridView;
-	private CalendarGridViewAdapter calendarGridViewAdapter;
-	public GregorianCalendar month;// calendar instances.
-	private List<Map<String, Object>> mGridDataList;
-	private TextView expenseTextView;
-	private TextView incomeTextView;
-	private TextView amountTextView;
-	private double expense;
-	private double income;
-	private double amount;
-	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static SparseArray<Fragment> registeredFragments;
 	
 	private RelativeLayout budgetRelativeLayout ;
@@ -96,7 +103,12 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	
 	private double budgetAmount;
 	private double transactionAmount;
-
+	private LayoutInflater mInflater;
+	private AlertDialog alertDialog;
+	private long argumentsDate;
+	private int currentPosition;
+	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -107,13 +119,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 					mListViewAdapter.setAdapterDate(mDataList);
 					mListViewAdapter.notifyDataSetChanged();
 				}
-				expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
-				incomeTextView.setText(MEntity.doublepoint2str(income + ""));
-				amountTextView.setText(MEntity.doublepoint2str(amount + ""));
-
-				calendarGridViewAdapter.setCheckDat(selectedDate);
-				calendarGridViewAdapter.setDataList(mGridDataList);
-				calendarGridViewAdapter.notifyDataSetChanged();
 				
 				mProgressBar.setMax((int)budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
@@ -143,8 +148,13 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		registeredFragments = new SparseArray<Fragment>();
-
+		
+		Bundle bundle = getArguments();
+		if (bundle != null) {
+			argumentsDate = bundle.getLong("selectedDate");
+		}
+		currentPosition = MID_VALUE + MEntity.getWeekOffsetByDay(argumentsDate, System.currentTimeMillis());
+		selectedDate = argumentsDate;
 	}
 
 	@Override
@@ -153,10 +163,7 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_overview, container,
 				false);
-
-		expenseTextView = (TextView) view.findViewById(R.id.expense_txt);
-		incomeTextView = (TextView) view.findViewById(R.id.income_txt);
-		amountTextView = (TextView) view.findViewById(R.id.amount_txt);
+		mInflater = inflater;
 
 		budgetRelativeLayout = (RelativeLayout) view.findViewById(R.id.budget_relativeLayout);
 		budgeTextView = (TextView) view.findViewById(R.id.budget_amount);
@@ -174,29 +181,14 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 			}
 		});
 		
-		onUpdateNavigationListener = (OnUpdateNavigationListener)mActivity;
 		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
-		mViewPagerAdapter = new ViewPagerAdapter(
-				mActivity.getSupportFragmentManager());
-		mViewPager.setAdapter(mViewPagerAdapter);
-		mViewPager.setCurrentItem(MID_VALUE);
+		mViewPagerAdapter = new ViewPagerAdapter(mActivity.getSupportFragmentManager());
 		
-//		 try {               
-//	            Field mField = ViewPager.class.getDeclaredField("mScroller");               
-//	            mField.setAccessible(true);     
-//	             //设置加速度 ，通过改变FixedSpeedScroller这个类中的mDuration来改变动画时间（如mScroller.setmDuration(mMyDuration);）    
-//	            mScroller = new FixedSpeedScroller(mViewPager.getContext(), new AccelerateInterpolator());           
-//	            mField.set(mViewPager, mScroller);           
-//	            } catch (Exception e) {           
-//	                e.printStackTrace();  
-//	            }   
-	    
-	
-		viewPagerPosition = MID_VALUE;
-
-		mViewPagerAdapter.getItem(MID_VALUE);
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager.setAdapter(mViewPagerAdapter);
+		mViewPager.setCurrentItem(currentPosition);
+		
+		viewPagerPosition = currentPosition;
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						viewPagerPosition = position;
@@ -225,49 +217,31 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		mListView.setDividerHeight(0);
 		mListViewAdapter = new ListViewAdapter(mActivity);
 		mListView.setAdapter(mListViewAdapter);
-
-		weekLayout = (RelativeLayout) view.findViewById(R.id.RelativeLayout1);
-		calendarLayout = (RelativeLayout) view
-				.findViewById(R.id.RelativeLayout2);
-		weekLayout.setVisibility(View.VISIBLE);
-		calendarLayout.setVisibility(View.INVISIBLE);
-
-		Locale.setDefault(Locale.ENGLISH);
-		month = (GregorianCalendar) GregorianCalendar.getInstance();
-
-		mGridView = (GridView) view.findViewById(R.id.mGridview);
-		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
-		mGridView.setAdapter(calendarGridViewAdapter);
-		mGridView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> paramAdapterView,
-					View paramView, int paramInt, long paramLong) {
-				// TODO Auto-generated method stub
-				selectedDate = getMilltoDate(CalendarGridViewAdapter.dayString
-						.get(paramInt));
-				calendarGridViewAdapter.setCheckDat(selectedDate);
-				calendarGridViewAdapter.notifyDataSetChanged();
-
-				int offset = MEntity.getOffsetByDay(selectedDate,
-						MEntity.getNowMillis());
-				viewPagerPosition = MID_VALUE + offset;
-				mViewPager.setCurrentItem(viewPagerPosition);
-
-				long choosedTime = getMilltoDate(CalendarGridViewAdapter.dayString
-						.get(paramInt));
-				onBackTimeListener.OnBackTime(choosedTime, viewPagerPosition);
-				onUpdateNavigationListener.OnUpdateNavigation(0);
-			}
-		});
-
+		mListView.setOnItemLongClickListener(longClickListener);
+		
+		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
-
+		
+//		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener) (mViewPagerAdapter.registeredFragments.get(currentPosition));
+//		Log.v("mtest", "ViewPagerAdapter.registeredFragments"+ViewPagerAdapter.registeredFragments);
+//		onUpdateWeekSelectListener.OnUpdateWeekSelect(argumentsDate);
+		
 		return view;
 	}
+	
+	
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+	}
+
+
 
 	public Runnable mTask = new Runnable() {
 
@@ -278,40 +252,10 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 					selectedDate);
 			reFillData(mDataList);
 
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(selectedDate);
-			long beginTime = MEntity.getFirstDayOfMonthMillis(selectedDate);
-			long endTime = MEntity.getLastDayOfMonthMillis(selectedDate);
-
-			List<Map<String, Object>> mCalendarDataList = OverViewDao
-					.selectTransactionByTimeBE(mActivity, beginTime, endTime);
-
-			BigDecimal b1 = new BigDecimal("0");
-			BigDecimal b2 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mCalendarDataList) {
-				String amount = (String) iMap.get("amount");
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				BigDecimal b3 = new BigDecimal(amount);
-
-				if (expenseAccount > 0 && incomeAccount <= 0) {
-					b1 = b1.subtract(b3);
-				} else if (incomeAccount > 0 && expenseAccount <= 0) {
-					b2 = b2.add(b3);
-				}
-			}
-			expense = b1.doubleValue();
-			income = b2.doubleValue();
-			amount = b1.add(b2).doubleValue();
-
-			mGridDataList = filterDataByTime(mCalendarDataList);
-			
-			
 			List<Map<String, Object>>  mBudgetList = OverViewDao.selectBudget(mActivity);
 			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(mActivity);
-			Calendar todayCalendar = Calendar.getInstance();
-			long firstDay = MEntity.getFirstDayOfMonthMillis(todayCalendar.getTimeInMillis());
-			long lastDay = MEntity.getLastDayOfMonthMillis(todayCalendar.getTimeInMillis());
+			long firstDay = MEntity.getFirstDayOfMonthMillis(selectedDate);
+			long lastDay = MEntity.getLastDayOfMonthMillis(selectedDate);
 			
 			BigDecimal budgetBig = new BigDecimal("0");
 			BigDecimal transactionBig = new BigDecimal("0");
@@ -353,7 +297,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 				transactionBig = transactionBig.add(bigz);
 				double tAmount = bigz.doubleValue();
 				iMap.put("tAmount", tAmount+"");
-				
 			}
 			
 			budgetAmount = budgetBig.doubleValue();
@@ -363,61 +306,89 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		}
 	};
 	
-	public List<Map<String, Object>> filterDataByTime(
-			List<Map<String, Object>> mData) {// Transaction根据时间分类计算
+	private OnItemLongClickListener longClickListener = new OnItemLongClickListener(){
 
-		List<Map<String, Object>> mReturnList = new ArrayList<Map<String, Object>>();
-		ArrayList<Long> mTemlist = new ArrayList<Long>();
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			// TODO Auto-generated method stub
+			final int _id = (Integer) mDataList.get(arg2).get("_id");
+			final Map<String, Object> mMap = mDataList.get(arg2);
+			
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,null);
 
-		for (Map<String, Object> mMap : mData) {
-			long dateTime = (Long) mMap.get("dateTime");
-			mTemlist.add(dateTime);
-		}
+			String[] data = { "Duplicate", "Delete" };
+			ListView diaListView = (ListView) dialogView
+					.findViewById(R.id.dia_listview);
+			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(mActivity, data);
+			diaListView.setAdapter(mDialogItemAdapter);
+			diaListView.setOnItemClickListener(new OnItemClickListener() {
 
-		Iterator<Long> it1 = mTemlist.iterator();
-		Map<Long, Long> msp = new TreeMap<Long, Long>();
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
 
-		while (it1.hasNext()) {
-			long obj = it1.next();
-			msp.put(obj, obj);
-		}
-		Iterator<Long> it2 = msp.keySet().iterator();
-		while (it2.hasNext()) {
-			Map<String, Object> mMap = new HashMap<String, Object>();
-			mMap.put("dateTime", (Long) it2.next());
-			mReturnList.add(mMap);
-		}
+					if (arg2 == 0) {
 
-		for (Map<String, Object> iMap : mReturnList) {
-			long dayTime = (Long) iMap.get("dateTime");
-			BigDecimal b1 = new BigDecimal("0");
-			BigDecimal b2 = new BigDecimal("0");
+						Calendar c = Calendar.getInstance(); //处理为当天固定格式时间
+						Date date = new Date(c.getTimeInMillis());
+						SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+						try {
+							c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(sdf.format(date)));
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						String amount = (String) mMap.get("amount");
+						long dateTime = c.getTimeInMillis();
+						int isClear = (Integer) mMap.get("isClear");
+						String notes = (String) mMap.get("notes");
+						String photoName = (String) mMap.get("photoName");
+						int recurringType = (Integer) mMap.get("recurringType");
+						int category = (Integer) mMap.get("category");
+						String childTransactions = (String) mMap
+								.get("childTransactions");
+						int expenseAccount = (Integer) mMap
+								.get("expenseAccount");
+						int incomeAccount = (Integer) mMap.get("incomeAccount");
+						int parTransaction = (Integer) mMap
+								.get("parTransaction");
+						int payee = (Integer) mMap.get("payee");
 
-			for (Map<String, Object> mMap : mData) {
-				long dateTime = (Long) mMap.get("dateTime");
-				String amount = (String) mMap.get("amount");
-				int expenseAccount = (Integer) mMap.get("expenseAccount");
-				int incomeAccount = (Integer) mMap.get("incomeAccount");
+						long row = TransactionDao.insertTransactionAll(
+								mActivity, amount,
+								dateTime, isClear, notes, photoName,
+								recurringType, category, childTransactions,
+								expenseAccount, incomeAccount, parTransaction,
+								payee);
+						alertDialog.dismiss();
 
-				if (dayTime == dateTime) {
 
-					BigDecimal b3 = new BigDecimal(amount);
-					if (expenseAccount > 0 && incomeAccount <= 0) {
-						b1 = b1.subtract(b3);
-					} else if (incomeAccount > 0 && expenseAccount <= 0) {
-						b2 = b2.add(b3);
+						mHandler.post(mTask);
+
+					} else if (arg2 == 1) {
+
+						long row = AccountDao.deleteTransaction(
+								mActivity, _id);
+						alertDialog.dismiss();
+						mHandler.post(mTask);
 					}
 				}
-				double expense = b1.doubleValue();
-				double income = b2.doubleValue();
-				Map<String, Object> rMap = new HashMap<String, Object>();
-				iMap.put("expense", expense);
-				iMap.put("income", income);
-			}
+			});
 
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					mActivity);
+			builder.setView(dialogView);
+			alertDialog = builder.create();
+			alertDialog.show();
+			return true;
 		}
-		return mReturnList;
-	}
+		
+	};
+	
+	
 
 	public long getMilltoDate(String date) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -467,65 +438,6 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		}
 	}
 
-	public class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-		public ViewPagerAdapter(FragmentManager fm) {
-			super(fm);
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public void setPrimaryItem(ViewGroup container, int position,
-				Object object) {
-			// TODO Auto-generated method stub
-			super.setPrimaryItem(container, position, object);
-		}
-
-		@Override
-		public android.support.v4.app.Fragment getItem(int arg0) {
-			// TODO Auto-generated method stub
-			WeekFragment weekFragment = new WeekFragment();
-			weekFragment.setTargetFragment(weekFragment, arg0);
-			if (arg0 >= 0 && arg0 < 20000) {
-
-				Bundle bundle = new Bundle();
-				bundle.putInt("position", arg0);
-				weekFragment.setArguments(bundle);
-
-			} else {
-
-				Bundle bundle = new Bundle();
-				bundle.putInt("position", MID_VALUE);
-				weekFragment.setArguments(bundle);
-			}
-			return weekFragment;
-
-		}
-
-		@Override
-		public Object instantiateItem(ViewGroup arg0, int arg1) {
-			// TODO Auto-generated method stub
-			Fragment fragment = (Fragment) super.instantiateItem(arg0, arg1);
-			registeredFragments.put(arg1, fragment);
-			return fragment;
-		}
-
-		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			registeredFragments.remove(position);
-			super.destroyItem(container, position, object);
-		}
-
-		public Fragment getRegisteredFragment(int position) {
-			return registeredFragments.get(position);
-		}
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return MAX_VALUE;
-		}
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -566,26 +478,14 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 	}
 
 	@Override
-	public void OnUpdateList(long selectedDate) {
-		// TODO Auto-generated method stub
-		this.selectedDate = selectedDate;
-		mHandler.post(mTask);
-		Log.v("mtest", "turnToDate selectedDate" + turnToDate(selectedDate));
-
-		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(selectedDate));
-		calendarGridViewAdapter.refreshDays();
-		calendarGridViewAdapter.notifyDataSetChanged();
-	}
-
-	@Override
 	public void OnChangeState(int state) {
 		// TODO Auto-generated method stub
 		if (state == 0) {
 			weekLayout.setVisibility(View.VISIBLE);
-			calendarLayout.setVisibility(View.INVISIBLE);
+//			calendarLayout.setVisibility(View.GONE);
 		} else {
-			weekLayout.setVisibility(View.INVISIBLE);
-			calendarLayout.setVisibility(View.VISIBLE);
+			weekLayout.setVisibility(View.GONE);
+//			calendarLayout.setVisibility(View.VISIBLE);
 		}
 
 	}
@@ -596,6 +496,14 @@ public class OverviewFragment extends Fragment implements OnUpdateListListener,
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy, HH:mm:ss");
 		String theDate = sdf.format(date2);
 		return theDate;
+	}
+	
+	@Override
+	public void OnUpdateList(long selectedDate) {
+		// TODO Auto-generated method stub
+		this.selectedDate = selectedDate;
+		mHandler.post(mTask);
+
 	}
 
 }

@@ -100,7 +100,7 @@ public class GridViewAdapter extends BaseAdapter {
 		viewHolder.dateTextView.setText(turnToDate(todayTime));
 		
 		if (choosedTime == todayTime) {
-			viewHolder.mLayout.setBackgroundResource(R.color.blue);
+			viewHolder.mLayout.setBackgroundResource(R.color.black_gray);
 		} else {
 			viewHolder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
 		}

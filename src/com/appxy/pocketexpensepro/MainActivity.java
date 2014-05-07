@@ -16,7 +16,10 @@ import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.overview.MonthViewFragment;
+import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
+import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.overview.WeekFragment;
 
@@ -52,7 +55,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener ,OnUpdateNavigationListener{
+		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener {
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -71,7 +74,7 @@ public class MainActivity extends FragmentActivity implements
 	private OverviewFragment overviewFragment;
 	private final static long DAYMILLIS = 86400000L;
 
-	private long selectedDate;
+	public static long selectedDate;
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private int mItemPosition = 0;
 	private ActionBar actionBar;
@@ -107,12 +110,20 @@ public class MainActivity extends FragmentActivity implements
 				getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
+				if (mItemPosition == 1) {
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				} else {
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+				}
 			}
 
 			public void onDrawerOpened(View drawerView) {
 				getActionBar().setTitle(mDrawerTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
+				// onPrepareOptionsMenu()
+				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -121,15 +132,13 @@ public class MainActivity extends FragmentActivity implements
 		mAccountLinearLayout.setOnClickListener(mClickListener);
 		mReportLinearLayout.setOnClickListener(mClickListener);
 		mBillsLinearLayout.setOnClickListener(mClickListener);
-		
-		
+
 		mDrawerLayout.closeDrawer(mLinearLayout);
-		overviewFragment = new OverviewFragment();
-		FragmentTransaction fragmentTransaction1 = fragmentManager
-				.beginTransaction();
-		fragmentTransaction1.replace(R.id.content_frame,
-				overviewFragment);
-		fragmentTransaction1.commit();
+//		overviewFragment = new OverviewFragment();
+//		FragmentTransaction fragmentTransaction1 = fragmentManager
+//				.beginTransaction();
+//		fragmentTransaction1.replace(R.id.content_frame, overviewFragment);
+//		fragmentTransaction1.commit();
 
 		Calendar calendar = Calendar.getInstance();
 		long todayLong = calendar.getTimeInMillis();
@@ -137,6 +146,13 @@ public class MainActivity extends FragmentActivity implements
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setDisplayShowTitleEnabled(false);
+		
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.set(Calendar.HOUR_OF_DAY, 0);
+		calendar1.set(Calendar.MINUTE, 0);
+		calendar1.set(Calendar.SECOND, 0);
+		calendar1.set(Calendar.MILLISECOND, 0);
+		selectedDate = calendar1.getTimeInMillis();
 
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 		overViewNavigationListAdapter = new OverViewNavigationListAdapter(this);
@@ -158,25 +174,48 @@ public class MainActivity extends FragmentActivity implements
 		public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
 			if (itemPosition == 0) {
+				mItemPosition = 0;
 				overViewNavigationListAdapter.setChoosed(0);
 				overViewNavigationListAdapter.notifyDataSetChanged();
-				onChangeStateListener = (OnChangeStateListener) overviewFragment;
-				onChangeStateListener.OnChangeState(itemPosition);
+				
+				overviewFragment = new OverviewFragment();
+				Bundle bundle = new Bundle();
+				bundle.putLong("selectedDate", selectedDate);
+				overviewFragment.setArguments(bundle);
+				
+				FragmentTransaction fragmentTransaction1 = fragmentManager.beginTransaction();
+				fragmentTransaction1.replace(R.id.content_frame,overviewFragment);
+				fragmentTransaction1.commit();
+				mItemPosition = 0;
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(false);
 				
 			} else if (itemPosition == 1) {
+				
 				overViewNavigationListAdapter.setChoosed(1);
 				overViewNavigationListAdapter.notifyDataSetChanged();
-				onChangeStateListener = (OnChangeStateListener) overviewFragment;
-				onChangeStateListener.OnChangeState(itemPosition);
+				
+				OverViewFragmentMonth overViewFragmentMonth = new OverViewFragmentMonth();
+				Bundle bundle = new Bundle();
+				bundle.putLong("selectedDate", selectedDate);
+				overViewFragmentMonth.setArguments(bundle);
+				
+				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,
+						overViewFragmentMonth);
+				fragmentTransaction.commit();
+				mItemPosition = 0;
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(false);
+
 			}
-			
-			
+
 			return false;
 
 		}
 	};
 
-	public  String turnToDate(long mills) {
+	public String turnToDate(long mills) {
 
 		Date date2 = new Date(mills);
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM, yyyy");
@@ -190,33 +229,37 @@ public class MainActivity extends FragmentActivity implements
 		public void onClick(View v) {
 			switch (v.getId()) {
 			case R.id.overview_linearlayout:
-				
+
 				if (mItemPosition == 0) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
 
-				mDrawerLayout.closeDrawer(mLinearLayout);
-				overviewFragment = new OverviewFragment();
-				FragmentTransaction fragmentTransaction1 = fragmentManager
-						.beginTransaction();
-				fragmentTransaction1.replace(R.id.content_frame,
-						overviewFragment);
-				fragmentTransaction1.commit();
-				mItemPosition = 0;
-				actionBar.setDisplayHomeAsUpEnabled(true);
-				actionBar.setDisplayShowTitleEnabled(false);
+					mDrawerLayout.closeDrawer(mLinearLayout);
+					
+					mItemPosition = 0;
+					actionBar.setDisplayHomeAsUpEnabled(true);
+					actionBar.setDisplayShowTitleEnabled(false);
+					
+					Calendar calendar1 = Calendar.getInstance();
+					calendar1.set(Calendar.HOUR_OF_DAY, 0);
+					calendar1.set(Calendar.MINUTE, 0);
+					calendar1.set(Calendar.SECOND, 0);
+					calendar1.set(Calendar.MILLISECOND, 0);
+					selectedDate = calendar1.getTimeInMillis();
+					
 
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-				overViewNavigationListAdapter.setChoosed(0);
-				overViewNavigationListAdapter.setTitle("Overview ");
-				overViewNavigationListAdapter
-						.setSubTitle(turnToDate(selectedDate));
-				List<String> itemStrings = new ArrayList<String>();
-				itemStrings.add("Week                    ");
-				itemStrings.add("Month                   ");
-				overViewNavigationListAdapter.setDownItemData(itemStrings);
-				actionBar.setListNavigationCallbacks(
-						overViewNavigationListAdapter, new DropDownListenser());
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+					overViewNavigationListAdapter.setChoosed(0);
+					overViewNavigationListAdapter.setTitle("Overview ");
+					overViewNavigationListAdapter
+							.setSubTitle(turnToDate(selectedDate));
+					List<String> itemStrings = new ArrayList<String>();
+					itemStrings.add("Week                    ");
+					itemStrings.add("Month                   ");
+					overViewNavigationListAdapter.setDownItemData(itemStrings);
+					actionBar.setListNavigationCallbacks(
+							overViewNavigationListAdapter,
+							new DropDownListenser());
 				}
 
 				break;
@@ -224,44 +267,46 @@ public class MainActivity extends FragmentActivity implements
 				if (mItemPosition == 1) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
-					
-				mDrawerLayout.closeDrawer(mLinearLayout);
-				AccountsFragment accountFragment = new AccountsFragment();
-				FragmentTransaction fragmentTransaction2 = fragmentManager
-						.beginTransaction();
-				fragmentTransaction2.replace(R.id.content_frame,
-						accountFragment);
-				fragmentTransaction2.commit();
-				mItemPosition = 1;
-				actionBar.setDisplayHomeAsUpEnabled(true);
-				actionBar.setDisplayShowTitleEnabled(true);
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+
+					mDrawerLayout.closeDrawer(mLinearLayout);
+					AccountsFragment accountFragment = new AccountsFragment();
+					FragmentTransaction fragmentTransaction2 = fragmentManager
+							.beginTransaction();
+					fragmentTransaction2.replace(R.id.content_frame,
+							accountFragment);
+					fragmentTransaction2.commit();
+					mItemPosition = 1;
+					actionBar.setDisplayHomeAsUpEnabled(true);
+					actionBar.setDisplayShowTitleEnabled(true);
+					actionBar
+							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				}
 
 				break;
 			case R.id.report_linearLayout:
-				
+
 				if (mItemPosition == 2) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
-					
+
 					mDrawerLayout.closeDrawer(mLinearLayout);
-				actionBar.setDisplayHomeAsUpEnabled(true);
-				actionBar.setDisplayShowTitleEnabled(false);
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-				overViewNavigationListAdapter.setChoosed(0);
-				overViewNavigationListAdapter.setTitle("Reports ");
-				overViewNavigationListAdapter
-						.setSubTitle(turnToDate(selectedDate));
-				List<String> reportStrings = new ArrayList<String>();
-				reportStrings.add("OverView                 ");
-				reportStrings.add("Cash Flow                ");
-				reportStrings.add("Category                 ");
-				overViewNavigationListAdapter.setDownItemData(reportStrings);
-				actionBar.setListNavigationCallbacks(
-						overViewNavigationListAdapter,
-						new ReportDropDownListenser());
-				mItemPosition = 2;
+					actionBar.setDisplayHomeAsUpEnabled(true);
+					actionBar.setDisplayShowTitleEnabled(false);
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+					overViewNavigationListAdapter.setChoosed(0);
+					overViewNavigationListAdapter.setTitle("Reports ");
+					overViewNavigationListAdapter
+							.setSubTitle(turnToDate(selectedDate));
+					List<String> reportStrings = new ArrayList<String>();
+					reportStrings.add("OverView                 ");
+					reportStrings.add("Cash Flow                ");
+					reportStrings.add("Category                 ");
+					overViewNavigationListAdapter
+							.setDownItemData(reportStrings);
+					actionBar.setListNavigationCallbacks(
+							overViewNavigationListAdapter,
+							new ReportDropDownListenser());
+					mItemPosition = 2;
 				}
 
 				break;
@@ -269,29 +314,30 @@ public class MainActivity extends FragmentActivity implements
 				if (mItemPosition == 3) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
-				mDrawerLayout.closeDrawer(mLinearLayout);
-				BillsFragment billsFragment = new BillsFragment();
-				FragmentTransaction fragmentTransaction4 = fragmentManager
-						.beginTransaction();
-				fragmentTransaction4.replace(R.id.content_frame, billsFragment);
-				fragmentTransaction4.commit();
-				
-				actionBar.setDisplayHomeAsUpEnabled(true);
-				actionBar.setDisplayShowTitleEnabled(false);
-				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-				overViewNavigationListAdapter.setChoosed(0);
-				overViewNavigationListAdapter.setTitle("Bills    ");
-				overViewNavigationListAdapter
-						.setSubTitle(turnToDate(selectedDate));
-				List<String> billStrings = new ArrayList<String>();
-				billStrings.add("ListView                 ");
-				billStrings.add("CalendarView              ");
-				overViewNavigationListAdapter.setDownItemData(billStrings);
-				actionBar.setListNavigationCallbacks(
-						overViewNavigationListAdapter,
-						new BillsDropDownListenser());
+					mDrawerLayout.closeDrawer(mLinearLayout);
+					BillsFragment billsFragment = new BillsFragment();
+					FragmentTransaction fragmentTransaction4 = fragmentManager
+							.beginTransaction();
+					fragmentTransaction4.replace(R.id.content_frame,
+							billsFragment);
+					fragmentTransaction4.commit();
 
-				mItemPosition = 3;
+					actionBar.setDisplayHomeAsUpEnabled(true);
+					actionBar.setDisplayShowTitleEnabled(false);
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+					overViewNavigationListAdapter.setChoosed(0);
+					overViewNavigationListAdapter.setTitle("Bills    ");
+					overViewNavigationListAdapter
+							.setSubTitle(turnToDate(selectedDate));
+					List<String> billStrings = new ArrayList<String>();
+					billStrings.add("ListView                 ");
+					billStrings.add("CalendarView              ");
+					overViewNavigationListAdapter.setDownItemData(billStrings);
+					actionBar.setListNavigationCallbacks(
+							overViewNavigationListAdapter,
+							new BillsDropDownListenser());
+
+					mItemPosition = 3;
 				}
 				break;
 			default:
@@ -443,11 +489,11 @@ public class MainActivity extends FragmentActivity implements
 	public void OnBackTime(long selectedDate, int viewPagerPosition) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		onUpdateWeekSelectListener =(OnUpdateWeekSelectListener) (OverviewFragment.registeredFragments.get(viewPagerPosition));
+		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener) (ViewPagerAdapter.registeredFragments.get(viewPagerPosition));
 		onUpdateWeekSelectListener.OnUpdateWeekSelect(selectedDate);
-		
 	}
 
+	
 	@Override
 	public void OnUpdateNavigation(int itemPosition) {
 		// TODO Auto-generated method stub

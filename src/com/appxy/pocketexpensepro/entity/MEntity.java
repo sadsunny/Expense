@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.util.Log;
+
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
@@ -66,7 +68,7 @@ public class MEntity {
 	}
 
 	public static String getMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
@@ -91,18 +93,17 @@ public class MEntity {
 		return returnDate;
 	}
 
-	public static long getLastDayByFirst(long FirstDayOfWeek) {
+	public static long getLastDayByFirst(long firstDayOfWeek) {
 
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(FirstDayOfWeek);
+		calendar.setTimeInMillis(firstDayOfWeek);
 
 		long returnDate = calendar.getTimeInMillis();
 
 		long offsetDate = 7 * DAYMILLIS;
 		calendar.setTimeInMillis(returnDate + offsetDate);
-		returnDate = calendar.getTimeInMillis();
 
-		return returnDate;
+		return calendar.getTimeInMillis();
 	}
 
 	public static long getFirstDayByTime(long theDayTime) {
@@ -120,39 +121,87 @@ public class MEntity {
 		return calendar.getTimeInMillis();
 	}
 
-	public static int getOffsetByDay(long choosedTime, long beginTime) { // 根据beginTime计算到choosedTime的offset
-		long startWeek = getLastDayByFirst(getFirstDayByTime(beginTime));
-		int offset = (int) ((choosedTime - startWeek) / (7 * DAYMILLIS));
+	public static int getWeekOffsetByDay(long choosedTime, long beginTime) { // 根据beginTime计算到choosedTime的offset
 
-		long residue = (choosedTime - startWeek) % (7 * DAYMILLIS);
-		if ( residue > 0) {
-			 offset = offset + 1;
+		int offset = 0;
+		long firstDayOfWeek = getFirstDayByTime(beginTime);
+		long lastDayOfWeek = getLastDayByFirst(firstDayOfWeek);
+
+		if (choosedTime < firstDayOfWeek) {
+			
+			offset = (int) ((choosedTime - firstDayOfWeek) / (7 * DAYMILLIS));
+
+			long remainder = (firstDayOfWeek - choosedTime) % (7 * DAYMILLIS);
+			if (remainder > 0) {
+				offset = offset - 1;
+			}
+			
+		} else if (choosedTime > lastDayOfWeek) {
+
+			offset = (int) ((choosedTime - lastDayOfWeek) / (7 * DAYMILLIS));
+
+			long remainder = (choosedTime - lastDayOfWeek) % (7 * DAYMILLIS);
+			if (remainder > 0) {
+				offset = offset + 1;
+			}
+
+		} else {
+			offset = 0;
 		}
 
 		return offset;
 	}
 	
-	public static long getNowMillis() {
-		 Date date1=new Date(); 
-	     SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
-	     String nowTime = formatter.format(date1);
-	     Calendar c = Calendar.getInstance();
-	     try {
-				c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(nowTime));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	     long nowMillis = c.getTimeInMillis(); 
-	     
-	     return nowMillis;
+	public static long getMonthByOffset(int offset) {
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.add(Calendar.MONTH, offset);
+		long returnDate = calendar.getTimeInMillis();
+
+		return MEntity.getFirstDayOfMonthMillis(returnDate);
 	}
 	
+	public static int getMonthOffsetByDay(long beginTime, long endTime) { // 根据beginTime计算到choosedTime的offset
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(beginTime);
+        
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTimeInMillis(endTime);
+        
+        int beginYear = calendar.get(Calendar.YEAR);
+        int beginMonth = calendar.get(Calendar.MONTH);
+
+        int endYear = calendar2.get(Calendar.YEAR);
+        int endMonth = calendar2.get(Calendar.MONTH);
+        Log.v("mtest", "endMonth"+endMonth);
+        Log.v("mtest", "beginMonth"+beginMonth);
+        int betMonth = (endYear-beginYear)*12+(endMonth-beginMonth);
+        
+		return betMonth;
+	}
+
+	public static long getNowMillis() {
+		Date date1 = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+		String nowTime = formatter.format(date1);
+		Calendar c = Calendar.getInstance();
+		try {
+			c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(nowTime));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		long nowMillis = c.getTimeInMillis();
+
+		return nowMillis;
+	}
+
 	public static String turnMilltoMonthYear(long milliSeconds) {// 将毫秒转化成固定格式的年月日
 		SimpleDateFormat formatter = new SimpleDateFormat("MMM, yyyy");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
 	}
-	
+
 }

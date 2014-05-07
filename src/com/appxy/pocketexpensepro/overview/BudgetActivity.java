@@ -6,15 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
+import com.appxy.pocketexpensepro.accounts.EditAccountActivity;
+import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
+import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,12 +31,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 public class BudgetActivity extends Activity {
 
@@ -44,12 +53,13 @@ public class BudgetActivity extends Activity {
 	private LinearLayout setBudgetLayout;
 	private LinearLayout transferLayout;
 	private ListView mListView;
-	
+
 	private double budgetAmount;
 	private double transactionAmount;
-    private List<Map<String, Object>> mBudgetList;
-    private BudgetListApdater budgetListApdater;
-    
+	private List<Map<String, Object>> mBudgetList;
+	private BudgetListApdater budgetListApdater;
+	private AlertDialog alertDialog;
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -59,8 +69,8 @@ public class BudgetActivity extends Activity {
 				mProgressBar.setProgress((int) transactionAmount);
 				budgetListApdater.setAdapterDate(mBudgetList);
 				budgetListApdater.notifyDataSetChanged();
-				leftTextView.setText((budgetAmount-transactionAmount)+"");
-				
+				leftTextView.setText((budgetAmount - transactionAmount) + "");
+
 				break;
 
 			case MSG_FAILURE:
@@ -75,11 +85,13 @@ public class BudgetActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget);
+
 		mInflater = LayoutInflater.from(this);
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		Calendar calendar = Calendar.getInstance();
-		actionBar.setSubtitle(MEntity.turnMilltoMonthYear(calendar.getTimeInMillis()));
+		actionBar.setSubtitle(MEntity.turnMilltoMonthYear(calendar
+				.getTimeInMillis()));
 
 		mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
 		leftTextView = (TextView) findViewById(R.id.budget_amount);
@@ -90,8 +102,25 @@ public class BudgetActivity extends Activity {
 		mListView.setAdapter(budgetListApdater);
 		mListView.setDividerHeight(0);
 		
+		mListView.setOnItemLongClickListener(longClickListener);
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				int category_id = (Integer) mBudgetList.get(arg2).get("category");
+				String categoryName = (String) mBudgetList.get(arg2).get("categoryName");
+				Intent intent = new Intent();
+				intent.putExtra("_id", category_id);
+				intent.putExtra("categoryName", categoryName);
+				intent.setClass(BudgetActivity.this, BudgetToTransactionActivity.class);
+				startActivityForResult(intent, 17);
+			}
+		});
+		
 		setBudgetLayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -100,26 +129,27 @@ public class BudgetActivity extends Activity {
 				startActivityForResult(intent, 4);
 			}
 		});
-		
+
 		transferLayout.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(BudgetActivity.this, BudgetTransferActivity.class);
+				intent.setClass(BudgetActivity.this,
+						BudgetTransferActivity.class);
 				startActivityForResult(intent, 15);
-				
+
 			}
 		});
-		
+
 		Thread mThread = new Thread(mTask);
 		mThread.start();
-		
+
 		Intent intent = new Intent();
 		intent.putExtra("done", 1);
 		setResult(14, intent);
-		
+
 	}
 
 	public Runnable mTask = new Runnable() {
@@ -128,26 +158,29 @@ public class BudgetActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mBudgetList = OverViewDao.selectBudget(BudgetActivity.this);
-			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(BudgetActivity.this);
+			List<Map<String, Object>> mTransferList = OverViewDao
+					.selectBudgetTransfer(BudgetActivity.this);
 			Calendar calendar = Calendar.getInstance();
-			long firstDay = MEntity.getFirstDayOfMonthMillis(calendar.getTimeInMillis());
-			long lastDay = MEntity.getLastDayOfMonthMillis(calendar.getTimeInMillis());
-			
+			long firstDay = MEntity.getFirstDayOfMonthMillis(calendar
+					.getTimeInMillis());
+			long lastDay = MEntity.getLastDayOfMonthMillis(calendar
+					.getTimeInMillis());
+
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");
-			for (Map<String, Object> iMap: mBudgetList) {
+			for (Map<String, Object> iMap : mBudgetList) {
 				int _id = (Integer) iMap.get("_id");
 				String amount = (String) iMap.get("amount");
 				int category_id = (Integer) iMap.get("category");
-				
+
 				BigDecimal b1 = new BigDecimal(amount);
 				b0 = b0.add(b1);
-				for (Map<String, Object> mMap: mTransferList) {
-					
+				for (Map<String, Object> mMap : mTransferList) {
+
 					int fromBudget = (Integer) mMap.get("fromBudget");
 					int toBudget = (Integer) mMap.get("toBudget");
 					String amountTransfer = (String) mMap.get("amount");
-					
+
 					BigDecimal b2 = new BigDecimal(amountTransfer);
 					if (_id == fromBudget) {
 						b1 = b1.subtract(b2);
@@ -155,12 +188,15 @@ public class BudgetActivity extends Activity {
 						b1 = b1.add(b2);
 					}
 				}
-				iMap.put("amount", b1.doubleValue()+"");
-				
+				iMap.put("amount", b1.doubleValue() + "");
+
 				BigDecimal bz = new BigDecimal("0");
-				List<Map<String, Object>> mTransactionList = OverViewDao.selectTransactionByCategoryIdAndTime(BudgetActivity.this, category_id, firstDay, lastDay) ;
-				for (Map<String, Object> tMap: mTransactionList){
-					
+				List<Map<String, Object>> mTransactionList = OverViewDao
+						.selectTransactionByCategoryIdAndTime(
+								BudgetActivity.this, category_id, firstDay,
+								lastDay);
+				for (Map<String, Object> tMap : mTransactionList) {
+
 					String tAmount = (String) tMap.get("amount");
 					int expenseAccount = (Integer) tMap.get("expenseAccount");
 					int incomeAccount = (Integer) tMap.get("incomeAccount");
@@ -168,20 +204,70 @@ public class BudgetActivity extends Activity {
 
 					if (expenseAccount > 0 && incomeAccount <= 0) {
 						bz = bz.add(b3);
-					} 
+					}
 				}
 				bt0 = bt0.add(bz);
 				double tAmount = bz.doubleValue();
-				iMap.put("tAmount", tAmount+"");
-				
+				iMap.put("tAmount", tAmount + "");
+
 			}
-			
+
 			budgetAmount = b0.doubleValue();
 			transactionAmount = bt0.doubleValue();
-			
+
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 		//
+	};
+	
+	private OnItemLongClickListener longClickListener = new OnItemLongClickListener(){
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			// TODO Auto-generated method stub
+			final int id = (Integer) mBudgetList.get(arg2).get("_id");
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
+					null);
+
+			String[] data = {"Edit","Delete"};
+			
+			ListView diaListView = (ListView) dialogView
+					.findViewById(R.id.dia_listview);
+			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(BudgetActivity.this , data);
+			diaListView.setAdapter(mDialogItemAdapter);
+			diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					if (arg2 == 0) {
+
+						Intent intent = new Intent();
+						intent.putExtra("_id", id);
+						intent.setClass(BudgetActivity.this, EditBudgetActivity.class);
+						startActivityForResult(intent, 16);
+						alertDialog.dismiss();
+
+					} else if (arg2 == 1) {
+						long row = BudgetsDao.deleteBudget(BudgetActivity.this, id);
+						mHandler.post(mTask);
+						alertDialog.dismiss();
+
+					}
+
+				}
+			});
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(BudgetActivity.this);
+			builder.setView(dialogView);
+			alertDialog = builder.create();
+			alertDialog.show();
+			
+			return true;
+		}
+		
 	};
 
 	@Override
@@ -209,7 +295,7 @@ public class BudgetActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -223,6 +309,14 @@ public class BudgetActivity extends Activity {
 			}
 			break;
 		case 15:
+
+			if (data != null) {
+
+				mHandler.post(mTask);
+			}
+			break;
+			
+		case 16:
 
 			if (data != null) {
 

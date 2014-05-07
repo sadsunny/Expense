@@ -699,7 +699,7 @@ public class AccountToTransactionActivity extends Activity {
 			return childPosition;
 		}
 
-		public String turnToDateString(long mills) { // 锟斤拷锟斤拷锟斤拷锟斤拷转锟斤拷为锟斤拷锟节猴拷锟斤拷锟斤拷
+		public String turnToDateString(long mills) {
 
 			Date date2 = new Date(mills);
 			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");

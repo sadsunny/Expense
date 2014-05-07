@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
-import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
@@ -51,7 +51,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	private int offset;
 
 	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {// 此方法在ui线程运行
+		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
@@ -120,7 +120,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			position = bundle.getInt("position");
 		}
 		offset = position - MID_VALUE;
-		selectedDate = getFirstDayByOffset(offset);
+		selectedDate = MainActivity.selectedDate;
 		
 	}
 
@@ -158,9 +158,12 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 				View paramView, int paramInt, long paramLong) {
 			// TODO Auto-generated method stub
 			selectedDate = (Long) mDataList.get(paramInt).get("weekTime");
+			
 			weekCallBack.OnWeekSelected(selectedDate);
 			mAdapter.setChoosedTime(selectedDate);
 			mAdapter.notifyDataSetChanged();
+			
+			
 		}
 	};
 
@@ -259,8 +262,8 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	mHandler.post(mTask);
 	weekCallBack.OnWeekSelected(selectedDate);
 	
-//		mAdapter.setChoosedTime(selectedDate);
-//		mAdapter.notifyDataSetChanged();
+		mAdapter.setChoosedTime(selectedDate);
+		mAdapter.notifyDataSetChanged();
 	}
 
 }

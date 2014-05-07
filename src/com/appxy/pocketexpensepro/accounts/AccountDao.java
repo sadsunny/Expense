@@ -123,7 +123,7 @@ public class AccountDao {
 	}
 
 	public static long updateAccount(Context context, long _id, String accName,
-			String amount, long dateTime, int autoClear, int accountType) { // Account更新排序字段
+			String amount, long dateTime, int autoClear, int accountType) { 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("accName", accName);
@@ -342,6 +342,8 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	
 	
 	
 	public static List<Map<String, Object>> selectTransactionByID(Context context, int id) { // Account查询

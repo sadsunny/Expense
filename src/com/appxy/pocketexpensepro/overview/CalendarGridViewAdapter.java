@@ -47,14 +47,14 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	String itemvalue;
 	DateFormat df;
 
-	public static List<String> dayString;
+	public  List<String> dayString;
 	private List<Map<String, Object>> mDataList;
 	private String checkDate;
 	private ArrayList<String> items;
 
 	public CalendarGridViewAdapter(Context c, GregorianCalendar monthCalendar) {
 
-		CalendarGridViewAdapter.dayString = new ArrayList<String>();
+		this.dayString = new ArrayList<String>();
 		Locale.setDefault(Locale.ENGLISH);
 		month = monthCalendar;
 		mContext = c;
@@ -63,6 +63,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		refreshDays();
 
 		this.items = new ArrayList<String>();
+	}
+	
+	public List<String> getDayString() {
+		return this.dayString;
 	}
 
 	public void setDataList(List<Map<String, Object>> mDataList) {
@@ -76,7 +80,6 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	}
 
 	public List<String> getCalendarItem() {
-		Log.v("mtest", "this.dayString ***" + this.dayString);
 		return this.dayString;
 	}
 
@@ -109,15 +112,28 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		return dm.widthPixels / 7;
 	}
 
+	@Override
+	public boolean isEnabled(int position) {
+		// TODO Auto-generated method stub
+		String[] separatedTime = dayString.get(position).split("-");
+		String gridvalue = separatedTime[2].replaceFirst("^0*", "");
+		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
+			return false;
+		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	// create a new view for each item referenced by the Adapter
 	public View getView(int position, View convertView, ViewGroup parent) {
-		TextView dayView;
 		ViewHolder viewholder = null;
 
 		if (convertView == null) { // if it's not recycled, initialize some
 			// attributes
 			LayoutInflater vi = LayoutInflater.from(mContext);
-			;
+
 			convertView = vi.inflate(R.layout.fragment_calender_item, null);
 			viewholder = new ViewHolder();
 
@@ -163,7 +179,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		if (everyDay.equals(checkDate)) {
 			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
 		} else {
-			viewholder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
+			viewholder.mLayout
+					.setBackgroundResource(R.drawable.week_item_selector);
 		}
 
 		if (items != null && items.contains(everyDay)) { // 该位置表示当天
@@ -180,8 +197,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 				}
 			}
 
-			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
-			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income + ""));
+			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
+					+ ""));
+			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
+					+ ""));
 
 		} else {
 			viewholder.expenseTextView.setText("");
@@ -211,8 +230,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		dayString.clear();
 		Locale.setDefault(Locale.ENGLISH);
 		pmonth = (GregorianCalendar) month.clone();
-		Log.v("mtest", "refreshDays" + turnToDate(pmonth.getTimeInMillis()));
-
+//		Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
 		// month start day. ie; sun, mon, etc
 		firstDay = month.get(GregorianCalendar.DAY_OF_WEEK);
 		// finding number of weeks in current month.
@@ -238,7 +256,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			pmonthmaxset.add(GregorianCalendar.DATE, 1);
 			dayString.add(itemvalue);
 		}
-		Log.v("mtest", "dayString******" + dayString);
+		Log.v("mtest","dayString"+MEntity.getMilltoDate(month.getTimeInMillis()));
 	}
 
 	private int getMaxP() {

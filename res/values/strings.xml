@@ -86,5 +86,6 @@
     <string name="set_budget">Set Budget</string>
     <string name="from_budget">FROM BUDGET</string>
     <string name="to_budget">TO BUDGET</string>
+    <string name="edit_budget">Edit Budget</string>
 
 </resources>
