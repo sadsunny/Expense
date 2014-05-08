@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,11 +32,11 @@ import android.widget.TextView;
 public class CalendarGridViewAdapter extends BaseAdapter {
 	private Context mContext;
 	private Calendar month;
-	public GregorianCalendar pmonth; // calendar instance for previous month
+	public Calendar pmonth; // calendar instance for previous month
 	/**
 	 * calendar instance for previous month for getting complete view
 	 */
-	public GregorianCalendar pmonthmaxset;
+	public Calendar pmonthmaxset;
 	int firstDay;
 	int maxWeeknumber;
 	int maxP;
@@ -52,13 +52,13 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	private String checkDate;
 	private ArrayList<String> items;
 
-	public CalendarGridViewAdapter(Context c, GregorianCalendar monthCalendar) {
+	public CalendarGridViewAdapter(Context c, Calendar monthCalendar) {
 
 		this.dayString = new ArrayList<String>();
 		Locale.setDefault(Locale.ENGLISH);
 		month = monthCalendar;
 		mContext = c;
-		month.set(GregorianCalendar.DAY_OF_MONTH, 1);
+		month.set(Calendar.DAY_OF_MONTH, 1);
 		df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 		refreshDays();
 
@@ -229,12 +229,12 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		// clear items
 		dayString.clear();
 		Locale.setDefault(Locale.ENGLISH);
-		pmonth = (GregorianCalendar) month.clone();
+		pmonth = (Calendar) month.clone();
 //		Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
 		// month start day. ie; sun, mon, etc
-		firstDay = month.get(GregorianCalendar.DAY_OF_WEEK);
+		firstDay = month.get(Calendar.DAY_OF_WEEK);
 		// finding number of weeks in current month.
-		maxWeeknumber = month.getActualMaximum(GregorianCalendar.WEEK_OF_MONTH);
+		maxWeeknumber = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
 		// allocating maximum row number for the gridview.
 		mnthlength = maxWeeknumber * 7;
 		maxP = getMaxP(); // previous month maximum day 31,30....
@@ -243,17 +243,17 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		 * Calendar instance for getting a complete gridview including the three
 		 * month's (previous,current,next) dates.
 		 */
-		pmonthmaxset = (GregorianCalendar) pmonth.clone();
+		pmonthmaxset = (Calendar) pmonth.clone();
 		/**
 		 * setting the start date as previous month's required date.
 		 */
-		pmonthmaxset.set(GregorianCalendar.DAY_OF_MONTH, calMaxP + 1);
+		pmonthmaxset.set(Calendar.DAY_OF_MONTH, calMaxP + 1);
 		/**
 		 * filling calendar gridview.
 		 */
 		for (int n = 0; n < mnthlength; n++) {
 			itemvalue = df.format(pmonthmaxset.getTime());
-			pmonthmaxset.add(GregorianCalendar.DATE, 1);
+			pmonthmaxset.add(Calendar.DATE, 1);
 			dayString.add(itemvalue);
 		}
 		Log.v("mtest","dayString"+MEntity.getMilltoDate(month.getTimeInMillis()));
@@ -261,15 +261,15 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 	private int getMaxP() {
 		int maxP;
-		if (month.get(GregorianCalendar.MONTH) == month
-				.getActualMinimum(GregorianCalendar.MONTH)) {
-			pmonth.set((month.get(GregorianCalendar.YEAR) - 1),
-					month.getActualMaximum(GregorianCalendar.MONTH), 1);
+		if (month.get(Calendar.MONTH) == month
+				.getActualMinimum(Calendar.MONTH)) {
+			pmonth.set((month.get(Calendar.YEAR) - 1),
+					month.getActualMaximum(Calendar.MONTH), 1);
 		} else {
-			pmonth.set(GregorianCalendar.MONTH,
-					month.get(GregorianCalendar.MONTH) - 1);
+			pmonth.set(Calendar.MONTH,
+					month.get(Calendar.MONTH) - 1);
 		}
-		maxP = pmonth.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
+		maxP = pmonth.getActualMaximum(Calendar.DAY_OF_MONTH);
 
 		return maxP;
 	}

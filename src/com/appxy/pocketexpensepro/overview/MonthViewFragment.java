@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +17,7 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
@@ -39,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class MonthViewFragment extends Fragment implements OnUpdateListListener {
+public class MonthViewFragment extends Fragment implements OnUpdateListListener, OnUpdateMonthListener {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private static final int MID_VALUE = 10000;
@@ -49,7 +50,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 
 	private GridView mGridView;
 	private CalendarGridViewAdapter calendarGridViewAdapter;
-	public GregorianCalendar month;// calendar instances.
+	public Calendar month;// calendar instances.
 	private List<Map<String, Object>> mGridDataList;
 	private TextView expenseTextView;
 	private TextView incomeTextView;
@@ -146,7 +147,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 
 		
 		Locale.setDefault(Locale.ENGLISH);
-		month = (GregorianCalendar) GregorianCalendar.getInstance();
+		month = (Calendar) Calendar.getInstance();
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 		
 //		Log.v("mtest", "offset"+offset);
@@ -308,6 +309,12 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener 
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(selectedDate));
 		calendarGridViewAdapter.refreshDays();
 		calendarGridViewAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void OnUpdateMonth() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
 	}
 
 }

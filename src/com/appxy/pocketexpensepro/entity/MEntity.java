@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.R.integer;
 import android.util.Log;
 
 public class MEntity {
@@ -181,6 +182,16 @@ public class MEntity {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
+	}
+	
+	public static long getMontByOffset(int offset){
+		Calendar calendar = Calendar.getInstance();
+		if (offset == 0) {
+			
+		}else {
+			
+		}
+		return 1;
 	}
 
 }

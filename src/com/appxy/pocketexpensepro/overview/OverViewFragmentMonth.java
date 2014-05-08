@@ -5,15 +5,19 @@ import java.util.Calendar;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnTellUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
+import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,12 +31,14 @@ public class OverViewFragmentMonth extends Fragment {
 	private long argumentsDate;
 	private int currentPosition;
 	private int viewPagerPosition;
+	private OnTellUpdateMonthListener onTellUpdateMonthListener;
 	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
+		onTellUpdateMonthListener = (OnTellUpdateMonthListener) mActivity;
 	}
 
 	@Override
@@ -105,4 +111,37 @@ public class OverViewFragmentMonth extends Fragment {
 		
 		return view;
 	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+
+		case R.id.action_add:
+
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), CreatTransactionActivity.class);
+			startActivityForResult(intent, 6);
+			return true;
+
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 6:
+
+			if (data != null) {
+
+				onTellUpdateMonthListener.OnTellTime(viewPagerPosition);
+				
+			}
+			break;
+		}
+	}
+
 }
