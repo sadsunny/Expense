@@ -7,16 +7,17 @@
     <android.support.v4.view.ViewPager
             android:id="@+id/mPager"
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="60dp"
             />
     <LinearLayout
         android:id="@+id/week_view"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
+        android:layout_height="28dp"
         android:layout_alignParentTop="true"
         android:orientation="horizontal"
         android:paddingRight="2dp"
-        android:weightSum="7" >
+        android:weightSum="7"
+        android:background="@color/lightgray" >
 
         <TextView
             android:layout_width="100dp"
@@ -74,6 +75,13 @@
             android:gravity="center"
             android:text="Sat" />
     </LinearLayout>
+    
+    <View 
+           android:id="@+id/line_view1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black_gray"/>
+    
     <GridView
             android:id="@+id/mGridview"
             android:layout_width="match_parent"

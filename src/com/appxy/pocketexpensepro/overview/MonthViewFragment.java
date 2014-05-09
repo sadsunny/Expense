@@ -110,7 +110,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 		}
 		offset = position - MID_VALUE;
 		selectedDate = MainActivity.selectedDate;
-		
+		month = (Calendar) Calendar.getInstance();
 	}
 
 	@Override
@@ -144,10 +144,8 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 		incomeTextView = (TextView) view.findViewById(R.id.income_txt);
 		amountTextView = (TextView) view.findViewById(R.id.amount_txt);
 		
-
-		
 		Locale.setDefault(Locale.ENGLISH);
-		month = (Calendar) Calendar.getInstance();
+		
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 		
 //		Log.v("mtest", "offset"+offset);
@@ -178,6 +176,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 				onUpdateNavigationListener.OnUpdateNavigation(0, mChooseTime);
 			}
 		});
+		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();

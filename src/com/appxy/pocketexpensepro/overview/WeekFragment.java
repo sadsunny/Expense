@@ -99,7 +99,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 
 		if (isVisibleToUser) {
 
-//			weekCallBack.OnWeekSelected(selectedDate);
+			weekCallBack.OnWeekSelected(MainActivity.selectedDate);
 			
 			if (mThread == null) {
 				mThread = new Thread(mTask);
@@ -121,7 +121,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		}
 		offset = position - MID_VALUE;
 		selectedDate = MainActivity.selectedDate;
-		
+		mDataList = new ArrayList<Map<String, Object>>();
 	}
 
 	@Override
@@ -134,8 +134,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		mAdapter = new GridViewAdapter(mActivity);
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(mListener);
-		mDataList = new ArrayList<Map<String, Object>>();
-
 		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
@@ -174,13 +172,8 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			// TODO Auto-generated method stub
 
 			long firstDayDate = getWeekByOffset(offset);
-			if (mDataList == null) {
-				mDataList = new ArrayList<Map<String, Object>>();
-			} else {
-				mDataList.clear();
-			}
-		
-
+			
+			mDataList.clear();
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
 				mMap.put("weekTime", firstDayDate);
@@ -209,7 +202,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 				firstDayDate = firstDayDate + DAYMILLIS;
 				mDataList.add(mMap);
 			}
-
+            Log.v("mspecial", "week的位置"+position+"  week中得mDataList，检查是否七天"+mDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};

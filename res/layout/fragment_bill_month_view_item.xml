@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="55dp"
-        android:layout_height="65dp"
+        android:layout_height="60dp"
         android:background="@drawable/week_item_selector" >
         
           <View
@@ -47,6 +47,13 @@
             android:textSize="10sp"
             android:text="12" 
             />
+           
+            <View
+            android:id="@+id/line_view2"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@color/line_devide" />
         
     </RelativeLayout>
 

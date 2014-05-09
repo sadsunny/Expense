@@ -12,6 +12,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
@@ -31,7 +32,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class MonthFragment extends Fragment{
+public class MonthFragment extends Fragment {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -46,9 +47,10 @@ public class MonthFragment extends Fragment{
 	private GridViewAdapter mAdapter;
 	private List<Map<String, Object>> mDataList;
 	private Thread mThread;
-	private long selectedDate;
 	private int offset;
-
+	private long selectedMonth;
+	private OnBillToActivityListener onBillToActivityListener;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -56,7 +58,7 @@ public class MonthFragment extends Fragment{
 
 				if (mDataList != null) {
 					mAdapter.setDate(mDataList);
-					mAdapter.setChoosedTime(MainActivity.selectedDate);
+					mAdapter.setChoosedTime(MainActivity.selectedMonth);
 					mAdapter.notifyDataSetChanged();
 				}
 
@@ -69,7 +71,6 @@ public class MonthFragment extends Fragment{
 			}
 		}
 	};
-
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -85,16 +86,14 @@ public class MonthFragment extends Fragment{
 
 		if (isVisibleToUser) {
 
-//			weekCallBack.OnWeekSelected(selectedDate);
-			
-//			if (mThread == null) {
-//				mThread = new Thread(mTask);
-//				mThread.start();
-//			}else {
-//				mHandler.post(mTask);
-//			}
+			if (mThread == null) {
+				mThread = new Thread(mTask);
+				mThread.start();
+			} else {
+				mHandler.post(mTask);
+			}
 		}
-		
+
 	}
 
 	@Override
@@ -107,8 +106,8 @@ public class MonthFragment extends Fragment{
 			position = bundle.getInt("position");
 		}
 		offset = position - MID_VALUE;
-		selectedDate = MainActivity.selectedDate;
-		
+		mDataList = new ArrayList<Map<String, Object>>();
+		onBillToActivityListener = (OnBillToActivityListener)mActivity;
 	}
 
 	@Override
@@ -116,19 +115,31 @@ public class MonthFragment extends Fragment{
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		mInflater = inflater;
-		View view = inflater.inflate(R.layout.fragment_bill_month_view, container, false);
+		View view = inflater.inflate(R.layout.fragment_bill_month_view,
+				container, false);
 		mGridView = (GridView) view.findViewById(R.id.mGridView);
 		mAdapter = new GridViewAdapter(mActivity);
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(mListener);
-		mDataList = new ArrayList<Map<String, Object>>();
+		mGridView.setOnItemClickListener(new OnItemClickListener() {
 
-		
-//		if (mThread == null) {
-//			mThread = new Thread(mTask);
-//			mThread.start();
-//		}
-		
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				MainActivity.selectedMonth = (Long) mDataList.get(arg2).get("monthTime");
+				Log.v("mtest", "mGridView time"+MEntity.turnMilltoMonthYear((Long) mDataList.get(arg2).get("monthTime")));
+				mAdapter.setChoosedTime((Long) mDataList.get(arg2).get("monthTime"));
+				mAdapter.notifyDataSetChanged();
+				onBillToActivityListener.OnBillToActivity();
+			}
+		});
+
+		if (mThread == null) {
+			mThread = new Thread(mTask);
+			mThread.start();
+		}
+
 		return view;
 	}
 
@@ -143,12 +154,7 @@ public class MonthFragment extends Fragment{
 		public void onItemClick(AdapterView<?> paramAdapterView,
 				View paramView, int paramInt, long paramLong) {
 			// TODO Auto-generated method stub
-			selectedDate = (Long) mDataList.get(paramInt).get("weekTime");
-			
-			mAdapter.setChoosedTime(selectedDate);
-			mAdapter.notifyDataSetChanged();
-			
-			
+
 		}
 	};
 
@@ -158,86 +164,32 @@ public class MonthFragment extends Fragment{
 		public void run() {
 			// TODO Auto-generated method stub
 
-			long firstDayDate = getWeekByOffset(offset);
-			if (mDataList == null) {
-				mDataList = new ArrayList<Map<String, Object>>();
-			} else {
-				mDataList.clear();
-			}
-		
+			long firstMonth = MEntity.getFirstMonthByOffset(offset);
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(firstMonth);
+
+			mDataList.clear();
 
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
-				mMap.put("weekTime", firstDayDate);
 
-				List<Map<String, Object>> mTemList = null;
-				BigDecimal b1 = new BigDecimal("0");
-				BigDecimal b2 = new BigDecimal("0");
-				for (Map<String, Object> iMap : mTemList) {
-					String amount = (String) iMap.get("amount");
-					int expenseAccount = (Integer) iMap.get("expenseAccount");
-					int incomeAccount = (Integer) iMap.get("incomeAccount");
-					BigDecimal b3 = new BigDecimal(amount);
+				long firstDayOfMonth = calendar.getTimeInMillis();
+				long lastDayOfMonth = MEntity
+						.getLastDayOfMonthMillis(firstDayOfMonth);
 
-					if (expenseAccount > 0 && incomeAccount <= 0) {
-						b1 = b1.subtract(b3);
-					} 
-					else if (incomeAccount > 0 && expenseAccount <= 0) {
-						b2 = b2.add(b3);
-					}
-				}
-				double expense = b1.doubleValue();
-				double income = b2.doubleValue();
-				mMap.put("expense", expense);
-				mMap.put("income", income);
+				mMap.put("monthTime", firstDayOfMonth);
 
-				firstDayDate = firstDayDate + DAYMILLIS;
+				List<Map<String, Object>> mTemList = BillsDao.selectBillByBE(
+						firstDayOfMonth, lastDayOfMonth);
+				int count = i;
+				mMap.put("count", count);
+
+				calendar.add(Calendar.MONTH, 1);
 				mDataList.add(mMap);
 			}
 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
-
-	public long getFirstDayByOffset(int offset) {
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-
-		long returnDate = calendar.getTimeInMillis();
-
-		if (offset == 0) {
-			return returnDate;
-		} else {
-			long offsetDate = offset * 7 * DAYMILLIS;
-			calendar.setTimeInMillis(returnDate + offsetDate);
-			calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-			calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-			returnDate = calendar.getTimeInMillis();
-		}
-
-		return returnDate;
-	}
-
-	public long getWeekByOffset(int offset) {
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		long returnDate = calendar.getTimeInMillis();
-
-		long offsetDate = offset * 7 * DAYMILLIS;
-		calendar.setTimeInMillis(returnDate + offsetDate);
-		calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-		calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-		returnDate = calendar.getTimeInMillis();
-
-		return returnDate;
-	}
 
 }

@@ -1,4 +1,4 @@
-package com.appxy.pocketexpensepro.overview;
+package com.appxy.pocketexpensepro.bills;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
@@ -64,6 +64,11 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		refreshDays();
 		itemWidth = getWeekItemWidth();
 		this.items = new ArrayList<String>();
+	}
+	
+	public void setMonth(Calendar monthCalendar) {
+		month = monthCalendar;
+		refreshDays();
 	}
 	
 	public List<String> getDayString() {
@@ -177,37 +182,37 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		viewholder.dayView.setText(gridvalue);
 		String everyDay = dayString.get(position); // 定位为当天
 
-		if (everyDay.equals(checkDate)) {
-			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
-		} else {
-			viewholder.mLayout
-					.setBackgroundResource(R.drawable.week_item_selector);
-		}
-
-		if (items != null && items.contains(everyDay)) { // 该位置表示当天
-
-			double expense = 0;
-			double income = 0;
-			for (Map<String, Object> iMap : mDataList) {
-				long mDayDate = (Long) iMap.get("dateTime");
-				String mDayDateString = df.format(mDayDate);
-
-				if (mDayDateString.equals(everyDay)) {
-					expense = (Double) iMap.get("expense");
-					income = (Double) iMap.get("income");
-				}
-			}
-
-			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
-					+ ""));
-			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
-					+ ""));
-
-		} else {
-			viewholder.expenseTextView.setText("");
-			viewholder.incomeTextView.setText("");
-
-		}
+//		if (everyDay.equals(checkDate)) {
+//			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
+//		} else {
+//			viewholder.mLayout
+//					.setBackgroundResource(R.drawable.week_item_selector);
+//		}
+//
+//		if (items != null && items.contains(everyDay)) { // 该位置表示当天
+//
+//			double expense = 0;
+//			double income = 0;
+//			for (Map<String, Object> iMap : mDataList) {
+//				long mDayDate = (Long) iMap.get("dateTime");
+//				String mDayDateString = df.format(mDayDate);
+//
+//				if (mDayDateString.equals(everyDay)) {
+//					expense = (Double) iMap.get("expense");
+//					income = (Double) iMap.get("income");
+//				}
+//			}
+//
+//			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
+//					+ ""));
+//			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
+//					+ ""));
+//
+//		} else {
+//			viewholder.expenseTextView.setText("");
+//			viewholder.incomeTextView.setText("");
+//
+//		}
 		return convertView;
 	}
 

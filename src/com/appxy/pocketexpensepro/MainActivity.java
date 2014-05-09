@@ -10,7 +10,9 @@ import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragmentMonth;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnTellUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
@@ -43,7 +45,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener , OnTellUpdateMonthListener{
+		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener , OnTellUpdateMonthListener, OnBillToActivityListener{
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -62,12 +64,14 @@ public class MainActivity extends FragmentActivity implements
 	private OverviewFragment overviewFragment;
 	private final static long DAYMILLIS = 86400000L;
 
-	public static long selectedDate;
+	public static long selectedDate;//overview 定位时间
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private int mItemPosition = 0;
 	private ActionBar actionBar;
 	private OverViewNavigationListAdapter overViewNavigationListAdapter;
-
+	public static long selectedMonth;//bill定位时间
+	private BillsFragmentMonth billsFragmentMonth;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -154,6 +158,14 @@ public class MainActivity extends FragmentActivity implements
 		overViewNavigationListAdapter.setDownItemData(itemStrings);
 		actionBar.setListNavigationCallbacks(overViewNavigationListAdapter,
 				new DropDownListenser());
+		
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.set(Calendar.HOUR_OF_DAY, 0);
+		calendar2.set(Calendar.MINUTE, 0);
+		calendar2.set(Calendar.SECOND, 0);
+		calendar2.set(Calendar.MILLISECOND, 0);
+		calendar2.set(Calendar.DAY_OF_MONTH, 1);
+		this.selectedMonth = calendar2.getTimeInMillis();
 
 	}
 
@@ -306,11 +318,11 @@ public class MainActivity extends FragmentActivity implements
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
 					mDrawerLayout.closeDrawer(mLinearLayout);
-					BillsFragmentMonth billsFragment = new BillsFragmentMonth();
+					billsFragmentMonth = new BillsFragmentMonth();
 					FragmentTransaction fragmentTransaction4 = fragmentManager
 							.beginTransaction();
 					fragmentTransaction4.replace(R.id.content_frame,
-							billsFragment);
+							billsFragmentMonth);
 					fragmentTransaction4.commit();
 
 					actionBar.setDisplayHomeAsUpEnabled(true);
@@ -319,7 +331,7 @@ public class MainActivity extends FragmentActivity implements
 					overViewNavigationListAdapter.setChoosed(0);
 					overViewNavigationListAdapter.setTitle("Bills      ");
 					overViewNavigationListAdapter
-							.setSubTitle(turnToDate(selectedDate));
+							.setSubTitle(turnToDate(MainActivity.selectedMonth));
 					List<String> billStrings = new ArrayList<String>();
 					billStrings.add("ListView                 ");
 					billStrings.add("CalendarView              ");
@@ -508,6 +520,19 @@ public class MainActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		OnUpdateMonthListener onUpdateMonthListener= (OnUpdateMonthListener)(MonthViewPagerAdapter.registeredFragments.get(viewpagerPositon));
 		onUpdateMonthListener.OnUpdateMonth();
+	}
+
+	@Override
+	public void OnBillToActivity() {
+		// TODO Auto-generated method stub
+		Log.v("mtest", "main");
+		overViewNavigationListAdapter
+		.setSubTitle(turnToDate(this.selectedMonth));
+         overViewNavigationListAdapter.notifyDataSetChanged();
+		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener)(billsFragmentMonth);
+		onActivityToBillListener.OnActivityToBill();
+		
+		
 	}
 	
 

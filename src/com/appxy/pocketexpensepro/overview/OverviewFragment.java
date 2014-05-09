@@ -193,7 +193,7 @@ public class OverviewFragment extends Fragment implements
 		
 		 final OnUpdateNavigationListener onUpdateNavigationListener;
 		 onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		 mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						viewPagerPosition = position;
@@ -205,6 +205,7 @@ public class OverviewFragment extends Fragment implements
 							calendar1.set(Calendar.SECOND, 0);
 							calendar1.set(Calendar.MILLISECOND, 0);
 							onUpdateNavigationListener.OnUpdateNavigation(calendar1.getTimeInMillis());
+							
 						}else {
 							long theSelectedDate = MEntity.getFirstDayByOffset(position-MID_VALUE);
 							onUpdateNavigationListener.OnUpdateNavigation(theSelectedDate);
