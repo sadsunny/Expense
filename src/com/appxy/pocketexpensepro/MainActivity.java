@@ -1,6 +1,5 @@
 package com.appxy.pocketexpensepro;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,34 +7,29 @@ import java.util.Date;
 import java.util.List;
 
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
+import com.appxy.pocketexpensepro.bills.BillsFragmentMonth;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
+import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
+import com.appxy.pocketexpensepro.expinterface.OnTellUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
+import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
-import com.appxy.pocketexpensepro.overview.MonthViewFragment;
+import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
-import com.appxy.pocketexpensepro.overview.WeekFragment;
 
 import android.os.Bundle;
-import android.R.layout;
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ActionBar.OnNavigationListener;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -44,19 +38,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
-import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener {
+		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener , OnTellUpdateMonthListener, OnBillToActivityListener{
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -75,12 +64,14 @@ public class MainActivity extends FragmentActivity implements
 	private OverviewFragment overviewFragment;
 	private final static long DAYMILLIS = 86400000L;
 
-	public static long selectedDate;
+	public static long selectedDate;//overview 定位时间
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private int mItemPosition = 0;
 	private ActionBar actionBar;
 	private OverViewNavigationListAdapter overViewNavigationListAdapter;
-
+	public static long selectedMonth;//bill定位时间
+	private BillsFragmentMonth billsFragmentMonth;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -167,6 +158,14 @@ public class MainActivity extends FragmentActivity implements
 		overViewNavigationListAdapter.setDownItemData(itemStrings);
 		actionBar.setListNavigationCallbacks(overViewNavigationListAdapter,
 				new DropDownListenser());
+		
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.set(Calendar.HOUR_OF_DAY, 0);
+		calendar2.set(Calendar.MINUTE, 0);
+		calendar2.set(Calendar.SECOND, 0);
+		calendar2.set(Calendar.MILLISECOND, 0);
+		calendar2.set(Calendar.DAY_OF_MONTH, 1);
+		this.selectedMonth = calendar2.getTimeInMillis();
 
 	}
 
@@ -183,7 +182,6 @@ public class MainActivity extends FragmentActivity implements
 				overviewFragment = new OverviewFragment();
 				Bundle bundle = new Bundle();
 				bundle.putLong("selectedDate", MainActivity.selectedDate);
-				 Log.v("mtest", "主actiivity传入week"+MEntity.getMilltoDate(MainActivity.selectedDate));
 				overviewFragment.setArguments(bundle);
 
 				FragmentTransaction fragmentTransaction1 = fragmentManager
@@ -320,20 +318,20 @@ public class MainActivity extends FragmentActivity implements
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
 					mDrawerLayout.closeDrawer(mLinearLayout);
-					BillsFragment billsFragment = new BillsFragment();
+					billsFragmentMonth = new BillsFragmentMonth();
 					FragmentTransaction fragmentTransaction4 = fragmentManager
 							.beginTransaction();
 					fragmentTransaction4.replace(R.id.content_frame,
-							billsFragment);
+							billsFragmentMonth);
 					fragmentTransaction4.commit();
 
 					actionBar.setDisplayHomeAsUpEnabled(true);
 					actionBar.setDisplayShowTitleEnabled(false);
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 					overViewNavigationListAdapter.setChoosed(0);
-					overViewNavigationListAdapter.setTitle("Bills    ");
+					overViewNavigationListAdapter.setTitle("Bills      ");
 					overViewNavigationListAdapter
-							.setSubTitle(turnToDate(selectedDate));
+							.setSubTitle(turnToDate(MainActivity.selectedMonth));
 					List<String> billStrings = new ArrayList<String>();
 					billStrings.add("ListView                 ");
 					billStrings.add("CalendarView              ");
@@ -514,6 +512,26 @@ public class MainActivity extends FragmentActivity implements
 		this.selectedDate = selectedDate;
 		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
+		
+	}
+
+	@Override
+	public void OnTellTime(int viewpagerPositon) {
+		// TODO Auto-generated method stub
+		OnUpdateMonthListener onUpdateMonthListener= (OnUpdateMonthListener)(MonthViewPagerAdapter.registeredFragments.get(viewpagerPositon));
+		onUpdateMonthListener.OnUpdateMonth();
+	}
+
+	@Override
+	public void OnBillToActivity() {
+		// TODO Auto-generated method stub
+		Log.v("mtest", "main");
+		overViewNavigationListAdapter
+		.setSubTitle(turnToDate(this.selectedMonth));
+         overViewNavigationListAdapter.notifyDataSetChanged();
+		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener)(billsFragmentMonth);
+		onActivityToBillListener.OnActivityToBill();
+		
 		
 	}
 	

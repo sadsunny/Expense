@@ -173,25 +173,26 @@ containing a value of this type.
     }
     public static final class color {
         public static final int black_gray=0x7f06000c;
-        public static final int blue=0x7f06000f;
-        public static final int blue_bright=0x7f060012;
+        public static final int blue=0x7f060010;
+        public static final int blue_bright=0x7f060013;
         public static final int but_color=0x7f060009;
         public static final int but_sel_color=0x7f06000a;
         public static final int calendar_bac=0x7f060008;
-        public static final int darkblue=0x7f060010;
-        public static final int holoblue=0x7f060011;
-        public static final int lightgray=0x7f06000e;
+        public static final int dark_gray=0x7f06000d;
+        public static final int darkblue=0x7f060011;
+        public static final int holoblue=0x7f060012;
+        public static final int lightgray=0x7f06000f;
         public static final int line_black=0x7f060002;
         public static final int line_devide=0x7f060003;
         public static final int line_left_black=0x7f060005;
         public static final int line_more=0x7f060004;
         public static final int line_white=0x7f060001;
         public static final int press_blue=0x7f060006;
-        public static final int red=0x7f060013;
+        public static final int red=0x7f060014;
         public static final int top_bac=0x7f060007;
         public static final int transparent=0x7f06000b;
         public static final int white=0x7f060000;
-        public static final int white_gray=0x7f06000d;
+        public static final int white_gray=0x7f06000e;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -215,41 +216,42 @@ containing a value of this type.
         public static final int b_sub_sel=0x7f020008;
         public static final int bag_selector=0x7f020009;
         public static final int bg_handle_section1=0x7f02000a;
-        public static final int calendar=0x7f02000b;
-        public static final int calendar_label=0x7f02000c;
-        public static final int cancel=0x7f02000d;
-        public static final int category=0x7f02000e;
-        public static final int confirm=0x7f02000f;
-        public static final int drawer_shadow=0x7f020010;
-        public static final int ic_drawer=0x7f020011;
-        public static final int ic_launcher=0x7f020012;
-        public static final int icon_baby=0x7f020013;
-        public static final int icon_car=0x7f020014;
-        public static final int icon_computer=0x7f020015;
-        public static final int icon_cosmetology=0x7f020016;
-        public static final int icon_credit_card=0x7f020017;
-        public static final int icon_dining=0x7f020018;
-        public static final int icon_education=0x7f020019;
-        public static final int icon_ele=0x7f02001a;
-        public static final int icon_gas=0x7f02001b;
-        public static final int item_layout_selector=0x7f02001c;
-        public static final int memo=0x7f02001d;
-        public static final int photo=0x7f02001e;
-        public static final int progressbar_bac=0x7f02001f;
-        public static final int recurring=0x7f020020;
-        public static final int report=0x7f020021;
-        public static final int sort=0x7f020022;
-        public static final int test1=0x7f020023;
-        public static final int upcoming=0x7f020024;
-        public static final int week_item_selector=0x7f020025;
+        public static final int bill_calendar_selector=0x7f02000b;
+        public static final int calendar=0x7f02000c;
+        public static final int calendar_label=0x7f02000d;
+        public static final int cancel=0x7f02000e;
+        public static final int category=0x7f02000f;
+        public static final int confirm=0x7f020010;
+        public static final int drawer_shadow=0x7f020011;
+        public static final int ic_drawer=0x7f020012;
+        public static final int ic_launcher=0x7f020013;
+        public static final int icon_baby=0x7f020014;
+        public static final int icon_car=0x7f020015;
+        public static final int icon_computer=0x7f020016;
+        public static final int icon_cosmetology=0x7f020017;
+        public static final int icon_credit_card=0x7f020018;
+        public static final int icon_dining=0x7f020019;
+        public static final int icon_education=0x7f02001a;
+        public static final int icon_ele=0x7f02001b;
+        public static final int icon_gas=0x7f02001c;
+        public static final int item_layout_selector=0x7f02001d;
+        public static final int memo=0x7f02001e;
+        public static final int photo=0x7f02001f;
+        public static final int progressbar_bac=0x7f020020;
+        public static final int recurring=0x7f020021;
+        public static final int report=0x7f020022;
+        public static final int sort=0x7f020023;
+        public static final int test1=0x7f020024;
+        public static final int upcoming=0x7f020025;
+        public static final int week_item_selector=0x7f020026;
     }
     public static final class id {
         public static final int LinearLayout1=0x7f04001a;
         public static final int RelativeLayout1=0x7f040005;
-        public static final int RelativeLayout2=0x7f040095;
+        public static final int RelativeLayout2=0x7f04009d;
         public static final int Sort_ImageView=0x7f04000c;
-        public static final int TextView1=0x7f0400a6;
-        public static final int TextView2=0x7f0400a7;
+        public static final int TextView1=0x7f0400ab;
+        public static final int TextView2=0x7f0400ac;
         public static final int account_btn=0x7f040072;
         public static final int account_edit=0x7f04004d;
         public static final int account_image=0x7f04005f;
@@ -258,15 +260,15 @@ containing a value of this type.
         public static final int account_txt=0x7f040007;
         public static final int account_type_edit=0x7f040044;
         public static final int account_type_img=0x7f040006;
-        public static final int action_add=0x7f0400ac;
+        public static final int action_add=0x7f0400b0;
         public static final int action_cancel=0x7f040052;
         public static final int action_done=0x7f040053;
-        public static final int action_search=0x7f0400ae;
-        public static final int action_settings=0x7f0400af;
+        public static final int action_search=0x7f0400b2;
+        public static final int action_settings=0x7f0400b3;
         public static final int add_btn=0x7f04004f;
         public static final int add_payee_btn=0x7f04001c;
         public static final int amount_edit=0x7f04001e;
-        public static final int amount_txt=0x7f04009b;
+        public static final int amount_txt=0x7f0400a1;
         public static final int amounttextView=0x7f04000b;
         public static final int balance_edit=0x7f04004e;
         public static final int balance_txt=0x7f040018;
@@ -284,24 +286,25 @@ containing a value of this type.
         public static final int category_img=0x7f04004a;
         public static final int category_rel=0x7f040071;
         public static final int category_txt=0x7f040056;
-        public static final int checkBox1=0x7f0400a5;
+        public static final int checkBox1=0x7f0400aa;
         public static final int childView=0x7f040073;
         public static final int choose_btn=0x7f040054;
-        public static final int choose_view=0x7f0400a0;
+        public static final int choose_view=0x7f0400a5;
         public static final int clear_btn=0x7f040055;
         public static final int clear_spin=0x7f040026;
         public static final int clickRemove=0x7f040000;
-        public static final int confirm=0x7f0400ad;
+        public static final int confirm=0x7f0400b1;
         public static final int content_frame=0x7f040058;
+        public static final int count_text=0x7f040097;
         public static final int currency_label=0x7f04003a;
         public static final int currency_txt=0x7f04000a;
         public static final int currency_txt1=0x7f040012;
         public static final int currency_txt2=0x7f040017;
-        public static final int dateTextView=0x7f0400aa;
+        public static final int dateTextView=0x7f0400af;
         public static final int date_btn=0x7f040020;
-        public static final int date_text=0x7f040091;
+        public static final int date_text=0x7f040099;
         public static final int delete_btn=0x7f040083;
-        public static final int devid_line=0x7f04009a;
+        public static final int devid_line=0x7f0400a0;
         public static final int devider1=0x7f04005d;
         public static final int devider2=0x7f040061;
         public static final int devider3=0x7f040065;
@@ -315,8 +318,8 @@ containing a value of this type.
         public static final int event_info_reminders_label=0x7f040034;
         public static final int everytextView=0x7f040085;
         public static final int expense_btn=0x7f040078;
-        public static final int expense_text=0x7f040092;
-        public static final int expense_txt=0x7f040098;
+        public static final int expense_text=0x7f04009a;
+        public static final int expense_txt=0x7f04009e;
         public static final int export_img=0x7f040090;
         public static final int flingRemove=0x7f040001;
         public static final int from_btn=0x7f040022;
@@ -325,17 +328,18 @@ containing a value of this type.
         public static final int get_text=0x7f040076;
         public static final int icon_label=0x7f040045;
         public static final int imageView1=0x7f04002b;
-        public static final int image_item=0x7f04009f;
+        public static final int image_item=0x7f0400a4;
         public static final int income_btn=0x7f040079;
-        public static final int income_text=0x7f040093;
-        public static final int income_txt=0x7f040099;
+        public static final int income_text=0x7f04009b;
+        public static final int income_txt=0x7f04009f;
         public static final int is_forever_spinner=0x7f040087;
         public static final int left_drawer=0x7f040059;
         public static final int line_label=0x7f040075;
         public static final int line_label1=0x7f04006c;
         public static final int line_label2=0x7f04006f;
-        public static final int line_view=0x7f040094;
-        public static final int line_view1=0x7f0400ab;
+        public static final int line_view=0x7f04009c;
+        public static final int line_view1=0x7f040093;
+        public static final int line_view2=0x7f040098;
         public static final int linearLayout1=0x7f04000e;
         public static final int linearLayout2=0x7f04000f;
         public static final int linearLayout3=0x7f040014;
@@ -343,21 +347,22 @@ containing a value of this type.
         public static final int mEditText=0x7f04007c;
         public static final int mExpandableListView=0x7f04000d;
         public static final int mGridView=0x7f040046;
-        public static final int mGridview=0x7f040097;
-        public static final int mImageView=0x7f0400a3;
-        public static final int mImageView1=0x7f0400a8;
-        public static final int mImageView2=0x7f0400a9;
+        public static final int mGridview=0x7f040094;
+        public static final int mImageView=0x7f0400a8;
+        public static final int mImageView1=0x7f0400ad;
+        public static final int mImageView2=0x7f0400ae;
         public static final int mLinearLayout=0x7f04002d;
         public static final int mListView=0x7f04006a;
         public static final int mListview=0x7f04008d;
-        public static final int mPager=0x7f04009c;
-        public static final int mPager2=0x7f04009d;
+        public static final int mPager=0x7f040091;
+        public static final int mPager2=0x7f0400a2;
         public static final int mProgressBar=0x7f04003b;
         public static final int mRelativeLayout=0x7f040049;
         public static final int mScrollView=0x7f040019;
         public static final int mScrollView1=0x7f04004c;
         public static final int memo_edit=0x7f04002c;
-        public static final int mline_label=0x7f0400a4;
+        public static final int mline_label=0x7f0400a9;
+        public static final int month_text=0x7f040096;
         public static final int net_worth_txt=0x7f04008c;
         public static final int onDown=0x7f040002;
         public static final int onLongPress=0x7f040004;
@@ -392,7 +397,7 @@ containing a value of this type.
         public static final int repeat_frequency_spinner=0x7f040086;
         public static final int repeat_label=0x7f040032;
         public static final int repeating_until=0x7f040088;
-        public static final int report_drop_text=0x7f04009e;
+        public static final int report_drop_text=0x7f0400a3;
         public static final int report_image=0x7f040063;
         public static final int report_linearLayout=0x7f040062;
         public static final int report_text=0x7f040064;
@@ -402,14 +407,14 @@ containing a value of this type.
         public static final int setbudget_linearLayout=0x7f04003e;
         public static final int setbudget_txt=0x7f040040;
         public static final int sub_btn=0x7f040050;
-        public static final int subtitle_text=0x7f0400a2;
+        public static final int subtitle_text=0x7f0400a7;
         public static final int symbol_txt=0x7f040009;
         public static final int symbol_txt1=0x7f040011;
         public static final int symbol_txt2=0x7f040016;
         public static final int take_btn=0x7f040081;
         public static final int textView1=0x7f040010;
         public static final int textView2=0x7f040015;
-        public static final int title_text=0x7f0400a1;
+        public static final int title_text=0x7f0400a6;
         public static final int to_btn=0x7f040024;
         public static final int tranfer_linearLayout=0x7f04008e;
         public static final int transfer_linearLayout=0x7f040041;
@@ -419,7 +424,8 @@ containing a value of this type.
         public static final int type_name=0x7f04007b;
         public static final int type_txt=0x7f040008;
         public static final int view_btn=0x7f040084;
-        public static final int week_view=0x7f040096;
+        public static final int week_view=0x7f040092;
+        public static final int year_text=0x7f040095;
     }
     public static final class layout {
         public static final int account_list_item=0x7f030000;
@@ -465,19 +471,22 @@ containing a value of this type.
         public static final int dialog_recurring=0x7f030028;
         public static final int dialog_remindme=0x7f030029;
         public static final int fragment_account=0x7f03002a;
-        public static final int fragment_calender_item=0x7f03002b;
-        public static final int fragment_month_view=0x7f03002c;
-        public static final int fragment_overview=0x7f03002d;
-        public static final int fragment_overview_month=0x7f03002e;
-        public static final int fragment_week=0x7f03002f;
-        public static final int getdropdownview=0x7f030030;
-        public static final int gridview_item=0x7f030031;
-        public static final int navigation_dropview=0x7f030032;
-        public static final int navigation_getview=0x7f030033;
-        public static final int payee_list_item=0x7f030034;
-        public static final int transaction_child_item=0x7f030035;
-        public static final int transaction_group_item=0x7f030036;
-        public static final int week_item=0x7f030037;
+        public static final int fragment_bill_month=0x7f03002b;
+        public static final int fragment_bill_month_view=0x7f03002c;
+        public static final int fragment_bill_month_view_item=0x7f03002d;
+        public static final int fragment_calender_item=0x7f03002e;
+        public static final int fragment_month_view=0x7f03002f;
+        public static final int fragment_overview=0x7f030030;
+        public static final int fragment_overview_month=0x7f030031;
+        public static final int fragment_week=0x7f030032;
+        public static final int getdropdownview=0x7f030033;
+        public static final int gridview_item=0x7f030034;
+        public static final int navigation_dropview=0x7f030035;
+        public static final int navigation_getview=0x7f030036;
+        public static final int payee_list_item=0x7f030037;
+        public static final int transaction_child_item=0x7f030038;
+        public static final int transaction_group_item=0x7f030039;
+        public static final int week_item=0x7f03003a;
     }
     public static final class menu {
         public static final int add_menu=0x7f0a0000;
@@ -673,7 +682,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:click_remove_id
+          @attr name android:click_remove_id
         */
         public static final int DragSortListView_click_remove_id = 16;
         /**
@@ -689,7 +698,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:collapsed_height
+          @attr name android:collapsed_height
         */
         public static final int DragSortListView_collapsed_height = 0;
         /**
@@ -703,7 +712,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:drag_enabled
+          @attr name android:drag_enabled
         */
         public static final int DragSortListView_drag_enabled = 10;
         /**
@@ -717,7 +726,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:drag_handle_id
+          @attr name android:drag_handle_id
         */
         public static final int DragSortListView_drag_handle_id = 14;
         /**
@@ -731,7 +740,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:drag_scroll_start
+          @attr name android:drag_scroll_start
         */
         public static final int DragSortListView_drag_scroll_start = 1;
         /**
@@ -749,7 +758,7 @@ containing a value of this type.
 <tr><td><code>onMove</code></td><td>1</td><td></td></tr>
 <tr><td><code>onLongPress</code></td><td>2</td><td></td></tr>
 </table>
-          @attr name com.appxy.pocketexpensepro:drag_start_mode
+          @attr name android:drag_start_mode
         */
         public static final int DragSortListView_drag_start_mode = 13;
         /**
@@ -763,7 +772,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:drop_animation_duration
+          @attr name android:drop_animation_duration
         */
         public static final int DragSortListView_drop_animation_duration = 9;
         /**
@@ -777,7 +786,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:fling_handle_id
+          @attr name android:fling_handle_id
         */
         public static final int DragSortListView_fling_handle_id = 15;
         /**
@@ -791,7 +800,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:float_alpha
+          @attr name android:float_alpha
         */
         public static final int DragSortListView_float_alpha = 6;
         /**
@@ -806,7 +815,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:float_background_color
+          @attr name android:float_background_color
         */
         public static final int DragSortListView_float_background_color = 3;
         /**
@@ -820,7 +829,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:max_drag_scroll_speed
+          @attr name android:max_drag_scroll_speed
         */
         public static final int DragSortListView_max_drag_scroll_speed = 2;
         /**
@@ -834,7 +843,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:remove_animation_duration
+          @attr name android:remove_animation_duration
         */
         public static final int DragSortListView_remove_animation_duration = 8;
         /**
@@ -848,7 +857,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:remove_enabled
+          @attr name android:remove_enabled
         */
         public static final int DragSortListView_remove_enabled = 12;
         /**
@@ -865,7 +874,7 @@ containing a value of this type.
 <tr><td><code>clickRemove</code></td><td>0</td><td></td></tr>
 <tr><td><code>flingRemove</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name com.appxy.pocketexpensepro:remove_mode
+          @attr name android:remove_mode
         */
         public static final int DragSortListView_remove_mode = 4;
         /**
@@ -879,7 +888,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:slide_shuffle_speed
+          @attr name android:slide_shuffle_speed
         */
         public static final int DragSortListView_slide_shuffle_speed = 7;
         /**
@@ -893,7 +902,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:sort_enabled
+          @attr name android:sort_enabled
         */
         public static final int DragSortListView_sort_enabled = 11;
         /**
@@ -907,7 +916,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:track_drag_sort
+          @attr name android:track_drag_sort
         */
         public static final int DragSortListView_track_drag_sort = 5;
         /**
@@ -921,7 +930,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name com.appxy.pocketexpensepro:use_default_controller
+          @attr name android:use_default_controller
         */
         public static final int DragSortListView_use_default_controller = 17;
     };

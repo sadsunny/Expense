@@ -123,7 +123,7 @@ public class OverviewFragment extends Fragment implements
 				mProgressBar.setMax((int)budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
 				
-				budgeTextView.setText((budgetAmount-transactionAmount)+"");
+				budgeTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
 				
 				break;
 
@@ -193,7 +193,7 @@ public class OverviewFragment extends Fragment implements
 		
 		 final OnUpdateNavigationListener onUpdateNavigationListener;
 		 onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		 mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						viewPagerPosition = position;
@@ -205,6 +205,7 @@ public class OverviewFragment extends Fragment implements
 							calendar1.set(Calendar.SECOND, 0);
 							calendar1.set(Calendar.MILLISECOND, 0);
 							onUpdateNavigationListener.OnUpdateNavigation(calendar1.getTimeInMillis());
+							
 						}else {
 							long theSelectedDate = MEntity.getFirstDayByOffset(position-MID_VALUE);
 							onUpdateNavigationListener.OnUpdateNavigation(theSelectedDate);
@@ -243,10 +244,6 @@ public class OverviewFragment extends Fragment implements
 			mThread.start();
 		}
 		
-//		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener) (mViewPagerAdapter.registeredFragments.get(currentPosition));
-//		Log.v("mtest", "ViewPagerAdapter.registeredFragments"+ViewPagerAdapter.registeredFragments);
-//		onUpdateWeekSelectListener.OnUpdateWeekSelect(argumentsDate);
-		
 		return view;
 	}
 	
@@ -262,8 +259,8 @@ public class OverviewFragment extends Fragment implements
 
 			List<Map<String, Object>>  mBudgetList = OverViewDao.selectBudget(mActivity);
 			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(mActivity);
-			long firstDay = MEntity.getFirstDayOfMonthMillis(selectedDate);
-			long lastDay = MEntity.getLastDayOfMonthMillis(selectedDate);
+			long firstDay = MEntity.getFirstDayOfMonthMillis(MainActivity.selectedDate);
+			long lastDay = MEntity.getLastDayOfMonthMillis(MainActivity.selectedDate);
 			
 			BigDecimal budgetBig = new BigDecimal("0");
 			BigDecimal transactionBig = new BigDecimal("0");
@@ -472,7 +469,7 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 
-				onBackTimeListener.OnBackTime(selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+				onBackTimeListener.OnBackTime(MainActivity.selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
 			break;
 		case 14:

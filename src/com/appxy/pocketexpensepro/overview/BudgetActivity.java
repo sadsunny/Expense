@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
@@ -161,10 +162,8 @@ public class BudgetActivity extends Activity {
 			List<Map<String, Object>> mTransferList = OverViewDao
 					.selectBudgetTransfer(BudgetActivity.this);
 			Calendar calendar = Calendar.getInstance();
-			long firstDay = MEntity.getFirstDayOfMonthMillis(calendar
-					.getTimeInMillis());
-			long lastDay = MEntity.getLastDayOfMonthMillis(calendar
-					.getTimeInMillis());
+			long firstDay = MEntity.getFirstDayOfMonthMillis(MainActivity.selectedDate);
+			long lastDay = MEntity.getLastDayOfMonthMillis(MainActivity.selectedDate);
 
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");

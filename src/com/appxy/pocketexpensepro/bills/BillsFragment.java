@@ -5,6 +5,8 @@ import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +16,15 @@ import android.view.ViewGroup;
 
 public class BillsFragment extends Fragment{
 
+	private FragmentActivity mActivity;
+	
+	@Override
+	public void onAttach(Activity activity) {
+		// TODO Auto-generated method stub
+		super.onAttach(activity);
+		mActivity = (FragmentActivity) activity;
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -36,7 +47,7 @@ public class BillsFragment extends Fragment{
 		case R.id.action_add:
 			
 			Intent intent = new Intent();
-			intent.setClass(getActivity(), CreatBudgetsActivity.class);
+			intent.setClass(getActivity(), CreatBillsActivity.class);
 			startActivityForResult(intent, 8);
 			return true;
 

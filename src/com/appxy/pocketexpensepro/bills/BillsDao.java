@@ -1,5 +1,8 @@
 package com.appxy.pocketexpensepro.bills;
 
+import java.util.List;
+import java.util.Map;
+
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 
 import android.R.integer;
@@ -29,6 +32,10 @@ public class BillsDao {
 		long row = db.insert("EP_BillRule", null, cv);
 		db.close();
 		return row;
+	}
+	public static List<Map<String, Object>> selectBillByBE(long beginTime, long endTime) {
+		
+		return null;
 	}
 
 }

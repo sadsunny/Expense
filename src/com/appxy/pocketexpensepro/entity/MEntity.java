@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.R.integer;
 import android.util.Log;
 
 public class MEntity {
@@ -127,10 +128,10 @@ public class MEntity {
 		long firstDayOfWeek = getFirstDayByTime(beginTime);
 		long lastDayOfWeek = getFirstDayByTime(choosedTime);
 		offset = (int) ((lastDayOfWeek - firstDayOfWeek) / (7 * DAYMILLIS));
-		
+
 		return offset;
 	}
-	
+
 	public static long getMonthByOffset(int offset) {
 
 		Calendar calendar = Calendar.getInstance();
@@ -139,24 +140,24 @@ public class MEntity {
 
 		return MEntity.getFirstDayOfMonthMillis(returnDate);
 	}
-	
+
 	public static int getMonthOffsetByDay(long beginTime, long endTime) { // 根据beginTime计算到choosedTime的offset
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(beginTime);
-        
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTimeInMillis(endTime);
-        
-        int beginYear = calendar.get(Calendar.YEAR);
-        int beginMonth = calendar.get(Calendar.MONTH);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(beginTime);
 
-        int endYear = calendar2.get(Calendar.YEAR);
-        int endMonth = calendar2.get(Calendar.MONTH);
-        Log.v("mtest", "endMonth"+endMonth);
-        Log.v("mtest", "beginMonth"+beginMonth);
-        int betMonth = (endYear-beginYear)*12+(endMonth-beginMonth);
-        
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTimeInMillis(endTime);
+
+		int beginYear = calendar.get(Calendar.YEAR);
+		int beginMonth = calendar.get(Calendar.MONTH);
+
+		int endYear = calendar2.get(Calendar.YEAR);
+		int endMonth = calendar2.get(Calendar.MONTH);
+		Log.v("mtest", "endMonth" + endMonth);
+		Log.v("mtest", "beginMonth" + beginMonth);
+		int betMonth = (endYear - beginYear) * 12 + (endMonth - beginMonth);
+
 		return betMonth;
 	}
 
@@ -181,6 +182,50 @@ public class MEntity {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
+	}
+
+	public static long getFirstMonthByOffset(int offset) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
+		calendar.add(Calendar.MONTH, -3 + offset * 7);
+
+		return calendar.getTimeInMillis();
+	}
+
+	public static int getOffsetByMonth(long month) {
+		Calendar calendar = Calendar.getInstance();
+
+		Calendar calendar2 = Calendar.getInstance();
+		calendar2.setTimeInMillis(month);
+		
+		int beginYear = calendar.get(Calendar.YEAR);
+		int beginMonth = calendar.get(Calendar.MONTH);
+		
+		int endYear = calendar2.get(Calendar.YEAR);
+		int endMonth = calendar2.get(Calendar.MONTH);
+
+		if (endYear < beginYear) {
+			calendar.add(Calendar.MONTH, 3);
+		} else if (endYear > beginYear) {
+			calendar.add(Calendar.MONTH, -3);
+		} else {
+			if (endMonth < beginMonth) {
+				calendar.add(Calendar.MONTH, 3);
+			} else {
+				calendar.add(Calendar.MONTH, -3);
+			}
+		}
+		
+		 beginMonth = calendar.get(Calendar.MONTH);
+		
+		int offset = ((endYear - beginYear) * 12 + (endMonth - beginMonth)) / 7;
+
+		return offset;
 	}
 
 }
