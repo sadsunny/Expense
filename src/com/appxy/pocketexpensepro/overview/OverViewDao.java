@@ -28,8 +28,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime = "
-				+ time
+		String sql = "select a.* from 'Transaction' a where a.dateTime = "+ time
 				+ " and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {

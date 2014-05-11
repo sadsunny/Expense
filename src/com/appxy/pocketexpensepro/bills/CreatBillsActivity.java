@@ -268,6 +268,7 @@ public class CreatBillsActivity extends Activity {
 				
 				String ep_billName = billNameEditText.getText().toString();
 				double ep_billAmount = 0;
+				String ep_note = memoEditText.getText().toString();
 				try {
 					ep_billAmount = Float.parseFloat(amountString);
                 } catch (NumberFormatException e) {
@@ -313,7 +314,7 @@ public class CreatBillsActivity extends Activity {
 					
 				}else{
 					
-					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, endDate,  ep_billName,  recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
+					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, endDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
 					Log.v("mtest","Bill ID"+row);
 					finish();
 				}

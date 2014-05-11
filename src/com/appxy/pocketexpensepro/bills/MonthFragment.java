@@ -179,8 +179,9 @@ public class MonthFragment extends Fragment {
 
 				mMap.put("monthTime", firstDayOfMonth);
 
-				List<Map<String, Object>> mTemList = BillsDao.selectBillByBE(
-						firstDayOfMonth, lastDayOfMonth);
+				List<Map<String, Object>> mTemList = BillsDao.selectOrdinaryBillRuleByBE(
+						mActivity,firstDayOfMonth, lastDayOfMonth);
+				Log.v("mtest","mTemList"+mTemList);
 				int count = i;
 				mMap.put("count", count);
 
