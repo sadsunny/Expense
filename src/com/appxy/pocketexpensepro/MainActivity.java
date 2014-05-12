@@ -4,7 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
@@ -76,7 +78,7 @@ public class MainActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		mTitle = mDrawerTitle = getTitle();
 		mLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
 		mOverViewLinearLayout = (LinearLayout) findViewById(R.id.overview_linearlayout);
