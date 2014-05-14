@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:myView="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"   
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+   >
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="46dp"
-        android:layout_height="50dp" >
+        android:layout_height="50dp" 
+        android:background="@color/lightgray" >
 
         <TextView
             android:id="@+id/date_text"
@@ -19,17 +22,49 @@
             android:layout_marginTop="5dp"
             android:text="14" />
 
-        <RelativeLayout
-        android:id="@+id/RelativeLayout1"
-        android:layout_width="46dp"
-        android:layout_height="50dp" >
-        
-        </RelativeLayout>
-        <com.appxy.pocketexpensepro.entity.CircleView
-            android:id="@+id/ring"
+        <com.appxy.pocketexpensepro.CircleView
+            android:id="@+id/circle_red"
             android:layout_width="10dp"
             android:layout_height="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="3dp"
+            myView:background="@color/bill_red"
             />
+        
+        <com.appxy.pocketexpensepro.CircleView
+            android:id="@+id/ring_green"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/circle_red"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="3dp"
+            myView:background="@color/bill_green"
+            
+            />
+        
+        <com.appxy.pocketexpensepro.RingView
+            android:id="@+id/ring_green"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_above="@+id/circle_red"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="3dp"
+            
+            />
+        
+        <com.appxy.pocketexpensepro.CircleView
+            android:id="@+id/circle_gray"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_alignBottom="@+id/ring_green"
+            android:layout_toRightOf="@+id/ring_green"
+             android:layout_marginLeft="3dp"
+            myView:background="@color/bill_gray" />
+        
 
         <View
             android:id="@+id/line_view"
@@ -44,6 +79,8 @@
             android:layout_height="1dp"
             android:layout_alignParentBottom="true"
             android:background="@color/black_gray" />
+
+
     </RelativeLayout>
 
 </LinearLayout>

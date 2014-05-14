@@ -1,4 +1,4 @@
-package com.appxy.pocketexpensepro.entity;
+package com.appxy.pocketexpensepro;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -155,7 +155,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewholder.mLayout
 				.getLayoutParams();
-		relativeParams.width = itemWidth + 1;
+		relativeParams.width = itemWidth;
 		viewholder.mLayout.setLayoutParams(relativeParams);
 
 		// separates daystring into parts.
