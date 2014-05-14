@@ -140,17 +140,13 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			// attributes
 			LayoutInflater vi = LayoutInflater.from(mContext);
 
-			convertView = vi.inflate(R.layout.fragment_calender_item, null);
+			convertView = vi.inflate(R.layout.bill_calendar_item, null);
 			viewholder = new ViewHolder();
 
 			viewholder.dayView = (TextView) convertView
 					.findViewById(R.id.date_text);
 			viewholder.mLayout = (RelativeLayout) convertView
 					.findViewById(R.id.RelativeLayout1);
-			viewholder.expenseTextView = (TextView) convertView
-					.findViewById(R.id.expense_text);
-			viewholder.incomeTextView = (TextView) convertView
-					.findViewById(R.id.income_text);
 
 			convertView.setTag(viewholder);
 		} else {
@@ -182,45 +178,39 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		viewholder.dayView.setText(gridvalue);
 		String everyDay = dayString.get(position); // 定位为当天
 
-//		if (everyDay.equals(checkDate)) {
-//			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
-//		} else {
-//			viewholder.mLayout
-//					.setBackgroundResource(R.drawable.week_item_selector);
-//		}
-//
-//		if (items != null && items.contains(everyDay)) { // 该位置表示当天
-//
-//			double expense = 0;
-//			double income = 0;
-//			for (Map<String, Object> iMap : mDataList) {
-//				long mDayDate = (Long) iMap.get("dateTime");
-//				String mDayDateString = df.format(mDayDate);
-//
-//				if (mDayDateString.equals(everyDay)) {
-//					expense = (Double) iMap.get("expense");
-//					income = (Double) iMap.get("income");
-//				}
-//			}
-//
-//			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
-//					+ ""));
-//			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
-//					+ ""));
-//
-//		} else {
-//			viewholder.expenseTextView.setText("");
-//			viewholder.incomeTextView.setText("");
-//
-//		}
+		if (everyDay.equals(checkDate)) {
+			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
+		} else {
+			viewholder.mLayout
+					.setBackgroundResource(R.color.lightgray);
+		}
+
+		if (items != null && items.contains(everyDay)) { // 该位置表示当天
+
+			for (Map<String, Object> iMap : mDataList) {
+				long mDayDate = (Long) iMap.get("dateTime");
+				String mDayDateString = df.format(mDayDate);
+				int never = (Integer) iMap.get("never");
+				int part = (Integer) iMap.get("part");
+				int all = (Integer) iMap.get("all");
+				
+				if (mDayDateString.equals(everyDay)) {
+					Log.v("mtest", "never"+never);
+					Log.v("mtest", "all"+all);
+
+				}
+			}
+
+		} else {
+
+		}
+		
 		return convertView;
 	}
 
 	public class ViewHolder {
 		RelativeLayout mLayout;
 		TextView dayView;
-		TextView expenseTextView;
-		TextView incomeTextView;
 	}
 
 	public static String turnToDate(long mills) {

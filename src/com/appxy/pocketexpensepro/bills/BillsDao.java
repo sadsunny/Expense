@@ -42,7 +42,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*, Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a._id = "+id+" and ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
+		String sql = "select a.*, b.*, Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a._id = "+id+" and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -92,7 +92,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+endTime+ " and ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
+		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+endTime+ " and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -141,7 +141,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*, Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where ep_recurringType > 0 and a.billRuleHasCategory = b._id ";
+		String sql = "select a.*, b.*, Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_recurringType > 0 and a.billRuleHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -188,7 +188,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <="+endTime+ " and ep_recurringType > 0 and a.billItemHasCategory = b._id ";
+		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <="+endTime+ " and a.billItemHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -237,5 +237,88 @@ public class BillsDao {
 		db.close();
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectTransactionByBillRuleId(Context context, int id) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName from 'Transaction' a, Accounts b where a.transactionHasBillRule = "+ id +" and a.expenseAccount = b._id";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int expenseAccount = mCursor.getInt(3);
+            String accName = mCursor.getString(4);
+            
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("accName", accName);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static List<Map<String, Object>> selectTransactionByBillItemId(Context context, int id) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName  from 'Transaction' a, Accounts b where a.transactionHasBillItem = "+ id +" and a.expenseAccount = b._id";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int expenseAccount = mCursor.getInt(3);
+            String accName = mCursor.getString(4);
+            
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("accName", accName);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	public static long insertTransactionRule(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillRule) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("expenseAccount", expenseAccount);
+		cv.put("transactionHasBillRule", transactionHasBillRule);
+		long row = db.insert("'Transaction'", null, cv);
+		db.close();
+		return row;
+	}
+	
+	public static long insertTransactionItem(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillItem) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("expenseAccount", expenseAccount);
+		cv.put("transactionHasBillItem", transactionHasBillItem);
+		long row = db.insert("'Transaction'", null, cv);
+		db.close();
+		return row;
+	}
+	
 	
 }

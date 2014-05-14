@@ -166,7 +166,7 @@ public class MainActivity extends FragmentActivity implements
 		calendar2.set(Calendar.MINUTE, 0);
 		calendar2.set(Calendar.SECOND, 0);
 		calendar2.set(Calendar.MILLISECOND, 0);
-		calendar2.set(Calendar.DAY_OF_MONTH, 1);
+//		calendar2.set(Calendar.DAY_OF_MONTH, 1);
 		this.selectedMonth = calendar2.getTimeInMillis();
 
 	}
@@ -533,7 +533,6 @@ public class MainActivity extends FragmentActivity implements
          overViewNavigationListAdapter.notifyDataSetChanged();
 		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener)(billsFragmentMonth);
 		onActivityToBillListener.OnActivityToBill();
-		
 		
 	}
 	

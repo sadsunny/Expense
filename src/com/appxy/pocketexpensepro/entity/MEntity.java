@@ -5,14 +5,50 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
 
 import android.R.integer;
+import android.content.Context;
 import android.util.Log;
 
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
+
+	public static class MapComparator implements
+			Comparator<Map<String, Object>> {
+		@Override
+		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+			// TODO Auto-generated method stub
+			long due1 = (Long) o1.get("ep_billDueDate");
+			long due2 = (Long) o2.get("ep_billDueDate");
+			if (due1 > due2) {
+				return 1;
+			} else if (due1 < due2) {
+				return -1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	
+	 /** 
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素) 
+     */  
+    public static int dip2px(Context context, float dpValue) {  
+        final float scale = context.getResources().getDisplayMetrics().density;  
+        return (int) (dpValue * scale + 0.5f);  
+    }  
+
+	public static String turnToDateString(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
 
 	public static String doublepoint2str(String num) {
 		BigDecimal bg = new BigDecimal(num);
@@ -202,10 +238,10 @@ public class MEntity {
 
 		Calendar calendar2 = Calendar.getInstance();
 		calendar2.setTimeInMillis(month);
-		
+
 		int beginYear = calendar.get(Calendar.YEAR);
 		int beginMonth = calendar.get(Calendar.MONTH);
-		
+
 		int endYear = calendar2.get(Calendar.YEAR);
 		int endMonth = calendar2.get(Calendar.MONTH);
 
@@ -220,9 +256,9 @@ public class MEntity {
 				calendar.add(Calendar.MONTH, -3);
 			}
 		}
-		
-		 beginMonth = calendar.get(Calendar.MONTH);
-		
+
+		beginMonth = calendar.get(Calendar.MONTH);
+
 		int offset = ((endYear - beginYear) * 12 + (endMonth - beginMonth)) / 7;
 
 		return offset;

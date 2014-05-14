@@ -1,11 +1,16 @@
 package com.appxy.pocketexpensepro.bills;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
@@ -32,11 +37,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class BillsFragmentMonth extends Fragment implements OnActivityToBillListener{
+public class BillsFragmentMonth extends Fragment implements
+		OnActivityToBillListener {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
-	
+
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
 	private FragmentActivity mActivity;
@@ -46,16 +52,29 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 	private BillMonthViewPagerAdapter billMonthViewPagerAdapter;
 	public Calendar month;
 	private CalendarGridViewAdapter calendarGridViewAdapter;
-	private Thread mThread; 
+	private Thread mThread;
 	private OnBillToActivityListener onBillToActivityListener;
+	private List<Map<String, Object>> mDateList;
+	private List<Map<String, Object>> mCalendartList;
+	private BillListViewAdapter billListViewAdapter;
+	private List<Map<String, Object>> mListViewData;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
-				Log.v("mtest", "bill time MSG_SUCCESS"+MEntity.turnMilltoMonthYear(MainActivity.selectedMonth));
+				Log.v("mtest",
+						"bill time MSG_SUCCESS"
+								+ MEntity
+										.turnMilltoMonthYear(MainActivity.selectedMonth));
 				calendarGridViewAdapter.setMonth(month);
+				calendarGridViewAdapter.setDataList(mCalendartList);
 				calendarGridViewAdapter.notifyDataSetChanged();
+				
+				getListviewData(MainActivity.selectedMonth, mDateList);
+				billListViewAdapter.setAdapterDate(mListViewData);
+				billListViewAdapter.notifyDataSetChanged();
+				
 				break;
 
 			case MSG_FAILURE:
@@ -65,7 +84,7 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 			}
 		}
 	};
-	
+
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
@@ -79,7 +98,9 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		month = (Calendar) Calendar.getInstance();
-		onBillToActivityListener = (OnBillToActivityListener)mActivity;
+		onBillToActivityListener = (OnBillToActivityListener) mActivity;
+		mCalendartList = new ArrayList<Map<String, Object>>();
+		mListViewData = new ArrayList<Map<String, Object>>();
 	}
 
 	@Override
@@ -91,7 +112,9 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
 		mGridView = (GridView) view.findViewById(R.id.mGridview);
 		mListView = (ListView) view.findViewById(R.id.mListView);
-
+		billListViewAdapter = new BillListViewAdapter(mActivity);
+		mListView.setAdapter(billListViewAdapter);
+		
 		month.setTimeInMillis(MainActivity.selectedMonth);
 		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
 		mGridView.setAdapter(calendarGridViewAdapter);
@@ -101,36 +124,48 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 			public void onItemClick(AdapterView<?> paramAdapterView,
 					View paramView, int paramInt, long paramLong) {
 				// TODO Auto-generated method stub
-				long mChooseTime = getMilltoDate(calendarGridViewAdapter.getDayString()
-						.get(paramInt));
-				Log.v("mtest", "mChooseTime"+MEntity.getMilltoDate(mChooseTime));
+				long mChooseTime = getMilltoDate(calendarGridViewAdapter
+						.getDayString().get(paramInt));
+				Log.v("mtest",
+						"mChooseTime" + MEntity.getMilltoDate(mChooseTime));
+
+				calendarGridViewAdapter.setCheckDat(mChooseTime);
+				calendarGridViewAdapter.notifyDataSetChanged();
 				
+				getListviewData(mChooseTime, mDateList);
+				billListViewAdapter.setAdapterDate(mListViewData);
+				billListViewAdapter.notifyDataSetChanged();
 			}
 		});
-		
+
 		billMonthViewPagerAdapter = new BillMonthViewPagerAdapter(
 				mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(billMonthViewPagerAdapter);
-		
-		Log.v("mtest", "重新获取的日期"+MEntity.turnMilltoMonthYear(MainActivity.selectedMonth));
+
+		Log.v("mtest",
+				"重新获取的日期"
+						+ MEntity
+								.turnMilltoMonthYear(MainActivity.selectedMonth));
 		int mOffset = MEntity.getOffsetByMonth(MainActivity.selectedMonth);
-		Log.v("mtest", "重新获取的mOffset"+mOffset);
-		mViewPager.setCurrentItem(MID_VALUE+mOffset);
-		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		Log.v("mtest", "重新获取的mOffset" + mOffset);
+		mViewPager.setCurrentItem(MID_VALUE + mOffset);
+		mViewPager
+				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						if (position == MID_VALUE) {
-							
+
 							Calendar calendar1 = Calendar.getInstance();
 							calendar1.set(Calendar.HOUR_OF_DAY, 0);
 							calendar1.set(Calendar.MINUTE, 0);
 							calendar1.set(Calendar.SECOND, 0);
 							calendar1.set(Calendar.MILLISECOND, 0);
-							calendar1.set(Calendar.DAY_OF_MONTH, 1);
-							MainActivity.selectedMonth = calendar1.getTimeInMillis();
+							MainActivity.selectedMonth = calendar1
+									.getTimeInMillis();
 						} else {
 							int offset = position - MID_VALUE;
-							MainActivity.selectedMonth = MEntity.getFirstMonthByOffset(offset);
+							MainActivity.selectedMonth = MEntity
+									.getFirstMonthByOffset(offset);
 						}
 						onBillToActivityListener.OnBillToActivity();
 					}
@@ -153,30 +188,164 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 						}
 					}
 				});
-		
-		
+
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
-		}else {
+		} else {
 			mHandler.post(mTask);
 		}
 
 		return view;
 	}
-	
+
 	public Runnable mTask = new Runnable() {
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			calendarGridViewAdapter.setCheckDat(1);
-			month.setTimeInMillis(MainActivity.selectedMonth);
-			
+			long thSelectedTime = MainActivity.selectedMonth;
+			calendarGridViewAdapter.setCheckDat(thSelectedTime);
+			month.setTimeInMillis(thSelectedTime);
+			mDateList = RecurringEventBE.recurringData(mActivity,
+					MEntity.getFirstDayOfMonthMillis(thSelectedTime),
+					MEntity.getLastDayOfMonthMillis(thSelectedTime));
+			judgePayment(mDateList);
+
+			mCalendartList.clear();
+			ArrayList<Long> mTemlist = new ArrayList<Long>();
+
+			for (Map<String, Object> mMap : mDateList) {
+				long dateTime = (Long) mMap.get("ep_billDueDate");
+				mTemlist.add(dateTime);
+			}
+			Iterator<Long> it1 = mTemlist.iterator();
+			Map<Long, Long> msp = new TreeMap<Long, Long>();
+
+			while (it1.hasNext()) {
+				long obj = it1.next();
+				msp.put(obj, obj);
+			}
+			Iterator<Long> it2 = msp.keySet().iterator();
+
+			while (it2.hasNext()) {
+				Map<String, Object> mMap = new HashMap<String, Object>();
+				mMap.put("dateTime", (Long) it2.next());
+				mCalendartList.add(mMap);
+			}
+
+			for (Map<String, Object> iMap : mCalendartList) {
+				long dayTime = (Long) iMap.get("dateTime");
+				int never = 0;
+				int part = 0;
+				int all = 0;
+
+				for (Map<String, Object> mMap : mDateList) {
+					long dateTime = (Long) mMap.get("ep_billDueDate");
+					int payState = (Integer) mMap.get("payState");
+
+					if (dayTime == dateTime) {
+
+						if (payState == 0) {
+							never = 1;
+						} else if (payState == 1) {
+							part = 1;
+						} else if (payState == 2) {
+							all = 1;
+						}
+
+					}
+				}
+
+				iMap.put("never", never);
+				iMap.put("part", part);
+				iMap.put("all", all);
+
+			}
+
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
 	
+	public void getListviewData(long selectedGridDate,List<Map<String, Object>> dataList) {
+		mListViewData.clear();
+		for(Map<String, Object> bMap:dataList){ 
+	   		long mbillduedate = (Long) bMap.get("ep_billDueDate");
+	   		
+	   		if (selectedGridDate == mbillduedate) {
+		        
+		        mListViewData.add(bMap);
+			}
+	   	 }
+	}
+
+	public void judgePayment(List<Map<String, Object>> dataList) {
+
+		for (Map<String, Object> iMap : dataList) {
+
+			int _id = (Integer) iMap.get("_id");
+			String ep_billAmount = (String) iMap.get("ep_billAmount");
+			int indexflag = (Integer) iMap.get("indexflag");
+			BigDecimal b0 = new BigDecimal(ep_billAmount);
+
+			if (indexflag == 0 || indexflag == 1) {
+
+				List<Map<String, Object>> pDataList = BillsDao
+						.selectTransactionByBillRuleId(mActivity, _id);
+				BigDecimal b1 = new BigDecimal(0.0); // pay的总额
+				for (Map<String, Object> pMap : pDataList) {
+					String pAmount = (String) pMap.get("amount");
+					BigDecimal b2 = new BigDecimal(pAmount);
+					b1 = b1.add(b2);
+				}
+				double remain = (b1.subtract(b0)).doubleValue();
+				double payTotal = b1.doubleValue();
+				if (payTotal > 0) {
+
+					if (remain >= 0) {
+						iMap.put("payState", 2);// 全部支付
+					} else {
+						iMap.put("payState", 1);// 部分支付
+					}
+
+				} else {
+					iMap.put("payState", 0);// 完全未支付
+				}
+
+			} else if (indexflag == 2) {
+
+				iMap.put("payState", 0);
+
+			}
+			if (indexflag == 3) {
+
+				List<Map<String, Object>> pDataList = BillsDao
+						.selectTransactionByBillItemId(mActivity, _id);
+				BigDecimal b1 = new BigDecimal(0.0); // pay的总额
+				for (Map<String, Object> pMap : pDataList) {
+					String pAmount = (String) pMap.get("amount");
+					BigDecimal b2 = new BigDecimal(pAmount);
+					b1 = b1.add(b2);
+				}
+				double remain = (b1.subtract(b0)).doubleValue();
+				double payTotal = b1.doubleValue();
+				if (payTotal > 0) {
+
+					if (remain >= 0) {
+						iMap.put("payState", 2);
+					} else {
+						iMap.put("payState", 1);
+					}
+
+				} else {
+					iMap.put("payState", 0);
+				}
+			}
+
+		}
+
+	}
+
 	public long getMilltoDate(String date) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar calendar = Calendar.getInstance();
@@ -210,11 +379,6 @@ public class BillsFragmentMonth extends Fragment implements OnActivityToBillList
 	public void OnActivityToBill() {
 		// TODO Auto-generated method stub
 		mHandler.post(mTask);
-//		month.setTimeInMillis(MainActivity.selectedMonth);
-//		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
-//		mGridView.setAdapter(calendarGridViewAdapter);
-//		Log.v("mtest", "bill");
-//		Log.v("mtest", "bill time"+MEntity.turnMilltoMonthYear(MainActivity.selectedMonth));
 	}
 
 }

@@ -21,6 +21,7 @@ public class RecurringEventBE {
 
 	public static List<Map<String, Object>> recurringData(Context context,
 			long start, long end) { // 重复事件的模板处理，生成虚拟事件(根据日期段)
+		 long a = System.currentTimeMillis();
 		List<Map<String, Object>> finalDataList = new ArrayList<Map<String, Object>>();
 
 		List<Map<String, Object>> tDataList = BillsDao.selectTemplateBillRuleByBE(context);
@@ -336,7 +337,9 @@ public class RecurringEventBE {
 		List<Map<String, Object>> mOrdinaryList = BillsDao.selectOrdinaryBillRuleByBE(context, start, end);
 		finalDataList.addAll(mOrdinaryList);
 		// Log.v("mtest", "finalDataList的大小"+finalDataList.size());
-
+		long b = System.currentTimeMillis();
+		Log.v("mtest", "算法耗时"+(b-a));
+		
 		return finalDataList;
 	}
 

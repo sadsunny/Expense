@@ -240,6 +240,7 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 			msp.put(obj, obj);
 		}
 		Iterator<Long> it2 = msp.keySet().iterator();
+		
 		while (it2.hasNext()) {
 			Map<String, Object> mMap = new HashMap<String, Object>();
 			mMap.put("dateTime", (Long) it2.next());

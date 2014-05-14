@@ -107,7 +107,8 @@ public class CreatBillsActivity extends Activity {
 	private Button remindAtButton;
 
 	private int recurringType = 0;// 0 表示没有重复 only once
-	private long endDate = -1;
+	private long endDate;
+	private int isForever = 1;
 	private int recurringTypeSelectPosition = 0;
 	private int isForverSelectPosition = 0;
 	private int temRecurringType = 0;
@@ -313,8 +314,14 @@ public class CreatBillsActivity extends Activity {
 							}).show();
 					
 				}else{
+					long lastDate = -1;
+					if(isForever == 1){
+						lastDate = -1;
+					}else{
+						lastDate = endDate;
+					}
 					
-					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, endDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
+					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
 					Log.v("mtest","payeeId"+payeeId);
 					finish();
 				}
@@ -732,9 +739,10 @@ public class CreatBillsActivity extends Activity {
 								temIsForverSelectPosition = arg2;
 								if (arg2 == 0) {
 									untilButton.setVisibility(View.INVISIBLE);
-									endDate = -1;
+									isForever = 1;
 								} else {
 									untilButton.setVisibility(View.VISIBLE);
+									isForever = 0;
 								}
 
 							}
@@ -1055,7 +1063,7 @@ public class CreatBillsActivity extends Activity {
 
 		Calendar c = Calendar.getInstance();
 		try {
-			c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(dateString));
+			c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(mdateString));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

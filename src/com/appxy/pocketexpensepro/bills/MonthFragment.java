@@ -56,9 +56,10 @@ public class MonthFragment extends Fragment {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
+				Log.v("mtest", "mDataList"+position+mDataList);
 				if (mDataList != null) {
 					mAdapter.setDate(mDataList);
-					mAdapter.setChoosedTime(MainActivity.selectedMonth);
+					mAdapter.setChoosedTime(MEntity.getFirstDayOfMonthMillis(MainActivity.selectedMonth));
 					mAdapter.notifyDataSetChanged();
 				}
 
@@ -89,8 +90,10 @@ public class MonthFragment extends Fragment {
 			if (mThread == null) {
 				mThread = new Thread(mTask);
 				mThread.start();
+				Log.v("mtest", "11"+position);
 			} else {
 				mHandler.post(mTask);
+				Log.v("mtest", "22"+position);
 			}
 		}
 
@@ -115,10 +118,30 @@ public class MonthFragment extends Fragment {
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		mInflater = inflater;
+		
+		
 		View view = inflater.inflate(R.layout.fragment_bill_month_view,
 				container, false);
+		
+		long firstMonth = MEntity.getFirstMonthByOffset(offset);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(firstMonth);
+
+		List<Map<String, Object>> mDataList1 = new ArrayList<Map<String, Object>>();
+		for (int i = 0; i < 7; i++) {
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			long firstDayOfMonth = calendar.getTimeInMillis();
+			mMap.put("monthTime", firstDayOfMonth);
+			mMap.put("count", 0);
+
+			calendar.add(Calendar.MONTH, 1);
+			mDataList1.add(mMap);
+		}
+		
 		mGridView = (GridView) view.findViewById(R.id.mGridView);
 		mAdapter = new GridViewAdapter(mActivity);
+		mAdapter.setDate(mDataList1);
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(mListener);
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
@@ -128,18 +151,11 @@ public class MonthFragment extends Fragment {
 					long arg3) {
 				// TODO Auto-generated method stub
 				MainActivity.selectedMonth = (Long) mDataList.get(arg2).get("monthTime");
-				Log.v("mtest", "mGridView time"+MEntity.turnMilltoMonthYear((Long) mDataList.get(arg2).get("monthTime")));
 				mAdapter.setChoosedTime((Long) mDataList.get(arg2).get("monthTime"));
 				mAdapter.notifyDataSetChanged();
 				onBillToActivityListener.OnBillToActivity();
 			}
 		});
-
-		if (mThread == null) {
-			mThread = new Thread(mTask);
-			mThread.start();
-		}
-
 		return view;
 	}
 
@@ -167,9 +183,14 @@ public class MonthFragment extends Fragment {
 			long firstMonth = MEntity.getFirstMonthByOffset(offset);
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(firstMonth);
-
-			mDataList.clear();
-
+			
+			
+			if (mDataList == null) {
+				mDataList = new ArrayList<Map<String, Object>>();
+			} else {
+				mDataList.clear();
+			}
+			
 			for (int i = 0; i < 7; i++) {
 				Map<String, Object> mMap = new HashMap<String, Object>();
 
@@ -179,13 +200,12 @@ public class MonthFragment extends Fragment {
 
 				mMap.put("monthTime", firstDayOfMonth);
 
-				List<Map<String, Object>> mTemList = RecurringEventBE.recurringData(mActivity, firstDayOfMonth, lastDayOfMonth);
+				List<Map<String, Object>> mTemList = RecurringOnlyCount.recurringData(mActivity, firstDayOfMonth, lastDayOfMonth);
 				mMap.put("count", mTemList.size());
 
 				calendar.add(Calendar.MONTH, 1);
 				mDataList.add(mMap);
 			}
-
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
