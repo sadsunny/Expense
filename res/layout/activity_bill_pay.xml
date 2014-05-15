@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/optional_label2"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:text="@string/amount_label" />
+
+        <EditText
+            android:id="@+id/amount_edit"
+            style="@style/TextAppearance.EditEvent_Value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="100"
+            android:inputType="number"
+            android:maxLength="13"
+            android:minHeight="48dip"
+            android:singleLine="true"
+            android:text="@string/zero_label" >
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/account_label"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:text="@string/account_label" />
+
+        <Button
+            android:id="@+id/account_btn"
+            style="@style/TextAppearance.EditEvent_SpinnerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-12dip"
+            android:gravity="left|center_vertical"
+            android:hint="@string/account" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/paydate_label"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:text="@string/pay_date" />
+
+        <Button
+            android:id="@+id/paydate_btn"
+            style="@style/TextAppearance.EditEvent_SpinnerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-12dip"
+            android:gravity="left|center_vertical"
+            />
+    </LinearLayout>
+
+</LinearLayout>

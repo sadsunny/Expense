@@ -114,6 +114,7 @@ public class BillsFragmentMonth extends Fragment implements
 		mListView = (ListView) view.findViewById(R.id.mListView);
 		billListViewAdapter = new BillListViewAdapter(mActivity);
 		mListView.setAdapter(billListViewAdapter);
+		mListView.setDividerHeight(0);
 		
 		month.setTimeInMillis(MainActivity.selectedMonth);
 		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
@@ -142,15 +143,10 @@ public class BillsFragmentMonth extends Fragment implements
 				mActivity.getSupportFragmentManager());
 		mViewPager.setAdapter(billMonthViewPagerAdapter);
 
-		Log.v("mtest",
-				"重新获取的日期"
-						+ MEntity
-								.turnMilltoMonthYear(MainActivity.selectedMonth));
 		int mOffset = MEntity.getOffsetByMonth(MainActivity.selectedMonth);
 		Log.v("mtest", "重新获取的mOffset" + mOffset);
 		mViewPager.setCurrentItem(MID_VALUE + mOffset);
-		mViewPager
-				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						if (position == MID_VALUE) {
@@ -358,6 +354,23 @@ public class BillsFragmentMonth extends Fragment implements
 		}
 		return calendar.getTimeInMillis();
 	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 8:
+
+			if (data != null) {
+				mHandler.post(mTask);
+				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE);
+				monthFragment.refresh();
+			}
+			break;
+		}
+	}
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -379,6 +392,7 @@ public class BillsFragmentMonth extends Fragment implements
 	public void OnActivityToBill() {
 		// TODO Auto-generated method stub
 		mHandler.post(mTask);
+		
 	}
 
 }

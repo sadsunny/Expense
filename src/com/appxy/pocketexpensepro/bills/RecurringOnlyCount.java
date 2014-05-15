@@ -292,7 +292,7 @@ public class RecurringOnlyCount {
 
 			for (Map<String, Object> oMap : oDataList) {
 
-				int cbill_id = (Integer) oMap.get("_id");
+				int cbill_id = (Integer) oMap.get("billItemHasBillRule");
 				long cdue_date = (Long) oMap.get("ep_billDueDate");
 				int bk_billsDelete = (Integer) oMap.get("ep_billisDelete");
 

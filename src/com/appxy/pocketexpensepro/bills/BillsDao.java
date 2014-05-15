@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class BillsDao {
 	public static SQLiteDatabase getConnection(Context context) {
@@ -19,6 +20,30 @@ public class BillsDao {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		return db;
 	}
+	
+	public static long insertBillItem(Context context, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
+			long ep_billItemDueDateNew, long ep_billItemEndDate, String ep_billItemName,String ep_billItemNote, int ep_billItemRecurringType, 
+			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("ep_billItemAmount", ep_billItemAmount);
+		cv.put("ep_billisDelete", ep_billisDelete);
+		cv.put("ep_billItemDueDate", ep_billItemDueDate);
+		cv.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
+		cv.put("ep_billItemEndDate", ep_billItemEndDate);
+		cv.put("ep_billItemName", ep_billItemName);
+		cv.put("ep_billItemNote", ep_billItemNote);
+		cv.put("ep_billItemRecurringType", ep_billItemRecurringType);
+		cv.put("ep_billItemReminderDate", ep_billItemReminderDate);
+		cv.put("ep_billItemReminderTime", ep_billItemReminderTime);
+		cv.put("billItemHasBillRule", billItemHasBillRule);
+		cv.put("billItemHasCategory", billItemHasCategory);
+		cv.put("billItemHasPayee", billItemHasPayee);
+		long row = db.insert("EP_BillItem", null, cv);
+		db.close();
+		return row;
+	}
+	
 
 	public static long insertBillRule(Context context, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee) {
 		SQLiteDatabase db = getConnection(context);
@@ -176,6 +201,7 @@ public class BillsDao {
 			mMap.put("categoryName", categoryName);
 			mMap.put("iconName", iconName);
 			mMap.put("payee_nameString", payee_nameString);
+			mMap.put("indexflag", 1);
 			
 			mList.add(mMap);
 		}

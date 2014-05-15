@@ -129,11 +129,6 @@ public class MainActivity extends FragmentActivity implements
 		mBillsLinearLayout.setOnClickListener(mClickListener);
 
 		mDrawerLayout.closeDrawer(mLinearLayout);
-		// overviewFragment = new OverviewFragment();
-		// FragmentTransaction fragmentTransaction1 = fragmentManager
-		// .beginTransaction();
-		// fragmentTransaction1.replace(R.id.content_frame, overviewFragment);
-		// fragmentTransaction1.commit();
 
 		Calendar calendar = Calendar.getInstance();
 		long todayLong = calendar.getTimeInMillis();
@@ -319,31 +314,31 @@ public class MainActivity extends FragmentActivity implements
 				if (mItemPosition == 3) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
+					
+					Calendar calendar2 = Calendar.getInstance();
+					calendar2.set(Calendar.HOUR_OF_DAY, 0);
+					calendar2.set(Calendar.MINUTE, 0);
+					calendar2.set(Calendar.SECOND, 0);
+					calendar2.set(Calendar.MILLISECOND, 0);
+					MainActivity.selectedMonth = calendar2.getTimeInMillis();
+					
 					mDrawerLayout.closeDrawer(mLinearLayout);
-					billsFragmentMonth = new BillsFragmentMonth();
-					FragmentTransaction fragmentTransaction4 = fragmentManager
-							.beginTransaction();
-					fragmentTransaction4.replace(R.id.content_frame,
-							billsFragmentMonth);
-					fragmentTransaction4.commit();
 
 					actionBar.setDisplayHomeAsUpEnabled(true);
 					actionBar.setDisplayShowTitleEnabled(false);
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 					overViewNavigationListAdapter.setChoosed(0);
 					overViewNavigationListAdapter.setTitle("Bills      ");
-					overViewNavigationListAdapter
-							.setSubTitle(turnToDate(MainActivity.selectedMonth));
+					overViewNavigationListAdapter.setSubTitle(turnToDate(MainActivity.selectedMonth));
 					List<String> billStrings = new ArrayList<String>();
 					billStrings.add("ListView                 ");
 					billStrings.add("CalendarView              ");
 					overViewNavigationListAdapter.setDownItemData(billStrings);
-					actionBar.setListNavigationCallbacks(
-							overViewNavigationListAdapter,
-							new BillsDropDownListenser());
-
+					actionBar.setListNavigationCallbacks(overViewNavigationListAdapter,new BillsDropDownListenser());
 					mItemPosition = 3;
+					
 				}
+				
 				break;
 			default:
 				break;
@@ -377,9 +372,26 @@ public class MainActivity extends FragmentActivity implements
 
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
-
+				BillsFragment billsFragment = new BillsFragment();
+				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,billsFragment);
+				fragmentTransaction.commit();
+				
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(false);
+				
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
+				
+				billsFragmentMonth = new BillsFragmentMonth();
+				FragmentTransaction fragmentTransaction4 = fragmentManager
+						.beginTransaction();
+				fragmentTransaction4.replace(R.id.content_frame,
+						billsFragmentMonth);
+				fragmentTransaction4.commit();
+				
+				actionBar.setDisplayHomeAsUpEnabled(true);
+				actionBar.setDisplayShowTitleEnabled(false);
 			}
 			overViewNavigationListAdapter.notifyDataSetChanged();
 			return false;

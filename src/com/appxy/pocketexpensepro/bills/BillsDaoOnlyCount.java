@@ -72,12 +72,13 @@ public class BillsDaoOnlyCount {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.ep_billisDelete, a.ep_billItemDueDate, a.ep_billItemDueDateNew, a.ep_billItemEndDate, a.billItemHasBillRule  from EP_BillItem a where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <= "+endTime;
+		String sql = "select a.ep_billisDelete, a.ep_billItemDueDate, a.ep_billItemDueDateNew, a.ep_billItemEndDate, a.billItemHasBillRule, a._id  from EP_BillItem a where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <= "+endTime;
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
 			Map<String, Object> mMap = new HashMap<String, Object>();
-
+			
+			
 			int ep_billisDelete = mCursor.getInt(0);
 			long ep_billDueDate = mCursor.getLong(1);
 			long ep_billItemDueDateNew = mCursor.getLong(2);

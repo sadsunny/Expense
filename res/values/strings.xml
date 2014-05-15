@@ -87,5 +87,7 @@
     <string name="from_budget">FROM BUDGET</string>
     <string name="to_budget">TO BUDGET</string>
     <string name="edit_budget">Edit Budget</string>
+    <string name="bill_details">Bill Details</string>
+     <string name="pay_date">PAYMENT DATE</string>
 
 </resources>

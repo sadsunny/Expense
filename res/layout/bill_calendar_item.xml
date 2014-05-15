@@ -31,10 +31,11 @@
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="3dp"
             myView:background="@color/bill_red"
+             android:visibility="invisible"
             />
         
         <com.appxy.pocketexpensepro.CircleView
-            android:id="@+id/ring_green"
+            android:id="@+id/circle_green"
             android:layout_width="10dp"
             android:layout_height="10dp"
             android:layout_alignParentBottom="true"
@@ -42,7 +43,7 @@
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="3dp"
             myView:background="@color/bill_green"
-            
+             android:visibility="invisible"
             />
         
         <com.appxy.pocketexpensepro.RingView
@@ -53,7 +54,7 @@
             android:layout_above="@+id/circle_red"
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="3dp"
-            
+             android:visibility="invisible"
             />
         
         <com.appxy.pocketexpensepro.CircleView
@@ -63,7 +64,9 @@
             android:layout_alignBottom="@+id/ring_green"
             android:layout_toRightOf="@+id/ring_green"
              android:layout_marginLeft="3dp"
-            myView:background="@color/bill_gray" />
+            myView:background="@color/bill_gray" 
+            android:visibility="invisible"/>
+        
         
 
         <View

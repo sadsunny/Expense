@@ -52,7 +52,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	private String checkDate;
 	private ArrayList<String> items;
     private int itemWidth;
-
+    private long todayTime;
+    
 	public CalendarGridViewAdapter(Context c, Calendar monthCalendar) {
 
 		this.dayString = new ArrayList<String>();
@@ -64,6 +65,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		refreshDays();
 		itemWidth = getWeekItemWidth();
 		this.items = new ArrayList<String>();
+		
+		todayTime = MEntity.getNowMillis();
 	}
 	
 	public void setMonth(Calendar monthCalendar) {
@@ -147,7 +150,15 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 					.findViewById(R.id.date_text);
 			viewholder.mLayout = (RelativeLayout) convertView
 					.findViewById(R.id.RelativeLayout1);
-
+			viewholder.neverDueView = (View) convertView
+					.findViewById(R.id.circle_red);
+			viewholder.allView = (View) convertView
+					.findViewById(R.id.circle_green);
+			viewholder.partView = (View) convertView
+					.findViewById(R.id.ring_green);
+			viewholder.neverView = (View) convertView
+					.findViewById(R.id.circle_gray);
+			
 			convertView.setTag(viewholder);
 		} else {
 			viewholder = (ViewHolder) convertView.getTag();
@@ -195,15 +206,41 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 				int all = (Integer) iMap.get("all");
 				
 				if (mDayDateString.equals(everyDay)) {
-					Log.v("mtest", "never"+never);
-					Log.v("mtest", "all"+all);
-
+					
+					if (never==1) {
+						if (mDayDate < todayTime) {
+							viewholder.neverDueView.setVisibility(View.VISIBLE);
+							viewholder.neverView.setVisibility(View.INVISIBLE);
+						} else {
+							viewholder.neverView.setVisibility(View.VISIBLE);
+							viewholder.neverDueView.setVisibility(View.INVISIBLE);
+						}
+					} else {
+						viewholder.neverDueView.setVisibility(View.INVISIBLE);
+						viewholder.neverView.setVisibility(View.INVISIBLE);
+					}
+					
+					if (part ==1 ) {
+						viewholder.partView.setVisibility(View.VISIBLE);
+					} else {
+						viewholder.partView.setVisibility(View.INVISIBLE);
+					}
+					
+					if (all == 1) {
+						viewholder.allView.setVisibility(View.VISIBLE);
+					} else {
+						viewholder.allView.setVisibility(View.INVISIBLE);
+					}
 				}
 			}
 
 		} else {
-
+			viewholder.neverDueView.setVisibility(View.INVISIBLE);
+			viewholder.allView.setVisibility(View.INVISIBLE);
+			viewholder.partView.setVisibility(View.INVISIBLE);
+			viewholder.neverView.setVisibility(View.INVISIBLE);
 		}
+		
 		
 		return convertView;
 	}
@@ -211,6 +248,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	public class ViewHolder {
 		RelativeLayout mLayout;
 		TextView dayView;
+		View neverDueView;
+		View allView;
+		View partView;
+		View neverView;
 	}
 
 	public static String turnToDate(long mills) {

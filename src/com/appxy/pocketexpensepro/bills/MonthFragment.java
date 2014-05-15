@@ -56,7 +56,6 @@ public class MonthFragment extends Fragment {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				Log.v("mtest", "mDataList"+position+mDataList);
 				if (mDataList != null) {
 					mAdapter.setDate(mDataList);
 					mAdapter.setChoosedTime(MEntity.getFirstDayOfMonthMillis(MainActivity.selectedMonth));
@@ -209,5 +208,9 @@ public class MonthFragment extends Fragment {
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
+	
+	public void refresh () {
+		mHandler.post(mTask);
+	}
 
 }

@@ -322,7 +322,11 @@ public class CreatBillsActivity extends Activity {
 					}
 					
 					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
-					Log.v("mtest","payeeId"+payeeId);
+					
+					Intent intent = new Intent();
+					intent.putExtra("_id", row);
+					setResult(8, intent);
+					
 					finish();
 				}
 				break;
