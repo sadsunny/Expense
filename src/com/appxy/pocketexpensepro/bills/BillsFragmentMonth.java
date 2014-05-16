@@ -116,7 +116,7 @@ public class BillsFragmentMonth extends Fragment implements
 		mListView.setAdapter(billListViewAdapter);
 		mListView.setDividerHeight(0);
 		
-		month.setTimeInMillis(MainActivity.selectedMonth);
+		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(MainActivity.selectedMonth));
 		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
 		mGridView.setAdapter(calendarGridViewAdapter);
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
@@ -202,7 +202,7 @@ public class BillsFragmentMonth extends Fragment implements
 			// TODO Auto-generated method stub
 			long thSelectedTime = MainActivity.selectedMonth;
 			calendarGridViewAdapter.setCheckDat(thSelectedTime);
-			month.setTimeInMillis(thSelectedTime);
+			month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(thSelectedTime));
 			mDateList = RecurringEventBE.recurringData(mActivity,
 					MEntity.getFirstDayOfMonthMillis(thSelectedTime),
 					MEntity.getLastDayOfMonthMillis(thSelectedTime));

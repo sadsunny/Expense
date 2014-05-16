@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -142,6 +141,7 @@ public class BillsFragment extends Fragment{
 			// TODO Auto-generated method stub
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -2);
+//			calendar.set(Calendar.YEAR, 1970);
 			long startDate = calendar.getTimeInMillis();
 			
 			long todayMills = MEntity.getNowMillis();
@@ -149,7 +149,6 @@ public class BillsFragment extends Fragment{
 			
 			List<Map<String, Object>> mList = RecurringEventBE.recurringData(mActivity, 0, endDate);
 			judgePayment(mList);
-			Log.v("mtest", "judgePayment执行过");
 			filterData(mList);
 			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
@@ -295,20 +294,16 @@ public class BillsFragment extends Fragment{
 			String ep_billAmount = (String) iMap.get("ep_billAmount");
 			int indexflag = (Integer) iMap.get("indexflag");
 			BigDecimal b0 = new BigDecimal(ep_billAmount);
-			Log.v("mtest", "判断pay里的 _id"+_id);
-			Log.v("mtest", "判断pay里的 indexflag"+indexflag);
 			
 			if (indexflag == 0 || indexflag == 1) {
 
 				List<Map<String, Object>> pDataList = BillsDao.selectTransactionByBillRuleId(mActivity, _id);
-				Log.v("mtest", "pDataList"+pDataList);
 				
 				BigDecimal b1 = new BigDecimal(0.0); // pay的总额
 				for (Map<String, Object> pMap : pDataList) {
 					String pAmount = (String) pMap.get("amount");
 					BigDecimal b2 = new BigDecimal(pAmount);
 					b1 = b1.add(b2);
-					Log.v("mtest", "pAmount"+pAmount);
 				}
 				double remain = (b1.subtract(b0)).doubleValue();
 				double payTotal = b1.doubleValue();

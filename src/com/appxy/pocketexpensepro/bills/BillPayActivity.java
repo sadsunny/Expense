@@ -316,10 +316,11 @@ public class BillPayActivity extends Activity{
 				int billItemHasPayee = (Integer) mMap.get("billRuleHasPayee");
 				
 				long row = BillsDao.insertBillItem(BillPayActivity.this, ep_billisDelete, ep_billItemAmount, ep_billItemDueDate, ep_billItemDueDateNew, ep_billItemEndDate, ep_billItemName, ep_billItemNote, ep_billItemRecurringType, ep_billItemReminderDate, ep_billItemReminderTime, billItemHasBillRule, billItemHasCategory, billItemHasPayee);
-				mMap.put("_id", row);
+				mMap.put("_id", (int)row);
 				mMap.put("ep_billisDelete", 0);
 				mMap.put("ep_billItemDueDateNew",ep_billItemDueDateNew);
 				mMap.put("billItemHasBillRule", _id);
+				mMap.put("indexflag", 3);
 				
 				long row1 = BillsDao.insertTransactionItem(BillPayActivity.this, amountString, dateLong, accountId, (int)row);
 				

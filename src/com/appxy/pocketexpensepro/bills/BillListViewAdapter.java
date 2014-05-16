@@ -63,7 +63,7 @@ public class BillListViewAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
-		ViewHolder viewholder = null;
+		ViewHolder viewholder;
 
 		if (convertView == null) {
 			viewholder = new ViewHolder();
@@ -93,7 +93,7 @@ public class BillListViewAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	public class ViewHolder {
+	private class ViewHolder {
 		public ImageView mIcon;
 		public TextView accountTextView;
 		public TextView dateTextView;

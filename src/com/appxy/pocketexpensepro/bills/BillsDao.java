@@ -268,7 +268,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName from 'Transaction' a, Accounts b where a.transactionHasBillRule = "+ id +" and a.expenseAccount = b._id";
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName, b.iconName  from 'Transaction' a, Accounts b where a.transactionHasBillRule = "+ id +" and a.expenseAccount = b._id";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			Map<String, Object> mMap = new HashMap<String, Object>();
@@ -278,13 +278,15 @@ public class BillsDao {
 			long dateTime = mCursor.getLong(2);
 			int expenseAccount = mCursor.getInt(3);
             String accName = mCursor.getString(4);
+            int iconName = mCursor.getInt(5);
             
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("accName", accName);
-
+			mMap.put("iconName", iconName);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -297,7 +299,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName  from 'Transaction' a, Accounts b where a.transactionHasBillItem = "+ id +" and a.expenseAccount = b._id";
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName, b.iconName  from 'Transaction' a, Accounts b where a.transactionHasBillItem = "+ id +" and a.expenseAccount = b._id";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			Map<String, Object> mMap = new HashMap<String, Object>();
@@ -307,12 +309,14 @@ public class BillsDao {
 			long dateTime = mCursor.getLong(2);
 			int expenseAccount = mCursor.getInt(3);
             String accName = mCursor.getString(4);
+            int iconName = mCursor.getInt(5);
             
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("accName", accName);
+			mMap.put("iconName", iconName);
 
 			mList.add(mMap);
 		}
