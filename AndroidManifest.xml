@@ -134,6 +134,11 @@
             android:label="@string/expense_label" >
         </activity>
         
+          <activity
+            android:name="com.appxy.pocketexpensepro.bills.BillEditActivity"
+            android:label="@string/expense_label" >
+        </activity>
+        
     </application>
 
 </manifest>

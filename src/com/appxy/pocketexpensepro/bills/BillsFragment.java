@@ -26,12 +26,17 @@ import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.R.integer;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,6 +63,9 @@ public class BillsFragment extends Fragment{
 	private List<List<Map<String, Object>>> childrenAllDataList;
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
+	private AlertDialog editDialog;
+	private ListView diaListView;
+	private DialogDeleteBillAdapter dialogEditBillAdapter ;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -141,7 +149,6 @@ public class BillsFragment extends Fragment{
 			// TODO Auto-generated method stub
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -2);
-//			calendar.set(Calendar.YEAR, 1970);
 			long startDate = calendar.getTimeInMillis();
 			
 			long todayMills = MEntity.getNowMillis();
@@ -198,15 +205,20 @@ public class BillsFragment extends Fragment{
 
 					int _id = (Integer) childrenAllDataList.get(groupPosition)
 							.get(childPosition).get("_id");
-
+					int indexflag = (Integer) childrenAllDataList.get(groupPosition)
+							.get(childPosition).get("indexflag");
+					Map<String, Object> mMap = childrenAllDataList.get(groupPosition).get(childPosition);
 					if (arg2 == 0) {
-						Map<String, Object> mMap = childrenAllDataList.get(groupPosition).get(childPosition);
-
+						Intent intent = new Intent();
+						intent.putExtra("dataMap",(Serializable)mMap);
+						intent.setClass(mActivity, BillEditActivity.class);
+						startActivityForResult(intent, 19);
+						
 						alertDialog.dismiss();
 						mHandler.post(mTask);
 
 					} else if (arg2 == 1) {
-						
+						judgementDialog(indexflag, _id, mMap);
 						alertDialog.dismiss();
 						mHandler.post(mTask);
 					}
@@ -222,6 +234,417 @@ public class BillsFragment extends Fragment{
 			return true;
 		}
 	};
+	
+	public void judgementDialog(int mFlag , int mId , Map<String, Object> mMap) { 
+
+		if (mFlag == 0) {
+
+			deleteThisBill(mFlag,mId,mMap);
+			mHandler.post(mTask);
+			
+		}else if (mFlag == 1) {
+
+			int temPaydate = judgeTemPayDate(mId);		
+			long firstPayDate = judgePayDate(mId);
+
+			if (temPaydate > 0) {
+				deleteThisBill(mFlag,mId,mMap);
+				mHandler.post(mTask);
+				
+			} else {
+
+				if (firstPayDate == 0) {
+
+					editDialogShow(mFlag,mId,mMap);
+
+				} else {
+
+					deleteThisBill(mFlag,mId,mMap);
+					mHandler.post(mTask);
+				}
+
+			}
+
+		}else if(mFlag == 2){
+			long firstPayDate = judgePayDate(mId);
+			long mbk_billDuedate = (Long)mMap.get("ep_billDueDate");
+			if (firstPayDate == 0) {
+				editDialogShow(mFlag,mId,mMap);
+			} else {
+
+				if (firstPayDate < mbk_billDuedate) {
+
+					editDialogShow(mFlag,mId,mMap);
+
+				} else {
+					deleteThisBill(mFlag,mId,mMap);
+					mHandler.post(mTask);
+				}
+
+			}
+
+		}else if(mFlag == 3){
+
+			if (mMap.containsKey("billItemHasBillRule")) {
+				int billo_id = (Integer)mMap.get("billItemHasBillRule");
+				long firstPayDate = judgePayDate(billo_id);
+				long mbk_billDuedate = (Long)mMap.get("ep_billDueDate");
+				
+				if (firstPayDate == 0) {
+					editDialogShow(mFlag,mId,mMap);
+				} else {
+
+					if (firstPayDate < mbk_billDuedate) {
+
+						editDialogShow(mFlag,mId,mMap);
+						
+					} else {
+						deleteThisBill(mFlag,mId,mMap);
+						mHandler.post(mTask);
+					}
+				}
+			}else {
+
+				deleteThisBill(mFlag,mId,mMap);
+				mHandler.post(mTask);
+		}
+
+		}
+	}
+	
+	public void editDialogShow(final int mFlag , final int mId , final Map<String, Object> mMap) {
+
+		View  dialogview = mInflater.inflate(R.layout.dialog_upcoming_item_operation,null); 
+		dialogEditBillAdapter = new DialogDeleteBillAdapter(mActivity);
+		diaListView = (ListView)dialogview.findViewById(R.id.dia_listview);
+		diaListView.setAdapter(dialogEditBillAdapter);
+		diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				if (arg2 == 0) {
+					
+					deleteThisBill(mFlag,mId,mMap);
+				    mHandler.post(mTask);
+					editDialog.dismiss();
+
+				} else if (arg2 == 1) {
+					deleteAllFuture(mFlag,mId,mMap);
+					mHandler.post(mTask);
+					editDialog.dismiss();
+				}
+			}
+
+		});
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Details");
+		builder.setView(dialogview);
+		editDialog = builder.create();
+		editDialog.show();
+	}
+	
+	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) { //dialog ɾ��ǰ�������¼�
+
+		if(mFlag == 1){
+			BillsDao.deleteBill(mActivity, theId);
+		}else if(mFlag == 2){
+
+			billVirtualFutuDelete(theId,mMap);
+
+		}else if (mFlag == 3) {
+			int billo_id =0 ;
+
+			if (mMap.containsKey("billObjecthasBill")) {
+				billo_id = (Integer)mMap.get("billObjecthasBill");
+			}else{
+				
+			}
+			billVirtualFutuDelete(billo_id,mMap);
+		}
+	}
+	
+	public long billVirtualFutuDelete(int rowid ,Map<String, Object> mMap){
+		
+		long row = 0;
+		long bk_billDuedate = (Long) mMap.get("ep_billDueDate"); // 相当于事件的开始日期
+		long bk_billEndDate = (Long) mMap.get("ep_billEndDate"); // 重复事件的截止日期
+		int bk_billRepeatType = (Integer) mMap.get("ep_recurringType");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(bk_billDuedate);
+		
+		if (bk_billRepeatType == 1) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-7);
+
+		} else if (bk_billRepeatType == 2) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-14);
+
+		} else if (bk_billRepeatType == 3) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-28);
+
+		} else if (bk_billRepeatType == 4) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-15);
+
+		} else if (bk_billRepeatType == 5) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -1);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -1 - 1);
+				} else {
+					calendar.add(Calendar.MONTH, -1);
+				}
+
+
+		} else if (bk_billRepeatType == 6) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -2);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -2 - 2);
+				} else {
+					calendar.add(Calendar.MONTH, -2);
+				}
+
+
+		} else if (bk_billRepeatType == 7) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -3);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -3 - 3);
+				} else {
+					calendar.add(Calendar.MONTH, -3);
+				}
+
+
+		} else if (bk_billRepeatType == 8) {
+
+				calendar.add(Calendar.YEAR, -1);
+
+		}
+		long nextDuedate = calendar.getTimeInMillis();
+		
+		if (nextDuedate > bk_billEndDate) { 
+
+			row =BillsDao.deleteBill(mActivity, rowid);
+
+		} else {
+
+			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
+			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+		}
+
+
+		long preDuedate = calendar.getTimeInMillis();
+
+		BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
+		return row;
+	}
+	
+	
+	public int judgeTemPayDate(int b_id) {
+
+		List<Map<String, Object>> mList = BillsDao.selectTransactionByBillRuleId(mActivity, b_id);
+		if (mList.size() > 0) {
+			return 1;
+		}else {
+			return 0;
+		}
+
+	}
+	
+	public long judgePayDate(int b_id) {
+
+		List<Map<String, Object>> dataList = BillsDao.selectBillItemByRuleId(mActivity, b_id);
+		
+		if (dataList.size() > 0) {
+			ArrayList<Long> OPayList = new ArrayList<Long>();
+			long reData = 0;
+			for (Map<String, Object> oMap:dataList) {
+				int Object_id = (Integer) oMap.get("_id");
+				long bk_billODueDate = (Long) oMap.get("ep_billDueDate");
+				List<Map<String, Object>> mList = BillsDao.selectTransactionByBillItemId(mActivity, Object_id);
+				
+				if (mList.size()  > 0) {
+					OPayList.add(bk_billODueDate);
+				} 
+			}
+			
+			if (OPayList.size()>0) {
+
+				long max = OPayList.get(0);
+				for (int i = 0; i < OPayList.size(); i++) {
+
+					if (OPayList.get(i)>max) {
+						max=OPayList.get(i);
+					} 
+
+				}
+				reData = max;
+			} else {
+				reData = 0;
+			}
+
+			return reData;
+
+		}else {
+			return 0;
+		}
+
+	}
+	
+	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
+
+		if (mFlag == 0) {
+			BillsDao.deleteBill(mActivity, theId);
+		} else if(mFlag == 1){
+			billParentDelete(theId,mMap);
+		}else if(mFlag == 2){
+			billVirtualThisDelete(theId,mMap);
+		}else if (mFlag == 3) {
+			BillsDao.deleteBillObject(mActivity, theId);
+		}
+
+	}
+	
+	public long billVirtualThisDelete(int rowid, Map<String, Object> mMap){
+		long ep_billItemDueDate = (Long)mMap.get("ep_billDueDate");
+		long row = BillsDao.insertBillItem(mActivity, 1, "1", ep_billItemDueDate,
+				ep_billItemDueDate, ep_billItemDueDate, " ", "",
+				1, 1, ep_billItemDueDate,
+				rowid, 1, 1);
+		return row;
+	}
+	
+	
+	
+	public long billParentDelete(int rowid, Map<String, Object> mMap){
+		
+		long row = 0;
+		long bk_billDuedate = (Long) mMap.get("ep_billDueDate"); // 相当于事件的开始日期
+		long bk_billEndDate = (Long) mMap.get("ep_billEndDate"); // 重复事件的截止日期
+		int bk_billRepeatType = (Integer) mMap.get("ep_recurringType");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(bk_billDuedate);
+		
+		if (bk_billRepeatType == 1) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+7);
+
+		} else if (bk_billRepeatType == 2) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+14);
+
+		} else if (bk_billRepeatType == 3) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+28);
+
+		} else if (bk_billRepeatType == 4) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+15);
+
+		} else if (bk_billRepeatType == 5) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 1);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 1 + 1);
+				} else {
+					calendar.add(Calendar.MONTH, 1);
+				}
+
+
+		} else if (bk_billRepeatType == 6) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 2);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 2 + 2);
+				} else {
+					calendar.add(Calendar.MONTH, 2);
+				}
+
+
+		} else if (bk_billRepeatType == 7) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 3);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 3 + 3);
+				} else {
+					calendar.add(Calendar.MONTH, 3);
+				}
+
+
+		} else if (bk_billRepeatType == 8) {
+
+				calendar.add(Calendar.YEAR, 1);
+
+		}
+		long nextDuedate = calendar.getTimeInMillis();
+		
+		if (nextDuedate > bk_billEndDate) { 
+
+			row =BillsDao.deleteBill(mActivity, rowid);
+
+		} else {
+
+			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
+			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+		}
+		return row;
+	}
+	
+	
 	
 	public void filterData(List<Map<String, Object>> mData) {
 		groupDataList.clear();

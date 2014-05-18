@@ -21,6 +21,80 @@ public class BillsDao {
 		return db;
 	}
 	
+	public static long deleteBillPayTransaction(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("'Transaction'", "transactionHasBillRule = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	
+	public static long updateBillDateRule(Context context, long _id, long ep_billDueDate) { 
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("ep_billDueDate", ep_billDueDate);
+		String mId = _id + "";
+		try {
+			long id = db
+					.update("EP_BillRule", cv, "_id = ?", new String[] { mId });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+	}
+	
+	public static long deleteBill(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("EP_BillRule", "_id = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	public static long deleteBillObject(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("EP_BillItem", "_id = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	public static long deleteBillObjectByAfterDate(Context context, long thisDate) {
+		SQLiteDatabase db = getConnection(context);
+		long row = 0;
+		try {
+			row = db.delete("EP_BillItem", "ep_billItemDueDate >= ?", new String[] { thisDate+"" });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	
+	
 	public static long insertBillItem(Context context, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
 			long ep_billItemDueDateNew, long ep_billItemEndDate, String ep_billItemName,String ep_billItemNote, int ep_billItemRecurringType, 
 			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee) {
@@ -263,6 +337,61 @@ public class BillsDao {
 		db.close();
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectBillItemByRuleId(Context context, int id) { // Bill特例事件查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.billItemHasBillRule = "+ id+ " and a.billItemHasCategory = b._id ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			int ep_billisDelete = mCursor.getInt(2);
+			String ep_billAmount = mCursor.getString(3);
+			long ep_billDueDate = mCursor.getLong(8);
+			long ep_billItemDueDateNew = mCursor.getLong(9);
+			long ep_billEndDate = mCursor.getLong(10);
+			String ep_billName = mCursor.getString(11);
+			String ep_note = mCursor.getString(12);
+			int ep_recurringType = mCursor.getInt(13);
+			int ep_reminderDate = mCursor.getInt(14);
+			long ep_reminderTime = mCursor.getLong(15);
+			int billItemHasBillRule = mCursor.getInt(20);
+			int billRuleHasCategory = mCursor.getInt(21);
+			int billRuleHasPayee = mCursor.getInt(22);
+			String categoryName = mCursor.getString(27);
+			int iconName =  mCursor.getInt(33); 
+			String payee_nameString = mCursor.getString(51);
+			
+			mMap.put("_id", _id);
+			mMap.put("ep_billAmount", ep_billAmount);
+			mMap.put("ep_billDueDate", ep_billDueDate);
+			mMap.put("ep_billEndDate", ep_billEndDate);
+			mMap.put("ep_billName", ep_billName);
+			mMap.put("ep_note", ep_note);
+			mMap.put("ep_recurringType", ep_recurringType);
+			mMap.put("ep_reminderDate", ep_reminderDate);
+			mMap.put("ep_reminderTime", ep_reminderTime);
+			mMap.put("billRuleHasCategory", billRuleHasCategory);
+			mMap.put("billRuleHasPayee", billRuleHasPayee);
+			mMap.put("categoryName", categoryName);
+			mMap.put("iconName", iconName);
+			mMap.put("payee_nameString", payee_nameString);
+			mMap.put("ep_billisDelete", ep_billisDelete);
+			mMap.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
+			mMap.put("billItemHasBillRule", billItemHasBillRule);
+			mMap.put("indexflag", 3);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		return mList;
+	}
+	
 	
 	public static List<Map<String, Object>> selectTransactionByBillRuleId(Context context, int id) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();

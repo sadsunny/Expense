@@ -344,9 +344,9 @@ containing a value of this type.
         public static final int devider2=0x7f04007a;
         public static final int devider3=0x7f04007e;
         public static final int devider4=0x7f040082;
-        public static final int diaLinearLayout1=0x7f0400a0;
-        public static final int diaTextView1=0x7f0400a1;
-        public static final int dia_listview=0x7f04009f;
+        public static final int diaLinearLayout1=0x7f04009e;
+        public static final int diaTextView1=0x7f04009f;
+        public static final int dia_listview=0x7f0400a1;
         public static final int drawer_layout=0x7f040070;
         public static final int dueCountTextView=0x7f040093;
         public static final int dueTextView=0x7f040092;
@@ -382,7 +382,7 @@ containing a value of this type.
         public static final int linearLayout2=0x7f04000f;
         public static final int linearLayout3=0x7f040014;
         public static final int lineview=0x7f0400ab;
-        public static final int mEditText=0x7f04009e;
+        public static final int mEditText=0x7f0400a0;
         public static final int mExpandableListView=0x7f04000d;
         public static final int mGridView=0x7f04005f;
         public static final int mGridview=0x7f0400b5;
@@ -512,34 +512,36 @@ containing a value of this type.
         public static final int dialog_choose_icon=0x7f030022;
         public static final int dialog_choose_type=0x7f030023;
         public static final int dialog_choose_type_item=0x7f030024;
-        public static final int dialog_edittextview=0x7f030025;
-        public static final int dialog_expandable_child=0x7f030026;
-        public static final int dialog_expandable_group=0x7f030027;
-        public static final int dialog_item_operation=0x7f030028;
-        public static final int dialog_item_operation_item=0x7f030029;
-        public static final int dialog_payee_item=0x7f03002a;
-        public static final int dialog_photo=0x7f03002b;
-        public static final int dialog_photo_second=0x7f03002c;
-        public static final int dialog_recurring=0x7f03002d;
-        public static final int dialog_remindme=0x7f03002e;
-        public static final int fragment_account=0x7f03002f;
-        public static final int fragment_bill_list=0x7f030030;
-        public static final int fragment_bill_month=0x7f030031;
-        public static final int fragment_bill_month_view=0x7f030032;
-        public static final int fragment_bill_month_view_item=0x7f030033;
-        public static final int fragment_calender_item=0x7f030034;
-        public static final int fragment_month_view=0x7f030035;
-        public static final int fragment_overview=0x7f030036;
-        public static final int fragment_overview_month=0x7f030037;
-        public static final int fragment_week=0x7f030038;
-        public static final int getdropdownview=0x7f030039;
-        public static final int gridview_item=0x7f03003a;
-        public static final int navigation_dropview=0x7f03003b;
-        public static final int navigation_getview=0x7f03003c;
-        public static final int payee_list_item=0x7f03003d;
-        public static final int transaction_child_item=0x7f03003e;
-        public static final int transaction_group_item=0x7f03003f;
-        public static final int week_item=0x7f030040;
+        public static final int dialog_edit_bill_item=0x7f030025;
+        public static final int dialog_edittextview=0x7f030026;
+        public static final int dialog_expandable_child=0x7f030027;
+        public static final int dialog_expandable_group=0x7f030028;
+        public static final int dialog_item_operation=0x7f030029;
+        public static final int dialog_item_operation_item=0x7f03002a;
+        public static final int dialog_payee_item=0x7f03002b;
+        public static final int dialog_photo=0x7f03002c;
+        public static final int dialog_photo_second=0x7f03002d;
+        public static final int dialog_recurring=0x7f03002e;
+        public static final int dialog_remindme=0x7f03002f;
+        public static final int dialog_upcoming_item_operation=0x7f030030;
+        public static final int fragment_account=0x7f030031;
+        public static final int fragment_bill_list=0x7f030032;
+        public static final int fragment_bill_month=0x7f030033;
+        public static final int fragment_bill_month_view=0x7f030034;
+        public static final int fragment_bill_month_view_item=0x7f030035;
+        public static final int fragment_calender_item=0x7f030036;
+        public static final int fragment_month_view=0x7f030037;
+        public static final int fragment_overview=0x7f030038;
+        public static final int fragment_overview_month=0x7f030039;
+        public static final int fragment_week=0x7f03003a;
+        public static final int getdropdownview=0x7f03003b;
+        public static final int gridview_item=0x7f03003c;
+        public static final int navigation_dropview=0x7f03003d;
+        public static final int navigation_getview=0x7f03003e;
+        public static final int payee_list_item=0x7f03003f;
+        public static final int transaction_child_item=0x7f030040;
+        public static final int transaction_group_item=0x7f030041;
+        public static final int week_item=0x7f030042;
     }
     public static final class menu {
         public static final int add_menu=0x7f0a0000;
@@ -737,7 +739,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:click_remove_id
+          @attr name com.appxy.pocketexpensepro:click_remove_id
         */
         public static final int DragSortListView_click_remove_id = 16;
         /**
@@ -753,7 +755,7 @@ in (inches), mm (millimeters).
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:collapsed_height
+          @attr name com.appxy.pocketexpensepro:collapsed_height
         */
         public static final int DragSortListView_collapsed_height = 0;
         /**
@@ -767,7 +769,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:drag_enabled
+          @attr name com.appxy.pocketexpensepro:drag_enabled
         */
         public static final int DragSortListView_drag_enabled = 10;
         /**
@@ -781,7 +783,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:drag_handle_id
+          @attr name com.appxy.pocketexpensepro:drag_handle_id
         */
         public static final int DragSortListView_drag_handle_id = 14;
         /**
@@ -795,7 +797,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:drag_scroll_start
+          @attr name com.appxy.pocketexpensepro:drag_scroll_start
         */
         public static final int DragSortListView_drag_scroll_start = 1;
         /**
@@ -813,7 +815,7 @@ containing a value of this type.
 <tr><td><code>onMove</code></td><td>1</td><td></td></tr>
 <tr><td><code>onLongPress</code></td><td>2</td><td></td></tr>
 </table>
-          @attr name android:drag_start_mode
+          @attr name com.appxy.pocketexpensepro:drag_start_mode
         */
         public static final int DragSortListView_drag_start_mode = 13;
         /**
@@ -827,7 +829,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:drop_animation_duration
+          @attr name com.appxy.pocketexpensepro:drop_animation_duration
         */
         public static final int DragSortListView_drop_animation_duration = 9;
         /**
@@ -841,7 +843,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:fling_handle_id
+          @attr name com.appxy.pocketexpensepro:fling_handle_id
         */
         public static final int DragSortListView_fling_handle_id = 15;
         /**
@@ -855,7 +857,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:float_alpha
+          @attr name com.appxy.pocketexpensepro:float_alpha
         */
         public static final int DragSortListView_float_alpha = 6;
         /**
@@ -870,7 +872,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:float_background_color
+          @attr name com.appxy.pocketexpensepro:float_background_color
         */
         public static final int DragSortListView_float_background_color = 3;
         /**
@@ -884,7 +886,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:max_drag_scroll_speed
+          @attr name com.appxy.pocketexpensepro:max_drag_scroll_speed
         */
         public static final int DragSortListView_max_drag_scroll_speed = 2;
         /**
@@ -898,7 +900,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:remove_animation_duration
+          @attr name com.appxy.pocketexpensepro:remove_animation_duration
         */
         public static final int DragSortListView_remove_animation_duration = 8;
         /**
@@ -912,7 +914,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:remove_enabled
+          @attr name com.appxy.pocketexpensepro:remove_enabled
         */
         public static final int DragSortListView_remove_enabled = 12;
         /**
@@ -929,7 +931,7 @@ containing a value of this type.
 <tr><td><code>clickRemove</code></td><td>0</td><td></td></tr>
 <tr><td><code>flingRemove</code></td><td>1</td><td></td></tr>
 </table>
-          @attr name android:remove_mode
+          @attr name com.appxy.pocketexpensepro:remove_mode
         */
         public static final int DragSortListView_remove_mode = 4;
         /**
@@ -943,7 +945,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:slide_shuffle_speed
+          @attr name com.appxy.pocketexpensepro:slide_shuffle_speed
         */
         public static final int DragSortListView_slide_shuffle_speed = 7;
         /**
@@ -957,7 +959,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:sort_enabled
+          @attr name com.appxy.pocketexpensepro:sort_enabled
         */
         public static final int DragSortListView_sort_enabled = 11;
         /**
@@ -971,7 +973,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:track_drag_sort
+          @attr name com.appxy.pocketexpensepro:track_drag_sort
         */
         public static final int DragSortListView_track_drag_sort = 5;
         /**
@@ -985,7 +987,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:use_default_controller
+          @attr name com.appxy.pocketexpensepro:use_default_controller
         */
         public static final int DragSortListView_use_default_controller = 17;
         /** Attributes that can be used with a MyView.
@@ -1013,7 +1015,7 @@ containing a value of this type.
 theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
-          @attr name android:background
+          @attr name com.appxy.pocketexpensepro:background
         */
         public static final int MyView_background = 0;
     };
