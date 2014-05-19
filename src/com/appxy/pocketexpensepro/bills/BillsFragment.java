@@ -71,7 +71,6 @@ public class BillsFragment extends Fragment{
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
-				
 				expandableListViewAdapter.setAdapterData(groupDataList, childrenAllDataList);
 				expandableListViewAdapter.notifyDataSetChanged();
 				int groupCount = groupDataList.size();
@@ -345,10 +344,11 @@ public class BillsFragment extends Fragment{
 		editDialog.show();
 	}
 	
-	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) { //dialog ɾ��ǰ�������¼�
+	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
 
 		if(mFlag == 1){
 			BillsDao.deleteBill(mActivity, theId);
+			BillsDao.deleteBillObjectByParId(mActivity, theId);
 		}else if(mFlag == 2){
 
 			billVirtualFutuDelete(theId,mMap);
@@ -449,18 +449,7 @@ public class BillsFragment extends Fragment{
 				calendar.add(Calendar.YEAR, -1);
 
 		}
-		long nextDuedate = calendar.getTimeInMillis();
 		
-		if (nextDuedate > bk_billEndDate) { 
-
-			row =BillsDao.deleteBill(mActivity, rowid);
-
-		} else {
-
-			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
-			BillsDao.deleteBillPayTransaction(mActivity, rowid);
-		}
-
 
 		long preDuedate = calendar.getTimeInMillis();
 
@@ -788,6 +777,13 @@ public class BillsFragment extends Fragment{
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (resultCode) {
 		case 8:
+
+			if (data != null) {
+				mHandler.post(mTask);
+			}
+			break;
+			
+		case 19:
 
 			if (data != null) {
 				mHandler.post(mTask);

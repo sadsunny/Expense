@@ -281,7 +281,7 @@ public class RecurringEventBE {
 		 * 开始处理重复特例事件特例事件，并且来时合并
 		 */
 		List<Map<String, Object>>oDataList = BillsDao.selectBillItemByBE(context, start, end);
-		Log.v("mtest", "特例结果大小" + oDataList.size());
+		Log.v("mtest", "特例结果大小" + oDataList);
 
 		List<Map<String, Object>> delectDataListf = new ArrayList<Map<String, Object>>(); // finalDataList要删除的结果
 		List<Map<String, Object>> delectDataListO = new ArrayList<Map<String, Object>>(); // oDataList要删除的结果

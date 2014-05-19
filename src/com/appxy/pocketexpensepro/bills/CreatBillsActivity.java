@@ -702,8 +702,7 @@ public class CreatBillsActivity extends Activity {
 				adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 				frequencySpinner.setAdapter(adapter1);
 				frequencySpinner.setSelection(recurringTypeSelectPosition);
-				frequencySpinner
-						.setOnItemSelectedListener(new OnItemSelectedListener() {
+				frequencySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 							@Override
 							public void onItemSelected(AdapterView<?> arg0,

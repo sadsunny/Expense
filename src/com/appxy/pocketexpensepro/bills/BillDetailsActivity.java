@@ -210,7 +210,7 @@ public class BillDetailsActivity extends Activity{
 		case 17:
 
 			if (data != null) {
-				
+				mHandler.post(mTask);
 			}
 			break;
 			
@@ -218,7 +218,7 @@ public class BillDetailsActivity extends Activity{
 
 			if (data != null) {
 				mMap = (Map<String, Object>) data.getSerializableExtra("dataMap");
-				Log.v("mtest", "返回的map"+mMap);
+				mHandler.post(mTask);
 			}
 			break;
 			

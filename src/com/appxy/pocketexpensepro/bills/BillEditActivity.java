@@ -12,8 +12,11 @@ import java.util.Map;
 import javax.security.auth.PrivateCredentialPermission;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
+import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
+import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.PayeeListViewAdapter;
@@ -122,11 +125,11 @@ public class BillEditActivity extends Activity {
 	private int remindDateSelectPosition;
 	private int temRemindDateSelectPosition;
 	private String remindTimeString = "";
-	private TextView reminderLabel ;
+	private TextView reminderLabel;
 	private Map<String, Object> mMap;
 	private int indexflag;
 	private int _id;
-	
+
 	private String ep_billAmount;
 	private long ep_billDueDate;
 	private long ep_billEndDate;
@@ -138,18 +141,20 @@ public class BillEditActivity extends Activity {
 	private int billRuleHasCategory;
 	private int billRuleHasPayee;
 	private int iconName;
-	
-	
+
+	private int edit_status = 0;
+	private AlertDialog editDialog;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bills);
-		
-		Intent intent= getIntent();
+
+		Intent intent = getIntent();
 		if (intent == null) {
 			finish();
-		} 
+		}
 		mMap = (HashMap<String, Object>) intent.getSerializableExtra("dataMap");
 		indexflag = (Integer) mMap.get("indexflag");
 		_id = (Integer) mMap.get("_id");
@@ -164,12 +169,7 @@ public class BillEditActivity extends Activity {
 		billRuleHasCategory = (Integer) mMap.get("billRuleHasCategory");
 		billRuleHasPayee = (Integer) mMap.get("billRuleHasPayee");
 		iconName = (Integer) mMap.get("iconName");
-		
-//		int ep_billisDelete = 0;
-//		int billItemHasBillRule = _id;
-//		long ep_billItemDueDateNew = 1;
-		
-		
+
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 
@@ -209,18 +209,103 @@ public class BillEditActivity extends Activity {
 
 		billNameEditText.setText(ep_billName);
 		billNameEditText.setSelectAllOnFocus(true);
-		amountEditText.setText(MEntity.doublepoint2str(ep_billAmount));
-		amountEditText.setSelection(ep_billAmount.length());
+		amountEditText.setText(MEntity.doubl2str(ep_billAmount));
+//		amountEditText.setSelection(ep_billAmount.length());
 		amountString = ep_billAmount;
-		
-		
+
+		categoryId = billRuleHasCategory;
+
 		List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
 				BillEditActivity.this, 0);
 		filterData(mDataList);
-		categoryId = locationOthersId(groupDataList);
-		gCheckedItem = locationOthersPosition(groupDataList);
-		cCheckedItem = -1;
-		categoryButton.setText("Others");
+		if (groupDataList != null && groupDataList.size() > 0) {
+			List<Map<String, Object>> tList = locationPosition(mDataList,
+					groupDataList, childrenAllDataList, categoryId);
+			gCheckedItem = (Integer) tList.get(0).get("gPosition");
+			cCheckedItem = (Integer) tList.get(0).get("cPosition");
+			List<Map<String, Object>> mCategoryList = AccountDao
+					.selectCategoryById(BillEditActivity.this, categoryId);
+			categoryButton.setText((String) mCategoryList.get(0).get(
+					"categoryName"));
+		}
+
+		Calendar untilCalendar = Calendar.getInstance();
+		uYear = untilCalendar.get(Calendar.YEAR);
+		uMonth = untilCalendar.get(Calendar.MONTH);
+		uDay = untilCalendar.get(Calendar.DAY_OF_MONTH);
+
+		recurringTypeSelectPosition = ep_recurringType;
+		temRecurringType = ep_recurringType;
+		recurringType = ep_recurringType;
+		endDate = ep_billEndDate;
+		if (ep_recurringType > 0) {
+
+			if (ep_billEndDate == -1) {
+				isForever = 1;
+				isForverSelectPosition = 0;
+				temIsForverSelectPosition = 0;
+			} else {
+				temIsForverSelectPosition = 1;
+				isForverSelectPosition = 1;
+				isForever = 0;
+				untilCalendar.setTimeInMillis(ep_billEndDate);
+				uYear = untilCalendar.get(Calendar.YEAR);
+				uMonth = untilCalendar.get(Calendar.MONTH);
+				uDay = untilCalendar.get(Calendar.DAY_OF_MONTH);
+			}
+			String recurringName = this.getResources().getStringArray(
+					R.array.recurring)[ep_recurringType];
+			recurringButton.setText(recurringName);
+		} else {
+			recurringButton.setText("No Recurring");
+		}
+
+		remindDateSelectPosition = ep_reminderDate;
+		temRemindDateSelectPosition = ep_reminderDate;
+		Calendar timeCalendar = Calendar.getInstance();
+		mHour = timeCalendar.get(Calendar.HOUR_OF_DAY);
+		mMinute = timeCalendar.get(Calendar.MINUTE);
+		String mRemindString = this.getResources().getStringArray(
+				R.array.reminder)[ep_reminderDate];
+		if (ep_reminderDate > 0) {
+			timeCalendar.setTimeInMillis(MEntity.getNowMillis()
+					+ ep_reminderTime);
+			mHour = timeCalendar.get(Calendar.HOUR_OF_DAY);
+			mMinute = timeCalendar.get(Calendar.MINUTE);
+			String AmOrPm = "";
+			int Hour;
+			if (mHour >= 12) {
+				AmOrPm = "PM";
+			} else {
+				AmOrPm = "AM";
+			}
+
+			if (13 <= mHour) {
+				Hour = mHour % 12;
+			} else {
+				Hour = mHour;
+			}
+
+			String remindTime = (new StringBuilder().append(pad(Hour))
+					.append(":").append(pad(mMinute)).append(" ")
+					.append(AmOrPm)).toString();
+
+			reminderButton.setText(mRemindString + ", " + remindTime);
+		} else {
+			reminderButton.setText(mRemindString);
+		}
+
+		if (billRuleHasPayee > 0) {
+			List<Map<String, Object>> mPayeeDataList = AccountDao
+					.selectPayeeById(this, billRuleHasPayee);
+			String pNameString = (String) mPayeeDataList.get(0).get("name");
+			payeeButton.setText(pNameString);
+			payeeId = billRuleHasPayee;
+			List<Map<String, Object>> mPList = TransactionDao
+					.selectPayee(BillEditActivity.this);
+			payeeCheckItem = locationIdPosition(mPList, payeeId);
+		}
+		memoEditText.setText(ep_note);
 
 		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
 					private boolean isChanged = false;
@@ -292,15 +377,14 @@ public class BillEditActivity extends Activity {
 				});
 
 		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(ep_billDueDate);
 		mYear = c.get(Calendar.YEAR);
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 		updateDisplay();
-		uYear = c.get(Calendar.YEAR);
-		uMonth = c.get(Calendar.MONTH);
-		uDay = c.get(Calendar.DAY_OF_MONTH);
-		mHour = c.get(Calendar.HOUR_OF_DAY);
-		mMinute = c.get(Calendar.MINUTE);
+
+		judgementDialog(indexflag, _id);
+
 	}
 
 	private OnClickListener mClickListener = new OnClickListener() {
@@ -315,67 +399,161 @@ public class BillEditActivity extends Activity {
 				break;
 
 			case R.id.action_done:
-				
+
 				String ep_billName = billNameEditText.getText().toString();
 				double ep_billAmount = 0;
 				String ep_note = memoEditText.getText().toString();
 				try {
 					ep_billAmount = Float.parseFloat(amountString);
-                } catch (NumberFormatException e) {
-                	ep_billAmount = 0;
-                }
-				
-				
-				if (ep_billName == null
-						|| ep_billName.trim().length() == 0
+				} catch (NumberFormatException e) {
+					ep_billAmount = 0;
+				}
+
+				if (ep_billName == null || ep_billName.trim().length() == 0
 						|| ep_billName.trim().equals("")) {
-					
-					new AlertDialog.Builder(BillEditActivity.this)
-					.setTitle("Warning! ")
-					.setMessage("Please make sure the bill name is not empty! ")
-					.setPositiveButton("Retry",
-							new DialogInterface.OnClickListener() {
 
-								@Override	
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-									
-								}
-							}).show();
-					
-				} else if(ep_billAmount == 0){
-					
 					new AlertDialog.Builder(BillEditActivity.this)
-					.setTitle("Warning! ")
-					.setMessage("Please make sure the amount is not zero! ")
-					.setPositiveButton("Retry",
-							new DialogInterface.OnClickListener() {
+							.setTitle("Warning! ")
+							.setMessage(
+									"Please make sure the bill name is not empty! ")
+							.setPositiveButton("Retry",
+									new DialogInterface.OnClickListener() {
 
-								@Override	
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-									
-								}
-							}).show();
-					
-				}else{
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+
+										}
+									}).show();
+
+				} else if (ep_billAmount == 0) {
+
+					new AlertDialog.Builder(BillEditActivity.this)
+							.setTitle("Warning! ")
+							.setMessage(
+									"Please make sure the amount is not zero! ")
+							.setPositiveButton("Retry",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+
+										}
+									}).show();
+
+				} else {
 					long lastDate = -1;
-					if(isForever == 1){
+					if (isForever == 1) {
 						lastDate = -1;
-					}else{
+					} else {
 						lastDate = endDate;
 					}
-					
-					long row = BillsDao.insertBillRule(BillEditActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
-					
+					// int edit_status = 0; 编辑状态，1表示change this ，2表示this and
+					// future
+					if (indexflag == 0) {
+						long row = BillsDao.updateBillRule(
+								BillEditActivity.this, _id, ep_billAmount,
+								dateLong, lastDate, ep_billName, ep_note,
+								recurringType, remindDateSelectPosition,
+								remindTime, categoryId, payeeId);
+					} else if (indexflag == 1) {
+						
+						
+						if (edit_status == 1) {
+							int ep_billisDelete =0;
+							long ep_billItemDueDateNew  = 1;
+							
+							if(dateLong == ep_billDueDate){
+								ep_billisDelete =0;
+								ep_billItemDueDateNew = dateLong;
+							}else{
+								ep_billisDelete =2;
+								ep_billItemDueDateNew = ep_billDueDate;
+							}
+							
+							long row = BillsDao.insertBillItem(BillEditActivity.this, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
+									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId);
+							
+						} else if (edit_status == 2) {
+							Log.v("mtest","lastDate"+MEntity.turnToDateString(lastDate));
+							Log.v("mtest","recurringType"+recurringType);
+							
+							long row = BillsDao.updateBillRule(
+									BillEditActivity.this, _id, ep_billAmount,
+									dateLong, lastDate, ep_billName, ep_note,
+									recurringType, remindDateSelectPosition,
+									remindTime, categoryId, payeeId);
+							BillsDao.deleteBillObjectByParId(BillEditActivity.this, _id) ;
+						}
+					} else if (indexflag == 2) {
+						if (edit_status == 1) {
+							
+							int ep_billisDelete =0;
+							long ep_billItemDueDateNew  = 1;
+							if(dateLong == ep_billDueDate){
+								ep_billisDelete =0;
+								ep_billItemDueDateNew = dateLong;
+							}else{
+								ep_billisDelete =2;
+								ep_billItemDueDateNew = ep_billDueDate;
+							}
+							
+							long row = BillsDao.insertBillItem(BillEditActivity.this, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
+									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId);
+							
+						} else if (edit_status == 2) {
+							long row = BillsDao.insertBillRule(
+									BillEditActivity.this, ep_billAmount,
+									dateLong, lastDate, ep_billName, ep_note,
+									recurringType, remindDateSelectPosition,
+									remindTime, categoryId, payeeId);
+							
+							BillsDao.updateBillDateRule(BillEditActivity.this, _id, getPreDate(ep_recurringType, dateLong));
+						}
+					} else if (indexflag == 3) {
+						
+						if (edit_status == 1) {
+							int ep_billisDelete =0;
+							long ep_billItemDueDateNew  = 1;
+							if(dateLong == ep_billDueDate){
+								ep_billisDelete =0;
+								ep_billItemDueDateNew = dateLong;
+							}else{
+								ep_billisDelete =2;
+								ep_billItemDueDateNew = ep_billDueDate;
+							}
+							int p_id = (Integer)mMap.get("billItemHasBillRule");
+							long row = BillsDao.updateBillItem(BillEditActivity.this, _id, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
+									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, p_id, categoryId, payeeId) ;
+						} else if (edit_status == 2) {
+							long row = BillsDao.insertBillRule(
+									BillEditActivity.this, ep_billAmount,
+									dateLong, lastDate, ep_billName, ep_note,
+									recurringType, remindDateSelectPosition,
+									remindTime, categoryId, payeeId);
+                            int p_id = (Integer)mMap.get("billItemHasBillRule");
+							BillsDao.updateBillDateRule(BillEditActivity.this, p_id, getPreDate(ep_recurringType, dateLong));
+							BillsDao.deleteBillObjectByAfterDate(BillEditActivity.this, dateLong);
+							
+							List<Map<String, Object>> mList = BillsDao.selectBillRuleById(BillEditActivity.this, p_id);
+							long parentDuedate = (Long)mList.get(0).get("ep_billDueDate");
+							if(dateLong == parentDuedate){
+								BillsDao.deleteBill(BillEditActivity.this, p_id);
+							}
+						}
+					}
+
 					Intent intent = new Intent();
-					intent.putExtra("_id", row);
-					setResult(8, intent);
-					
+					intent.putExtra("_id", 1);
+					setResult(19, intent);
+
 					finish();
 				}
 				break;
@@ -814,8 +992,7 @@ public class BillEditActivity extends Activity {
 					public void onClick(View v) {
 						// TODO Auto-generated method stub
 						DatePickerDialog DPD = new DatePickerDialog( // 改变theme
-								new ContextThemeWrapper(
-										BillEditActivity.this,
+								new ContextThemeWrapper(BillEditActivity.this,
 										android.R.style.Theme_Holo_Light),
 								mDateSetListenerUntil, uYear, uMonth, uDay);
 						DPD.setTitle("EndDate");
@@ -839,7 +1016,8 @@ public class BillEditActivity extends Activity {
 								recurringType = temRecurringType;
 								recurringTypeSelectPosition = temRecurringType;
 								isForverSelectPosition = temIsForverSelectPosition;
-								recurringButton.setText(frequencySpinner.getSelectedItem().toString());
+								recurringButton.setText(frequencySpinner
+										.getSelectedItem().toString());
 							}
 						});
 				mBuilder5.setNegativeButton("Cancel",
@@ -864,7 +1042,7 @@ public class BillEditActivity extends Activity {
 				remindMeSpinner = (Spinner) view4.findViewById(R.id.remind_spn);
 				remindAtButton = (Button) view4.findViewById(R.id.remindAt_btn);
 				reminderLabel = (TextView) view4.findViewById(R.id.textView2);
-				
+
 				ArrayAdapter<CharSequence> adapter3 = ArrayAdapter
 						.createFromResource(BillEditActivity.this,
 								R.array.reminder,
@@ -880,12 +1058,14 @@ public class BillEditActivity extends Activity {
 									View arg1, int arg2, long arg3) {
 								// TODO Auto-generated method stub
 								temRemindDateSelectPosition = arg2;
-								
-								if(arg2 == 0){
-									remindAtButton.setTextColor(R.color.lightgray);
+
+								if (arg2 == 0) {
+									remindAtButton
+											.setTextColor(R.color.lightgray);
 									remindAtButton.setClickable(false);
-									reminderLabel.setTextColor(R.color.lightgray);
-								}else{
+									reminderLabel
+											.setTextColor(R.color.lightgray);
+								} else {
 									remindAtButton.setTextColor(Color.BLACK);
 									remindAtButton.setClickable(true);
 									reminderLabel.setTextColor(Color.BLACK);
@@ -900,17 +1080,16 @@ public class BillEditActivity extends Activity {
 
 						});
 
-				if(remindDateSelectPosition == 0){
+				if (remindDateSelectPosition == 0) {
 					remindAtButton.setTextColor(R.color.lightgray);
 					remindAtButton.setClickable(false);
 					reminderLabel.setTextColor(R.color.lightgray);
-				}else{
+				} else {
 					remindAtButton.setTextColor(Color.BLACK);
 					remindAtButton.setClickable(true);
 					reminderLabel.setTextColor(Color.BLACK);
 				}
-				
-				
+
 				remindAtButton.setOnClickListener(new OnClickListener() {
 
 					@Override
@@ -918,8 +1097,7 @@ public class BillEditActivity extends Activity {
 						// TODO Auto-generated method stub
 						TimePickerDialog DPD1 = new TimePickerDialog(
 						// 改变theme
-								new ContextThemeWrapper(
-										BillEditActivity.this,
+								new ContextThemeWrapper(BillEditActivity.this,
 										android.R.style.Theme_Holo_Light),
 								mTimeSetListener, mHour, mMinute, false);
 						DPD1.setTitle("Reminder");
@@ -941,14 +1119,17 @@ public class BillEditActivity extends Activity {
 								// TODO Auto-generated method stub
 								dialog.dismiss();
 								remindDateSelectPosition = temRemindDateSelectPosition;
-								String mRemindString = remindMeSpinner.getSelectedItem().toString();
-								if(remindDateSelectPosition > 0){
-									reminderButton.setText(mRemindString+", "+remindTimeString);
-								}else{
+								String mRemindString = remindMeSpinner
+										.getSelectedItem().toString();
+								if (remindDateSelectPosition > 0) {
+									reminderButton.setText(mRemindString + ", "
+											+ remindTimeString);
+								} else {
 									reminderButton.setText(mRemindString);
 								}
-								remindTime = mHour*60*60*1000 + mMinute*60*1000;
-								
+								remindTime = mHour * 60 * 60 * 1000 + mMinute
+										* 60 * 1000;
+
 							}
 						});
 				mBuilder4.setNegativeButton("Cancel",
@@ -1188,6 +1369,369 @@ public class BillEditActivity extends Activity {
 			}
 		}
 		return id;
+	}
+
+	public List<Map<String, Object>> locationPosition(
+			List<Map<String, Object>> allData, List<Map<String, Object>> gData,
+			List<List<Map<String, Object>>> cData, int id) { // 没有在group中找到，就定位id在Group和child的位置，返回map<Group,Child>
+		List<Map<String, Object>> rData = new ArrayList<Map<String, Object>>();
+		String categoryName = "";
+		int gPosition = -2;
+		int cPosition = -2;
+		for (Map<String, Object> aMap : allData) {
+			int _id = (Integer) aMap.get("_id");
+			String cNameString = (String) aMap.get("categoryName");
+			if (_id == id) {
+				categoryName = cNameString;
+			}
+		}
+
+		if (categoryName.length() > 0) {
+
+			if (categoryName.contains(":")) {
+				String temp[] = categoryName.split(":");
+				gPosition = locationgGroupByName(gData, temp[0]);
+
+				List<Map<String, Object>> temChildDataList = cData
+						.get(gPosition);
+				int i = 0;
+				for (Map<String, Object> iMap : temChildDataList) {
+					String childString = (String) iMap.get("categoryName");
+					int _id = (Integer) iMap.get("_id");
+					if (childString.equals(categoryName) && _id == id) {
+						cPosition = i;
+					}
+					i++;
+				}
+
+			} else {
+				gPosition = locationGroupPosition(gData, id);
+				cPosition = -1;
+			}
+
+		}
+		Map<String, Object> rMap = new HashMap<String, Object>();
+		rMap.put("gPosition", gPosition);
+		rMap.put("cPosition", cPosition);
+		rData.add(rMap);
+		return rData;
+	}
+
+	public int locationGroupPosition(List<Map<String, Object>> mData, int id) { // 定位id在Group位置
+		int position = -1;
+		int i = 0;
+
+		for (Map<String, Object> mMap : mData) {
+			int _id = (Integer) mMap.get("_id");
+			if (_id == id) {
+				position = i;
+			}
+			i = i + 1;
+		}
+		return position;
+	}
+
+	public int locationgGroupByName(List<Map<String, Object>> mData,
+			String cName) { // 定位others的位置
+		int position = 0;
+		int i = 0;
+
+		for (Map<String, Object> mMap : mData) {
+			String cNameString = (String) mMap.get("categoryName");
+			if (cNameString.equals(cName)) {
+				position = i;
+			}
+			i = i + 1;
+		}
+		return position;
+	}
+
+	public int locationIdPosition(List<Map<String, Object>> mData, int pId) { // 定位ID的位置
+		int i = 0;
+		int position = 0;
+		for (Map<String, Object> mMap : mData) {
+			int _id = (Integer) mMap.get("_id");
+			if (_id == pId) {
+				position = i;
+			}
+			i = i + 1;
+		}
+
+		return position;
+	}
+
+	public void judgementDialog(int mFlag, int mId) { // 弹出dialog和之前的判断
+
+		if (mFlag == 0) {
+
+			edit_status = 1; // 1表示只修改当前，2表示修改当前和all future
+
+		} else if (mFlag == 1) {
+
+			int temPaydate = judgeTemPayDate(mId); // 父本pay状态
+			long firstPayDate = judgePayDate(mId);// 返回第一笔pay的时间，如果为0表没有pay的bill
+
+			if (temPaydate > 0) {
+				edit_status = 1;
+				recurringButton.setEnabled(false);
+				recurringButton.setTextColor(R.color.bill_gray);
+				billNameEditText.setEnabled(false);
+				billNameEditText.setTextColor(R.color.bill_gray);
+			} else {
+
+				if (firstPayDate == 0) {
+
+					editDialogShow();
+
+				} else {
+
+					edit_status = 1;
+					recurringButton.setEnabled(false);
+					recurringButton.setTextColor(R.color.bill_gray);
+					billNameEditText.setEnabled(false);
+					billNameEditText.setTextColor(R.color.bill_gray);
+				}
+			}
+
+		} else if (mFlag == 2) {
+			long firstPayDate = judgePayDate(mId);
+
+			if (firstPayDate == 0) {
+				editDialogShow();
+			} else {
+
+				if (firstPayDate < ep_billDueDate) {
+
+					editDialogShow();
+
+				} else {
+					edit_status = 1;
+					recurringButton.setEnabled(false);
+					recurringButton.setTextColor(R.color.bill_gray);
+					billNameEditText.setEnabled(false);
+					billNameEditText.setTextColor(R.color.bill_gray);
+				}
+
+			}
+
+		} else if (mFlag == 3) {
+
+			if (mMap.containsKey("billItemHasBillRule")) {
+				int billo_id = (Integer) mMap.get("billItemHasBillRule");
+				long firstPayDate = judgePayDate(billo_id);
+
+				if (firstPayDate == 0) {
+					editDialogShow();
+				} else {
+
+					if (firstPayDate < ep_billDueDate) {
+
+						editDialogShow();
+
+					} else {
+						edit_status = 1;
+						recurringButton.setEnabled(false);
+						recurringButton.setTextColor(R.color.bill_gray);
+						billNameEditText.setEnabled(false);
+						billNameEditText.setTextColor(R.color.bill_gray);
+					}
+
+				}
+
+			} else {
+
+				edit_status = 1;
+				recurringButton.setEnabled(false);
+				recurringButton.setTextColor(R.color.bill_gray);
+				billNameEditText.setEnabled(false);
+				billNameEditText.setTextColor(R.color.bill_gray);
+			}
+
+		}
+
+	}
+
+	public void editDialogShow() { // 对话框的弹出方法
+
+		View dialogview = inflater.inflate(
+				R.layout.dialog_upcoming_item_operation, null);
+		ListView diaListView = (ListView) dialogview
+				.findViewById(R.id.dia_listview);
+		DialogEditBillAdapter dialogEditBillAdapter = new DialogEditBillAdapter(
+				this);
+
+		diaListView.setAdapter(dialogEditBillAdapter);
+		diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				if (arg2 == 0) {
+					edit_status = 1;
+					recurringButton.setEnabled(false);
+					recurringButton.setTextColor(R.color.bill_gray);
+					billNameEditText.setEnabled(false);
+					billNameEditText.setTextColor(R.color.bill_gray);
+					editDialog.dismiss();
+
+				} else if (arg2 == 1) {
+					edit_status = 2;
+					editDialog.dismiss();
+				}
+
+			}
+
+		});
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				BillEditActivity.this);
+		builder.setTitle("Details");
+		builder.setView(dialogview);
+		builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface arg0) {
+				finish();
+			}
+		});
+		editDialog = builder.create();
+		editDialog.show();
+
+	}
+
+	public int judgeTemPayDate(int b_id) {
+
+		List<Map<String, Object>> mList = BillsDao
+				.selectTransactionByBillRuleId(this, b_id);
+		if (mList.size() > 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+
+	}
+
+	public long judgePayDate(int b_id) {
+
+		List<Map<String, Object>> dataList = BillsDao.selectBillItemByRuleId(
+				this, b_id);
+
+		if (dataList.size() > 0) {
+			ArrayList<Long> OPayList = new ArrayList<Long>();
+			long reData = 0;
+			for (Map<String, Object> oMap : dataList) {
+				int Object_id = (Integer) oMap.get("_id");
+				long bk_billODueDate = (Long) oMap.get("ep_billDueDate");
+				List<Map<String, Object>> mList = BillsDao
+						.selectTransactionByBillItemId(this, Object_id);
+
+				if (mList.size() > 0) {
+					OPayList.add(bk_billODueDate);
+				}
+			}
+
+			if (OPayList.size() > 0) {
+
+				long max = OPayList.get(0);
+				for (int i = 0; i < OPayList.size(); i++) {
+
+					if (OPayList.get(i) > max) {
+						max = OPayList.get(i);
+					}
+
+				}
+				reData = max;
+			} else {
+				reData = 0;
+			}
+
+			return reData;
+
+		} else {
+			return 0;
+		}
+
+	}
+	
+	public long getPreDate(int bk_billRepeatType, long bk_billDuedate) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(bk_billDuedate);
+		
+		if (bk_billRepeatType == 1) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-7);
+
+		} else if (bk_billRepeatType == 2) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-14);
+
+		} else if (bk_billRepeatType == 3) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-28);
+
+		} else if (bk_billRepeatType == 4) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-15);
+
+		} else if (bk_billRepeatType == 5) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -1);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -1 - 1);
+				} else {
+					calendar.add(Calendar.MONTH, -1);
+				}
+
+
+		} else if (bk_billRepeatType == 6) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -2);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -2 - 2);
+				} else {
+					calendar.add(Calendar.MONTH, -2);
+				}
+
+
+		} else if (bk_billRepeatType == 7) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -3);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -3 - 3);
+				} else {
+					calendar.add(Calendar.MONTH, -3);
+				}
+
+
+		} else if (bk_billRepeatType == 8) {
+
+				calendar.add(Calendar.YEAR, -1);
+
+		}
+		long preDuedate = calendar.getTimeInMillis();
+		return preDuedate;
 	}
 
 }

@@ -36,10 +36,10 @@ public class BillsDao {
 	}
 	
 	
-	public static long updateBillDateRule(Context context, long _id, long ep_billDueDate) { 
+	public static long updateBillDateRule(Context context, long _id, long ep_billEndDate) { 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
-		cv.put("ep_billDueDate", ep_billDueDate);
+		cv.put("ep_billEndDate", ep_billEndDate);
 		String mId = _id + "";
 		try {
 			long id = db
@@ -53,12 +53,69 @@ public class BillsDao {
 		}
 	}
 	
+	public static long updateBillItem(Context context, int _id, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
+			long ep_billItemDueDateNew, long ep_billItemEndDate, String ep_billItemName,String ep_billItemNote, int ep_billItemRecurringType, 
+			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("ep_billItemAmount", ep_billItemAmount);
+		cv.put("ep_billisDelete", ep_billisDelete);
+		cv.put("ep_billItemDueDate", ep_billItemDueDate);
+		cv.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
+		cv.put("ep_billItemEndDate", ep_billItemEndDate);
+		cv.put("ep_billItemName", ep_billItemName);
+		cv.put("ep_billItemNote", ep_billItemNote);
+		cv.put("ep_billItemRecurringType", ep_billItemRecurringType);
+		cv.put("ep_billItemReminderDate", ep_billItemReminderDate);
+		cv.put("ep_billItemReminderTime", ep_billItemReminderTime);
+		cv.put("billItemHasBillRule", billItemHasBillRule);
+		cv.put("billItemHasCategory", billItemHasCategory);
+		cv.put("billItemHasPayee", billItemHasPayee);
+		String mId = _id + "";
+		long row = db.update("EP_BillItem",cv, "_id = ?", new String[] { mId });
+		db.close();
+		return row;
+	}
+	
+	public static long updateBillRule(Context context,int _id, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("ep_billAmount", ep_billAmount);
+		cv.put("ep_billDueDate", ep_billDueDate);
+		cv.put("ep_billEndDate", ep_billEndDate);
+		cv.put("ep_billName", ep_billName);
+		cv.put("ep_note", ep_note);
+		cv.put("ep_recurringType", ep_recurringType);
+		cv.put("ep_reminderDate", ep_reminderDate);
+		cv.put("ep_reminderTime", ep_reminderTime);
+		cv.put("billRuleHasCategory", billRuleHasCategory);
+		cv.put("billRuleHasPayee", billRuleHasPayee);
+		String mId = _id + "";
+		long row = db.update("EP_BillRule", cv, "_id = ?", new String[] { mId });
+		db.close();
+		return row;
+	}
+	
+	
 	public static long deleteBill(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
 		String _id = id + "";
 		long row = 0;
 		try {
 			row = db.delete("EP_BillRule", "_id = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	public static long deleteBillObjectByParId(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("EP_BillItem", "billItemHasBillRule = ?", new String[] { _id });
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;
@@ -136,6 +193,56 @@ public class BillsDao {
 		db.close();
 		return row;
 	}
+	
+	public static List<Map<String, Object>> selectBillRuleById(Context context, int id) {
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, b.*, Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a._id = "+id+" and a.billRuleHasCategory = b._id ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String ep_billAmount = mCursor.getString(2);
+			long ep_billDueDate = mCursor.getLong(3);
+			long ep_billEndDate = mCursor.getLong(4);
+			String ep_billName = mCursor.getString(5);
+			String ep_note = mCursor.getString(10);
+			int ep_recurringType = mCursor.getInt(11);
+			int ep_reminderDate = mCursor.getInt(12);
+			long ep_reminderTime = mCursor.getLong(13);
+			int billRuleHasCategory = mCursor.getInt(19);
+			int billRuleHasPayee = mCursor.getInt(20);
+			String categoryName = mCursor.getString(25);
+			int iconName =  mCursor.getInt(31); 
+			String payee_nameString = mCursor.getString(49);
+			 
+			mMap.put("_id", _id);
+			mMap.put("ep_billAmount", ep_billAmount);
+			mMap.put("ep_billDueDate", ep_billDueDate);
+			mMap.put("ep_billEndDate", ep_billEndDate);
+			mMap.put("ep_billName", ep_billName);
+			mMap.put("ep_note", ep_note);
+			mMap.put("ep_recurringType", ep_recurringType);
+			mMap.put("ep_reminderDate", ep_reminderDate);
+			mMap.put("ep_reminderTime", ep_reminderTime);
+			mMap.put("billRuleHasCategory", billRuleHasCategory);
+			mMap.put("billRuleHasPayee", billRuleHasPayee);
+			mMap.put("categoryName", categoryName);
+			mMap.put("iconName", iconName);
+			mMap.put("payee_nameString", payee_nameString);
+			mMap.put("indexflag", 0);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		
+		return mList;
+	}
+	
 	
 	public static List<Map<String, Object>> selectOrdinaryBillRuleById(Context context, int id) {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
