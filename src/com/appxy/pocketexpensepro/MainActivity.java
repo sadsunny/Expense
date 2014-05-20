@@ -26,6 +26,7 @@ import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
+import com.appxy.pocketexpensepro.report.ReportOverviewFragment;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 
 import android.os.Bundle;
@@ -353,6 +354,11 @@ public class MainActivity extends FragmentActivity implements
 
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
+
+				ReportOverviewFragment reportOverviewFragment = new ReportOverviewFragment();
+				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,reportOverviewFragment);
+				fragmentTransaction.commit();
 
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
