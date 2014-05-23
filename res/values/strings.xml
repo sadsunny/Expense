@@ -89,5 +89,6 @@
     <string name="edit_budget">Edit Budget</string>
     <string name="bill_details">Bill Details</string>
      <string name="pay_date">PAYMENT DATE</string>
+<string name="budget_list">Budget List</string>
 
 </resources>

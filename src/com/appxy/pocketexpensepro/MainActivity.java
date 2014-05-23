@@ -106,8 +106,7 @@ public class MainActivity extends FragmentActivity implements
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 				if (mItemPosition == 1) {
-					actionBar
-							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				} else {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 				}
@@ -190,6 +189,7 @@ public class MainActivity extends FragmentActivity implements
 				mItemPosition = 0;
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setDisplayShowTitleEnabled(false);
+				Log.v("mtest", "mtest");
 
 			} else if (itemPosition == 1) {
 
@@ -520,10 +520,11 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void OnUpdateNavigation(int itemPosition, long selectedDate) {
 		// TODO Auto-generated method stub
-		actionBar.setSelectedNavigationItem(itemPosition);
 		this.selectedDate = selectedDate;
+		actionBar.setSelectedNavigationItem(itemPosition);
 		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
+		Log.v("mtest", "OnUpdateNavigation");
 	}
 
 	@Override

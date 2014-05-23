@@ -12,6 +12,7 @@ import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditAccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetListActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
@@ -287,7 +288,7 @@ public class BudgetActivity extends Activity {
 
 		case R.id.action_add:
 			Intent intent = new Intent();
-			intent.setClass(BudgetActivity.this, CreatBudgetsActivity.class);
+			intent.setClass(BudgetActivity.this, BudgetListActivity.class);
 			startActivityForResult(intent, 4);
 			break;
 

@@ -139,6 +139,21 @@
             android:label="@string/expense_label" >
         </activity>
         
+         <activity
+            android:name="com.appxy.pocketexpensepro.accounts.AccountActivity"
+            android:label="@string/expense_label" >
+        </activity>
+        
+           <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetListActivity"
+            android:label="@string/budget_list" >
+        </activity>
+        
+           <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetSelectCategoryActivity"
+            android:label="@string/budget_list" >
+        </activity>
+        
     </application>
 
 </manifest>

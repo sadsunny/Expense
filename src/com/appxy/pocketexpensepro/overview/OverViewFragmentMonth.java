@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ public class OverViewFragmentMonth extends Fragment {
 	private int currentPosition;
 	private int viewPagerPosition;
 	private OnTellUpdateMonthListener onTellUpdateMonthListener;
+	private OnUpdateNavigationListener onUpdateNavigationListener;
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -46,6 +48,7 @@ public class OverViewFragmentMonth extends Fragment {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		
 		Bundle bundle = getArguments();
 		if (bundle != null) {
@@ -119,9 +122,17 @@ public class OverViewFragmentMonth extends Fragment {
 
 		case R.id.action_add:
 
-			Intent intent = new Intent();
-			intent.setClass(getActivity(), CreatTransactionActivity.class);
-			startActivityForResult(intent, 6);
+			
+			Calendar calendar1 = Calendar.getInstance();
+			calendar1.set(Calendar.HOUR_OF_DAY, 0);
+			calendar1.set(Calendar.MINUTE, 0);
+			calendar1.set(Calendar.SECOND, 0);
+			calendar1.set(Calendar.MILLISECOND, 0);
+			MainActivity.selectedDate = calendar1.getTimeInMillis();
+			Log.v("mtest", "action_add");
+			onUpdateNavigationListener.OnUpdateNavigation(0, MainActivity.selectedDate);
+			
+			
 			return true;
 
 		}

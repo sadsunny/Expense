@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:myView="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"   
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
@@ -92,49 +93,94 @@
         </ListView>
 
         <RelativeLayout
-            android:id="@+id/budget_relativeLayout"
+            android:id="@+id/relativeLayout1"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:background="@color/top_bac" >
+            >
+            
+           <RelativeLayout
+               android:id="@+id/budget_relativeLayout"
+               android:layout_width="wrap_content"
+               android:layout_height="60dp"
+               android:layout_alignParentBottom="true"
+               android:layout_alignParentLeft="true"
+               android:layout_marginLeft="45dp" >
 
-            <TextView
-                android:id="@+id/budget_label"
+               <TextView
+                android:id="@+id/currency_label1"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="12dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/budget_label" />
-
-            <TextView
-                android:id="@+id/budget_amount"
+                android:layout_height="30dp"
+                android:gravity="bottom"
+                android:layout_alignParentTop="true"
+                android:text="@string/dollar" />
+               
+              <TextView
+                android:id="@+id/left_amount"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="12dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/currency_label1"
+                android:gravity="bottom"
                 android:text="@string/zero_label" />
 
             <TextView
-                android:id="@+id/currency_label"
+                android:id="@+id/left_label"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="top"
+                android:text="LEFT" />
+
+             </RelativeLayout>
+             
+           <ImageView 
+                android:id="@+id/add_but"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_toLeftOf="@+id/budget_amount"
-                android:text="@string/dollar" />
+                android:src="@drawable/b_add"
+                android:layout_centerInParent="true"/>
 
-            <ProgressBar
-                android:id="@+id/mProgressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="13dp"
-                android:layout_below="@+id/budget_amount"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:layout_marginTop="5dp"
-                android:focusable="false"
-                android:progressDrawable="@drawable/progressbar_bac" />
+            <RelativeLayout
+               android:id="@+id/relativeLayout2"
+               android:layout_width="wrap_content"
+               android:layout_height="60dp"
+               android:layout_alignParentBottom="true"
+               android:layout_alignParentRight="true"
+               android:layout_marginRight="35dp" >
+
+               <TextView
+                android:id="@+id/currency_label2"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:gravity="bottom"
+                android:layout_alignParentTop="true"
+                android:text="@string/dollar" />
+               
+              <TextView
+                android:id="@+id/net_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/currency_label2"
+                android:gravity="bottom"
+                android:text="@string/zero_label" />
+
+            <TextView
+                android:id="@+id/net_label"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="top"
+                android:text="NET WORTH" />
+
+             </RelativeLayout>
+             
+            
+           
+             
         </RelativeLayout>
     </RelativeLayout>
 

@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
@@ -58,6 +61,11 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 	private double expense;
 	private double income;
 	private double amount;
+	
+	private double pexpense;
+	private double pincome;
+	private double pamount;
+	
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static SparseArray<Fragment> registeredMonthFragments;
 
@@ -67,14 +75,95 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
     private int offset;
     private int position = 10000;
     
+    private ImageView trend1;
+    private TextView percent_txt1;
+    private ImageView trend2;
+    private TextView percent_txt2;
+    private ImageView trend3;
+    private TextView percent_txt3;
+    
+    
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
 			case MSG_SUCCESS:
+				NumberFormat percentFormat = NumberFormat.getPercentInstance();
 				
+				// red d02f3a 208 47 58
+				// green 539627 83 150 39
 				expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
+				expenseTextView.setTextColor(Color.rgb(208, 47, 58));
 				incomeTextView.setText(MEntity.doublepoint2str(income + ""));
-				amountTextView.setText(MEntity.doublepoint2str(amount + ""));
+				incomeTextView .setTextColor(Color.rgb(83, 150, 39));
+				if (amount > 0) {
+					amountTextView.setText(MEntity.doublepoint2str(amount + ""));
+					amountTextView.setTextColor(Color.rgb(83, 150, 39));
+					
+				} else {
+					amountTextView.setText(MEntity.doublepoint2str((0-amount) + ""));
+					amountTextView.setTextColor(Color.rgb(208, 47, 58));
+				}
+				
+				if (pamount<0) {
+					pamount = 0- pamount;
+				}
+				
+				if (amount < 0) {
+					amount = 0-amount;
+				}
+				
+				if ((expense-pexpense) > 0) {
+					trend1.setImageResource(R.drawable.up);
+					if (pexpense == 0) {
+						percent_txt1.setText(percentFormat.format(1));
+					}else {
+						percent_txt1.setText(percentFormat.format((expense-pexpense)/pexpense));
+					}
+					
+					
+				} else if((expense-pexpense) == 0){
+					trend1.setImageResource(R.drawable.balence);
+					percent_txt1.setText(percentFormat.format(0));
+				}else{
+					
+					trend1.setImageResource(R.drawable.down);
+					percent_txt1.setText(percentFormat.format((pexpense-expense)/pexpense));
+				}
+				
+				if ((income-pincome) > 0) {
+					trend2.setImageResource(R.drawable.up);
+					if (pincome == 0) {
+						percent_txt2.setText(percentFormat.format(1));
+					}else{
+						percent_txt2.setText(percentFormat.format((income-pincome)/pincome));
+					}
+					
+				} else if((income-pincome) == 0){
+					trend2.setImageResource(R.drawable.balence);
+					percent_txt2.setText(percentFormat.format(0));
+				}else{
+					trend2.setImageResource(R.drawable.down);
+					percent_txt2.setText(percentFormat.format((pincome-income)/pincome));
+				}
+				
+				if ((amount-pamount) > 0) {
+					trend3.setImageResource(R.drawable.up);
+					if (pamount == 0) {
+						percent_txt3.setText(percentFormat.format(1));
+					} else {
+						percent_txt3.setText(percentFormat.format((amount-pamount)/pamount));
+					}
+					
+				} else if((amount-pamount) == 0){
+					trend3.setImageResource(R.drawable.balence);
+					percent_txt3.setText(percentFormat.format(0));
+				}else{
+					trend3.setImageResource(R.drawable.down);
+					percent_txt3.setText(percentFormat.format((pamount-amount)/pamount));
+				}
+				Log.v("mtest", "amount"+amount);
+				Log.v("mtest", "pamount"+pamount);
+				
 
 				calendarGridViewAdapter.setCheckDat(MainActivity.selectedDate);
 				calendarGridViewAdapter.setDataList(mGridDataList);
@@ -142,9 +231,15 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 
 		expenseTextView = (TextView) view.findViewById(R.id.expense_txt);
 		incomeTextView = (TextView) view.findViewById(R.id.income_txt);
-		amountTextView = (TextView) view.findViewById(R.id.amount_txt);
+		amountTextView = (TextView) view.findViewById(R.id.balance_txt);
 		
-		Locale.setDefault(Locale.ENGLISH);
+		trend1 = (ImageView)view.findViewById(R.id.trend1);
+	    percent_txt1 = (TextView)view.findViewById(R.id.percent_txt1);
+	    trend2 = (ImageView)view.findViewById(R.id.trend2);
+	    percent_txt2 = (TextView)view.findViewById(R.id.percent_txt2);
+	    trend3 = (ImageView)view.findViewById(R.id.trend3);
+	    percent_txt3 = (TextView)view.findViewById(R.id.percent_txt3);
+	    
 		
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 		
@@ -206,17 +301,43 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 				BigDecimal b3 = new BigDecimal(amount);
 
 				if (expenseAccount > 0 && incomeAccount <= 0) {
-					b1 = b1.subtract(b3);
+					b1 = b1.add(b3);
 				} else if (incomeAccount > 0 && expenseAccount <= 0) {
 					b2 = b2.add(b3);
 				}
 			}
 			expense = b1.doubleValue();
 			income = b2.doubleValue();
-			amount = b1.add(b2).doubleValue();
+			amount = b2.subtract(b1).doubleValue();
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(selectedDate);
+			calendar.add(Calendar.MONTH, -1);
+			
+			long preBeginTime = MEntity.getFirstDayOfMonthMillis(calendar.getTimeInMillis());
+			long preEndTime = MEntity.getLastDayOfMonthMillis(calendar.getTimeInMillis());
+			List<Map<String, Object>> mPreCalendarDataList = OverViewDao
+					.selectTransactionByTimeBE(mActivity, preBeginTime, preEndTime);
 
+			BigDecimal pb1 = new BigDecimal("0");
+			BigDecimal pb2 = new BigDecimal("0");
+			for (Map<String, Object> iMap : mPreCalendarDataList) {
+				String amount = (String) iMap.get("amount");
+				int expenseAccount = (Integer) iMap.get("expenseAccount");
+				int incomeAccount = (Integer) iMap.get("incomeAccount");
+				BigDecimal b3 = new BigDecimal(amount);
+
+				if (expenseAccount > 0 && incomeAccount <= 0) {
+					pb1 = pb1.add(b3);
+				} else if (incomeAccount > 0 && expenseAccount <= 0) {
+					pb2 = pb2.add(b3);
+				}
+			}
+			pexpense = pb1.doubleValue();
+			pincome = pb2.doubleValue();
+			pamount = pb2.subtract(pb1).doubleValue();
+			
 			mGridDataList = filterDataByTime(mCalendarDataList);
-
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};

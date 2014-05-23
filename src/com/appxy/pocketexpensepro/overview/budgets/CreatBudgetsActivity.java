@@ -33,8 +33,6 @@ public class CreatBudgetsActivity extends Activity {
 	private static final int MSG_FAILURE = 0;
 
 	private LayoutInflater inflater;
-	private ListView mListView;
-	private BudgetsListViewAdapter mAdapter;
 	private LinearLayout mRootLayout;
 	private List<LinearLayout> mViewList;
 	private List<Map<String, Object>> mDataList;

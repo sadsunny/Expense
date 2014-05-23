@@ -7,6 +7,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
@@ -16,6 +17,37 @@ import com.appxy.pocketexpensepro.R;
 public class Common {
 	
 	public static int CURRENCY = 148;
+	
+	public final static int[] ExpenseColors = new int[] { 
+		Color.argb(255, 246, 90, 70),
+		Color.argb(255, 239, 48, 48),
+		Color.argb(255, 199, 34, 29),
+		
+		Color.argb(255, 210, 113, 54),
+		Color.argb(255, 255, 172, 48),
+		Color.argb(255, 255, 208, 54),
+		
+		Color.argb(255, 255, 241, 83),
+		Color.argb(255, 152, 102,153),
+		Color.argb(255, 137, 55, 139),
+		Color.argb(255, 150, 25, 101),
+	};// expense Color
+	
+	public final static int[] IncomeColors = new int[] { 
+		Color.argb(255, 111, 182, 14),
+		Color.argb(255, 59, 214, 77),
+		Color.argb(255, 0, 183, 92),
+		
+		Color.argb(255, 14, 160, 104),
+		Color.argb(255, 19, 96, 85),
+		Color.argb(255, 253, 254, 175),
+		
+		Color.argb(255, 224, 207, 127),
+		Color.argb(255, 190, 154,58),
+		Color.argb(255, 222, 173, 60),
+		Color.argb(255, 254, 185, 38),
+	};// income Color
+	
 	
 	public static String turnToDate(long mills) {
 

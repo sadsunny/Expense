@@ -17,6 +17,7 @@ import java.util.TreeMap;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
@@ -37,6 +38,7 @@ import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -47,6 +49,8 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -55,6 +59,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -97,8 +102,7 @@ public class OverviewFragment extends Fragment implements
 	public static SparseArray<Fragment> registeredFragments;
 	
 	private RelativeLayout budgetRelativeLayout ;
-	private TextView budgeTextView;
-	private ProgressBar mProgressBar;
+	private TextView leftTextView;
 	private FixedSpeedScroller mScroller; 
 	
 	private double budgetAmount;
@@ -107,7 +111,16 @@ public class OverviewFragment extends Fragment implements
 	private AlertDialog alertDialog;
 	private long argumentsDate;
 	private int currentPosition;
+	
+	private ImageView addImageView;
+	private RelativeLayout accountRelativeLayout ;
+	
+	private Menu mMenu;
+	public static MenuItem item0;
+	public static MenuItem item1;
+	
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
+	private OnUpdateNavigationListener onUpdateNavigationListener;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -120,10 +133,7 @@ public class OverviewFragment extends Fragment implements
 					mListViewAdapter.notifyDataSetChanged();
 				}
 				
-				mProgressBar.setMax((int)budgetAmount);
-				mProgressBar.setProgress((int) transactionAmount);
-				
-				budgeTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
+				leftTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
 				
 				break;
 
@@ -134,6 +144,10 @@ public class OverviewFragment extends Fragment implements
 			}
 		}
 	};
+	
+	public OverviewFragment() {
+		
+	}
 
 	@Override
 	public void onAttach(Activity activity) {
@@ -148,6 +162,7 @@ public class OverviewFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		
 		Bundle bundle = getArguments();
 		if (bundle != null) {
@@ -168,17 +183,44 @@ public class OverviewFragment extends Fragment implements
 		mInflater = inflater;
 
 		budgetRelativeLayout = (RelativeLayout) view.findViewById(R.id.budget_relativeLayout);
-		budgeTextView = (TextView) view.findViewById(R.id.budget_amount);
-		mProgressBar = (ProgressBar) view.findViewById(R.id.mProgressBar);
+		leftTextView = (TextView) view.findViewById(R.id.left_amount);
+		addImageView = (ImageView) view.findViewById(R.id.add_but);
+		
+		accountRelativeLayout = (RelativeLayout) view.findViewById(R.id.relativeLayout2);
+		
+		accountRelativeLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(getActivity(), AccountActivity.class);
+				startActivityForResult(intent, 6);
+
+			}
+		});
+		
+		
+		addImageView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(getActivity(), CreatTransactionActivity.class);
+				startActivityForResult(intent, 6);
+				
+			}
+		});
 		
 		budgetRelativeLayout.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), BudgetActivity.class);
-				startActivityForResult(intent, 14);
+//				Intent intent = new Intent();
+//				intent.setClass(getActivity(), BudgetActivity.class);
+//				startActivityForResult(intent, 14);
 				
 			}
 		});
@@ -253,6 +295,7 @@ public class OverviewFragment extends Fragment implements
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
 			reFillData(mDataList);
@@ -443,6 +486,20 @@ public class OverviewFragment extends Fragment implements
 		}
 	}
 
+	
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//		// TODO Auto-generated method stub
+//		super.onCreateOptionsMenu(menu, inflater);
+//		this.mMenu = menu;
+//		inflater.inflate(R.menu.confirm, menu);
+//
+//		item0 = mMenu.findItem(R.id.confirm);// 设置actionbar中的搜索按钮不可见
+//		item1 = mMenu.findItem(R.id.action_add);
+//		item1.setVisible(false);
+//		item0.setVisible(true);
+//	}
+
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -450,10 +507,26 @@ public class OverviewFragment extends Fragment implements
 		switch (item.getItemId()) {
 
 		case R.id.action_add:
+			
+			Calendar calendar1 = Calendar.getInstance();
+			calendar1.set(Calendar.HOUR_OF_DAY, 0);
+			calendar1.set(Calendar.MINUTE, 0);
+			calendar1.set(Calendar.SECOND, 0);
+			calendar1.set(Calendar.MILLISECOND, 0);
+			MainActivity.selectedDate = calendar1.getTimeInMillis();
+//			Log.v("mtest", "action_add");
+//			onUpdateNavigationListener.OnUpdateNavigation(0, MainActivity.selectedDate);
+			
+			OverviewFragment overviewFragment = new OverviewFragment();
+			Bundle bundle = new Bundle();
+			bundle.putLong("selectedDate", MainActivity.selectedDate);
+			overviewFragment.setArguments(bundle);
 
-			Intent intent = new Intent();
-			intent.setClass(getActivity(), CreatTransactionActivity.class);
-			startActivityForResult(intent, 6);
+			FragmentTransaction fragmentTransaction1 = mActivity.getSupportFragmentManager().beginTransaction();
+			fragmentTransaction1.replace(R.id.content_frame,
+					overviewFragment);
+			fragmentTransaction1.commit();
+			
 			return true;
 
 		}
