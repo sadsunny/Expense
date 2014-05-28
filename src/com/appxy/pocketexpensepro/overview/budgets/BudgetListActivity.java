@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.bills.BillEditActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
@@ -12,7 +13,9 @@ import com.appxy.pocketexpensepro.overview.OverViewDao;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ActionBar.LayoutParams;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -145,7 +148,10 @@ public class BudgetListActivity extends Activity {
 								});
 
 					}
+				}else{
+					mRootLayout.removeAllViews();
 				}
+					
 				break;
 
 			case MSG_FAILURE:
@@ -225,39 +231,78 @@ public class BudgetListActivity extends Activity {
 				break;
 
 			case R.id.action_done:
-
+				BudgetsDao.deleteBudgetAll(BudgetListActivity.this);
+				int checkDo = 1;
 				if (mViewList != null && mViewList.size() > 0) {
 					for (int i = 0; i < mViewList.size(); i++) {
 						EditText mEditText = (EditText) mViewList.get(i)
 								.findViewById(R.id.amount_edit);
 						String amountString = mEditText.getText().toString();
-
+						
 						double amount;
 						try {
 							amount = Double.parseDouble(amountString);
 						} catch (NumberFormatException e) {
 							amount = 0.00;
 						}
+						
+						if (amount == 0) {
+							
+							new AlertDialog.Builder(BudgetListActivity.this)
+							.setTitle("Warning! ")
+							.setMessage(
+									"Please make sure the amount is not zero! ")
+							.setPositiveButton("Retry",
+									new DialogInterface.OnClickListener() {
 
-						if (amount > 0) {
-							int categoryId = (Integer) mDataList.get(i).get(
-									"_id");
-							long temId = BudgetsDao.insertBudgetTemplate(
-									BudgetListActivity.this, amountString,
-									categoryId);
-							if (temId > 0) {
-								long itemId = BudgetsDao.insertBudgetItem(
-										BudgetListActivity.this, amountString,
-										(int) temId);
-							}
-							Intent intent = new Intent();
-							intent.putExtra("done", 1);
-							setResult(4, intent);
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+
+										}
+									}).show();
+							checkDo = 0;
+							return;
 						}
 					}
 				}
+					
+					if(checkDo == 1){
+						for (int i = 0; i < mViewList.size(); i++) {
+							EditText mEditText = (EditText) mViewList.get(i)
+									.findViewById(R.id.amount_edit);
+							String amountString = mEditText.getText().toString();
 
-				finish();
+							double amount;
+							try {
+								amount = Double.parseDouble(amountString);
+							} catch (NumberFormatException e) {
+								amount = 0.00;
+							}
+
+							if (amount > 0) {
+								int categoryId = (Integer) mDataList.get(i).get(
+										"category");
+								long temId = BudgetsDao.insertBudgetTemplate(
+										BudgetListActivity.this, amountString,
+										categoryId);
+								if (temId > 0) {
+									long itemId = BudgetsDao.insertBudgetItem(
+											BudgetListActivity.this, amountString,
+											(int) temId);
+								}
+								Intent intent = new Intent();
+								intent.putExtra("done", 1);
+								setResult(4, intent);
+							}
+						}
+						finish();
+					}
+					
+				
 				break;
 			}
 		}
@@ -271,11 +316,41 @@ public class BudgetListActivity extends Activity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 4:
+
+			if (data != null) {
+				List<Map<String, Object>> mReturnDataList = (List<Map<String, Object>>) data.getSerializableExtra("mReturnDataList");
+				List<Map<String, Object>> removeDataList = new ArrayList<Map<String,Object>>();
+				
+				if (mReturnDataList!=null) {
+					if (mReturnDataList.size() > 0) {
+						
+						for (Map<String, Object> iMap:mDataList) {
+							int categoryId = (Integer) iMap.get("category");
+							for (Map<String, Object> jMap :mReturnDataList) {
+								int categoryId2 = (Integer) jMap.get("category");
+								if (categoryId == categoryId2) {
+									removeDataList.add(jMap);
+								}
+							}
+						}
+						mReturnDataList.removeAll(removeDataList);
+						mDataList.addAll(mReturnDataList);
+						mHandler.post(mTask);
+					} else {
+						mDataList.clear();
+						mHandler.post(mTask);
+					}
+				} 
+				
+			}
+			break;
+		}
 	}
-	
 	
 
 	

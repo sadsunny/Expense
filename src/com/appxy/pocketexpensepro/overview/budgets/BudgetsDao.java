@@ -86,6 +86,33 @@ public class BudgetsDao {
 		db.close();
 		return row;
 	}
+	
+	
+	
+	public static long deleteBudgetAll(Context context) {
+		SQLiteDatabase db = getConnection(context);
+		long trow = 0;
+		try {
+			trow = db.delete("BudgetTemplate", "_id > ?",
+					new String[] { "0" });
+		} catch (Exception e) {
+			// TODO: handle exception
+			trow = 0;
+		}
+		
+		long row = 0;
+		try {
+			row = db.delete("BudgetItem", "_id > ?", new String[] { "0" });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+
+		
+		db.close();
+		return row;
+	}
+	
 
 	public static List<Map<String, Object>> selectItemById(Context context,
 			int id) { // 查询Category
@@ -216,6 +243,41 @@ public class BudgetsDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectCategoryLeftBudget(Context context) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+
+		String sql = "select * from Category c left join (select c._id from BudgetItem a,BudgetTemplate b,Category c where a.budgetTemplate=b._id and b.category=c._id ) tem on c._id = tem._id where c.categoryType = 0 and categoryName not like '%:%' order by categoryName ASC";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String categoryName = mCursor.getString(3);
+			int categoryType = mCursor.getInt(5);
+			int hasBudget = mCursor.getInt(8);
+			int iconName = mCursor.getInt(9);
+			int isDefault = mCursor.getInt(10);
+			int hasChild = mCursor.getInt(24);
+
+			mMap.put("category", _id);
+			mMap.put("categoryName", categoryName);
+			mMap.put("categoryType", categoryType);
+			mMap.put("hasBudget", hasBudget);
+			mMap.put("iconName", iconName);
+			mMap.put("isDefault", isDefault);
+			mMap.put("hasChild", hasChild);
+			mMap.put("amount", "0.00");
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		return mList;
+	}
+	
+	
 
 	public static List<Map<String, Object>> selectBudgetById(Context context,
 			int id) { // 查询Category

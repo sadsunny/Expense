@@ -218,9 +218,9 @@ public class OverviewFragment extends Fragment implements
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
-//				Intent intent = new Intent();
-//				intent.setClass(getActivity(), BudgetActivity.class);
-//				startActivityForResult(intent, 14);
+				Intent intent = new Intent();
+				intent.setClass(getActivity(), BudgetActivity.class);
+				startActivityForResult(intent, 14);
 				
 			}
 		});

@@ -124,7 +124,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select * from BudgetItem a, BudgetTemplate b,Category c where a.budgetTemplate = b._id and  b.category = c._id ";
+		String sql = "select * from BudgetItem a, BudgetTemplate b,Category c where a.budgetTemplate = b._id and  b.category = c._id order by c.categoryName ASC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

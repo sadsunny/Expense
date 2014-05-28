@@ -192,7 +192,8 @@ public class CreatBudgetsActivity extends Activity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mDataList = BudgetsDao
-					.selectCategoryNotIn(CreatBudgetsActivity.this);
+					.selectCategoryLeftBudget(CreatBudgetsActivity.this);
+			Log.v("mtest", "mDataList"+mDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 		//

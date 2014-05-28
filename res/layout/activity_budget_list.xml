@@ -30,7 +30,13 @@
       <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
-
+        
+        <LinearLayout
+            android:id="@+id/LinearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            
         <LinearLayout
             android:id="@+id/rootView"
             android:layout_width="match_parent"
@@ -38,14 +44,16 @@
             android:orientation="vertical" >
         </LinearLayout>
         
+         <Button
+         android:id="@+id/mButton"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Select Category"
+         android:layout_gravity="center_horizontal"
+        /> 
+          </LinearLayout>
     </ScrollView>
     
-    <Button
-         android:id="@+id/mButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Select Category"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/actionbar_bag_selector" /> 
+   
 
 </LinearLayout>

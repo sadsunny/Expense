@@ -76,7 +76,7 @@
                 android:id="@+id/setbudget_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_computer" />
+                android:src="@drawable/airplane" />
 
             <TextView
                 android:id="@+id/setbudget_txt"
@@ -100,7 +100,7 @@
                 android:id="@+id/setbudget_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_credit_card" />
+                android:src="@drawable/apple" />
 
             <TextView
                 android:id="@+id/transfer_txt"

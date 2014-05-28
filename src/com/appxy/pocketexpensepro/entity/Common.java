@@ -15,40 +15,31 @@ import android.support.v4.content.CursorLoader;
 import com.appxy.pocketexpensepro.R;
 
 public class Common {
-	
+
 	public static int CURRENCY = 148;
-	
-	public final static int[] ExpenseColors = new int[] { 
-		Color.argb(255, 246, 90, 70),
-		Color.argb(255, 239, 48, 48),
-		Color.argb(255, 199, 34, 29),
-		
-		Color.argb(255, 210, 113, 54),
-		Color.argb(255, 255, 172, 48),
-		Color.argb(255, 255, 208, 54),
-		
-		Color.argb(255, 255, 241, 83),
-		Color.argb(255, 152, 102,153),
-		Color.argb(255, 137, 55, 139),
-		Color.argb(255, 150, 25, 101),
-	};// expense Color
-	
-	public final static int[] IncomeColors = new int[] { 
-		Color.argb(255, 111, 182, 14),
-		Color.argb(255, 59, 214, 77),
-		Color.argb(255, 0, 183, 92),
-		
-		Color.argb(255, 14, 160, 104),
-		Color.argb(255, 19, 96, 85),
-		Color.argb(255, 253, 254, 175),
-		
-		Color.argb(255, 224, 207, 127),
-		Color.argb(255, 190, 154,58),
-		Color.argb(255, 222, 173, 60),
-		Color.argb(255, 254, 185, 38),
-	};// income Color
-	
-	
+
+	public final static int[] ExpenseColors = new int[] {
+			Color.argb(255, 246, 90, 70), Color.argb(255, 239, 48, 48),
+			Color.argb(255, 199, 34, 29),
+
+			Color.argb(255, 210, 113, 54), Color.argb(255, 255, 172, 48),
+			Color.argb(255, 255, 208, 54),
+
+			Color.argb(255, 255, 241, 83), Color.argb(255, 152, 102, 153),
+			Color.argb(255, 137, 55, 139), Color.argb(255, 150, 25, 101), };// expense
+																			// Color
+
+	public final static int[] IncomeColors = new int[] {
+			Color.argb(255, 111, 182, 14), Color.argb(255, 59, 214, 77),
+			Color.argb(255, 0, 183, 92),
+
+			Color.argb(255, 14, 160, 104), Color.argb(255, 19, 96, 85),
+			Color.argb(255, 253, 254, 175),
+
+			Color.argb(255, 224, 207, 127), Color.argb(255, 190, 154, 58),
+			Color.argb(255, 222, 173, 60), Color.argb(255, 254, 185, 38), };// income
+																			// Color
+
 	public static String turnToDate(long mills) {
 
 		Date date2 = new Date(mills);
@@ -56,23 +47,73 @@ public class Common {
 		String theDate = sdf.format(date2);
 		return theDate;
 	}
-	
+
 	public static String getRealPathFromURI(Uri contentUri, Context context) {
 		String[] proj = { MediaStore.Images.Media.DATA };
-		CursorLoader loader = new CursorLoader(context, contentUri, proj, null, null, null);
+		CursorLoader loader = new CursorLoader(context, contentUri, proj, null,
+				null, null);
 		Cursor cursor = loader.loadInBackground();
-		int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
 		cursor.moveToFirst();
 		return cursor.getString(column_index);
 	}
-
+	public final static Integer[] CATEGORY_ICON = { R.drawable.airplane,
+		R.drawable.apple, R.drawable.appliances, R.drawable.asset,
+		R.drawable.auto_gas, R.drawable.auto2, R.drawable.bag,
+		R.drawable.ball, R.drawable.bank, R.drawable.bill,
+		R.drawable.bonus, R.drawable.book, R.drawable.bus,
+		R.drawable.business, R.drawable.cable_tv, R.drawable.car,
+		R.drawable.category_cash, R.drawable.ceremony, R.drawable.charity,
+		R.drawable.childcare, R.drawable.clothing, R.drawable.commonfood,
+		R.drawable.comp, R.drawable.cosmetics, R.drawable.credit_card2,
+		R.drawable.credit_card, R.drawable.delete,
+		R.drawable.digital_product, R.drawable.eat, R.drawable.education,
+		R.drawable.entertainment, R.drawable.fastfood, R.drawable.favorite,
+		R.drawable.furniture, R.drawable.game, R.drawable.gifts,
+		R.drawable.grocery, R.drawable.health_fitness,
+		R.drawable.health_fitness3, R.drawable.health_fitness4,
+		R.drawable.heart, R.drawable.hobby, R.drawable.house_hold2,
+		R.drawable.insurance, R.drawable.interent, R.drawable.loan,
+		R.drawable.lunch, R.drawable.medicare, R.drawable.mind,
+		R.drawable.misc, R.drawable.movie, R.drawable.my_kids,
+		R.drawable.my_pets, R.drawable.party, R.drawable.pets,
+		R.drawable.power, R.drawable.question_mark,
+		R.drawable.question_mark2, R.drawable.rent, R.drawable.repair,
+		R.drawable.salary, R.drawable.salary2, R.drawable.saving,
+		R.drawable.star, R.drawable.tax, R.drawable.tax2, R.drawable.tea,
+		R.drawable.teeth, R.drawable.traffic_other, R.drawable.transfer,
+		R.drawable.utilities_gas, R.drawable.vegatable,
+		R.drawable.vocation, R.drawable.water, R.drawable.wedding };
 	
-	public final static Integer[] ACCOUNT_TYPE_ICON = { R.drawable.icon_baby,
-			R.drawable.icon_car, R.drawable.icon_computer,
-			R.drawable.icon_cosmetology, R.drawable.icon_credit_card,
-			R.drawable.icon_dining, R.drawable.icon_education,
-			R.drawable.icon_ele, R.drawable.icon_gas };
-
+	
+	public final static Integer[] ACCOUNT_TYPE_ICON = { R.drawable.airplane,
+			R.drawable.apple, R.drawable.appliances, R.drawable.asset,
+			R.drawable.auto_gas, R.drawable.auto2, R.drawable.bag,
+			R.drawable.ball, R.drawable.bank, R.drawable.bill,
+			R.drawable.bonus, R.drawable.book, R.drawable.bus,
+			R.drawable.business, R.drawable.cable_tv, R.drawable.car,
+			R.drawable.category_cash, R.drawable.ceremony, R.drawable.charity,
+			R.drawable.childcare, R.drawable.clothing, R.drawable.commonfood,
+			R.drawable.comp, R.drawable.cosmetics, R.drawable.credit_card2,
+			R.drawable.credit_card, R.drawable.delete,
+			R.drawable.digital_product, R.drawable.eat, R.drawable.education,
+			R.drawable.entertainment, R.drawable.fastfood, R.drawable.favorite,
+			R.drawable.furniture, R.drawable.game, R.drawable.gifts,
+			R.drawable.grocery, R.drawable.health_fitness,
+			R.drawable.health_fitness3, R.drawable.health_fitness4,
+			R.drawable.heart, R.drawable.hobby, R.drawable.house_hold2,
+			R.drawable.insurance, R.drawable.interent, R.drawable.loan,
+			R.drawable.lunch, R.drawable.medicare, R.drawable.mind,
+			R.drawable.misc, R.drawable.movie, R.drawable.my_kids,
+			R.drawable.my_pets, R.drawable.party, R.drawable.pets,
+			R.drawable.power, R.drawable.question_mark,
+			R.drawable.question_mark2, R.drawable.rent, R.drawable.repair,
+			R.drawable.salary, R.drawable.salary2, R.drawable.saving,
+			R.drawable.star, R.drawable.tax, R.drawable.tax2, R.drawable.tea,
+			R.drawable.teeth, R.drawable.traffic_other, R.drawable.transfer,
+			R.drawable.utilities_gas, R.drawable.vegatable,
+			R.drawable.vocation, R.drawable.water, R.drawable.wedding };
 
 	public final static String[] CURRENCY_SIGN = { "Lek", "Kz", "$", "դր",
 			"Afl.", "$", "AZN", "د.ج", "؋", "B$", "৳", "Bds$", "BYR", "$",
