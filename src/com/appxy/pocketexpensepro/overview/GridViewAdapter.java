@@ -105,9 +105,6 @@ public class GridViewAdapter extends BaseAdapter {
 			viewHolder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
 		}
 		
-		viewHolder.expenseTextView.setTextColor(Color.RED);
-		viewHolder.incomeTextView.setTextColor(Color.GREEN);
-		
 		double expense =  (Double) mList.get(position).get("expense");
 		double income =  (Double) mList.get(position).get("income");
 		

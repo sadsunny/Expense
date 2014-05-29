@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="55dp"
-        android:layout_height="65dp"
+        android:layout_height="60dp"
         android:background="@drawable/week_item_selector" >
 
         <View
@@ -15,15 +15,18 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_alignParentTop="true"
-            android:background="@color/black_gray" />
+            android:background="@color/devide_gray" />
 
         <TextView
             android:id="@+id/date_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:text="14" />
+            android:layout_marginTop="3dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentRight="true"
+            android:text="14" 
+            android:textSize="16.5sp"
+            android:textColor="@color/text_gray"/>
 
         <TextView
             android:id="@+id/expense_text"
@@ -31,9 +34,10 @@
             android:layout_height="wrap_content"
             android:layout_above="@+id/income_text"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="1dp"
+            android:layout_marginRight="5dp"
             android:maxLength="9"
-            android:textSize="12sp" />
+            android:textSize="10sp" 
+            android:textColor="@color/text_red"/>
 
         <TextView
             android:id="@+id/income_text"
@@ -41,23 +45,24 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="1dp"
+            android:layout_marginRight="5dp"
             android:maxLength="9"
-            android:textSize="12sp" />
+            android:textSize="10sp"
+            android:textColor="@color/text_green" />
 
         <View
             android:id="@+id/line_view"
             android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:background="@color/black_gray" />
+            android:background="@color/devide_gray" />
 
         <View
             android:id="@+id/line_view"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_alignParentBottom="true"
-            android:background="@color/black_gray" />
+            android:background="@color/devide_gray" />
     </RelativeLayout>
 
 </LinearLayout>

@@ -10,6 +10,7 @@
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:textSize="18sp"
+         android:textColor="@color/white"
          android:textAppearance="?android:attr/textAppearanceLarge" 
           />
      
@@ -17,7 +18,9 @@
          android:id="@+id/subtitle_text"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
+         android:textColor="@color/white"
          android:textSize="12sp"
+         android:alpha="0.5"
           />
 
 </LinearLayout>

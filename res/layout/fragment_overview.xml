@@ -96,7 +96,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/mPager"
             android:layout_width="match_parent"
-            android:layout_height="65dp"
+            android:layout_height="60dp"
             android:layout_alignParentTop="true" />
 
         <ListView

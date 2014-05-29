@@ -27,8 +27,17 @@
     <color name="bill_gray">#acacac</color>
     <color name="list_line">#FFd4d4d7</color>
     <color name="text_little_title">#7c8285</color>
-    <color name="text_black">#323232</color>
     
-     <color name="blue_theme">#4c8fca</color>
+    <color name="blue_theme">#4c8fca</color>
+    <color name="text_black">#36373c</color>
+    <color name="text_gray">#5e637f</color>
+    <color name="text_gray1">#acadb2</color>
+    <color name="text_red">#d02f3a</color>
+    <color name="text_green">#539627</color>
+    <color name="text_blue">#cedff9</color>
+    <color name="bag_gray">#f2f2f2</color>
+    <color name="sel_gray">#dfdfdf</color>
+    <color name="devide_gray">#dddddd</color>
+    <color name="line_devide_gray">#cccccc</color>
 
 </resources>

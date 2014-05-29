@@ -4,14 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <View
-        android:id="@+id/mline_label"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="48dp"
-        android:background="@color/lightgray" >
-    </View>
-
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
@@ -32,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="13dp"
             android:src="@drawable/auto2" 
             />
 
@@ -48,7 +40,8 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearance"
-            android:textSize="16sp" />
+            android:textSize="16.5sp" 
+            android:textColor="@color/text_black"/>
 
         <TextView
             android:id="@+id/TextView2"
@@ -62,7 +55,8 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="13.3sp" />
+            android:textSize="13.5sp" 
+            android:textColor="@color/text_gray1"/>
 
         <ImageView
             android:id="@+id/mImageView1"
@@ -100,7 +94,8 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/amounttextView"
             android:text="@string/dollar"
-            android:visibility="visible" />
+            android:visibility="visible" 
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/amounttextView"
@@ -114,7 +109,13 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="16sp" />
+            android:textSize="18sp" />
     </RelativeLayout>
-
+ <View
+        android:id="@+id/mline_label"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="48dp"
+        android:background="@color/line_devide_gray" >
+    </View>
 </LinearLayout>
