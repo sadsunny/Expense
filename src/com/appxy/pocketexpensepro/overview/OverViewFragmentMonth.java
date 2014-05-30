@@ -11,6 +11,14 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,6 +26,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +44,7 @@ public class OverViewFragmentMonth extends Fragment {
 	private int viewPagerPosition;
 	private OnTellUpdateMonthListener onTellUpdateMonthListener;
 	private OnUpdateNavigationListener onUpdateNavigationListener;
+	public static MenuItem item;
 	
 	@Override
 	public void onAttach(Activity activity) {
@@ -116,13 +127,53 @@ public class OverViewFragmentMonth extends Fragment {
 	}
 	
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// TODO Auto-generated method stub
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.today_menu, menu);
+		item = menu.findItem(R.id.today);
+		 menu.findItem(R.id.today).setIcon(getTodayIcon()); 
+	}
+
+	/**
+     * 在给定的图片的右上角加上联系人数量。数量用红色表示
+     * @param icon 给定的图片
+     * @return 带联系人数量的图片
+     */
+    private Drawable getTodayIcon(){
+        //初始化画布
+    	Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.today).copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas=new Canvas(originalBitmap);
+        
+        int size = MEntity.dip2px(mActivity, 32);
+        int px = MEntity.dip2px(mActivity, 14.25f);
+        
+        Calendar calendar = Calendar.getInstance();
+        int contacyCount= calendar.get(Calendar.DAY_OF_MONTH);
+        //启用抗锯齿和使用设备的文本字距
+        Paint countPaint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.DEV_KERN_TEXT_FLAG);
+        countPaint.setColor(Color.WHITE);
+        countPaint.setTextSize(26f);
+        countPaint.setTextAlign(Paint.Align.CENTER);
+        FontMetrics fontMetrics = countPaint.getFontMetrics();  
+        float ascentY =  fontMetrics.ascent;  
+        float descentY = fontMetrics.descent;  
+        Log.v("mtest", "ascentY"+ascentY);
+        Log.v("mtest", "descentY"+descentY);
+        
+        canvas.drawText(String.valueOf(contacyCount), size/2, size-px-(ascentY+descentY)/2, countPaint);
+        BitmapDrawable bd= new BitmapDrawable(mActivity.getResources(), originalBitmap);
+        return bd;
+    }
+ 
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 
-		case R.id.action_add:
+		case R.id.today:
 
-			
 			Calendar calendar1 = Calendar.getInstance();
 			calendar1.set(Calendar.HOUR_OF_DAY, 0);
 			calendar1.set(Calendar.MINUTE, 0);

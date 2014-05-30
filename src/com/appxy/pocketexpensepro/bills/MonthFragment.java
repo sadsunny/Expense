@@ -51,6 +51,9 @@ public class MonthFragment extends Fragment {
 	private long selectedMonth;
 	private OnBillToActivityListener onBillToActivityListener;
 	
+	public MonthFragment() {
+		
+	}
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

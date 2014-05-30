@@ -67,6 +67,9 @@ public class ReportOverviewFragment extends Fragment {
 		}
 	};
 	
+	public ReportOverviewFragment () {
+		
+	}
 	
 	@Override
 	public void onAttach(Activity activity) {

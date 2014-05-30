@@ -102,7 +102,7 @@ public class GridViewAdapter extends BaseAdapter {
 		if (choosedTime == todayTime) {
 			viewHolder.mLayout.setBackgroundResource(R.color.black_gray);
 		} else {
-			viewHolder.mLayout.setBackgroundResource(R.drawable.week_item_selector);
+			viewHolder.mLayout.setBackgroundResource(R.color.white);
 		}
 		
 		double expense =  (Double) mList.get(position).get("expense");

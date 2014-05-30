@@ -67,6 +67,9 @@ public class BillsFragment extends Fragment{
 	private ListView diaListView;
 	private DialogDeleteBillAdapter dialogEditBillAdapter ;
 	
+	public BillsFragment () {
+		
+	}
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

@@ -335,16 +335,17 @@ containing a value of this type.
         public static final int tea=0x7f020066;
         public static final int teeth=0x7f020067;
         public static final int test1=0x7f020068;
-        public static final int traffic_other=0x7f020069;
-        public static final int transfer=0x7f02006a;
-        public static final int up=0x7f02006b;
-        public static final int upcoming=0x7f02006c;
-        public static final int utilities_gas=0x7f02006d;
-        public static final int vegatable=0x7f02006e;
-        public static final int vocation=0x7f02006f;
-        public static final int water=0x7f020070;
-        public static final int wedding=0x7f020071;
-        public static final int week_item_selector=0x7f020072;
+        public static final int today=0x7f020069;
+        public static final int traffic_other=0x7f02006a;
+        public static final int transfer=0x7f02006b;
+        public static final int up=0x7f02006c;
+        public static final int upcoming=0x7f02006d;
+        public static final int utilities_gas=0x7f02006e;
+        public static final int vegatable=0x7f02006f;
+        public static final int vocation=0x7f020070;
+        public static final int water=0x7f020071;
+        public static final int wedding=0x7f020072;
+        public static final int week_item_selector=0x7f020073;
     }
     public static final class id {
         public static final int  currency_textView1=0x7f040033;
@@ -578,6 +579,7 @@ containing a value of this type.
         public static final int textView5=0x7f04003f;
         public static final int title_text=0x7f0400e8;
         public static final int to_btn=0x7f040024;
+        public static final int today=0x7f0400f4;
         public static final int tranfer_linearLayout=0x7f0400b3;
         public static final int transfer_linearLayout=0x7f04005a;
         public static final int transfer_txt=0x7f04005b;
@@ -669,6 +671,7 @@ containing a value of this type.
         public static final int add_menu=0x7f0a0000;
         public static final int confirm=0x7f0a0001;
         public static final int main=0x7f0a0002;
+        public static final int today_menu=0x7f0a0003;
     }
     public static final class string {
         public static final int account=0x7f080007;

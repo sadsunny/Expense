@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.overview;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -40,6 +41,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -69,16 +79,6 @@ import android.view.animation.AccelerateInterpolator;
 
 public class OverviewFragment extends Fragment implements 
 		OnChangeStateListener,OnUpdateListListener {
-	
-//	 try {               
-//    Field mField = ViewPager.class.getDeclaredField("mScroller");               
-//    mField.setAccessible(true);     
-//     //设置加速度 ，通过改变FixedSpeedScroller这个类中的mDuration来改变动画时间（如mScroller.setmDuration(mMyDuration);）    
-//    mScroller = new FixedSpeedScroller(mViewPager.getContext(), new AccelerateInterpolator());           
-//    mField.set(mViewPager, mScroller);           
-//    } catch (Exception e) {           
-//        e.printStackTrace();  
-//    }   
 	
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
@@ -115,12 +115,9 @@ public class OverviewFragment extends Fragment implements
 	private ImageView addImageView;
 	private RelativeLayout accountRelativeLayout ;
 	
-	private Menu mMenu;
-	public static MenuItem item0;
-	public static MenuItem item1;
-	
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private OnUpdateNavigationListener onUpdateNavigationListener;
+	public static MenuItem item;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -128,7 +125,6 @@ public class OverviewFragment extends Fragment implements
 			case MSG_SUCCESS:
 
 				if (mDataList != null) {
-
 					mListViewAdapter.setAdapterDate(mDataList);
 					mListViewAdapter.notifyDataSetChanged();
 				}
@@ -487,26 +483,49 @@ public class OverviewFragment extends Fragment implements
 	}
 
 	
-//	@Override
-//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//		// TODO Auto-generated method stub
-//		super.onCreateOptionsMenu(menu, inflater);
-//		this.mMenu = menu;
-//		inflater.inflate(R.menu.confirm, menu);
-//
-//		item0 = mMenu.findItem(R.id.confirm);// 设置actionbar中的搜索按钮不可见
-//		item1 = mMenu.findItem(R.id.action_add);
-//		item1.setVisible(false);
-//		item0.setVisible(true);
-//	}
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// TODO Auto-generated method stub
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.today_menu, menu);
+		item = menu.findItem(R.id.today);
+		
+		menu.findItem(R.id.today).setIcon(getTodayIcon()); 
+	}
 
-
+    private Drawable getTodayIcon(){
+        //初始化画布
+    	Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.today).copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas=new Canvas(originalBitmap);
+        
+        int size = MEntity.dip2px(mActivity, 32);
+        int px = MEntity.dip2px(mActivity, 14.25f);
+        
+        Calendar calendar = Calendar.getInstance();
+        int contacyCount= calendar.get(Calendar.DAY_OF_MONTH);
+        //启用抗锯齿和使用设备的文本字距
+        Paint countPaint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.DEV_KERN_TEXT_FLAG);
+        countPaint.setColor(Color.WHITE);
+        countPaint.setTextSize(26f);
+        countPaint.setTextAlign(Paint.Align.CENTER);
+        FontMetrics fontMetrics = countPaint.getFontMetrics();  
+        float ascentY =  fontMetrics.ascent;  
+        float descentY = fontMetrics.descent;  
+        Log.v("mtest", "ascentY"+ascentY);
+        Log.v("mtest", "descentY"+descentY);
+        
+        canvas.drawText(String.valueOf(contacyCount), size/2, size-px-(ascentY+descentY)/2, countPaint);
+        BitmapDrawable bd= new BitmapDrawable(mActivity.getResources(), originalBitmap);
+        return bd;
+    }
+ 
+ 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
 		switch (item.getItemId()) {
 
-		case R.id.action_add:
+		case R.id.today:
 			
 			Calendar calendar1 = Calendar.getInstance();
 			calendar1.set(Calendar.HOUR_OF_DAY, 0);
@@ -532,6 +551,7 @@ public class OverviewFragment extends Fragment implements
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {

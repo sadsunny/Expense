@@ -118,7 +118,7 @@ public class MainActivity extends FragmentActivity implements
 											// onPrepareOptionsMenu()
 				// onPrepareOptionsMenu()
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
+				
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -420,7 +420,31 @@ public class MainActivity extends FragmentActivity implements
 		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mLinearLayout);
 		menu.findItem(R.id.action_search).setVisible(drawerOpen);
 		menu.findItem(R.id.action_settings).setVisible(drawerOpen);
-		menu.findItem(R.id.action_add).setVisible(!drawerOpen);
+		if (mItemPosition == 0) {
+			menu.findItem(R.id.action_add).setVisible(false);
+			
+			if (drawerOpen) {
+				
+				if (OverviewFragment.item != null) {
+					OverviewFragment.item.setVisible(false);
+				}
+				
+				if (OverViewFragmentMonth.item != null) {
+					OverViewFragmentMonth.item.setVisible(false);
+				}
+			} 
+			
+		} else {
+			menu.findItem(R.id.action_add).setVisible(!drawerOpen);
+		}
+		
+		if (mItemPosition == 1 && drawerOpen==false) {
+			
+			if (AccountsFragment.item0 != null && AccountsFragment.sortCheck == 1) {
+				AccountsFragment.item1.setVisible(false);
+				AccountsFragment.item0.setVisible(true);
+			}
+		}
 
 		return super.onPrepareOptionsMenu(menu);
 	}

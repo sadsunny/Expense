@@ -59,6 +59,9 @@ public class BillsFragmentMonth extends Fragment implements
 	private BillListViewAdapter billListViewAdapter;
 	private List<Map<String, Object>> mListViewData;
 	
+	public BillsFragmentMonth() {
+		
+	}
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

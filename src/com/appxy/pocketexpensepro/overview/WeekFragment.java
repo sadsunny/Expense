@@ -110,6 +110,10 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		}
 	}
 
+	public WeekFragment() {
+		
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

@@ -11,6 +11,7 @@ import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -59,7 +60,7 @@ public class ListViewAdapter extends BaseAdapter {
 		return 0;
 	}
 
-	public String turnToDateString(long mills) { // 锟斤拷锟斤拷锟斤拷锟斤拷转锟斤拷为锟斤拷锟节猴拷锟斤拷锟斤拷
+	public String turnToDateString(long mills) {
 
 		Date date2 = new Date(mills);
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
@@ -67,6 +68,7 @@ public class ListViewAdapter extends BaseAdapter {
 		return theDate;
 	}
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
@@ -155,30 +157,22 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 
 		if (expenseAccount > 0 && incomeAccount <= 0) {
-			viewholder.symbol_txt.setVisibility(View.VISIBLE);
-			viewholder.symbol_txt.setText("-");
-			viewholder.symbol_txt.setTextColor(Color.RED);
-			viewholder.currency_textView.setTextColor(Color.RED);
-			viewholder.amount_textView.setTextColor(Color.RED);
-			double amount = 0 - mAmount;
+			viewholder.currency_textView.setTextColor(R.color.text_red);
+			viewholder.amount_textView.setTextColor(R.color.text_red);
+			double amount = mAmount;
 			viewholder.amount_textView.setText(MEntity.doublepoint2str(amount
 					+ ""));
 		} else if (expenseAccount <= 0 && incomeAccount > 0) {
-			viewholder.symbol_txt.setVisibility(View.INVISIBLE);
-			viewholder.symbol_txt.setText("");
-			viewholder.symbol_txt.setTextColor(Color.GREEN);
-			viewholder.currency_textView.setTextColor(Color.GREEN);
-			viewholder.amount_textView.setTextColor(Color.GREEN);
+			viewholder.currency_textView.setTextColor(R.color.text_green);
+			viewholder.amount_textView.setTextColor(R.color.text_green);
 			viewholder.amount_textView.setText(MEntity
 					.doublepoint2str((String) mData.get(position).get("amount")));
 		}else {
-			viewholder.symbol_txt.setTextColor(Color.BLACK);
-			viewholder.currency_textView.setTextColor(Color.BLACK);
-			viewholder.amount_textView.setTextColor(Color.BLACK);
+			viewholder.currency_textView.setTextColor(R.color.text_black);
+			viewholder.amount_textView.setTextColor(R.color.text_black);
 			viewholder.amount_textView.setText(MEntity
 					.doublepoint2str((String) mData.get(position).get("amount")));
 		}
-
 
 		return convertView;
 	}

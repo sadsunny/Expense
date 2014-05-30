@@ -65,6 +65,10 @@ public class AccountsFragment extends Fragment {
 	private LinearLayout tranfer_linearLayout;
 	private Activity mActivity;
 
+	public AccountsFragment() {
+		
+	}
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -369,7 +373,7 @@ public class AccountsFragment extends Fragment {
 		this.mMenu = menu;
 		inflater.inflate(R.menu.confirm, menu);
 
-		item0 = mMenu.findItem(R.id.confirm);// 设置actionbar中的搜索按钮不可见
+		item0 = mMenu.findItem(R.id.confirm);// 设置actionbar中的按钮不可见
 		item0.setVisible(false);
 		item1 = mMenu.findItem(R.id.action_add);
 
