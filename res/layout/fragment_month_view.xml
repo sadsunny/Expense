@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/white" >
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
@@ -25,7 +26,7 @@
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:layout_below="@+id/mGridview"
             android:orientation="horizontal"
             android:weightSum="3" >
@@ -36,71 +37,85 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" >
 
-                <TextView
-                    android:id="@+id/expense_label"
+                <RelativeLayout
+                    android:id="@+id/mRelative1"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="bottom"
-                    android:text="EXPENSE" />
-
-                <LinearLayout
-                    android:id="@+id/mLinearLayout1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/expense_label"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" >
 
                     <TextView
-                        android:id="@+id/currency_txt1"
+                        android:id="@+id/expense_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dollar" />
+                        android:layout_height="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="bottom"
+                        android:text="EXPENSE"
+                        android:textColor="@color/text_black"
+                        android:textSize="12.5sp" />
 
-                    <TextView
-                        android:id="@+id/expense_txt"
+                    <LinearLayout
+                        android:id="@+id/mLinearLayout1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_label" />
-                </LinearLayout>
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/expense_label"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                <LinearLayout
-                    android:id="@+id/mLinearLayout2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/mLinearLayout1"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                        <TextView
+                            android:id="@+id/currency_txt1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dollar"
+                            android:textSize="15sp" />
 
-                    <ImageView
-                        android:id="@+id/trend1"
+                        <TextView
+                            android:id="@+id/expense_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zero_label"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/mLinearLayout2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/balence" />
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/mLinearLayout1"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/percent_txt1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.00%" />
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/trend1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/balence" />
+
+                        <TextView
+                            android:id="@+id/percent_txt1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="1dp"
+                            android:text="0.00%"
+                            android:textColor="@color/percent_text_gray"
+                            android:textSize="12.5sp" />
+                    </LinearLayout>
+                </RelativeLayout>
 
                 <View
                     android:id="@+id/line1"
-                    android:layout_width="1dp"
+                    android:layout_width="0.5dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
 
                 <View
                     android:id="@+id/line2"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -109,71 +124,85 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" >
 
-                <TextView
-                    android:id="@+id/income_label"
+                <RelativeLayout
+                    android:id="@+id/mRelative1"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="bottom"
-                    android:text="INCOME" />
-
-                <LinearLayout
-                    android:id="@+id/iLinearLayout1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/income_label"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" >
 
                     <TextView
-                        android:id="@+id/currency_txt2"
+                        android:id="@+id/income_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dollar" />
+                        android:layout_height="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="bottom"
+                        android:text="INCOME"
+                        android:textColor="@color/text_black"
+                        android:textSize="12.5sp" />
 
-                    <TextView
-                        android:id="@+id/income_txt"
+                    <LinearLayout
+                        android:id="@+id/iLinearLayout1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_label" />
-                </LinearLayout>
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/income_label"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                <LinearLayout
-                    android:id="@+id/iLinearLayout2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/iLinearLayout1"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                        <TextView
+                            android:id="@+id/currency_txt2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dollar"
+                            android:textSize="15sp" />
 
-                    <ImageView
-                        android:id="@+id/trend2"
+                        <TextView
+                            android:id="@+id/income_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zero_label"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/iLinearLayout2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/balence" />
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/iLinearLayout1"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/percent_txt2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.00%" />
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/trend2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/balence" />
+
+                        <TextView
+                            android:id="@+id/percent_txt2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="1dp"
+                            android:text="0.00%"
+                            android:textColor="@color/percent_text_gray"
+                            android:textSize="12.5sp" />
+                    </LinearLayout>
+                </RelativeLayout>
 
                 <View
                     android:id="@+id/line3"
-                    android:layout_width="1dp"
+                    android:layout_width="0.5dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
 
                 <View
                     android:id="@+id/line4"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -182,71 +211,85 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" >
 
-                <TextView
-                    android:id="@+id/balance_label"
+                <RelativeLayout
+                    android:id="@+id/mRelative1"
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="bottom"
-                    android:text="BALANCE" />
-
-                <LinearLayout
-                    android:id="@+id/bLinearLayout1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/balance_label"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" >
 
                     <TextView
-                        android:id="@+id/currency_txt3"
+                        android:id="@+id/balance_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/dollar" />
+                        android:layout_height="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="bottom"
+                        android:text="BALANCE"
+                        android:textColor="@color/text_black"
+                        android:textSize="12.5sp" />
 
-                    <TextView
-                        android:id="@+id/balance_txt"
+                    <LinearLayout
+                        android:id="@+id/bLinearLayout1"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/zero_label" />
-                </LinearLayout>
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/balance_label"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                <LinearLayout
-                    android:id="@+id/bLinearLayout2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_below="@+id/bLinearLayout1"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal" >
+                        <TextView
+                            android:id="@+id/currency_txt3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dollar"
+                            android:textSize="15sp" />
 
-                    <ImageView
-                        android:id="@+id/trend3"
+                        <TextView
+                            android:id="@+id/balance_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/zero_label"
+                            android:textSize="15sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/bLinearLayout2"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/balence" />
+                        android:layout_height="20dp"
+                        android:layout_below="@+id/bLinearLayout1"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/percent_txt3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.00%" />
-                </LinearLayout>
+                        <ImageView
+                            android:id="@+id/trend3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/balence" />
+
+                        <TextView
+                            android:id="@+id/percent_txt3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="1dp"
+                            android:text="0.00%"
+                            android:textColor="@color/percent_text_gray"
+                            android:textSize="12.5sp" />
+                    </LinearLayout>
+                </RelativeLayout>
 
                 <View
                     android:id="@+id/line5"
-                    android:layout_width="1dp"
+                    android:layout_width="0.5dp"
                     android:layout_height="match_parent"
                     android:layout_alignParentRight="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
 
                 <View
                     android:id="@+id/line6"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/bill_gray" />
+                    android:background="@color/line_devide_gray" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>

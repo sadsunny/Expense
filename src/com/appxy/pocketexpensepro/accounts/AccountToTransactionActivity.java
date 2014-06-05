@@ -99,36 +99,36 @@ public class AccountToTransactionActivity extends Activity {
 			case MSG_SUCCESS:
 				
 				if (outstanding < 0) {
-					symbolTextView1.setText("-");
-					symbolTextView1.setVisibility(View.VISIBLE);
-					symbolTextView1.setTextColor(Color.RED);
-					currencyTextView1.setTextColor(Color.RED);
-					outstandingTextView.setTextColor(Color.RED);
+//					symbolTextView1.setText("-");
+//					symbolTextView1.setVisibility(View.VISIBLE);
+//					symbolTextView1.setTextColor(Color.RED);
+//					currencyTextView1.setTextColor(Color.RED);
+//					outstandingTextView.setTextColor(Color.RED);
 					double tem = 0 - outstanding;
 					outstandingTextView.setText(MEntity.doublepoint2str(tem+""));
 				} else {
-					symbolTextView1.setText("");
-					symbolTextView1.setVisibility(View.INVISIBLE);
-					symbolTextView1.setTextColor(R.color.black_gray);
-					currencyTextView1.setTextColor(R.color.black_gray);
-					outstandingTextView.setTextColor(R.color.black_gray);
+//					symbolTextView1.setText("");
+//					symbolTextView1.setVisibility(View.INVISIBLE);
+//					symbolTextView1.setTextColor(R.color.black_gray);
+//					currencyTextView1.setTextColor(R.color.black_gray);
+//					outstandingTextView.setTextColor(R.color.black_gray);
 					outstandingTextView.setText(MEntity.doublepoint2str(outstanding+""));
 				}
 				
 				if (banlance < 0) {
-					symbolTextView2.setText("-");
-					symbolTextView2.setVisibility(View.VISIBLE);
-					symbolTextView2.setTextColor(Color.RED);
-					currencyTextView2.setTextColor(Color.RED);
-					balanceTextView.setTextColor(Color.RED);
+//					symbolTextView2.setText("-");
+//					symbolTextView2.setVisibility(View.VISIBLE);
+//					symbolTextView2.setTextColor(Color.RED);
+//					currencyTextView2.setTextColor(Color.RED);
+//					balanceTextView.setTextColor(Color.RED);
 					double tem = 0 - banlance;
 					balanceTextView.setText(MEntity.doublepoint2str(tem+""));
 				} else {
-					symbolTextView2.setText("");
-					symbolTextView2.setVisibility(View.INVISIBLE);
-					symbolTextView2.setTextColor(R.color.black_gray);
-					currencyTextView2.setTextColor(R.color.black_gray);
-					balanceTextView.setTextColor(R.color.black_gray);
+//					symbolTextView2.setText("");
+//					symbolTextView2.setVisibility(View.INVISIBLE);
+//					symbolTextView2.setTextColor(R.color.black_gray);
+//					currencyTextView2.setTextColor(R.color.black_gray);
+//					balanceTextView.setTextColor(R.color.black_gray);
 					balanceTextView.setText(MEntity.doublepoint2str(banlance+""));
 				}
 				
@@ -847,20 +847,16 @@ public class AccountToTransactionActivity extends Activity {
 			}
 
 			if (mAmount < 0) {
-				viewholder.symbol_txt.setVisibility(View.VISIBLE);
-				viewholder.symbol_txt.setText("-");
-				viewholder.symbol_txt.setTextColor(Color.RED);
-				viewholder.currency_textView.setTextColor(Color.RED);
-				viewholder.amount_textView.setTextColor(Color.RED);
+				viewholder.symbol_txt.setTextColor(Color.rgb(208, 47 ,58));
+				viewholder.currency_textView.setTextColor(Color.rgb(208, 47 ,58));
+				viewholder.amount_textView.setTextColor(Color.rgb(208, 47 ,58));
 				double amount = 0 - mAmount;
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str(amount + ""));
 			} else {
-				viewholder.symbol_txt.setVisibility(View.INVISIBLE);
-				viewholder.symbol_txt.setText("");
-				viewholder.symbol_txt.setTextColor(Color.GREEN);
-				viewholder.currency_textView.setTextColor(Color.GREEN);
-				viewholder.amount_textView.setTextColor(Color.GREEN);
+				viewholder.symbol_txt.setTextColor(Color.rgb(83,150,39));
+				viewholder.currency_textView.setTextColor( Color.rgb(83,150,39));
+				viewholder.amount_textView.setTextColor(Color.rgb(83,150,39));
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str((String) childList.get(groupPosition)
 								.get(childPosition).get("amount")));

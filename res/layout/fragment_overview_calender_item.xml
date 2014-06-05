@@ -3,25 +3,23 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-     >
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="46dp"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:background="@drawable/bill_calendar_selector" >
-
 
         <TextView
             android:id="@+id/date_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-             android:layout_marginTop="3dp"
-            android:layout_marginRight="8dp"
             android:layout_alignParentRight="true"
-            android:textSize="16.5sp"
-            android:text="14" />
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="3dp"
+            android:text="14"
+            android:textSize="16.5sp" />
 
         <TextView
             android:id="@+id/expense_text"
@@ -30,6 +28,7 @@
             android:layout_above="@+id/income_text"
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="-1dp"
             android:maxLength="9"
             android:textSize="10sp" />
 
@@ -40,12 +39,13 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
             android:maxLength="9"
             android:textSize="10sp" />
 
         <View
             android:id="@+id/line_view"
-            android:layout_width="1dp"
+            android:layout_width="0.5dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:background="@color/devide_gray" />
@@ -53,7 +53,7 @@
         <View
             android:id="@+id/line_view"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
             android:background="@color/devide_gray" />
     </RelativeLayout>

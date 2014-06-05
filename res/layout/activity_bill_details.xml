@@ -5,21 +5,29 @@
     android:layout_height="match_parent"
     android:background="@color/white" >
 
+   
+    
     <RelativeLayout
         android:id="@+id/mRelativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/calendar_bac" >
+        android:background="@color/bag_gray" >
+        
+         <View
+                    android:id="@+id/Line0"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="19.5dp"
+                    android:background="@color/line_devide_gray" />
 
             <LinearLayout
                 android:id="@+id/LinearLayout1"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:layout_marginBottom="9.3dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="9.3dp"
-                android:layout_marginTop="5.3dp"
-                android:orientation="vertical" >
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                android:background="@color/white" >
+                
 
                 <RelativeLayout
                     android:id="@+id/RelativeLayout1"
@@ -30,8 +38,9 @@
 
                     <ImageView
                         android:id="@+id/category_imageView"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/airplane"
                         android:layout_alignParentLeft="true"
                         android:layout_centerVertical="true" />
 
@@ -45,7 +54,7 @@
                         android:maxEms="10"
                         android:singleLine="true"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/text_black"
+                        android:textColor="@color/text_black1"
                         android:textSize="16sp" />
 
                     <TextView
@@ -56,16 +65,18 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="3.3dp"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/text_black"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_gray1"
+                        android:textSize="14sp" />
                 </RelativeLayout>
 
                 <View
                     android:id="@+id/Line1"
                     android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
+                    android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/line_devide" />
+                    android:layout_marginRight="12dp"
+                     android:layout_marginLeft="12dp"
+                    android:background="@color/devide_gray" />
 
                 <RelativeLayout
                     android:id="@+id/RelativeLayout2"
@@ -82,8 +93,8 @@
                         android:layout_centerVertical="true"
                         android:text="Total"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_gray1"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/ currency_textView1"
@@ -94,8 +105,8 @@
                         android:layout_toLeftOf="@+id/Total_textView"
                         android:text="$"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_black1"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/Total_textView"
@@ -105,8 +116,8 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="3.3dp"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_black1"
+                        android:textSize="15sp"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -124,8 +135,8 @@
                         android:layout_centerVertical="true"
                         android:text="Paid"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_gray1"
+                        android:textSize="15sp"  />
 
                     <TextView
                         android:id="@+id/ currency_textView2"
@@ -136,8 +147,8 @@
                         android:layout_toLeftOf="@+id/Paid_textView"
                         android:text="$"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_black1"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/Paid_textView"
@@ -147,16 +158,18 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="3.3dp"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_black1"
+                        android:textSize="15sp"/>
                 </RelativeLayout>
 
                 <View
                     android:id="@+id/Line2"
                     android:layout_width="match_parent"
-                    android:layout_height="0.8dp"
+                    android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
-                    android:background="@color/line_devide" />
+                    android:layout_marginRight="12dp"
+                     android:layout_marginLeft="12dp"
+                    android:background="@color/devide_gray" />
 
                 <RelativeLayout
                     android:id="@+id/RelativeLayout4"
@@ -173,8 +186,8 @@
                         android:layout_centerVertical="true"
                         android:text="Due"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="16sp" />
+                        android:textColor="@color/text_gray1"
+                        android:textSize="15sp"  />
 
                     <TextView
                         android:id="@+id/ currency_textView3"
@@ -185,8 +198,8 @@
                         android:layout_toLeftOf="@+id/remain_textView"
                         android:text="$"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="22sp" />
+                        android:textColor="@color/text_red"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/remain_textView"
@@ -196,50 +209,80 @@
                         android:layout_centerVertical="true"
                         android:layout_marginRight="3.3dp"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:textColor="@color/bill_gray"
-                        android:textSize="22sp" />
+                        android:textColor="@color/text_red"
+                        android:textSize="15sp" />
                 </RelativeLayout>
 
             </LinearLayout>
+            
+              <View
+                    android:id="@+id/Line0"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_below="@+id/LinearLayout1"
+                    android:background="@color/line_devide_gray" />
+              
 
         <RelativeLayout
             android:id="@+id/mRelativeLayout2"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="36dp"
             android:layout_below="@+id/LinearLayout1"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="20dp"
             android:gravity="center_vertical" >
 
-
-            <ImageButton
+            <Button
                 android:id="@+id/paybill_btn"
-                android:layout_width="95dp"
-                android:layout_height="33.1dp"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/add_payment_selector" />
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:layout_marginLeft="55dp"
+                android:layout_marginRight="55dp"
+                android:gravity="center"
+                android:text="Add a payment"
+                android:textSize="18sp"
+                android:textColor="@color/text_black2"
+                android:background="@drawable/add_payment_selector"
+                />
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/LinearLayout0"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/mRelativeLayout2"
+            android:background="@color/bag_gray1"
+            >
+            
+                 <View
+                    android:id="@+id/Line1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_alignParentTop="true"
+                    android:background="@color/line_devide_gray" />
+            
         <TextView
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/mRelativeLayout2"
             android:layout_marginLeft="15.3dp"
-            android:layout_marginTop="15dp"
+            android:layout_centerVertical="true"
             android:text="Payment History"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@color/bill_gray"
-            android:textSize="16sp" />
+            android:textColor="@color/text_gray1"
+            android:textSize="14sp" />
+        
+                  <View
+                    android:id="@+id/Line2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="0dp"
+                    android:background="@color/line_devide_gray" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_below="@+id/textView5"
-            android:orientation="vertical" >
-        </LinearLayout>
+         </RelativeLayout>
+         
     </RelativeLayout>
 
     <ListView
@@ -254,9 +297,9 @@
     <View
         android:id="@+id/line_label"
         android:layout_width="match_parent"
-        android:layout_height="0.7dp"
+        android:layout_height="0.5dp"
         android:layout_below="@+id/mListview"
-        android:background="@color/lightgray" >
+        android:background="@color/line_devide_gray" >
     </View>
 
 </RelativeLayout>

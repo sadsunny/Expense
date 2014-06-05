@@ -135,7 +135,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			// attributes
 			LayoutInflater vi = LayoutInflater.from(mContext);
 
-			convertView = vi.inflate(R.layout.fragment_calender_item, null);
+			convertView = vi.inflate(R.layout.fragment_overview_calender_item, null);
 			viewholder = new ViewHolder();
 
 			viewholder.dayView = (TextView) convertView
@@ -154,34 +154,45 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewholder.mLayout
 				.getLayoutParams();
-		relativeParams.width = itemWidth + 1;
+		relativeParams.width = itemWidth;
 		viewholder.mLayout.setLayoutParams(relativeParams);
-
+		
+		String everyDay = dayString.get(position); // 定位为当天
 		// separates daystring into parts.
 		String[] separatedTime = dayString.get(position).split("-");
 		// taking last part of date. ie; 2 from 2012-12-02
 		String gridvalue = separatedTime[2].replaceFirst("^0*", "");
 		// checking whether the day is in current month or not.
+		
 		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
 			// setting offdays to white color.
-			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
+			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
-			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
+			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else {
-			viewholder.dayView.setTextColor(Color.BLACK);
+			
+			if (everyDay.equals(turnToDate())) {
+				viewholder.dayView.setTextColor(Color.rgb(3, 128, 255));
+			} else {
+				viewholder.dayView.setTextColor(Color.rgb(94, 99, 117));
+			}
+			
 		}
 		viewholder.dayView.setText(gridvalue);
-		String everyDay = dayString.get(position); // 定位为当天
 
 		if (everyDay.equals(checkDate)) {
-			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
+			if (everyDay.equals(turnToDate())) {
+				viewholder.mLayout.setBackgroundResource(R.color.text_blue);
+			} else {
+				viewholder.mLayout.setBackgroundResource(R.color.sel_gray);
+			}
+		
 		} else {
-			viewholder.mLayout
-					.setBackgroundResource(R.drawable.week_item_selector);
+			viewholder.mLayout.setBackgroundResource(R.color.bag_gray);
 		}
 
 		if (items != null && items.contains(everyDay)) { // 该位置表示当天
@@ -200,8 +211,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
 					+ ""));
+			viewholder.expenseTextView.setTextColor(Color.rgb(208, 47, 58));
 			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
 					+ ""));
+			viewholder.incomeTextView.setTextColor(Color.rgb(83, 150, 39));
 
 		} else {
 			viewholder.expenseTextView.setText("");
@@ -218,12 +231,9 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		TextView incomeTextView;
 	}
 
-	public static String turnToDate(long mills) {
+	public String turnToDate() {
 
-		Date date2 = new Date(mills);
-		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy, HH:mm:ss");
-		String theDate = sdf.format(date2);
-		return theDate;
+		return df.format(System.currentTimeMillis());
 	}
 
 	public void refreshDays() {
@@ -257,7 +267,6 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			pmonthmaxset.add(Calendar.DATE, 1);
 			dayString.add(itemvalue);
 		}
-		Log.v("mtest","dayString"+MEntity.getMilltoDate(month.getTimeInMillis()));
 	}
 
 	private int getMaxP() {

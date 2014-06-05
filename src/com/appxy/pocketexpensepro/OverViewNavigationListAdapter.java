@@ -4,10 +4,12 @@ import java.util.List;
 
 import android.R.integer;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
@@ -94,6 +96,8 @@ public class OverViewNavigationListAdapter extends BaseAdapter implements
 			convertView = mInflater.inflate(R.layout.navigation_dropview, null);
 			viewholder.mTextView1 = (TextView) convertView.findViewById(R.id.report_drop_text);
 			 viewholder.lineView = (View)convertView.findViewById(R.id.choose_view);
+			 viewholder.mRelativeLayout1 = (RelativeLayout)convertView.findViewById(R.id.mRelativeLayout1);
+			 
 			convertView.setTag(viewholder);
 		} else {
 			viewholder = (DropViewHolder) convertView.getTag();
@@ -102,8 +106,10 @@ public class OverViewNavigationListAdapter extends BaseAdapter implements
 		//
 		if (position == choosePostion) {
 			viewholder.lineView.setVisibility(View.VISIBLE);
+			viewholder.mRelativeLayout1.setBackgroundColor(Color.parseColor("#ececec"));
 		} else {
 			viewholder.lineView.setVisibility(View.INVISIBLE);
+			viewholder.mRelativeLayout1.setBackgroundColor(Color.WHITE);
 		}
 
 		return convertView;
@@ -117,6 +123,7 @@ public class OverViewNavigationListAdapter extends BaseAdapter implements
 	class DropViewHolder {
 		public TextView mTextView1;
 		public View lineView;
+		public RelativeLayout mRelativeLayout1;
 	}
 
 }

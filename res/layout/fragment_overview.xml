@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:myView="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"
+    xmlns:myView="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"   
     android:layout_width="match_parent"
     android:layout_height="match_parent" 
-    >
-
+    android:background="@color/white">
+    
     <LinearLayout
         android:id="@+id/week_view"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_alignParentTop="true"
-        android:background="@color/blue_theme"
+        android:background="@color/bag_gray"
         android:orientation="horizontal"
         android:paddingRight="2dp"
         android:weightSum="7" >
@@ -22,8 +22,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="SUN"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/text_black"
+            android:textSize="12sp"
+            android:alpha="0.7" />
 
         <TextView
             android:layout_width="100dp"
@@ -32,8 +33,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="MON"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp" 
+            android:alpha="0.7"/>
 
         <TextView
             android:layout_width="100dp"
@@ -42,8 +44,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="TUE"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp" 
+            android:alpha="0.7"/>
 
         <TextView
             android:layout_width="100dp"
@@ -52,8 +55,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="WED"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp"
+            android:alpha="0.7" />
 
         <TextView
             android:layout_width="100dp"
@@ -62,8 +66,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="THU"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp"
+            android:alpha="0.7" />
 
         <TextView
             android:layout_width="100dp"
@@ -72,8 +77,9 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="FRI"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp" 
+            android:alpha="0.7"/>
 
         <TextView
             android:layout_width="100dp"
@@ -82,9 +88,11 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="SAT"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/over_label_text"
+            android:textSize="12sp" 
+            android:alpha="0.7"/>
     </LinearLayout>
+    
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
@@ -92,7 +100,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/week_view"
         android:visibility="visible" >
-
+        
+        
         <android.support.v4.view.ViewPager
             android:id="@+id/mPager"
             android:layout_width="match_parent"
@@ -107,20 +116,33 @@
             android:layout_marginBottom="60dp"
             android:dividerHeight="0dp" >
         </ListView>
+        
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_alignParentBottom="true">
+            
+            <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_above="@+id/relativeLayout1"
+            android:background="@color/line_devide_gray"/>
 
         <RelativeLayout
             android:id="@+id/relativeLayout1"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_alignParentBottom="true" >
-
+            android:layout_alignParentBottom="true"
+            android:background="@color/over_bot_bag" >
+               
             <RelativeLayout
                 android:id="@+id/budget_relativeLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="60dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="45dp" >
+                android:layout_marginLeft="45dp" 
+                >
 
                 <TextView
                     android:id="@+id/currency_label1"
@@ -128,7 +150,9 @@
                     android:layout_height="30dp"
                     android:layout_alignParentTop="true"
                     android:gravity="bottom"
-                    android:text="@string/dollar" />
+                    android:text="@string/dollar"
+                    android:textSize="16.5sp"
+                    android:textColor="@color/over_budget_text" />
 
                 <TextView
                     android:id="@+id/left_amount"
@@ -137,7 +161,9 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/currency_label1"
                     android:gravity="bottom"
-                    android:text="@string/zero_label" />
+                    android:text="@string/zero_label"
+                    android:textSize="16.5sp"
+                    android:textColor="@color/over_budget_text" />
 
                 <TextView
                     android:id="@+id/left_label"
@@ -146,15 +172,12 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:gravity="top"
-                    android:text="LEFT" />
+                    android:text="LEFT" 
+                    android:textColor="@color/over_label_text"
+                    android:textSize="10.5sp"
+                    android:alpha="0.5"
+                    />
             </RelativeLayout>
-
-            <ImageView
-                android:id="@+id/add_but"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:src="@drawable/b_add" />
 
             <RelativeLayout
                 android:id="@+id/relativeLayout2"
@@ -170,7 +193,9 @@
                     android:layout_height="30dp"
                     android:layout_alignParentTop="true"
                     android:gravity="bottom"
-                    android:text="@string/dollar" />
+                    android:text="@string/dollar" 
+                    android:textColor="@color/text_black"
+                    android:textSize="16.5sp"/>
 
                 <TextView
                     android:id="@+id/net_amount"
@@ -179,7 +204,9 @@
                     android:layout_alignParentTop="true"
                     android:layout_toRightOf="@+id/currency_label2"
                     android:gravity="bottom"
-                    android:text="@string/zero_label" />
+                    android:text="@string/zero_label"
+                    android:textColor="@color/text_black"
+                    android:textSize="16.5sp" />
 
                 <TextView
                     android:id="@+id/net_label"
@@ -188,16 +215,42 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:gravity="top"
-                    android:text="NET WORTH" />
+                    android:text="NET WORTH"
+                    android:textColor="@color/over_label_text"
+                    android:textSize="10.5sp"
+                    android:alpha="0.5"
+                     />
             </RelativeLayout>
         </RelativeLayout>
+        
+        <com.appxy.pocketexpensepro.CircleView 
+                android:id="@+id/add_view"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                myView:radius = "20dp"
+                myView:background="@color/blue_theme"
+                />
+        
+          <ImageView
+                android:id="@+id/add_but"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                 android:layout_marginTop="32dp"
+                android:src="@drawable/action_add" />
+          
+        </RelativeLayout>
+        
     </RelativeLayout>
+
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/mPager2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/week_view"
         android:visibility="gone" />
 
 </RelativeLayout>

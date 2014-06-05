@@ -38,7 +38,7 @@ public class GridViewAdapter extends BaseAdapter {
 	public void setDate(List<Map<String, Object>> mList) {
 		this.mList = mList;
 	}
-	
+
 	public void setChoosedTime(long chooseTime) {
 		this.choosedTime = chooseTime;
 	}
@@ -91,35 +91,50 @@ public class GridViewAdapter extends BaseAdapter {
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
 		}
+
 		LinearLayout.LayoutParams relativeParams = (LinearLayout.LayoutParams) viewHolder.mLayout
 				.getLayoutParams();
-		relativeParams.width = getWeekItemWidth()+1;
+		relativeParams.width = getWeekItemWidth() + 1;
 		viewHolder.mLayout.setLayoutParams(relativeParams);
 
 		long todayTime = (Long) mList.get(position).get("weekTime");
 		viewHolder.dateTextView.setText(turnToDate(todayTime));
-		
-		if (choosedTime == todayTime) {
-			viewHolder.mLayout.setBackgroundResource(R.color.black_gray);
+
+		if (todayTime == MEntity.getNowMillis()) {
+			viewHolder.dateTextView.setTextColor(Color.rgb(3, 128, 255));
 		} else {
-			viewHolder.mLayout.setBackgroundResource(R.color.white);
+			viewHolder.dateTextView.setTextColor(Color.rgb(94, 99, 117));
 		}
-		
-		double expense =  (Double) mList.get(position).get("expense");
-		double income =  (Double) mList.get(position).get("income");
-		
-		if (expense !=0) {
-			viewHolder.expenseTextView.setText(MEntity.doublepoint2str(expense+""));
+
+		if (choosedTime == todayTime) {
+
+			if (todayTime == MEntity.getNowMillis()) {
+				viewHolder.mLayout.setBackgroundColor(Color.rgb(206, 223, 249));
+			} else {
+				viewHolder.mLayout.setBackgroundColor(Color.rgb(223, 223, 223));
+			}
+
+		} else {
+			viewHolder.mLayout.setBackgroundColor(Color.rgb(242, 242, 242));
+		}
+
+		double expense = (Double) mList.get(position).get("expense");
+		double income = (Double) mList.get(position).get("income");
+
+		if (expense != 0) {
+			viewHolder.expenseTextView.setText(MEntity.doublepoint2str(expense
+					+ ""));
 		} else {
 			viewHolder.expenseTextView.setText("");
 		}
-		
-		if (income !=0) {
-			viewHolder.incomeTextView.setText(MEntity.doublepoint2str(income+""));
+
+		if (income != 0) {
+			viewHolder.incomeTextView.setText(MEntity.doublepoint2str(income
+					+ ""));
 		} else {
 			viewHolder.incomeTextView.setText("");
 		}
-		
+
 		return view;
 	}
 

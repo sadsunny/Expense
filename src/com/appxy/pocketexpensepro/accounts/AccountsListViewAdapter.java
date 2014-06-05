@@ -104,19 +104,15 @@ public class AccountsListViewAdapter extends BaseAdapter {
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		
 		if (mAmount < 0) {
-			viewholder.symbolTextView.setVisibility(View.VISIBLE);
-			viewholder.symbolTextView.setText("-");
-			viewholder.symbolTextView.setTextColor(Color.RED);
-			viewholder.currencyTextView.setTextColor(Color.RED);
-			viewholder.amountTextView.setTextColor(Color.RED);
+			viewholder.symbolTextView.setTextColor(Color.rgb(208, 47, 58));
+			viewholder.currencyTextView.setTextColor(Color.rgb(208, 47, 58));
+			viewholder.amountTextView.setTextColor(Color.rgb(208, 47, 58));
 			double amount = 0-mAmount;
 			viewholder.amountTextView.setText( MEntity.doublepoint2str(amount+""));
 		} else {
-			viewholder.symbolTextView.setVisibility(View.INVISIBLE);
-			viewholder.symbolTextView.setText("");
-			viewholder.symbolTextView.setTextColor(Color.GREEN);
-			viewholder.currencyTextView.setTextColor(Color.GREEN);
-			viewholder.amountTextView.setTextColor(Color.GREEN);
+			viewholder.symbolTextView.setTextColor(Color.rgb(83, 150, 39));
+			viewholder.currencyTextView.setTextColor(Color.rgb(83, 150, 39));
+			viewholder.amountTextView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amountTextView.setText( MEntity.doublepoint2str((String)mData.get(position).get("lastAmount")));
 		}
 		

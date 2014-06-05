@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;  
 import android.util.AttributeSet;  
+import android.util.Log;
 import android.view.View;  
   
 public class CircleView extends View {  
@@ -16,6 +17,7 @@ public class CircleView extends View {
     private final  Paint paint;  
     private final Context context;  
     private int background;
+    private double dp = 4;
     
     public CircleView(Context context) {  
           
@@ -33,6 +35,7 @@ public class CircleView extends View {
         
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MyView); 
         background = a.getColor(R.styleable.MyView_background, 0XFFFFFFFF);
+        dp = a.getDimension(R.styleable.MyView_radius, 4);
         this.paint.setColor(background);
         a.recycle();
     }  
@@ -42,20 +45,22 @@ public class CircleView extends View {
         // TODO Auto-generated method stub  
         super.onDraw(canvas);  
         int center = getWidth()/2;  
-        int innerCircle = dip2px(context, 4); //设置内圆半径  
-          
+        int innerCircle = dip2px(context, dp); //设置内圆半径  
         //绘制内圆  
-       
+        Log.v("mtest", "圆心"+center);
+        Log.v("mtest", "dp径"+dp);
+        Log.v("mtest", "半径"+innerCircle);
+        
         this.paint.setStrokeWidth(1);  
-        canvas.drawCircle(center,center, innerCircle, this.paint);  
+        canvas.drawCircle(center,center, center, this.paint);  
           
     }  
     
     /** 
      * 根据手机的分辨率从 dp 的单位 转成为 px(像素) 
      */  
-    public static int dip2px(Context context, float dpValue) {  
-        final float scale = context.getResources().getDisplayMetrics().density;  
+    public static int dip2px(Context context, double dpValue) {  
+        final double scale = context.getResources().getDisplayMetrics().density;  
         return (int) (dpValue * scale + 0.5f);  
     }  
 }  

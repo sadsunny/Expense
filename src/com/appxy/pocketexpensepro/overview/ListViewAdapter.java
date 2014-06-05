@@ -100,16 +100,11 @@ public class ListViewAdapter extends BaseAdapter {
 			convertView.setTag(viewholder);
 		} else {
 			viewholder = (ViewHolder) convertView.getTag();
-
 		}
 
-		viewholder.currency_textView
-				.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-
-		viewholder.mImageView
-				.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mData.get(
-						position).get("iconName")]);
-
+		viewholder.currency_textView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		viewholder.mImageView.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mData.get(position).get("iconName")]);
+		
 		long dateTime = (Long) mData.get(position).get("dateTime");
 		viewholder.mTextView2.setText(turnToDateString(dateTime));
 
@@ -129,10 +124,11 @@ public class ListViewAdapter extends BaseAdapter {
 			viewholder.mImageView2.setVisibility(View.INVISIBLE);
 		}
 
+		String notes = (String) mData.get(position).get("notes");
+		
 		Double mAmount;
 		try {
-			mAmount = Double.parseDouble((String) mData.get(position).get(
-					"amount"));
+			mAmount = Double.parseDouble((String) mData.get(position).get("amount"));
 		} catch (Exception e) {
 			// TODO: handle exception
 			mAmount = 0.0;
@@ -157,19 +153,19 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 
 		if (expenseAccount > 0 && incomeAccount <= 0) {
-			viewholder.currency_textView.setTextColor(R.color.text_red);
-			viewholder.amount_textView.setTextColor(R.color.text_red);
+			viewholder.currency_textView.setTextColor(Color.rgb(208, 47, 58));
+			viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
 			double amount = mAmount;
 			viewholder.amount_textView.setText(MEntity.doublepoint2str(amount
 					+ ""));
 		} else if (expenseAccount <= 0 && incomeAccount > 0) {
-			viewholder.currency_textView.setTextColor(R.color.text_green);
-			viewholder.amount_textView.setTextColor(R.color.text_green);
+			viewholder.currency_textView.setTextColor(Color.rgb(83, 150, 39));
+			viewholder.amount_textView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amount_textView.setText(MEntity
 					.doublepoint2str((String) mData.get(position).get("amount")));
 		}else {
-			viewholder.currency_textView.setTextColor(R.color.text_black);
-			viewholder.amount_textView.setTextColor(R.color.text_black);
+			viewholder.currency_textView.setTextColor(Color.rgb(54, 55, 60));
+			viewholder.amount_textView.setTextColor(Color.rgb(54, 55, 60));
 			viewholder.amount_textView.setText(MEntity
 					.doublepoint2str((String) mData.get(position).get("amount")));
 		}
@@ -186,6 +182,6 @@ public class ListViewAdapter extends BaseAdapter {
 		public TextView symbol_txt;
 		public TextView currency_textView;
 		public TextView amount_textView;
-		public View mline_label;
+		public View mline_label;	
 	}
 }

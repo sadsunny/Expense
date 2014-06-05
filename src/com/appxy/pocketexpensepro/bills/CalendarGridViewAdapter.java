@@ -168,6 +168,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		relativeParams.width = itemWidth;
 		viewholder.mLayout.setLayoutParams(relativeParams);
 
+		String everyDay = dayString.get(position); // 定位为当天
+		
 		// separates daystring into parts.
 		String[] separatedTime = dayString.get(position).split("-");
 		// taking last part of date. ie; 2 from 2012-12-02
@@ -175,26 +177,34 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		// checking whether the day is in current month or not.
 		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
 			// setting offdays to white color.
-			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
+			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
-			viewholder.dayView.setTextColor(Color.rgb(204, 199, 192));
+			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else {
-			viewholder.dayView.setTextColor(Color.BLACK);
+			
+			if (everyDay.equals(turnToDate())) {
+				viewholder.dayView.setTextColor(Color.rgb(3, 128, 255));
+			} else {
+				viewholder.dayView.setTextColor(Color.rgb(94, 99, 117));
+			}
 		}
 		viewholder.dayView.setText(gridvalue);
-		String everyDay = dayString.get(position); // 定位为当天
 
 		if (everyDay.equals(checkDate)) {
-			viewholder.mLayout.setBackgroundResource(R.color.black_gray);
+			if (everyDay.equals(turnToDate())) {
+				viewholder.mLayout.setBackgroundResource(R.color.text_blue);
+			} else {
+				viewholder.mLayout.setBackgroundResource(R.color.sel_gray);
+			}
+		
 		} else {
-			viewholder.mLayout
-					.setBackgroundResource(R.color.lightgray);
+			viewholder.mLayout.setBackgroundResource(R.color.bag_gray);
 		}
-
+		
 		if (items != null && items.contains(everyDay)) { // 该位置表示当天
 
 			for (Map<String, Object> iMap : mDataList) {
@@ -313,6 +323,11 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	public long getItemId(int paramInt) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	public String turnToDate() {
+
+		return df.format(System.currentTimeMillis());
 	}
 
 }

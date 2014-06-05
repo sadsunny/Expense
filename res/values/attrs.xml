@@ -3,6 +3,7 @@
 
     <declare-styleable name="MyView">
         <attr name="background" format="color" />
+        <attr name ="radius" format = "dimension" /> 
     </declare-styleable>
 
 </resources>

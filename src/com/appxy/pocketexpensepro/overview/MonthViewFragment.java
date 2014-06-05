@@ -58,6 +58,10 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 	private TextView expenseTextView;
 	private TextView incomeTextView;
 	private TextView amountTextView;
+	private TextView currencyTextView1;
+	private TextView currencyTextView2;
+	private TextView currencyTextView3;
+	
 	private double expense;
 	private double income;
 	private double amount;
@@ -93,15 +97,18 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 				// green 539627 83 150 39
 				expenseTextView.setText(MEntity.doublepoint2str(expense + ""));
 				expenseTextView.setTextColor(Color.rgb(208, 47, 58));
+				currencyTextView1.setTextColor(Color.rgb(208, 47, 58));
 				incomeTextView.setText(MEntity.doublepoint2str(income + ""));
 				incomeTextView .setTextColor(Color.rgb(83, 150, 39));
+				currencyTextView2.setTextColor(Color.rgb(83, 150, 39));
 				if (amount > 0) {
 					amountTextView.setText(MEntity.doublepoint2str(amount + ""));
 					amountTextView.setTextColor(Color.rgb(83, 150, 39));
-					
+					currencyTextView3.setTextColor(Color.rgb(83, 150, 39));
 				} else {
 					amountTextView.setText(MEntity.doublepoint2str((0-amount) + ""));
 					amountTextView.setTextColor(Color.rgb(208, 47, 58));
+					currencyTextView3.setTextColor(Color.rgb(208, 47, 58));
 				}
 				
 				if (pamount<0) {
@@ -240,6 +247,9 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 	    trend3 = (ImageView)view.findViewById(R.id.trend3);
 	    percent_txt3 = (TextView)view.findViewById(R.id.percent_txt3);
 	    
+	    currencyTextView1 = (TextView)view.findViewById(R.id.currency_txt1);
+	    currencyTextView2 = (TextView)view.findViewById(R.id.currency_txt2);
+	    currencyTextView3 = (TextView)view.findViewById(R.id.currency_txt3);
 		
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 		
@@ -272,10 +282,10 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 			}
 		});
 		
-		if (mThread == null) {
-			mThread = new Thread(mTask);
-			mThread.start();
-		}
+//		if (mThread == null) {
+//			mThread = new Thread(mTask);
+//			mThread.start();
+//		}
 
 		return view;
 	}

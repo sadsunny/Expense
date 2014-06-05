@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/lightgray" >
+    android:background="@color/white"
+    android:orientation="vertical" >
 
     <ExpandableListView
         android:id="@+id/expandableListView1"
@@ -13,5 +13,12 @@
         android:cacheColorHint="#00000000"
         android:divider="@null" >
     </ExpandableListView>
+
+    <View
+        android:id="@+id/mline_label"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/devide_gray" >
+    </View>
 
 </LinearLayout>

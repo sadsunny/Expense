@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-       <LinearLayout
+
+    <LinearLayout
         android:id="@+id/week_view"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_alignParentTop="true"
-        android:background="@color/blue_theme"
+        android:background="@color/bag_gray"
         android:orientation="horizontal"
         android:paddingRight="2dp"
         android:weightSum="7" >
@@ -18,9 +19,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="SUN"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -28,9 +30,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="MON"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -38,9 +41,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="TUE"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -48,9 +52,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="WED"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -58,9 +63,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="THU"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -68,9 +74,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="FRI"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
 
         <TextView
@@ -78,16 +85,22 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="SAT"
-            android:textColor="@color/white"
+            android:textColor="@color/over_label_text"
             android:textSize="12sp" />
     </LinearLayout>
-    
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/devide_gray" />
+
     <android.support.v4.view.ViewPager
         android:id="@+id/mPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-         />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

@@ -29,15 +29,29 @@
     <color name="text_little_title">#7c8285</color>
     
     <color name="blue_theme">#4c8fca</color>
-    <color name="text_black">#36373c</color>
+    <color name="today_text">#0380ff</color>
     <color name="text_gray">#5e637f</color>
     <color name="text_gray1">#acadb2</color>
+    <color name="text_gray3">#a2a3a8</color>
     <color name="text_red">#d02f3a</color>
     <color name="text_green">#539627</color>
     <color name="text_blue">#cedff9</color>
     <color name="bag_gray">#f2f2f2</color>
+     <color name="bag_gray1">#eaeaea</color>
     <color name="sel_gray">#dfdfdf</color>
     <color name="devide_gray">#dddddd</color>
-    <color name="line_devide_gray">#cccccc</color>
-
+    <color name="line_devide_gray">#cccccc</color> 
+    <color name="over_bot_bag">#f6f5f1</color>
+    <color name="over_budget_text">#0ca4e3</color>
+    <color name="over_label_text">#5e6375</color>
+    <color name="text_black">#5e6375</color>
+    <color name="text_black1">#36373c</color>
+    <color name="text_black2">#45211c</color>
+    <color name="percent_text_gray">#acadb2</color>
+    <color name="text_orange">#e67c00</color>
+     <color name="yello">#ffb177</color>
+     <color name="sel_yello">#c17847</color>
+     <color name="little_text">#6f8bb5</color>
+     <color name="navigation_sel">#ececec</color>
+  
 </resources>

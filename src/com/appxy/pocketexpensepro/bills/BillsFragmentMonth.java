@@ -50,7 +50,7 @@ public class BillsFragmentMonth extends Fragment implements
 	private GridView mGridView;
 	private ListView mListView;
 	private BillMonthViewPagerAdapter billMonthViewPagerAdapter;
-	public Calendar month;
+	public  Calendar month;
 	private CalendarGridViewAdapter calendarGridViewAdapter;
 	private Thread mThread;
 	private OnBillToActivityListener onBillToActivityListener;
@@ -58,7 +58,7 @@ public class BillsFragmentMonth extends Fragment implements
 	private List<Map<String, Object>> mCalendartList;
 	private BillListViewAdapter billListViewAdapter;
 	private List<Map<String, Object>> mListViewData;
-	
+	private View lineView;
 	public BillsFragmentMonth() {
 		
 	}
@@ -77,6 +77,13 @@ public class BillsFragmentMonth extends Fragment implements
 				getListviewData(MainActivity.selectedMonth, mDateList);
 				billListViewAdapter.setAdapterDate(mListViewData);
 				billListViewAdapter.notifyDataSetChanged();
+				
+				if (mListViewData.size()>0) {
+					lineView.setVisibility(View.VISIBLE);
+				} else {
+					lineView.setVisibility(View.INVISIBLE);
+				}
+				
 				
 				break;
 
@@ -119,6 +126,8 @@ public class BillsFragmentMonth extends Fragment implements
 		mListView.setAdapter(billListViewAdapter);
 		mListView.setDividerHeight(0);
 		
+		lineView = (View)view.findViewById(R.id.line_view2);
+		 
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(MainActivity.selectedMonth));
 		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
 		mGridView.setAdapter(calendarGridViewAdapter);
@@ -139,6 +148,13 @@ public class BillsFragmentMonth extends Fragment implements
 				getListviewData(mChooseTime, mDateList);
 				billListViewAdapter.setAdapterDate(mListViewData);
 				billListViewAdapter.notifyDataSetChanged();
+				
+				if (mListViewData.size()>0) {
+					lineView.setVisibility(View.VISIBLE);
+				} else {
+					lineView.setVisibility(View.INVISIBLE);
+				}
+				
 			}
 		});
 

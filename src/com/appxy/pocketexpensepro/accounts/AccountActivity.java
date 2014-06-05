@@ -114,9 +114,6 @@ public class AccountActivity extends Activity {
 
 	};
 
-
-	
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -134,6 +131,7 @@ public class AccountActivity extends Activity {
 		mListView = (DragSortListView)findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(this);
 		mListView.setAdapter(mAccountsListViewAdapter);
+		mListView.setDividerHeight(0);
 		mListView.setOnItemLongClickListener(listener);
 		mListView.setOnItemClickListener(itemListener);
 

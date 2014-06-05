@@ -35,7 +35,7 @@ public class BillDetailsActivity extends Activity{
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private Thread mThread;
-	private ImageButton payButton;
+	private Button payButton;
 	private Map<String, Object> mMap;
 	private ActionBar actionBar;
 	
@@ -118,9 +118,10 @@ public class BillDetailsActivity extends Activity{
 		remainTextView = (TextView) findViewById(R.id.remain_textView);
 		mListView = (ListView) findViewById(R.id.mListview);
 		billPayListViewAdapter = new BillPayListViewAdapter(BillDetailsActivity.this);
+		mListView.setDividerHeight(0);
 		mListView.setAdapter(billPayListViewAdapter);
 		
-		payButton = (ImageButton) findViewById(R.id.paybill_btn);
+		payButton = (Button) findViewById(R.id.paybill_btn);
 		payButton.setOnClickListener(new OnClickListener() {
 			
 			@Override

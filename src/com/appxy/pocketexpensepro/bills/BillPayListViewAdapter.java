@@ -77,6 +77,7 @@ public class BillPayListViewAdapter extends BaseAdapter {
 			viewholder.symbolTextView = (TextView) convertView.findViewById(R.id.symbol_txt);
 			viewholder.currencyTextView = (TextView) convertView.findViewById(R.id.currency_txt);
 			viewholder.amountTextView = (TextView) convertView.findViewById(R.id.amounttextView);
+			viewholder.line = (View)convertView.findViewById(R.id.mline_label);
 			
 			convertView.setTag(viewholder);
 		} else {
@@ -90,6 +91,11 @@ public class BillPayListViewAdapter extends BaseAdapter {
 		viewholder.dateTextView.setText(MEntity.turnToDateString(dueDate));
 		viewholder.amountTextView.setText( MEntity.doublepoint2str((String)mData.get(position).get("amount")));
 			
+		if (position == 0) {
+			viewholder.line.setVisibility(View.INVISIBLE);
+		} else {
+			viewholder.line.setVisibility(View.VISIBLE);
+		}
 		return convertView;
 	}
 
@@ -100,5 +106,6 @@ public class BillPayListViewAdapter extends BaseAdapter {
 		public TextView symbolTextView;
 		public TextView currencyTextView;
 		public TextView amountTextView;
+		public View line;
 	}
 }

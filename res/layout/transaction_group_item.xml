@@ -7,6 +7,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="24dp"
+        android:background="@color/bag_gray1"
          >
 
         <TextView
@@ -18,7 +19,7 @@
             android:layout_marginLeft="15dp"
             android:singleLine="true"
             android:text="TextView"
-            android:textColor="@color/line_more"
+            android:textColor="@color/text_gray3"
             android:textSize="14sp"
              />
 
@@ -26,8 +27,8 @@
       <View
             android:id="@+id/line_label"
             android:layout_width="match_parent"
-            android:layout_height="1.2dp"
-            android:background="@color/lightgray"
+            android:layout_height="0.5dp"
+            android:background="@color/line_devide_gray"
             >
        </View>
     

@@ -7,9 +7,9 @@
     <View
             android:id="@+id/mline_label"
             android:layout_width="match_parent"
-            android:layout_height="0.7dp"
-            android:layout_marginLeft="48dp"
-            android:background="@color/bill_gray"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="60dp"
+            android:background="@color/devide_gray"
             >
        </View>
 
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="12dp" />
+            android:layout_marginLeft="13dp" />
 
         <TextView
             android:id="@+id/account_txt"
@@ -37,7 +37,9 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearance"
-            android:textSize="16sp" />
+             android:textSize="16sp" 
+            android:textColor="@color/text_black1"
+            />
 
         <TextView
             android:id="@+id/date_txt"
@@ -51,7 +53,10 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="13.3sp" />
+            android:textSize="13sp" 
+            android:textColor="@color/text_gray1"
+            android:layout_marginTop="2dp"
+             />
 
         <TextView
             android:id="@+id/symbol_txt"
@@ -69,7 +74,9 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/amounttextView"
             android:text="@string/text_label"
-            android:visibility="visible" />
+            android:visibility="visible" 
+            android:textSize="16sp" 
+             android:layout_marginTop="2dp"/>
 
         <TextView
             android:id="@+id/amounttextView"
@@ -83,7 +90,9 @@
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textSize="16sp" />
+            android:textSize="16sp" 
+             android:layout_marginTop="2dp"
+             />
         
     </RelativeLayout>
 

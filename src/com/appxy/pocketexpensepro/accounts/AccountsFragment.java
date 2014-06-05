@@ -147,6 +147,7 @@ public class AccountsFragment extends Fragment {
 		mListView = (DragSortListView) view.findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(mActivity);
 		mListView.setAdapter(mAccountsListViewAdapter);
+		mListView.setDividerHeight(0);
 		mListView.setOnItemLongClickListener(listener);
 		mListView.setOnItemClickListener(itemListener);
 

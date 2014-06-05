@@ -85,6 +85,10 @@ public class GridViewAdapter extends BaseAdapter {
 					.findViewById(R.id.year_text);
 			viewHolder.countTextView = (TextView) view
 					.findViewById(R.id.count_text);
+			
+			viewHolder.bottomLine = (View) view
+					.findViewById(R.id.line_view3);
+			
 			view.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) view.getTag();
@@ -97,22 +101,29 @@ public class GridViewAdapter extends BaseAdapter {
 		long monthTime = (Long)mList.get(position).get("monthTime");
 		
 		if (monthTime == choosedTime) {
-			viewHolder.mLayout.setBackgroundResource(R.color.lightgray);
+			viewHolder.mLayout.setBackgroundResource(R.color.bag_gray);
 			viewHolder.mView.setVisibility(View.VISIBLE);
 			viewHolder.yearTextView.setVisibility(View.VISIBLE);
-			viewHolder.countTextView.setVisibility(View.VISIBLE);
-			viewHolder.monthTextView.setTextColor(Color.parseColor("#33b5e5"));
+			viewHolder.monthTextView.setTextColor(Color.parseColor("#0380ff"));
+			viewHolder.bottomLine.setVisibility(View.INVISIBLE);
 		} else {
 			viewHolder.mLayout.setBackgroundResource(R.color.white);
 			viewHolder.mView.setVisibility(View.INVISIBLE);
 			viewHolder.yearTextView.setVisibility(View.INVISIBLE);
-			viewHolder.countTextView.setVisibility(View.INVISIBLE);
-			viewHolder.monthTextView.setTextColor(Color.parseColor("#AAAAAA"));
+			viewHolder.monthTextView.setTextColor(Color.parseColor("#aeb1bc"));
+			viewHolder.bottomLine.setVisibility(View.VISIBLE);
 		}
 		
 		viewHolder.monthTextView.setText(turnMilltoMonth(monthTime));
 		viewHolder.yearTextView.setText(turnMilltoYear(monthTime));
-		viewHolder.countTextView.setText((Integer)mList.get(position).get("count")+"");
+		
+		int count = (Integer)mList.get(position).get("count");
+		if (count > 0) {
+			viewHolder.countTextView.setText(count+"");
+		} else {
+			viewHolder.countTextView.setText("");
+		}
+		
 		
 		return view;
 	}
@@ -137,6 +148,7 @@ public class GridViewAdapter extends BaseAdapter {
 		TextView yearTextView;
 		TextView monthTextView;
 		TextView countTextView;
+		View bottomLine;
 	}
 
 }

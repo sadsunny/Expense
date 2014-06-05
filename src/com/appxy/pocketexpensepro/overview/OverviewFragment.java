@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.appxy.pocketexpensepro.CircleView;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
@@ -90,7 +91,7 @@ public class OverviewFragment extends Fragment implements
 	private FragmentActivity mActivity;
 	public  ViewPagerAdapter mViewPagerAdapter;
 	private WeekFragment weekFragment;
-	private ListView mListView;
+	private ListView mListView; 
 	private List<Map<String, Object>> mDataList;
 	private ListViewAdapter mListViewAdapter;
 	private Thread mThread;
@@ -118,6 +119,7 @@ public class OverviewFragment extends Fragment implements
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static MenuItem item;
+	private CircleView addView;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -180,7 +182,7 @@ public class OverviewFragment extends Fragment implements
 
 		budgetRelativeLayout = (RelativeLayout) view.findViewById(R.id.budget_relativeLayout);
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);
-		addImageView = (ImageView) view.findViewById(R.id.add_but);
+		addView = (CircleView) view.findViewById(R.id.add_view);
 		
 		accountRelativeLayout = (RelativeLayout) view.findViewById(R.id.relativeLayout2);
 		
@@ -197,7 +199,7 @@ public class OverviewFragment extends Fragment implements
 		});
 		
 		
-		addImageView.setOnClickListener(new OnClickListener() {
+		addView.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View paramView) {
