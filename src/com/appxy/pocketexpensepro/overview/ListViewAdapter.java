@@ -94,8 +94,6 @@ public class ListViewAdapter extends BaseAdapter {
 					.findViewById(R.id.currency_txt);
 			viewholder.amount_textView = (TextView) convertView
 					.findViewById(R.id.amounttextView);
-			viewholder.mline_label = (View) convertView
-					.findViewById(R.id.mline_label);
 
 			convertView.setTag(viewholder);
 		} else {
@@ -107,7 +105,7 @@ public class ListViewAdapter extends BaseAdapter {
 		
 		long dateTime = (Long) mData.get(position).get("dateTime");
 		viewholder.mTextView2.setText(turnToDateString(dateTime));
-
+		
 		int recurringType = (Integer) mData.get(position).get("recurringType");
 		if (recurringType > 0) {
 			viewholder.mImageView1.setVisibility(View.VISIBLE);
@@ -182,6 +180,5 @@ public class ListViewAdapter extends BaseAdapter {
 		public TextView symbol_txt;
 		public TextView currency_textView;
 		public TextView amount_textView;
-		public View mline_label;	
 	}
 }

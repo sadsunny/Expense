@@ -49,9 +49,11 @@
     <color name="text_black2">#45211c</color>
     <color name="percent_text_gray">#acadb2</color>
     <color name="text_orange">#e67c00</color>
-     <color name="yello">#ffb177</color>
-     <color name="sel_yello">#c17847</color>
-     <color name="little_text">#6f8bb5</color>
-     <color name="navigation_sel">#ececec</color>
+    <color name="yello">#ffb177</color>
+    <color name="sel_yello">#c17847</color>
+    <color name="little_text">#6f8bb5</color>
+    <color name="navigation_sel">#ececec</color>
+    <color name="press_color">#3d83c1</color>
+    <color name="button_sel_color">#bebdb9</color>
   
 </resources>

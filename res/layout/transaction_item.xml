@@ -4,6 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
+     <View
+        android:id="@+id/mline_label"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="60dp"
+        android:background="@color/devide_gray" >
+    </View>
+    
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
@@ -113,14 +121,6 @@
              android:textSize="16sp"
             android:textColor="@color/text_black1" />
     </RelativeLayout>
-    
-     <View
-        android:id="@+id/mline_label"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_marginLeft="60dp"
-        android:background="@color/devide_gray" >
-    </View>
     
  
 </LinearLayout>

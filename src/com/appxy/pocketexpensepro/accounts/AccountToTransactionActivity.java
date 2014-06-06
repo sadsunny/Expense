@@ -715,7 +715,7 @@ public class AccountToTransactionActivity extends Activity {
 			cViewHolder viewholder = null;
 			if (convertView == null) {
 				viewholder = new cViewHolder();
-				convertView = inflater.inflate(R.layout.transaction_child_item,
+				convertView = inflater.inflate(R.layout.transaction_item,
 						parent, false);
 
 				viewholder.mCheckBox = (CheckBox) convertView

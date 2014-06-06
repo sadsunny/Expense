@@ -19,6 +19,7 @@ import java.util.TreeMap;
 import com.appxy.pocketexpensepro.CircleView;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.RoundProgressBar;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
@@ -35,6 +36,7 @@ import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
@@ -69,8 +71,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -102,7 +106,7 @@ public class OverviewFragment extends Fragment implements
 
 	public static SparseArray<Fragment> registeredFragments;
 	
-	private RelativeLayout budgetRelativeLayout ;
+	private LinearLayout budgetRelativeLayout ;
 	private TextView leftTextView;
 	private FixedSpeedScroller mScroller; 
 	
@@ -114,12 +118,13 @@ public class OverviewFragment extends Fragment implements
 	private int currentPosition;
 	
 	private ImageView addImageView;
-	private RelativeLayout accountRelativeLayout ;
+	private LinearLayout accountRelativeLayout ;
 	
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static MenuItem item;
-	private CircleView addView;
+	private Button addView;
+	private RoundProgressBar mProgressBar;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -172,6 +177,7 @@ public class OverviewFragment extends Fragment implements
 		selectedDate = argumentsDate;
 	}
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -180,11 +186,17 @@ public class OverviewFragment extends Fragment implements
 				false);
 		mInflater = inflater;
 
-		budgetRelativeLayout = (RelativeLayout) view.findViewById(R.id.budget_relativeLayout);
-		leftTextView = (TextView) view.findViewById(R.id.left_amount);
-		addView = (CircleView) view.findViewById(R.id.add_view);
+		mProgressBar = (RoundProgressBar) view.findViewById(R.id.roundBar);
+		 
+		mProgressBar.setProgress(70);
+		mProgressBar.setSecondaryProgress(100);
+//		mProgressBar.setPaintColor(R.color.bill_red);
 		
-		accountRelativeLayout = (RelativeLayout) view.findViewById(R.id.relativeLayout2);
+		budgetRelativeLayout = (LinearLayout) view.findViewById(R.id.budget_relativeLayout);
+		leftTextView = (TextView) view.findViewById(R.id.left_amount);
+		addView = (Button) view.findViewById(R.id.add_btn);
+		
+		accountRelativeLayout = (LinearLayout) view.findViewById(R.id.relativeLayout2);
 		
 		accountRelativeLayout.setOnClickListener(new OnClickListener() {
 			

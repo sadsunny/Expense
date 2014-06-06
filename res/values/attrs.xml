@@ -2,8 +2,17 @@
 <resources>
 
     <declare-styleable name="MyView">
-        <attr name="background" format="color" />
+        <attr name="background" format="reference|color" />
         <attr name ="radius" format = "dimension" /> 
     </declare-styleable>
+    
+     <declare-styleable name="RoundProgressBar">  
+        <attr name="max" format="integer"/>	
+        <attr name="fill" format="boolean"/>			<!-- 是否填充圆形区域 -->
+        <attr name="Paint_Width" format="integer"/>		<!-- 画笔宽度，填充模式下无效，会被重置为0 -->
+        <attr name="Paint_Color" format="integer"/>		<!-- 画笔颜色 -->
+        <attr name="Show_Bottom" format="boolean"/>		<!-- 是否显示底色 -->
+        <attr name="Inside_Interval" format="integer"/> <!-- 圆形区域向里缩进的距离 --> 
+    </declare-styleable>  
 
 </resources>
