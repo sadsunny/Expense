@@ -148,6 +148,8 @@ public class PayeeActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
 		getMenuInflater().inflate(R.menu.add_menu, menu);
+//		Menu itemMenu = (Menu) menu.findItem(R.id.navigation_but);
+//		Menu itemMenu1 = (Menu) menu.findItem(R.id.action_add);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -162,6 +164,9 @@ public class PayeeActivity extends Activity {
 			Intent intent = new Intent();
 			intent.setClass(PayeeActivity.this, CreatPayeeActivity.class);
 			startActivityForResult(intent, 4);
+			break;
+		case R.id.navigation_but:
+			
 			break;
 		}
 

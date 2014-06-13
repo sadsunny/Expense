@@ -22,7 +22,7 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:actionBarStyle">@style/customActionBarStyle</item>
          <item name="android:actionBarItemBackground">@drawable/actionbar_bag_selector</item>
-      <!--    <item name="android:actionDropDownStyle">@style/MyDropDownNav</item>   --> 
+         <item name="android:actionDropDownStyle">@style/MyDropDownNav</item>   
     </style>
 
     <style name="customActionBarStyle" parent="android:Widget.ActionBar">

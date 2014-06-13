@@ -1,4 +1,4 @@
- package com.appxy.pocketexpensepro;
+package com.appxy.pocketexpensepro;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,7 +48,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 public class MainActivity extends FragmentActivity implements
-		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener , OnTellUpdateMonthListener, OnBillToActivityListener{
+		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener,
+		OnTellUpdateMonthListener, OnBillToActivityListener {
 
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
@@ -67,19 +68,26 @@ public class MainActivity extends FragmentActivity implements
 	private OverviewFragment overviewFragment;
 	private final static long DAYMILLIS = 86400000L;
 
-	public static long selectedDate;//overview 定位时间
+	public static long selectedDate;// overview 定位时间
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
 	private int mItemPosition = 0;
 	private ActionBar actionBar;
 	private OverViewNavigationListAdapter overViewNavigationListAdapter;
-	public static long selectedMonth;//bill定位时间
+	public static long selectedMonth;// bill定位时间
 	private BillsFragmentMonth billsFragmentMonth;
 	
+	public static int rangePositon = 0; 
+	public static long startDate;
+	public static long endDate;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
+		endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
+
 		mTitle = mDrawerTitle = getTitle();
 		mLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
 		mOverViewLinearLayout = (LinearLayout) findViewById(R.id.overview_linearlayout);
@@ -106,7 +114,8 @@ public class MainActivity extends FragmentActivity implements
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 				if (mItemPosition == 1) {
-					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+					actionBar
+							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				} else {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 				}
@@ -118,7 +127,7 @@ public class MainActivity extends FragmentActivity implements
 											// onPrepareOptionsMenu()
 				// onPrepareOptionsMenu()
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-				
+
 			}
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -155,13 +164,13 @@ public class MainActivity extends FragmentActivity implements
 		overViewNavigationListAdapter.setDownItemData(itemStrings);
 		actionBar.setListNavigationCallbacks(overViewNavigationListAdapter,
 				new DropDownListenser());
-		
+
 		Calendar calendar2 = Calendar.getInstance();
 		calendar2.set(Calendar.HOUR_OF_DAY, 0);
 		calendar2.set(Calendar.MINUTE, 0);
 		calendar2.set(Calendar.SECOND, 0);
 		calendar2.set(Calendar.MILLISECOND, 0);
-//		calendar2.set(Calendar.DAY_OF_MONTH, 1);
+		// calendar2.set(Calendar.DAY_OF_MONTH, 1);
 		this.selectedMonth = calendar2.getTimeInMillis();
 
 	}
@@ -315,14 +324,14 @@ public class MainActivity extends FragmentActivity implements
 				if (mItemPosition == 3) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
-					
+
 					Calendar calendar2 = Calendar.getInstance();
 					calendar2.set(Calendar.HOUR_OF_DAY, 0);
 					calendar2.set(Calendar.MINUTE, 0);
 					calendar2.set(Calendar.SECOND, 0);
 					calendar2.set(Calendar.MILLISECOND, 0);
 					MainActivity.selectedMonth = calendar2.getTimeInMillis();
-					
+
 					mDrawerLayout.closeDrawer(mLinearLayout);
 
 					actionBar.setDisplayHomeAsUpEnabled(true);
@@ -330,16 +339,19 @@ public class MainActivity extends FragmentActivity implements
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 					overViewNavigationListAdapter.setChoosed(0);
 					overViewNavigationListAdapter.setTitle("Bills      ");
-					overViewNavigationListAdapter.setSubTitle(turnToDate(MainActivity.selectedMonth));
+					overViewNavigationListAdapter
+							.setSubTitle(turnToDate(MainActivity.selectedMonth));
 					List<String> billStrings = new ArrayList<String>();
 					billStrings.add("ListView                 ");
 					billStrings.add("CalendarView              ");
 					overViewNavigationListAdapter.setDownItemData(billStrings);
-					actionBar.setListNavigationCallbacks(overViewNavigationListAdapter,new BillsDropDownListenser());
+					actionBar.setListNavigationCallbacks(
+							overViewNavigationListAdapter,
+							new BillsDropDownListenser());
 					mItemPosition = 3;
-					
+
 				}
-				
+
 				break;
 			default:
 				break;
@@ -356,14 +368,18 @@ public class MainActivity extends FragmentActivity implements
 				overViewNavigationListAdapter.setChoosed(0);
 
 				ReportOverviewFragment reportOverviewFragment = new ReportOverviewFragment();
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				fragmentTransaction.replace(R.id.content_frame,reportOverviewFragment);
+				FragmentTransaction fragmentTransaction = fragmentManager
+						.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,
+						reportOverviewFragment);
 				fragmentTransaction.commit();
 
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
+				
 			} else if (itemPosition == 2) {
 				overViewNavigationListAdapter.setChoosed(2);
+				
 			}
 			overViewNavigationListAdapter.notifyDataSetChanged();
 			return false;
@@ -379,23 +395,24 @@ public class MainActivity extends FragmentActivity implements
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
 				BillsFragment billsFragment = new BillsFragment();
-				FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-				fragmentTransaction.replace(R.id.content_frame,billsFragment);
+				FragmentTransaction fragmentTransaction = fragmentManager
+						.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame, billsFragment);
 				fragmentTransaction.commit();
-				
+
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setDisplayShowTitleEnabled(false);
-				
+
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
-				
+
 				billsFragmentMonth = new BillsFragmentMonth();
 				FragmentTransaction fragmentTransaction4 = fragmentManager
 						.beginTransaction();
 				fragmentTransaction4.replace(R.id.content_frame,
 						billsFragmentMonth);
 				fragmentTransaction4.commit();
-				
+
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setDisplayShowTitleEnabled(false);
 			}
@@ -420,27 +437,32 @@ public class MainActivity extends FragmentActivity implements
 		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mLinearLayout);
 		menu.findItem(R.id.action_search).setVisible(drawerOpen);
 		menu.findItem(R.id.action_settings).setVisible(drawerOpen);
-		if (mItemPosition == 0) {
+		if (mItemPosition == 0 || mItemPosition == 2 ) {
 			menu.findItem(R.id.action_add).setVisible(false);
 			
 			if (drawerOpen) {
-				
+
 				if (OverviewFragment.item != null) {
 					OverviewFragment.item.setVisible(false);
 				}
-				
+
 				if (OverViewFragmentMonth.item != null) {
 					OverViewFragmentMonth.item.setVisible(false);
 				}
-			} 
-			
+				
+				if (ReportOverviewFragment.item != null) {
+					ReportOverviewFragment.item.setVisible(false);
+				}
+			}
+
 		} else {
 			menu.findItem(R.id.action_add).setVisible(!drawerOpen);
 		}
-		
-		if (mItemPosition == 1 && drawerOpen==false) {
-			
-			if (AccountsFragment.item0 != null && AccountsFragment.sortCheck == 1) {
+
+		if (mItemPosition == 1 && drawerOpen == false) {
+
+			if (AccountsFragment.item0 != null
+					&& AccountsFragment.sortCheck == 1) {
 				AccountsFragment.item1.setVisible(false);
 				AccountsFragment.item0.setVisible(true);
 			}
@@ -527,9 +549,11 @@ public class MainActivity extends FragmentActivity implements
 		overViewNavigationListAdapter
 				.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
+		if (overviewFragment != null) {
+			onUpdateListListener = (OnUpdateListListener) overviewFragment;
+			onUpdateListListener.OnUpdateList(this.selectedDate);
+		}
 
-		onUpdateListListener = (OnUpdateListListener) overviewFragment;
-		onUpdateListListener.OnUpdateList(this.selectedDate);
 	}
 
 	@Override
@@ -546,7 +570,8 @@ public class MainActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
 		actionBar.setSelectedNavigationItem(itemPosition);
-		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
+		overViewNavigationListAdapter
+				.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
 		Log.v("mtest", "OnUpdateNavigation");
 	}
@@ -555,15 +580,17 @@ public class MainActivity extends FragmentActivity implements
 	public void OnUpdateNavigation(long selectedDate) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
+		overViewNavigationListAdapter
+				.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
-		
+
 	}
 
 	@Override
 	public void OnTellTime(int viewpagerPositon) {
 		// TODO Auto-generated method stub
-		OnUpdateMonthListener onUpdateMonthListener= (OnUpdateMonthListener)(MonthViewPagerAdapter.registeredFragments.get(viewpagerPositon));
+		OnUpdateMonthListener onUpdateMonthListener = (OnUpdateMonthListener) (MonthViewPagerAdapter.registeredFragments
+				.get(viewpagerPositon));
 		onUpdateMonthListener.OnUpdateMonth();
 	}
 
@@ -572,12 +599,11 @@ public class MainActivity extends FragmentActivity implements
 		// TODO Auto-generated method stub
 		Log.v("mtest", "main");
 		overViewNavigationListAdapter
-		.setSubTitle(turnToDate(this.selectedMonth));
-         overViewNavigationListAdapter.notifyDataSetChanged();
-		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener)(billsFragmentMonth);
+				.setSubTitle(turnToDate(this.selectedMonth));
+		overViewNavigationListAdapter.notifyDataSetChanged();
+		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener) (billsFragmentMonth);
 		onActivityToBillListener.OnActivityToBill();
-		
+
 	}
-	
 
 }

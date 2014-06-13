@@ -21,6 +21,8 @@
             android:listSelector="@android:color/transparent"
             android:numColumns="7"
             android:stretchMode="columnWidth"
+            android:scrollbarSize="0dp"
+            android:scrollbars="none"
             android:verticalSpacing="0dp" />
 
         <LinearLayout

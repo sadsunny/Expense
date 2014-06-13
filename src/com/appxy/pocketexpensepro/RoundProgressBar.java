@@ -91,7 +91,8 @@ public class RoundProgressBar extends TextView {
 		mBottomPaint.setStrokeWidth(mPaintWidth);
 
 		mPaintColor = array.getColor(R.styleable.RoundProgressBar_Paint_Color,
-				0xffffcc00);
+				0xff5e6375);
+		
 		mRoundPaints.setColor(mPaintColor);
 		int color = mPaintColor & 0xFFcccccc | 0xFFcccccc;
 		mSecondaryPaint.setColor(color);
@@ -213,7 +214,6 @@ public class RoundProgressBar extends TextView {
 	
 	public synchronized void setPaintColor(int color) {
 		mPaintColor = color;
-		mRoundPaints.setColor(mPaintColor);
 		mRoundPaints.setColor(mPaintColor);
 		invalidate();
 	}

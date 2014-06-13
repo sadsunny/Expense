@@ -27,6 +27,7 @@
     <color name="bill_gray">#acacac</color>
     <color name="list_line">#FFd4d4d7</color>
     <color name="text_little_title">#7c8285</color>
+      <color name="test_color">#30000000</color>
     
     <color name="blue_theme">#4c8fca</color>
     <color name="today_text">#0380ff</color>

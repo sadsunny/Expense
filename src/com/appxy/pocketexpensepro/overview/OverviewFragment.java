@@ -190,7 +190,6 @@ public class OverviewFragment extends Fragment implements
 		 
 		mProgressBar.setProgress(70);
 		mProgressBar.setSecondaryProgress(100);
-//		mProgressBar.setPaintColor(R.color.bill_red);
 		
 		budgetRelativeLayout = (LinearLayout) view.findViewById(R.id.budget_relativeLayout);
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);

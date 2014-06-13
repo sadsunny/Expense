@@ -224,7 +224,6 @@ public class MonthViewFragment extends Fragment implements OnUpdateListListener,
 			 }else {
 			 mHandler.post(mTask);
 			 }
-			 Log.v("mtest", "主actiivity中的日期"+MEntity.getMilltoDate(MainActivity.selectedDate));
 			 
 		}
 	}

@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_search"
+        android:showAsAction="always|withText"
+        android:title="@string/action_search"
+        android:actionProviderClass="android.widget.ShareActionProvider"
+        android:visible="true">
+    </item>
+    
+     <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/action_setting" 
+        android:showAsAction="always|withText"
+        android:title="@string/action_settings"
+        android:visible="true">
+    </item>
+    
+    <item
+        android:id="@+id/action_add"
+        android:icon="@drawable/action_add" 
+        android:showAsAction="always|withText"
+        android:title="aaaa"
+        android:visible="true">
+    </item>
+
+</menu>
