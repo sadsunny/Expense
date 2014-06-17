@@ -298,6 +298,10 @@ public class MainActivity extends FragmentActivity implements
 				if (mItemPosition == 2) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
 				} else {
+					
+					rangePositon = 0;
+					startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
+					endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
 
 					mDrawerLayout.closeDrawer(mLinearLayout);
 					actionBar.setDisplayHomeAsUpEnabled(true);

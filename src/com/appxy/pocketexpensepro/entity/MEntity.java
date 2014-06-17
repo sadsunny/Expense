@@ -33,14 +33,31 @@ public class MEntity {
 			}
 		}
 	}
-	
-	 /** 
-     * 根据手机的分辨率从 dp 的单位 转成为 px(像素) 
-     */  
-    public static int dip2px(Context context, float dpValue) {  
-        final float scale = context.getResources().getDisplayMetrics().density;  
-        return (int) (dpValue * scale + 0.5f);  
-    }  
+
+	public static class MapComparatorAmount implements
+			Comparator<Map<String, Object>> {
+		@Override
+		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+			// TODO Auto-generated method stub
+			double due1 = (Double) o1.get("sum");
+			double due2 = (Double) o2.get("sum");
+			if (due1 > due2) {
+				return -1;
+			} else if (due1 < due2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+
+	/**
+	 * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+	 */
+	public static int dip2px(Context context, float dpValue) {
+		final float scale = context.getResources().getDisplayMetrics().density;
+		return (int) (dpValue * scale + 0.5f);
+	}
 
 	public static String turnToDateString(long mills) {
 
