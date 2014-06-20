@@ -17,6 +17,7 @@ import com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 
@@ -43,7 +44,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
-public class BudgetActivity extends Activity {
+public class BudgetActivity extends BaseHomeActivity {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -84,7 +85,7 @@ public class BudgetActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget);
 

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.ChooseTypeListViewAdapter.ViewHolder;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -46,7 +47,7 @@ import android.widget.TextView;
  * 对CreatAccountTypeActivity发出Result code 1
  * 返回到Account主页面的Result code 2
  */
-public class EditAccountActivity extends Activity {
+public class EditAccountActivity extends BaseHomeActivity {
 
 	private LayoutInflater inflater;
 	private EditText accountEditText;
@@ -85,7 +86,7 @@ public class EditAccountActivity extends Activity {
 	private int seIsclear;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_new_account);

@@ -16,10 +16,9 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/myTheme"
-        >
+        android:theme="@style/myTheme" >
         <activity
-            android:name="com.appxy.pocketexpensepro.MainActivity"
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_Start"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+         <activity
+            android:name="com.appxy.pocketexpensepro.MainActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
         <activity
             android:name="com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity"
             android:label="@string/new_account" >
@@ -75,33 +79,31 @@
             android:name="com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity"
             android:label="@string/view_image" >
         </activity>
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.accounts.EditAccountActivity"
             android:label="@string/account" >
         </activity>
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity"
             android:label="@string/account" >
         </activity>
-          <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity"
             android:label="@string/account" >
         </activity>
-        
-          <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.BudgetActivity"
             android:label="@string/budget" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountTransferActivity"
             android:label="@string/account" >
         </activity>
-           <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity"
             android:label="@string/account" >
         </activity>
-           <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.accounts.EditTransactionActivity"
             android:label="@string/account" >
         </activity>
@@ -109,52 +111,81 @@
             android:name="com.appxy.pocketexpensepro.accounts.EditTransferActivity"
             android:label="@string/account" >
         </activity>
-        
-          <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.BudgetToTransactionActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.bills.BillDetailsActivity"
             android:label="@string/bill_details" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.bills.BillPayActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-          <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.bills.BillEditActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-         <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountActivity"
             android:label="@string/expense_label" >
         </activity>
-        
-           <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetListActivity"
             android:label="@string/budget_list" >
         </activity>
-        
-           <activity
+        <activity
             android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetSelectCategoryActivity"
             android:label="@string/budget_list" >
         </activity>
-        
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ChangePass"
+            android:label="@string/app_name" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ClosePass"
+            android:label="@string/app_name"
+             android:windowSoftInputMode="stateAlwaysVisible" 
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_HomeBack"
+            android:label="@string/app_name" 
+             android:windowSoftInputMode="stateAlwaysVisible" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_Login"
+            android:label="@string/app_name"
+             android:windowSoftInputMode="stateAlwaysVisible" 
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ResetPass"
+            android:label="@string/app_name" 
+             android:windowSoftInputMode="stateAlwaysVisible" 
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_SetPass"
+            android:label="@string/app_name"
+             android:windowSoftInputMode="stateAlwaysVisible" 
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.BaseHomeActivity"
+            android:label="@string/app_name" >
+        </activity>
     </application>
 
 </manifest>

@@ -16,6 +16,7 @@ import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.overview.transaction.AccountsListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -40,7 +41,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class BillPayActivity extends Activity{
+public class BillPayActivity extends BaseHomeActivity{
 	private ActionBar actionBar;
 	private Map<String, Object> mMap;
 	private int indexflag;
@@ -62,7 +63,7 @@ public class BillPayActivity extends Activity{
 	private long dateLong;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bill_pay);

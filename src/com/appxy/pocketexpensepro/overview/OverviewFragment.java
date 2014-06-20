@@ -151,6 +151,17 @@ public class OverviewFragment extends Fragment implements
 	public OverviewFragment() {
 		
 	}
+	
+	
+
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mListViewAdapter.notifyDataSetChanged();
+	}
+
+
 
 	@Override
 	public void onAttach(Activity activity) {

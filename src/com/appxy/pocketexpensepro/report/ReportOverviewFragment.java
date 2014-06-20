@@ -172,7 +172,14 @@ public class ReportOverviewFragment extends Fragment {
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
 	}
-
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mAdapter.notifyDataSetChanged();
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -710,7 +717,7 @@ public class ReportOverviewFragment extends Fragment {
 				updateDisplayEnd();
 				
 				AlertDialog.Builder mBuilder5 = new AlertDialog.Builder(mActivity);
-				mBuilder5.setTitle("Recurring");
+				mBuilder5.setTitle("Range");
 				mBuilder5.setView(view);
 				mBuilder5.setPositiveButton("Done",
 						new DialogInterface.OnClickListener() {

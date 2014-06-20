@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.setting.category;
 
 import java.util.ArrayList;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -16,14 +17,14 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class CategoryActivity extends FragmentActivity {
+public class CategoryActivity extends BaseHomeActivity {
 	private ViewPager mViewPager;
 	private ViewPagerAdapter mViewPagerAdapter;
 	private ExpenseFragment expenseFragment = new ExpenseFragment();
 	private IncomeFragment incomeFragment = new IncomeFragment();
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_category_tab);

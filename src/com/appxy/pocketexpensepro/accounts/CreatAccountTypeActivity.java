@@ -1,6 +1,8 @@
 package com.appxy.pocketexpensepro.accounts;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -18,7 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 
-public class CreatAccountTypeActivity extends Activity {
+public class CreatAccountTypeActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 	private EditText typeEditText;
 	private GridView mGridView;
@@ -26,7 +28,7 @@ public class CreatAccountTypeActivity extends Activity {
 	private int mPosition = 0; // the icon selected position, default 0
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_account_type);

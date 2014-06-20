@@ -6,6 +6,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountTransferActivity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -27,7 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class BudgetTransferActivity extends Activity {
+public class BudgetTransferActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 	private EditText amountEditText;
 	private Button fromButton;
@@ -44,7 +45,7 @@ public class BudgetTransferActivity extends Activity {
 	private String amountString = "0.00";
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget_transfer);

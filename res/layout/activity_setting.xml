@@ -22,7 +22,7 @@
             android:layout_marginRight="16dip"
             android:paddingBottom="3dp"
             android:paddingRight="8dip"
-            android:text="@string/general_label"
+            android:text="GENERAL"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#FFAAAAAA"
@@ -36,7 +36,6 @@
             android:background="@color/black_gray" />
 
         <RelativeLayout
-            android:id="@+id/general_rel"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal" >
@@ -51,9 +50,162 @@
                 android:layout_marginLeft="7.3dp"
                 android:layout_marginRight="12dip"
                 android:paddingRight="8dip"
-                android:text="@string/general_label"
+                android:text="Passcode"
                 android:textAppearance="?android:attr/textAppearance"
+                android:textColor="@color/text_black"
                 android:textSize="16sp" />
+
+            <Switch
+                android:id="@+id/passcode_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="12dp"
+                android:gravity="center_vertical" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label2"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/currency_RelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@drawable/item_layout_selector" >
+
+            <TextView
+                android:id="@+id/currency_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:layout_marginTop="12dp"
+                android:paddingRight="8dip"
+                android:text="Currency"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/currency_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/currency_label"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dp"
+                android:paddingRight="8dip"
+                android:text="$Currency"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/text_gray"
+                android:textSize="13.3sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label2"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/budget_rel"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/budge_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="Budget"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:id="@+id/bag_view"
+                android:layout_width="100dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/budget_bag"
+                android:orientation="horizontal"
+                android:weightSum="2" >
+
+                <LinearLayout
+                    android:id="@+id/left_LinearLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:background="@drawable/left_corners" >
+
+                    <TextView
+                        android:id="@+id/left_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Left"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/devid_line"
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/budget_bag_color" />
+
+                <LinearLayout
+                    android:id="@+id/spent_LinearLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical" 
+                    android:background="@drawable/right_corners">
+
+                    <TextView
+                        android:id="@+id/spent_txt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Spent"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
         </RelativeLayout>
     </LinearLayout>
 
@@ -91,6 +243,7 @@
                 android:paddingRight="8dip"
                 android:text="@string/payee_label"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
                 android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
@@ -129,6 +282,115 @@
                 android:paddingRight="8dip"
                 android:text="@string/category_label"
                 android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <TextView
+            android:id="@+id/repeat_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:layout_marginLeft="7.3dp"
+            android:layout_marginRight="16dip"
+            android:paddingBottom="3dp"
+            android:paddingRight="8dip"
+            android:text="FEEDBACK"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#FFAAAAAA"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/line_label4"
+            android:layout_width="match_parent"
+            android:layout_height="1.8dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/feedback_RelativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/feedback_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="Seed Feedback"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label7"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/version_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/version_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="App Version"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/version_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="7.3dp"
+                android:paddingRight="8dip"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_gray1"
                 android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>

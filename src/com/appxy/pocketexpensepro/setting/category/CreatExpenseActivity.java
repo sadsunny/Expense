@@ -9,6 +9,7 @@ import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -30,7 +31,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class CreatExpenseActivity extends Activity {
+public class CreatExpenseActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 	private EditText mEditText;
 	private RelativeLayout mRelativeLayout;
@@ -49,7 +50,7 @@ public class CreatExpenseActivity extends Activity {
 	private int selectWhether = -1;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_category);

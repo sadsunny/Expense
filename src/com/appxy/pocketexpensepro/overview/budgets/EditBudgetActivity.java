@@ -6,6 +6,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -23,7 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class EditBudgetActivity extends Activity {
+public class EditBudgetActivity extends BaseHomeActivity {
 	private int _id;
 	private TextView mTextView;
 	private EditText mEditText;
@@ -126,7 +127,7 @@ public class EditBudgetActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_editbudget);

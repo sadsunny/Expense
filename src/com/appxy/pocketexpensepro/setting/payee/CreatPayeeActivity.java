@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.CreatExpenseActivity;
 
 import android.R.integer;
@@ -38,7 +39,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class CreatPayeeActivity extends Activity {
+public class CreatPayeeActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 	private EditText nameEditText;
 	private Button categoryButton;
@@ -60,7 +61,7 @@ public class CreatPayeeActivity extends Activity {
 	private int categoryId; // 初次others的位置
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_payee);

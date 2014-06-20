@@ -11,6 +11,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragmentMonth;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
@@ -26,8 +27,12 @@ import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.report.ReportCashFragment;
+import com.appxy.pocketexpensepro.report.ReportCategoryFragment;
 import com.appxy.pocketexpensepro.report.ReportOverviewFragment;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
+import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.os.Bundle;
 import android.app.ActionBar;
@@ -47,7 +52,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class MainActivity extends FragmentActivity implements
+public class MainActivity extends BaseHomeActivity implements
 		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener,
 		OnTellUpdateMonthListener, OnBillToActivityListener {
 
@@ -81,9 +86,12 @@ public class MainActivity extends FragmentActivity implements
 	public static long endDate;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
+		Common.CURRENCY = (Integer) mList.get(0).get("currency");
 		
 		startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
 		endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
@@ -380,10 +388,24 @@ public class MainActivity extends FragmentActivity implements
 
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
+				ReportCashFragment cashFragment = new ReportCashFragment();
+				FragmentTransaction fragmentTransaction = fragmentManager
+						.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,
+						cashFragment);
+				fragmentTransaction.commit();
+
 				
 			} else if (itemPosition == 2) {
 				overViewNavigationListAdapter.setChoosed(2);
 				
+				ReportCategoryFragment categoryFragment = new ReportCategoryFragment();
+				FragmentTransaction fragmentTransaction = fragmentManager
+						.beginTransaction();
+				fragmentTransaction.replace(R.id.content_frame,
+						categoryFragment);
+				fragmentTransaction.commit();
+
 			}
 			overViewNavigationListAdapter.notifyDataSetChanged();
 			return false;

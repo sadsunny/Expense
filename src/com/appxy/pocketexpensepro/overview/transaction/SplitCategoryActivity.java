@@ -9,6 +9,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 
 import android.app.ActionBar;
@@ -31,7 +32,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SplitCategoryActivity extends Activity {
+public class SplitCategoryActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 
@@ -158,7 +159,7 @@ public class SplitCategoryActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_budget);

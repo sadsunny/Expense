@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.R.anim;
 import android.annotation.SuppressLint;
@@ -60,7 +61,7 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class AccountToTransactionActivity extends Activity {
+public class AccountToTransactionActivity extends BaseHomeActivity {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -166,7 +167,7 @@ public class AccountToTransactionActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_account_to_transaction);

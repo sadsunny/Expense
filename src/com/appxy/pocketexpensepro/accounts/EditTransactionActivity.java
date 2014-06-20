@@ -29,6 +29,7 @@ import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -72,7 +73,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class EditTransactionActivity extends Activity {
+public class EditTransactionActivity extends BaseHomeActivity {
 	private static final int categoryDefault = 0;
 	private static final int childTransactionsDefault = 0;
 	private static final int expenseAccountDefault = 0;
@@ -146,7 +147,7 @@ public class EditTransactionActivity extends Activity {
 	private int _id;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transaction);

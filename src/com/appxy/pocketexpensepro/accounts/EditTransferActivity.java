@@ -21,6 +21,7 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
@@ -69,7 +70,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class EditTransferActivity extends Activity {
+public class EditTransferActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 
 	private EditText payeeEditText;
@@ -148,7 +149,7 @@ public class EditTransferActivity extends Activity {
 	private int _id;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_account_transfer);

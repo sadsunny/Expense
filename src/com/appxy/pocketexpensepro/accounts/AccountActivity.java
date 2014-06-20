@@ -10,6 +10,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -41,7 +42,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class AccountActivity extends Activity {
+public class AccountActivity extends BaseHomeActivity {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -115,7 +116,7 @@ public class AccountActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.fragment_account);

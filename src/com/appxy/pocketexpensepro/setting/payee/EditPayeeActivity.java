@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -37,7 +38,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class EditPayeeActivity extends Activity {
+public class EditPayeeActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private LayoutInflater inflater;
@@ -69,7 +70,7 @@ public class EditPayeeActivity extends Activity {
     private String categoryNameE;
      
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_payee);

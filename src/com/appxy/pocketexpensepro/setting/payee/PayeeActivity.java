@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.R.id;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.DialogItemAdapter;
 
 import android.app.Activity;
@@ -27,7 +28,7 @@ import android.widget.Toast;
  * add code 4,edit code 5
  */
 
-public class PayeeActivity extends Activity {
+public class PayeeActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private ListView mListView;
@@ -56,7 +57,7 @@ public class PayeeActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_payee);

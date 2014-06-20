@@ -51,6 +51,9 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 
 		String CREAT_BudgetTransfer_TABLE = "CREATE TABLE BudgetTransfer ( _id INTEGER PRIMARY KEY AUTOINCREMENT ,amount TEXT, dateTime INTEGER, dateTime_sync INTEGER, state TEXT, uuid TEXT, fromBudget INTEGER, toBudget INTEGER , FOREIGN KEY(fromBudget) REFERENCES BudgetItem(_id) ON DELETE CASCADE,FOREIGN KEY(toBudget) REFERENCES BudgetItem(_id) ON DELETE CASCADE)";
 		paramSQLiteDatabase.execSQL(CREAT_BudgetTransfer_TABLE);
+		
+		String CREAT_Setting_TABLE = "CREATE TABLE Setting ( _id INTEGER PRIMARY KEY AUTOINCREMENT ,accDRendDate TEXT, accDRstartDate TEXT, accDRstring TEXT, budgetNewStyle TEXT, budgetNewStyleCycle TEXT, cateDRendDate TEXT, cateDRstartDate TEXT, cateDRstring TEXT, currency TEXT, dateTime TEXT, expDRString TEXT, expenseLastView TEXT, isBefore TEXT, otherBool TEXT, otherBool1 TEXT, otherBool2 TEXT, otherBool3 TEXT, otherBool4 TEXT, otherBool5 TEXT, otherBool6 TEXT, otherBool7 TEXT, otherBool8 TEXT, otherBool9 TEXT, otherBool10 TEXT, otherBool11 TEXT, otherBool12 TEXT, otherBool13 TEXT, otherBool14 TEXT, otherBool15 TEXT, otherBool16 TEXT, otherBool17 TEXT, otherBool18 TEXT, otherBool19 TEXT, otherBool20 TEXT, others TEXT, others1 TEXT, others2 TEXT, others3 TEXT, others4 TEXT, others5 TEXT, others6 TEXT, others7 TEXT, others8 TEXT, others9 TEXT, others10 TEXT, others11 TEXT, others12 TEXT, others13 TEXT, others14 TEXT, others15 TEXT, others16 TEXT, others17 TEXT, others18 TEXT, others19 TEXT, others20 TEXT, passcode TEXT, payeeCategory INTEGER, payeeCfged INTEGER, payeeMemo INTEGER, payeeName INTEGER, payeeTranAmount INTEGER, payeeTranClear INTEGER, payeeTranMemo INTEGER, payeeTranType INTEGER, playorder INTEGER, sortType TEXT, state TEXT, uuid TEXT, weekstartday TEXT)" ;
+	    paramSQLiteDatabase.execSQL(CREAT_Setting_TABLE);
 
 		accountTypeIni(0, 0, "Others");
 		accountTypeIni(1, 0, "Asset");
@@ -115,6 +118,8 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Utilities:Internet", 0, 0, 44, 0);
 		categoryIni("Utilities:Telephone", 0, 0, 1, 0);
 		categoryIni("Utilities:Water", 0, 0, 73, 0);
+		
+		settingIni(148,"22");
 
 	}
 
@@ -141,6 +146,15 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		return row;
 	}
 
+	public long settingIni(int currency, String passcode) {
+
+		ContentValues cv = new ContentValues();
+		cv.put("currency", currency);
+		cv.put("passcode", passcode);
+		long row = db.insert("Setting", null, cv);
+		return row;
+	}
+	
 	@Override
 	public void onUpgrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1,
 			int paramInt2) {

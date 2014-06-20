@@ -23,6 +23,7 @@ import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -55,7 +56,7 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class BudgetToTransactionActivity extends Activity {
+public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -113,7 +114,7 @@ public class BudgetToTransactionActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_buget_to_transaction);

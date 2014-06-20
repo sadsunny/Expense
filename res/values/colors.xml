@@ -56,5 +56,6 @@
     <color name="navigation_sel">#ececec</color>
     <color name="press_color">#3d83c1</color>
     <color name="button_sel_color">#bebdb9</color>
+    <color name="budget_bag_color">#5a79a8</color>
   
 </resources>

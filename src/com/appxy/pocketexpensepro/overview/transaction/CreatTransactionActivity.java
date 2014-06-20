@@ -20,6 +20,7 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
@@ -66,7 +67,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class CreatTransactionActivity extends Activity {
+public class CreatTransactionActivity extends BaseHomeActivity {
 	private static final int categoryDefault = 0;
 	private static final int childTransactionsDefault = 0;
 	private static final int expenseAccountDefault = 0;
@@ -139,7 +140,7 @@ public class CreatTransactionActivity extends Activity {
 	private List<Map<String, Object>> mReturnList;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transaction);

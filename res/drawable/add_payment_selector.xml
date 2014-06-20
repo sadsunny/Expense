@@ -8,13 +8,16 @@
 
             <solid android:color="@color/yello" />
         </shape></item>
-    <item android:state_pressed="true" android:state_selected="false"><shape>
+    <item android:state_pressed="true" android:state_selected="false">
+        <shape>
             <stroke android:width="0.5dp" android:color="@color/sel_yello" />
 
             <corners android:radius="5dp" />
 
             <solid android:color="@color/sel_yello" />
-        </shape></item>
+        </shape>
+        
+        </item>
     <item android:state_activated="false" android:state_selected="false"><shape>
             <stroke android:width="0.5dp" android:color="@color/sel_yello" />
 

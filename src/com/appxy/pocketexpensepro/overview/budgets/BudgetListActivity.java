@@ -10,6 +10,7 @@ import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -34,7 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BudgetListActivity extends Activity {
+public class BudgetListActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	
@@ -163,7 +164,7 @@ public class BudgetListActivity extends Activity {
 	};
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget_list);

@@ -16,6 +16,7 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.PayeeListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 
@@ -54,7 +55,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class CreatBillsActivity extends Activity {
+public class CreatBillsActivity extends BaseHomeActivity {
 
 	private EditText billNameEditText;
 	private EditText amountEditText;
@@ -122,7 +123,7 @@ public class CreatBillsActivity extends Activity {
 	private TextView reminderLabel ;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bills);
