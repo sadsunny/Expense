@@ -28,17 +28,19 @@ import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
-import com.appxy.pocketexpensepro.report.ReportCashFragment;
-import com.appxy.pocketexpensepro.report.ReportCategoryFragment;
-import com.appxy.pocketexpensepro.report.ReportOverviewFragment;
+import com.appxy.pocketexpensepro.reports.ReportCashFragment;
+import com.appxy.pocketexpensepro.reports.ReportCategoryFragment;
+import com.appxy.pocketexpensepro.reports.ReportOverviewFragment;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
@@ -52,6 +54,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
+@SuppressLint("ResourceAsColor")
 public class MainActivity extends BaseHomeActivity implements
 		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener,
 		OnTellUpdateMonthListener, OnBillToActivityListener {
@@ -67,6 +70,11 @@ public class MainActivity extends BaseHomeActivity implements
 	private LinearLayout mAccountLinearLayout;
 	private LinearLayout mReportLinearLayout;
 	private LinearLayout mBillsLinearLayout;
+	private View choose_view1;
+	private View choose_view2;
+	private View choose_view3;
+	private View choose_view4;
+	 
 	private android.support.v4.app.FragmentManager fragmentManager;
 	private OnUpdateListListener onUpdateListListener;
 	private OnChangeStateListener onChangeStateListener;
@@ -84,11 +92,15 @@ public class MainActivity extends BaseHomeActivity implements
 	public static int rangePositon = 0; 
 	public static long startDate;
 	public static long endDate;
+	
+	private ArrayList<LinearLayout> layoutArrayList = new ArrayList<LinearLayout>();
+	private ArrayList<View> viewArrayList = new ArrayList<View>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		Common.CURRENCY = (Integer) mList.get(0).get("currency");
@@ -98,12 +110,28 @@ public class MainActivity extends BaseHomeActivity implements
 
 		mTitle = mDrawerTitle = getTitle();
 		mLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
+		
 		mOverViewLinearLayout = (LinearLayout) findViewById(R.id.overview_linearlayout);
 		mAccountLinearLayout = (LinearLayout) findViewById(R.id.account_linearlayout);
 		mReportLinearLayout = (LinearLayout) findViewById(R.id.report_linearLayout);
 		mBillsLinearLayout = (LinearLayout) findViewById(R.id.bills_linearLayout);
+		layoutArrayList.add(mOverViewLinearLayout);
+		layoutArrayList.add(mAccountLinearLayout);
+		layoutArrayList.add(mReportLinearLayout);
+		layoutArrayList.add(mBillsLinearLayout);
+		
 		fragmentManager = getSupportFragmentManager();
-
+		
+		choose_view1 = (View) findViewById(R.id.choose_view1); 
+		choose_view2 = (View) findViewById(R.id.choose_view2);
+		choose_view3 = (View) findViewById(R.id.choose_view3);
+		choose_view4 = (View) findViewById(R.id.choose_view4);
+		viewArrayList.add(choose_view1);
+		viewArrayList.add(choose_view2);
+		viewArrayList.add(choose_view3);
+		viewArrayList.add(choose_view4);
+		
+		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
@@ -122,17 +150,16 @@ public class MainActivity extends BaseHomeActivity implements
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 				if (mItemPosition == 1) {
-					actionBar
-							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				} else {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 				}
-			}
-
-			public void onDrawerOpened(View drawerView) {
-				getActionBar().setTitle(mDrawerTitle);
-				invalidateOptionsMenu(); // creates call to
-											// onPrepareOptionsMenu()
+			}                                                                                   
+                                                                                                
+			public void onDrawerOpened(View drawerView) {                                       
+				getActionBar().setTitle(mDrawerTitle);                                          
+				invalidateOptionsMenu(); // creates call to                                     
+											// onPrepareOptionsMenu()                                           
 				// onPrepareOptionsMenu()
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 
@@ -180,6 +207,16 @@ public class MainActivity extends BaseHomeActivity implements
 		calendar2.set(Calendar.MILLISECOND, 0);
 		// calendar2.set(Calendar.DAY_OF_MONTH, 1);
 		this.selectedMonth = calendar2.getTimeInMillis();
+		
+		for (int i = 0; i < layoutArrayList.size(); i++) {
+			if (i == 0) {
+				layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+				viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+			} else {
+				layoutArrayList.get(i).setBackgroundResource(R.color.white);
+				viewArrayList.get(i).setBackgroundResource(R.color.white);
+			}
+		}
 
 	}
 
@@ -191,8 +228,10 @@ public class MainActivity extends BaseHomeActivity implements
 			if (itemPosition == 0) {
 				mItemPosition = 0;
 				overViewNavigationListAdapter.setChoosed(0);
+				overViewNavigationListAdapter.setSubTitle(turnToDate(MainActivity.selectedDate));
 				overViewNavigationListAdapter.notifyDataSetChanged();
 
+				
 				overviewFragment = new OverviewFragment();
 				Bundle bundle = new Bundle();
 				bundle.putLong("selectedDate", MainActivity.selectedDate);
@@ -211,6 +250,7 @@ public class MainActivity extends BaseHomeActivity implements
 			} else if (itemPosition == 1) {
 
 				overViewNavigationListAdapter.setChoosed(1);
+				overViewNavigationListAdapter.setSubTitle(turnToDate(MainActivity.selectedDate));
 				overViewNavigationListAdapter.notifyDataSetChanged();
 
 				OverViewFragmentMonth overViewFragmentMonth = new OverViewFragmentMonth();
@@ -279,6 +319,16 @@ public class MainActivity extends BaseHomeActivity implements
 							overViewNavigationListAdapter,
 							new DropDownListenser());
 				}
+				
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == mItemPosition) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
+				}
 
 				break;
 			case R.id.account_linearlayout:
@@ -298,6 +348,16 @@ public class MainActivity extends BaseHomeActivity implements
 					actionBar.setDisplayShowTitleEnabled(true);
 					actionBar
 							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				}
+				
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == mItemPosition) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
 				}
 
 				break;
@@ -331,6 +391,16 @@ public class MainActivity extends BaseHomeActivity implements
 					mItemPosition = 2;
 				}
 
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == mItemPosition) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
+				}
+				
 				break;
 			case R.id.bills_linearLayout:
 				if (mItemPosition == 3) {
@@ -363,9 +433,27 @@ public class MainActivity extends BaseHomeActivity implements
 					mItemPosition = 3;
 
 				}
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == mItemPosition) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
+				}
 
 				break;
 			default:
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == 0) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
+				}
 				break;
 			}
 		}
@@ -478,6 +566,14 @@ public class MainActivity extends BaseHomeActivity implements
 				
 				if (ReportOverviewFragment.item != null) {
 					ReportOverviewFragment.item.setVisible(false);
+				}
+				
+				if (ReportCashFragment.item != null) {
+					ReportCashFragment.item.setVisible(false);
+				}
+				
+				if (ReportCategoryFragment.item != null) {
+					ReportCategoryFragment.item.setVisible(false);
 				}
 			}
 
@@ -592,14 +688,39 @@ public class MainActivity extends BaseHomeActivity implements
 	}
 
 	@Override
+	public void OnUpdateNavigation( ) {
+		// TODO Auto-generated method stub
+		
+		Calendar calendar1 = Calendar.getInstance();
+		calendar1.set(Calendar.HOUR_OF_DAY, 0);
+		calendar1.set(Calendar.MINUTE, 0);
+		calendar1.set(Calendar.SECOND, 0);
+		calendar1.set(Calendar.MILLISECOND, 0);
+		this.selectedDate = calendar1.getTimeInMillis();
+		
+		overviewFragment = new OverviewFragment();
+		Bundle bundle = new Bundle();
+		bundle.putLong("selectedDate", MainActivity.selectedDate);
+		overviewFragment.setArguments(bundle);
+
+		FragmentTransaction fragmentTransaction1 = this.getSupportFragmentManager().beginTransaction();
+		fragmentTransaction1.replace(R.id.content_frame,
+				overviewFragment);
+		fragmentTransaction1.commit();
+		
+		overViewNavigationListAdapter.setChoosed(0);
+		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
+		overViewNavigationListAdapter.notifyDataSetChanged();
+		
+		
+	}
+	
+	@Override
 	public void OnUpdateNavigation(int itemPosition, long selectedDate) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		actionBar.setSelectedNavigationItem(itemPosition);
-		overViewNavigationListAdapter
-				.setSubTitle(turnToDate(this.selectedDate));
-		overViewNavigationListAdapter.notifyDataSetChanged();
-		Log.v("mtest", "OnUpdateNavigation");
+		actionBar.setSelectedNavigationItem(0);
+		
 	}
 
 	@Override
@@ -631,5 +752,6 @@ public class MainActivity extends BaseHomeActivity implements
 		onActivityToBillListener.OnActivityToBill();
 
 	}
+
 
 }

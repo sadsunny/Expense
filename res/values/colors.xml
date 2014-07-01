@@ -27,8 +27,8 @@
     <color name="bill_gray">#acacac</color>
     <color name="list_line">#FFd4d4d7</color>
     <color name="text_little_title">#7c8285</color>
-      <color name="test_color">#30000000</color>
     
+    <color name="test_color">#30000000</color>
     <color name="blue_theme">#4c8fca</color>
     <color name="today_text">#0380ff</color>
     <color name="text_gray">#5e637f</color>
@@ -38,10 +38,10 @@
     <color name="text_green">#539627</color>
     <color name="text_blue">#cedff9</color>
     <color name="bag_gray">#f2f2f2</color>
-     <color name="bag_gray1">#eaeaea</color>
+    <color name="bag_gray1">#eaeaea</color>
     <color name="sel_gray">#dfdfdf</color>
     <color name="devide_gray">#dddddd</color>
-    <color name="line_devide_gray">#cccccc</color> 
+    <color name="line_devide_gray">#cccccc</color>
     <color name="over_bot_bag">#f6f5f1</color>
     <color name="over_budget_text">#0ca4e3</color>
     <color name="over_label_text">#5e6375</color>
@@ -57,5 +57,10 @@
     <color name="press_color">#3d83c1</color>
     <color name="button_sel_color">#bebdb9</color>
     <color name="budget_bag_color">#5a79a8</color>
-  
+    
+    <color name="main_choose_blue">#0078ff</color>
+    <color name="main_choose_gray">#e5e7ea</color>
+    <color name="main_divide">#cad3da</color>
+    <color name="main_text_black">#303642</color>
+
 </resources>

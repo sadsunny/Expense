@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
@@ -44,6 +45,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -97,6 +99,7 @@ public class OverviewFragment extends Fragment implements
 	private WeekFragment weekFragment;
 	private ListView mListView; 
 	private List<Map<String, Object>> mDataList;
+	private List<Map<String, Object>> mNetworthDataList;
 	private ListViewAdapter mListViewAdapter;
 	private Thread mThread;
 	private long selectedDate;
@@ -126,6 +129,13 @@ public class OverviewFragment extends Fragment implements
 	private Button addView;
 	private RoundProgressBar mProgressBar;
 	
+	private SharedPreferences mPreferences;
+	private int  BdgetSetting;
+	private TextView left_label;
+	private TextView currency_label1;
+	private TextView currency_label2;
+	private TextView networthTextView;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -136,7 +146,41 @@ public class OverviewFragment extends Fragment implements
 					mListViewAdapter.notifyDataSetChanged();
 				}
 				
-				leftTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
+				if (BdgetSetting == 0) {
+					left_label.setText("LEFT");
+					leftTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
+				} else {
+					left_label.setText("SPENT");
+					leftTextView.setText(MEntity.doublepoint2str((transactionAmount)+""));
+				}
+				
+				BigDecimal b1 = new BigDecimal("0");
+				for (Map<String, Object> iMap : mNetworthDataList) {
+					String amount = (String) iMap.get("lastAmount");
+					BigDecimal b2 = new BigDecimal(amount);
+					b1 = b1.add(b2);
+				}
+				
+				double netWorth = b1.doubleValue();
+				networthTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+				
+				if (!(mDataList != null) || mDataList.size() == 0) {
+					mProgressBar.setProgress(0);
+					mProgressBar.setSecondaryProgress(100);
+					mProgressBar.setMax(100);
+				} else {
+					mProgressBar.setProgress((int)(transactionAmount*0.8));
+					mProgressBar.setSecondaryProgress((int)budgetAmount);
+					mProgressBar.setMax((int)budgetAmount);
+				}
+				
+				
+				if ((budgetAmount-transactionAmount) < 0) {
+					mProgressBar.setPaintColor(Color.rgb(246, 48, 48));
+				} else {
+					mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
+				}
+				
 				
 				break;
 
@@ -147,20 +191,35 @@ public class OverviewFragment extends Fragment implements
 			}
 		}
 	};
-	
-	public OverviewFragment() {
+
 		
-	}
-	
 	
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
-		super.onResume();
+		super.onResume();	
 		mListViewAdapter.notifyDataSetChanged();
+		
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+		
+		if (BdgetSetting == 0) {
+			left_label.setText("LEFT");
+			leftTextView.setText(MEntity.doublepoint2str((budgetAmount-transactionAmount)+""));
+		} else {
+			left_label.setText("SPENT");
+			leftTextView.setText(MEntity.doublepoint2str((transactionAmount)+""));
+		}
+		
+		if ((budgetAmount-transactionAmount) < 0) {
+			mProgressBar.setPaintColor(Color.rgb(246, 48, 48));
+		} else {
+			mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
+		}
+		
+		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 	}
-
 
 
 	@Override
@@ -183,9 +242,9 @@ public class OverviewFragment extends Fragment implements
 			argumentsDate = bundle.getLong("selectedDate");
 		}
 		int mOffset = MEntity.getWeekOffsetByDay(argumentsDate, System.currentTimeMillis());
-		Log.v("mtest", "mOffset"+mOffset);
 		currentPosition = MID_VALUE + mOffset;
 		selectedDate = argumentsDate;
+		
 	}
 
 	@SuppressLint("ResourceAsColor")
@@ -196,14 +255,21 @@ public class OverviewFragment extends Fragment implements
 		View view = inflater.inflate(R.layout.fragment_overview, container,
 				false);
 		mInflater = inflater;
-
 		mProgressBar = (RoundProgressBar) view.findViewById(R.id.roundBar);
-		 
-		mProgressBar.setProgress(70);
-		mProgressBar.setSecondaryProgress(100);
 		
+		mPreferences = mActivity.getSharedPreferences("Expense", mActivity.MODE_PRIVATE);  
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+		
+		currency_label1 = (TextView) view.findViewById(R.id.currency_label1);
+		currency_label2 = (TextView) view.findViewById(R.id.currency_label2);
+		
+		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		
+		networthTextView = (TextView) view.findViewById(R.id.net_amount);
 		budgetRelativeLayout = (LinearLayout) view.findViewById(R.id.budget_relativeLayout);
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);
+		left_label = (TextView) view.findViewById(R.id.left_label);
 		addView = (Button) view.findViewById(R.id.add_btn);
 		
 		accountRelativeLayout = (LinearLayout) view.findViewById(R.id.relativeLayout2);
@@ -369,6 +435,39 @@ public class OverviewFragment extends Fragment implements
 			
 			budgetAmount = budgetBig.doubleValue();
 			transactionAmount = transactionBig.doubleValue();
+			
+			
+			mNetworthDataList = AccountDao.selectAccount(mActivity);
+
+			for (Map<String, Object> iMap : mNetworthDataList) {
+				int _id = (Integer) iMap.get("_id");
+				String amount = (String) iMap.get("amount");
+				BigDecimal b1 = new BigDecimal(amount);
+
+				List<Map<String, Object>> mTemList = AccountDao
+						.selectTransactionByAccount(mActivity, _id);
+				BigDecimal b0 = new BigDecimal(0);
+				for (Map<String, Object> tMap : mTemList) {
+
+					String tAmount = (String) tMap.get("amount");
+					BigDecimal b2 = new BigDecimal(tAmount);
+
+					int expenseAccount = (Integer) tMap.get("expenseAccount");
+					int incomeAccount = (Integer) tMap.get("incomeAccount");
+
+					if (expenseAccount == _id) {
+						b0 = b0.subtract(b2);
+					} else if (incomeAccount == _id) {
+						b0 = b0.add(b2);
+					}
+
+				}
+
+				b1 = b1.add(b0);
+				double lastAmount = b1.doubleValue();
+				iMap.put("lastAmount", lastAmount + "");
+			}
+			
 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
@@ -524,19 +623,18 @@ public class OverviewFragment extends Fragment implements
         
         int size = MEntity.dip2px(mActivity, 32);
         int px = MEntity.dip2px(mActivity, 14.25f);
+        int textSize = MEntity.dip2px(mActivity, 13f);
         
         Calendar calendar = Calendar.getInstance();
         int contacyCount= calendar.get(Calendar.DAY_OF_MONTH);
         //启用抗锯齿和使用设备的文本字距
         Paint countPaint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.DEV_KERN_TEXT_FLAG);
         countPaint.setColor(Color.WHITE);
-        countPaint.setTextSize(26f);
+        countPaint.setTextSize(textSize);
         countPaint.setTextAlign(Paint.Align.CENTER);
         FontMetrics fontMetrics = countPaint.getFontMetrics();  
         float ascentY =  fontMetrics.ascent;  
         float descentY = fontMetrics.descent;  
-        Log.v("mtest", "ascentY"+ascentY);
-        Log.v("mtest", "descentY"+descentY);
         
         canvas.drawText(String.valueOf(contacyCount), size/2, size-px-(ascentY+descentY)/2, countPaint);
         BitmapDrawable bd= new BitmapDrawable(mActivity.getResources(), originalBitmap);
@@ -551,24 +649,7 @@ public class OverviewFragment extends Fragment implements
 
 		case R.id.today:
 			
-			Calendar calendar1 = Calendar.getInstance();
-			calendar1.set(Calendar.HOUR_OF_DAY, 0);
-			calendar1.set(Calendar.MINUTE, 0);
-			calendar1.set(Calendar.SECOND, 0);
-			calendar1.set(Calendar.MILLISECOND, 0);
-			MainActivity.selectedDate = calendar1.getTimeInMillis();
-//			Log.v("mtest", "action_add");
-//			onUpdateNavigationListener.OnUpdateNavigation(0, MainActivity.selectedDate);
-			
-			OverviewFragment overviewFragment = new OverviewFragment();
-			Bundle bundle = new Bundle();
-			bundle.putLong("selectedDate", MainActivity.selectedDate);
-			overviewFragment.setArguments(bundle);
-
-			FragmentTransaction fragmentTransaction1 = mActivity.getSupportFragmentManager().beginTransaction();
-			fragmentTransaction1.replace(R.id.content_frame,
-					overviewFragment);
-			fragmentTransaction1.commit();
+			onUpdateNavigationListener.OnUpdateNavigation( );
 			
 			return true;
 
@@ -619,6 +700,7 @@ public class OverviewFragment extends Fragment implements
 		String theDate = sdf.format(date2);
 		return theDate;
 	}
+	
 	
 	@Override
 	public void OnUpdateList(long selectedDate) {

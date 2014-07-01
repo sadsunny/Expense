@@ -113,13 +113,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/mPager"
-            android:layout_marginBottom="60dp"
+            android:layout_marginBottom="48.5dp"
             android:dividerHeight="0dp" >
         </ListView>
         
         <RelativeLayout 
             android:layout_width="match_parent"
-            android:layout_height="50.5dp"
+            android:layout_height="48.5dp"
             android:layout_alignParentBottom="true">
             
             <View 
@@ -273,7 +273,6 @@
 		     android:layout_alignParentBottom="true"
              android:layout_centerHorizontal="true"
              android:layout_marginBottom="-10dp"
-         
 		 	 roundProgress:max="100"
 		 	 roundProgress:fill = "false"    
 		 	 roundProgress:Inside_Interval="1"

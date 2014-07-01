@@ -64,7 +64,7 @@ public class RoundProgressBar extends TextView {
 		TypedArray array = context.obtainStyledAttributes(attrs,
 				R.styleable.RoundProgressBar);
 
-		mMaxProgress = array.getInt(R.styleable.RoundProgressBar_max, 80);
+		mMaxProgress = array.getInt(R.styleable.RoundProgressBar_max, 100);
 		mSaveMax = mMaxProgress;
 		mBRoundPaintsFill = array.getBoolean(R.styleable.RoundProgressBar_fill,
 				true); // 获得是否是填充模式
@@ -80,7 +80,7 @@ public class RoundProgressBar extends TextView {
 		mBShowBottom = array.getBoolean(
 				R.styleable.RoundProgressBar_Show_Bottom, true);
 
-		mPaintWidth = dip2px(context, 3);
+		mPaintWidth = dip2px(context,3.5);
 		if (mBRoundPaintsFill) // 填充模式则画笔长度改为0
 		{
 			mPaintWidth = 0;
@@ -140,7 +140,7 @@ public class RoundProgressBar extends TextView {
 		mBottomPaint.setStrokeWidth(mPaintWidth);
 		mBottomPaint.setColor(Color.GRAY);
 
-		mStartProgress = 90;
+		mStartProgress = 129;
 		mCurProgress = 0;
 		mMaxProgress = 100;
 		mSaveMax = 100;
@@ -150,7 +150,7 @@ public class RoundProgressBar extends TextView {
 
 		mSidePaintInterval = 0;
 
-		mSecondaryCurProgress = 0;
+		mSecondaryCurProgress = 100;
 
 		mRoundOval = new RectF(0, 0, 0, 0);
 

@@ -180,8 +180,8 @@ public class OverViewFragmentMonth extends Fragment {
 			calendar1.set(Calendar.SECOND, 0);
 			calendar1.set(Calendar.MILLISECOND, 0);
 			MainActivity.selectedDate = calendar1.getTimeInMillis();
-			Log.v("mtest", "action_add");
-			onUpdateNavigationListener.OnUpdateNavigation(0, MainActivity.selectedDate);
+//			Log.v("mtest", "action_add");
+			onUpdateNavigationListener.OnUpdateNavigation(0, calendar1.getTimeInMillis());
 			
 			
 			return true;

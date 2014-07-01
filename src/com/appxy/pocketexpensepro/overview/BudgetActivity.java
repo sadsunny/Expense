@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.overview;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditAccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetListActivity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity;
@@ -25,6 +27,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,7 +55,7 @@ public class BudgetActivity extends BaseHomeActivity {
 	private LayoutInflater mInflater;
 	private ActionBar actionBar;
 	private ProgressBar mProgressBar;
-	private TextView leftTextView;
+
 	private LinearLayout setBudgetLayout;
 	private LinearLayout transferLayout;
 	private ListView mListView;
@@ -62,7 +65,18 @@ public class BudgetActivity extends BaseHomeActivity {
 	private List<Map<String, Object>> mBudgetList;
 	private BudgetListApdater budgetListApdater;
 	private AlertDialog alertDialog;
-
+	private RelativeLayout previous;
+	private RelativeLayout next;
+	private TextView dateTextView ;
+	private Calendar month;
+	private SharedPreferences mPreferences;
+	private int  BdgetSetting;
+	private TextView currencyTextView1;
+	private TextView totalTextView;
+	private TextView currencyTextView2;
+	private TextView leftTextLabel;
+	private TextView leftTextView;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -72,8 +86,16 @@ public class BudgetActivity extends BaseHomeActivity {
 				mProgressBar.setProgress((int) transactionAmount);
 				budgetListApdater.setAdapterDate(mBudgetList);
 				budgetListApdater.notifyDataSetChanged();
-				leftTextView.setText((budgetAmount - transactionAmount) + "");
-
+				
+				totalTextView.setText(budgetAmount + "");
+				if (BdgetSetting ==0) {
+					leftTextView.setText(MEntity.doublepoint2str((budgetAmount - transactionAmount) + ""));
+					leftTextLabel.setText("LEFT");
+				} else {
+					leftTextView.setText(MEntity.doublepoint2str(transactionAmount + ""));
+					leftTextLabel.setText("SPENT");
+				}
+				
 				break;
 
 			case MSG_FAILURE:
@@ -88,14 +110,29 @@ public class BudgetActivity extends BaseHomeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget);
-
+		
+		mPreferences = getSharedPreferences("Expense", MODE_PRIVATE);  
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+		
+		month = Calendar.getInstance();
+		month.setTimeInMillis(MainActivity.selectedDate);
+		 
 		mInflater = LayoutInflater.from(this);
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		Calendar calendar = Calendar.getInstance();
-		actionBar.setSubtitle(MEntity.turnMilltoMonthYear(calendar
-				.getTimeInMillis()));
 
+		dateTextView = (TextView)findViewById(R.id.date_txt);
+		previous = (RelativeLayout)findViewById(R.id.previous);
+		next = (RelativeLayout)findViewById(R.id.next);
+		
+		currencyTextView1 = (TextView)findViewById(R.id.currency_label1);
+		totalTextView =(TextView)findViewById(R.id.total_txt);
+		currencyTextView2  = (TextView)findViewById(R.id.currency_label2);
+		leftTextLabel = (TextView)findViewById(R.id.left_label);
+		
+		currencyTextView1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currencyTextView2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		
 		mProgressBar = (ProgressBar) findViewById(R.id.mProgressBar);
 		leftTextView = (TextView) findViewById(R.id.budget_amount);
 		setBudgetLayout = (LinearLayout) findViewById(R.id.setbudget_linearLayout);
@@ -104,6 +141,27 @@ public class BudgetActivity extends BaseHomeActivity {
 		budgetListApdater = new BudgetListApdater(this);
 		mListView.setAdapter(budgetListApdater);
 		mListView.setDividerHeight(0);
+		
+		dateTextView.setText(android.text.format.DateFormat.format("MMM yyyy", month));
+		previous.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setPreviousMonth();
+				mHandler.post(mTask);
+			}
+		});
+		
+		
+		next.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setNextMonth();
+				mHandler.post(mTask);
+			}
+		});
+
 		
 		mListView.setOnItemLongClickListener(longClickListener);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -128,7 +186,7 @@ public class BudgetActivity extends BaseHomeActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(BudgetActivity.this, CreatBudgetsActivity.class);
+				intent.setClass(BudgetActivity.this, BudgetListActivity.class);
 				startActivityForResult(intent, 4);
 			}
 		});
@@ -164,8 +222,8 @@ public class BudgetActivity extends BaseHomeActivity {
 			List<Map<String, Object>> mTransferList = OverViewDao
 					.selectBudgetTransfer(BudgetActivity.this);
 			Calendar calendar = Calendar.getInstance();
-			long firstDay = MEntity.getFirstDayOfMonthMillis(MainActivity.selectedDate);
-			long lastDay = MEntity.getLastDayOfMonthMillis(MainActivity.selectedDate);
+			long firstDay = MEntity.getFirstDayOfMonthMillis(month.getTimeInMillis());
+			long lastDay = MEntity.getLastDayOfMonthMillis(month.getTimeInMillis());
 
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");
@@ -271,12 +329,30 @@ public class BudgetActivity extends BaseHomeActivity {
 		
 	};
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-		getMenuInflater().inflate(R.menu.add_menu, menu);
-		return super.onCreateOptionsMenu(menu);
+	protected void setPreviousMonth() {
+		if (month.get(GregorianCalendar.MONTH) == month
+				.getActualMinimum(GregorianCalendar.MONTH)) {
+			month.set((month.get(GregorianCalendar.YEAR) - 1),
+					month.getActualMaximum(GregorianCalendar.MONTH), 1);
+		} else {
+			month.set(GregorianCalendar.MONTH,
+					month.get(GregorianCalendar.MONTH) - 1);
+		}
+		dateTextView.setText(android.text.format.DateFormat.format("MMM yyyy", month));
 	}
+	
+	protected void setNextMonth() {
+		if (month.get(GregorianCalendar.MONTH) == month
+				.getActualMaximum(GregorianCalendar.MONTH)) {
+			month.set((month.get(GregorianCalendar.YEAR) + 1),month.getActualMinimum(GregorianCalendar.MONTH), 1);
+		} else {
+			month.set(GregorianCalendar.MONTH,
+					month.get(GregorianCalendar.MONTH) + 1);
+		}
+		dateTextView.setText(android.text.format.DateFormat.format("MMM yyyy", month));
+	}
+	
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -286,12 +362,6 @@ public class BudgetActivity extends BaseHomeActivity {
 		case android.R.id.home:
 			finish();
 			return true;
-
-		case R.id.action_add:
-			Intent intent = new Intent();
-			intent.setClass(BudgetActivity.this, BudgetListActivity.class);
-			startActivityForResult(intent, 4);
-			break;
 
 		}
 		return super.onOptionsItemSelected(item);

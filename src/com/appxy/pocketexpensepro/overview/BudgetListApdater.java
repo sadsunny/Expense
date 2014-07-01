@@ -6,9 +6,11 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,10 +28,14 @@ public class BudgetListApdater extends BaseAdapter {
 	private Context context;
 	private List<Map<String, Object>> mData;
 	private LayoutInflater mInflater;
+	private SharedPreferences mPreferences;
+	private int  BdgetSetting;
 
 	public BudgetListApdater(Context context) {
 		this.context = context;
 		this.mInflater = LayoutInflater.from(context);
+		mPreferences = context.getSharedPreferences("Expense", context.MODE_PRIVATE);  
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
 	}
 
 	public void setAdapterDate(List<Map<String, Object>> data) {
@@ -75,12 +81,16 @@ public class BudgetListApdater extends BaseAdapter {
 					.findViewById(R.id.budget_amount);
 			viewholder.mProgressBar = (ProgressBar) convertView
 					.findViewById(R.id.mProgressBar);
+			viewholder.currencyTextView = (TextView) convertView
+					.findViewById(R.id.currency_label);
+
 
 			convertView.setTag(viewholder);
 		} else {
 			viewholder = (ViewHolder) convertView.getTag();
 		}
-
+		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		
 		viewholder.mIcon
 				.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mData.get(
 						position).get("iconName")]);
@@ -92,9 +102,15 @@ public class BudgetListApdater extends BaseAdapter {
 
 		BigDecimal b1 = new BigDecimal(amount);
 		BigDecimal b2 = new BigDecimal(tAmount);
-		double left = b1.subtract(b2).doubleValue();
+		double left_spent = 0;
 		
-		viewholder.leftTextView.setText(left+"");
+		if (BdgetSetting == 0) {
+			left_spent = b1.subtract(b2).doubleValue();
+		} else {
+			left_spent = b2.doubleValue();
+		}
+		viewholder.leftTextView.setText(MEntity.doublepoint2str(left_spent+""));
+		
 		Log.v("mtest", "amount"+amount);
 		viewholder.mProgressBar.setMax((int) Double.parseDouble(amount));
 		viewholder.mProgressBar.setProgress((int) Double.parseDouble(tAmount));
@@ -102,10 +118,11 @@ public class BudgetListApdater extends BaseAdapter {
 		return convertView;
 	}
 
-	public class ViewHolder {
+	private class ViewHolder {
 		public ImageView mIcon;
 		public TextView categoryTextView;
 		public TextView leftTextView;
+		public TextView currencyTextView;
 		public ProgressBar mProgressBar;
 	}
 }

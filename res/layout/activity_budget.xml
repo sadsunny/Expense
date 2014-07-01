@@ -2,51 +2,158 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
+    
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+         android:layout_alignParentTop="true"
+        android:background="@color/top_bac" >
+
+        <TextView
+            android:id="@+id/date_txt"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal|center"
+            android:textSize="18.7sp" />
+
+        <RelativeLayout
+            android:id="@+id/previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0.7dp"
+            android:layout_alignParentLeft="true"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingLeft="10dp"
+                android:src="@drawable/previous_month_selector"
+                />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="0.7dp"
+            android:layout_alignParentRight="true"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingRight="10dp"
+                android:src="@drawable/next_month_selector" />
+            
+        </RelativeLayout>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/budget_relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentTop="true"
+        android:layout_height="75dp"
+        android:layout_below="@+id/header"
         android:background="@color/top_bac" >
 
-        <TextView
-            android:id="@+id/budget_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/budget_label" />
-
-        <TextView
-            android:id="@+id/budget_amount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="12dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/zero_label" />
-
-        <TextView
-            android:id="@+id/currency_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_toLeftOf="@+id/budget_amount"
-            android:text="@string/dollar" />
 
         <ProgressBar
             android:id="@+id/mProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="13dp"
-            android:layout_below="@+id/budget_amount"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="15dp"
             android:focusable="false"
             android:progressDrawable="@drawable/progressbar_bac" />
+        
+        <TextView	
+            android:id="@+id/currency_label1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/mProgressBar"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="2dp" 
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/dollar"
+            android:textColor="@color/text_black"
+            />
+        
+        <TextView
+            android:id="@+id/total_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/currency_label1"
+            android:layout_below="@+id/mProgressBar"
+            android:layout_marginTop="2dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_black"
+            android:text="100" />
+        
+        
+         <TextView	
+            android:id="@+id/total_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/currency_label1"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="2dp" 
+            android:textSize="12sp"
+            android:text="TOTAL"
+            android:textColor="@color/text_gray1"
+            />
+         
+         
+         <TextView
+            android:id="@+id/budget_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@+id/mProgressBar"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/zero_label"
+            android:textColor="@color/text_black" />
+
+        <TextView	
+            android:id="@+id/currency_label2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_below="@+id/mProgressBar"
+            android:layout_toLeftOf="@+id/budget_amount"
+            android:text="@string/dollar"
+            android:textColor="@color/text_black" />
+        
+        
+        <TextView
+            android:id="@+id/left_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@+id/budget_amount"
+            android:textSize="12sp"
+            android:text="SPENT" 
+            android:textColor="@color/text_gray1"/>
+        
+        
     </RelativeLayout>
 
     <ListView

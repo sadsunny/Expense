@@ -105,9 +105,10 @@ public class CreatAccountTypeActivity extends BaseHomeActivity {
 					long id = AccountDao.insertAccountType(
 							CreatAccountTypeActivity.this, mPosition, 0,
 							typeName);
+					
 					if (id > 0) {
 						Intent intent = new Intent();
-						intent.putExtra("_id", id);
+						intent.putExtra("_id", (int)id);
 						intent.putExtra("typeName", typeName);
 						setResult(1, intent);
 						finish();

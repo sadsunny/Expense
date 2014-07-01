@@ -140,6 +140,11 @@ public class AccountActivity extends BaseHomeActivity {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
+		
+
+		Intent intent = new Intent();
+		intent.putExtra("done", 1);
+		setResult(14, intent);
 	}
 
 	@Override
@@ -396,6 +401,8 @@ public class AccountActivity extends BaseHomeActivity {
 		db.close();
 
 	}
+	
+	
 	
 	
 	@Override

@@ -64,6 +64,9 @@ public class SettingActivity extends BaseHomeActivity {
 	private LinearLayout spent_LinearLayout;
 	private TextView spent_txt;
 
+	private SharedPreferences mPreferences;
+	private int  BdgetSetting;
+	
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +76,9 @@ public class SettingActivity extends BaseHomeActivity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		inflater = LayoutInflater.from(this);
 
+		mPreferences = getSharedPreferences("Expense", MODE_PRIVATE);
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+		
 		versionTextView = (TextView) findViewById(R.id.version_txt);
 		payeeLinearLayout = (RelativeLayout) findViewById(R.id.payee_rel);
 		categoryLinearLayout = (RelativeLayout) findViewById(R.id.category_rel);
@@ -86,11 +92,20 @@ public class SettingActivity extends BaseHomeActivity {
 		spent_LinearLayout = (LinearLayout) findViewById(R.id.spent_LinearLayout);
 		spent_txt = (TextView) findViewById(R.id.spent_txt);
 
-		left_LinearLayout.setBackgroundResource(R.drawable.left_corners_sel);
-		left_txt.setTextColor(Color.rgb(255, 255, 255));
-		spent_LinearLayout.setBackgroundResource(R.drawable.right_corners);
-		spent_txt.setTextColor(Color.rgb(90, 121, 168));
+		if (BdgetSetting ==0) {
+			left_LinearLayout.setBackgroundResource(R.drawable.left_corners_sel);
+			left_txt.setTextColor(Color.rgb(255, 255, 255));
+			spent_LinearLayout.setBackgroundResource(R.drawable.right_corners);
+			spent_txt.setTextColor(Color.rgb(90, 121, 168));
 
+		} else {
+			left_LinearLayout.setBackgroundResource(R.drawable.left_corners);
+			left_txt.setTextColor(Color.rgb(90, 121, 168) );
+			spent_LinearLayout.setBackgroundResource(R.drawable.right_corners_sel);
+			spent_txt.setTextColor(Color.rgb(255, 255, 255) );
+
+		}
+	
 		left_LinearLayout.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -100,8 +115,13 @@ public class SettingActivity extends BaseHomeActivity {
 				left_txt.setTextColor(Color.rgb(255, 255, 255));
 				spent_LinearLayout.setBackgroundResource(R.drawable.right_corners);
 				spent_txt.setTextColor(Color.rgb(90, 121, 168));
-
+				
+				SharedPreferences.Editor editor = mPreferences
+						.edit();
+				editor.putInt("BdgetSetting", 0);
+				editor.commit();
 			}
+			
 		});
 
 		spent_LinearLayout.setOnClickListener(new OnClickListener() {
@@ -113,6 +133,11 @@ public class SettingActivity extends BaseHomeActivity {
 				left_txt.setTextColor(Color.rgb(90, 121, 168));
 				spent_LinearLayout.setBackgroundResource(R.drawable.right_corners_sel);
 				spent_txt.setTextColor(Color.rgb(255, 255, 255));
+				
+				SharedPreferences.Editor editor = mPreferences
+						.edit();
+				editor.putInt("BdgetSetting", 1);
+				editor.commit();
 
 			}
 		});
