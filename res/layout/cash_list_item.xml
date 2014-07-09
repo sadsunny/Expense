@@ -53,17 +53,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/amounttextView"
+            android:layout_toLeftOf="@+id/amount_txt"
             android:text="@string/text_label"
             android:visibility="visible"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/amounttextView"
+            android:id="@+id/amount_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/Sort_ImageView"
             android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
             android:layout_marginRight="12dp"
             android:gravity="left"
             android:maxEms="12"
@@ -72,21 +72,13 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="16sp" />
         
-        <ImageView
-             android:id="@+id/Sort_ImageView"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_alignParentRight="true"
-             android:layout_centerVertical="true"
-             android:layout_marginRight="13dp"
-             android:visibility="visible" />
         
         <View  
              android:layout_width="match_parent"
              android:layout_height="0.5dp"
              android:layout_alignParentBottom="true"
              android:background="@color/line_devide_gray"
-             android:layout_marginLeft="60dp"/>
+             />
         
     </RelativeLayout>
 

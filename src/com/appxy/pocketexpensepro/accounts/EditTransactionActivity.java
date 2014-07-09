@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
@@ -41,6 +42,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -55,6 +57,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -82,8 +85,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 	private LayoutInflater inflater;
 
-	private EditText payeeEditText;
-	private ImageButton payeeButton;
+	private AutoCompleteTextView payeeEditText;
 	private Button categoryButton;
 	private EditText amountEditText;
 	private Button dateButton;
@@ -130,10 +132,10 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 	private AlertDialog mPhotoDialog;
 	private AlertDialog mPhotoSeDialog;
-	private Button takePhotoButton;
-	private Button pickPhotoButton;
-	private Button deletePhotoButton;
-	private Button viewPhotoButton;
+	private LinearLayout takePhotoButton;
+	private LinearLayout pickPhotoButton;
+	private LinearLayout deletePhotoButton;
+	private LinearLayout viewPhotoButton;
 	private String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
@@ -145,7 +147,11 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private int splitCheck;
 	private List<Map<String, Object>> mReturnList;
 	private int _id;
-
+	private AutoListAdapter autoListAdapter;
+	private Cursor mCursor;
+	private CharSequence sKey;
+	private List<Map<String, Object>> mDataList1;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -199,8 +205,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		mReturnList = new ArrayList<Map<String, Object>>();
 
 		mImageView = (ImageView) findViewById(R.id.imageView1);
-		payeeEditText = (EditText) findViewById(R.id.payee_edit);
-		payeeButton = (ImageButton) findViewById(R.id.add_payee_btn);
+		payeeEditText = (AutoCompleteTextView) findViewById(R.id.payee_edit);
 		categoryButton = (Button) findViewById(R.id.category_btn);
 		amountEditText = (EditText) findViewById(R.id.amount_edit);
 		dateButton = (Button) findViewById(R.id.date_btn);
@@ -221,6 +226,39 @@ public class EditTransactionActivity extends BaseHomeActivity {
 					.selectPayee(EditTransactionActivity.this);
 			payeeCheckItem = locationIdPosition(mPList, payee);
 		}
+		
+		payeeEditText.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+				mCursor = TransactionDao.selectPayee(
+						EditTransactionActivity.this, MEntity.sqliteEscape(s.toString()));
+				autoListAdapter = new AutoListAdapter(
+						EditTransactionActivity.this, mCursor, true);
+				payeeEditText.setAdapter(autoListAdapter);
+				Log.v("mtest", "mCursor11" + mCursor);
+				sKey = s;
+
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+
+			}
+
+		});
 		
 		amountEditText.setText(MEntity.doubl2str(amount));
 		amountString = amount;
@@ -267,7 +305,6 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			memoEditText.setText(notes);
 		}
 
-		payeeButton.setOnClickListener(mClickListener);
 		categoryButton.setOnClickListener(mClickListener);
 		dateButton.setOnClickListener(mClickListener);
 		accountButton.setOnClickListener(mClickListener);
@@ -281,22 +318,70 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			childType = 0;
 		}
 
-		List<Map<String, Object>> mDataList = new ArrayList<Map<String, Object>>();
+	   mDataList1 = new ArrayList<Map<String, Object>>();
 		if (expenseAccount > 0 && incomeAccount <= 0) {
-			mDataList = PayeeDao
+			mDataList1 = PayeeDao
 					.selectCategory(EditTransactionActivity.this, 0);
 			mCategoryType = 0;
 
 		} else if (incomeAccount > 0 && expenseAccount <= 0) {
-			mDataList = PayeeDao
+			mDataList1 = PayeeDao
 					.selectCategory(EditTransactionActivity.this, 1);
 			mCategoryType = 1;
 
 		}
 
-		if (mDataList != null) {
-			filterData(mDataList);
+		if (mDataList1 != null) {
+			filterData(mDataList1);
 		}
+		
+		payeeEditText.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+
+				Cursor cursor = (Cursor) arg0.getItemAtPosition(0);
+
+				// Get the state's capital from this row in the database.
+				payeeId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+				categoryId = cursor.getInt(cursor
+						.getColumnIndexOrThrow("category"));
+				String categoryName = cursor.getString(cursor
+						.getColumnIndexOrThrow("categoryName"));
+				categoryButton.setText(categoryName);
+
+				if (categoryName.contains(":")) {
+					String parentString[] = categoryName.split(":");
+					String groupString = parentString[0];
+					gCheckedItem = locationPositionByName(groupDataList,
+							groupString);
+
+					int i = 0;
+
+					for (Map<String, Object> iMap : mDataList1) {
+
+						String cName = (String) iMap.get("categoryName");
+						int cId = (Integer) iMap.get("_id");
+						String temp[] = cName.split(":");
+						if (temp[0].equals(groupString) && cName.contains(":")) {
+							
+							if (cId == categoryId) {
+								cCheckedItem = i;
+							}
+							i = i + 1;
+						}
+
+					}
+
+				} else {
+					gCheckedItem = locationPositionById(groupDataList,
+							categoryId);
+					cCheckedItem = -1;
+				}
+			}
+		});
 
 		if (parTransaction == -1 && childTransactions.length() > 1) {// 表示该项是父本（这里不会出现子类，也就是parTransaction
 																		// >0,childTransactions//
@@ -320,7 +405,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 				if (groupDataList != null && groupDataList.size() > 0) {
 					List<Map<String, Object>> tList = locationPosition(
-							mDataList, groupDataList, childrenAllDataList,
+							mDataList1, groupDataList, childrenAllDataList,
 							categoryId);
 					gCheckedItem = (Integer) tList.get(0).get("gPosition");
 					cCheckedItem = (Integer) tList.get(0).get("cPosition");
@@ -495,6 +580,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				} catch (NumberFormatException e) {
 					amountDouble = 0.00;
 				}
+				String payeeString = payeeEditText.getText().toString();
 				if (amountDouble == 0) {
 
 					new AlertDialog.Builder(EditTransactionActivity.this)
@@ -549,9 +635,25 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 										}
 									}).show();
+				}else if(payeeString == null || payeeString.trim().length() == 0 || payeeString.trim().equals("")){
+					
+					new AlertDialog.Builder(EditTransactionActivity.this)
+					.setTitle("Warning! ")
+					.setMessage(" Payee is required! ")
+					.setPositiveButton("Retry",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+								}
+					 }).show();
+									
 				} else {
 
-					String payeeString = payeeEditText.getText().toString();
 					if (payeeString != null && payeeString.trim().length() != 0
 							&& !payeeString.trim().equals("")) {
 
@@ -632,60 +734,59 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 				break;
 
-			case R.id.add_payee_btn:
-
-				View view = inflater.inflate(R.layout.dialog_choose_type, null);
-				payeeListView = (ListView) view.findViewById(R.id.mListView);
-				payeeListViewAdapter = new PayeeListViewAdapter(
-						EditTransactionActivity.this);
-
-				final List<Map<String, Object>> mList = TransactionDao
-						.selectPayee(EditTransactionActivity.this);
-
-				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				payeeListView.setAdapter(payeeListViewAdapter);
-				payeeListView
-						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
-								: 0);
-				payeeListViewAdapter.setItemChecked(payeeCheckItem);
-				payeeListViewAdapter.setAdapterDate(mList);
-				payeeListViewAdapter.notifyDataSetChanged();
-				payeeListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						payeeCheckItem = arg2;
-						payeeListViewAdapter.setItemChecked(payeeCheckItem);
-						payeeListViewAdapter.notifyDataSetChanged();
-						String nameString = (String) mList.get(arg2)
-								.get("name");
-						payeeEditText.setText(nameString);
-						payeeEditText.setSelection(nameString.length());
-
-						payeeId = (Integer) mList.get(arg2).get("_id");
-						mDialog.dismiss();
-					}
-				});
-
-				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
-						EditTransactionActivity.this);
-				mBuilder.setTitle("Choose Payee");
-				mBuilder.setView(view);
-				mBuilder.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
-							}
-						});
-
-				mDialog = mBuilder.create();
-				mDialog.show();
-				break;
+//			case R.id.add_payee_btn:
+//				View view = inflater.inflate(R.layout.dialog_choose_type, null);
+//				payeeListView = (ListView) view.findViewById(R.id.mListView);
+//				payeeListViewAdapter = new PayeeListViewAdapter(
+//						EditTransactionActivity.this);
+//
+//				final List<Map<String, Object>> mList = TransactionDao
+//						.selectPayee(EditTransactionActivity.this);
+//
+//				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//				payeeListView.setAdapter(payeeListViewAdapter);
+//				payeeListView
+//						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
+//								: 0);
+//				payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//				payeeListViewAdapter.setAdapterDate(mList);
+//				payeeListViewAdapter.notifyDataSetChanged();
+//				payeeListView.setOnItemClickListener(new OnItemClickListener() {
+//
+//					@Override
+//					public void onItemClick(AdapterView<?> arg0, View arg1,
+//							int arg2, long arg3) {
+//						// TODO Auto-generated method stub
+//						payeeCheckItem = arg2;
+//						payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//						payeeListViewAdapter.notifyDataSetChanged();
+//						String nameString = (String) mList.get(arg2)
+//								.get("name");
+//						payeeEditText.setText(nameString);
+//						payeeEditText.setSelection(nameString.length());
+//
+//						payeeId = (Integer) mList.get(arg2).get("_id");
+//						mDialog.dismiss();
+//					}
+//				});
+//
+//				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
+//						EditTransactionActivity.this);
+//				mBuilder.setTitle("Choose Payee");
+//				mBuilder.setView(view);
+//				mBuilder.setNegativeButton("Cancel",
+//						new DialogInterface.OnClickListener() {
+//
+//							@Override
+//							public void onClick(DialogInterface dialog,
+//									int which) {
+//								// TODO Auto-generated method stub
+//							}
+//						});
+//
+//				mDialog = mBuilder.create();
+//				mDialog.show();
+//				break;
 
 			case R.id.category_btn:
 				if (splitCheck == 0) {
@@ -1149,14 +1250,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				break;
 			case R.id.photo_btn:
 
-				if (picPath != null && picPath.length() > 0
-						&& camorabitmap != null) {
+				if (picPath != null && picPath.length() > 0 && camorabitmap != null) {
 
 					View view9 = inflater.inflate(R.layout.dialog_photo_second,
 							null);
-					deletePhotoButton = (Button) view9
+					deletePhotoButton = (LinearLayout) view9
 							.findViewById(R.id.delete_btn);
-					viewPhotoButton = (Button) view9
+					viewPhotoButton = (LinearLayout) view9
 							.findViewById(R.id.view_btn);
 					deletePhotoButton.setOnClickListener(new OnClickListener() {
 
@@ -1211,9 +1311,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				} else {
 
 					View view4 = inflater.inflate(R.layout.dialog_photo, null);
-					takePhotoButton = (Button) view4
+					takePhotoButton = (LinearLayout) view4
 							.findViewById(R.id.take_btn);
-					pickPhotoButton = (Button) view4
+					pickPhotoButton = (LinearLayout) view4
 							.findViewById(R.id.pick_btn);
 					takePhotoButton.setOnClickListener(new OnClickListener() {
 
@@ -1500,6 +1600,35 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		rMap.put("cPosition", cPosition);
 		rData.add(rMap);
 		return rData;
+	}
+	
+	public int locationPositionByName(List<Map<String, Object>> mData,
+			String name) { // 定位的位置
+		int i = 0;
+		int position = 0;
+		for (Map<String, Object> mMap : mData) {
+			String categoryName = (String) mMap.get("categoryName");
+			if (categoryName.equals(name)) {
+				position = i;
+			}
+			i = i + 1;
+		}
+
+		return position;
+	}
+	
+	public int locationPositionById(List<Map<String, Object>> mData, int id) { // 定位的位置
+		int i = 0;
+		int position = -1;
+		for (Map<String, Object> mMap : mData) {
+			int mId = (Integer) mMap.get("_id");
+			if (mId == id) {
+				position = i;
+			}
+			i = i + 1;
+		}
+
+		return position;
 	}
 
 	@Override

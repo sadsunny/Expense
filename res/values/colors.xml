@@ -62,5 +62,8 @@
     <color name="main_choose_gray">#e5e7ea</color>
     <color name="main_divide">#cad3da</color>
     <color name="main_text_black">#303642</color>
+    <color name="payee_text">#5a79a8</color>
+    <color name="button_color_se">#d9d9d9</color>
+     <color name="button_color">#ededed</color>
 
 </resources>

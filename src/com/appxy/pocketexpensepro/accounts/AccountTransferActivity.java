@@ -17,6 +17,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
+import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
@@ -38,6 +39,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -52,6 +54,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -73,8 +76,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 public class AccountTransferActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 
-	private EditText payeeEditText;
-	private ImageButton payeeButton;
+	private AutoCompleteTextView payeeEditText;
 	private EditText amountEditText;
 	private Button dateButton;
 	private Button toButton;
@@ -145,7 +147,11 @@ public class AccountTransferActivity extends BaseHomeActivity {
 	private AlertDialog mAccountDialogTo;
 	private int fromId;
 	private int toId;
-
+	private AutoListAdapter autoListAdapter;
+	private Cursor mCursor;
+	private CharSequence sKey;
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -175,8 +181,7 @@ public class AccountTransferActivity extends BaseHomeActivity {
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 
 		mImageView = (ImageView) findViewById(R.id.imageView1);
-		payeeEditText = (EditText) findViewById(R.id.payee_edit);
-		payeeButton = (ImageButton) findViewById(R.id.add_payee_btn);
+		payeeEditText = (AutoCompleteTextView) findViewById(R.id.payee_edit);
 		amountEditText = (EditText) findViewById(R.id.amount_edit);
 		dateButton = (Button) findViewById(R.id.date_btn);
 		fromButton = (Button) findViewById(R.id.from_btn);
@@ -187,11 +192,43 @@ public class AccountTransferActivity extends BaseHomeActivity {
 		memoEditText = (EditText) findViewById(R.id.memo_edit); // spinner
 		recurringLinearLayout = (LinearLayout) findViewById(R.id.recurringLinearLayout);
 
-		payeeButton.setOnClickListener(mClickListener);
 		dateButton.setOnClickListener(mClickListener);
 		toButton.setOnClickListener(mClickListener);
 		fromButton.setOnClickListener(mClickListener);
 		photoButton.setOnClickListener(mClickListener);
+		
+		payeeEditText.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+				mCursor = TransactionDao.selectPayee(
+						AccountTransferActivity.this, MEntity.sqliteEscape(s.toString()));
+				autoListAdapter = new AutoListAdapter(
+						AccountTransferActivity.this, mCursor, true);
+				payeeEditText.setAdapter(autoListAdapter);
+				Log.v("mtest", "mCursor11" + mCursor);
+				sKey = s;
+
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+
+			}
+
+		});
 
 		mAccountList = AccountDao.selectAccount(AccountTransferActivity.this);
 
@@ -352,6 +389,7 @@ public class AccountTransferActivity extends BaseHomeActivity {
 				} catch (NumberFormatException e) {
 					amountDouble = 0.00;
 				}
+				String payeeString = payeeEditText.getText().toString();
 				if (amountDouble == 0) {
 
 					new AlertDialog.Builder(AccountTransferActivity.this)
@@ -406,9 +444,25 @@ public class AccountTransferActivity extends BaseHomeActivity {
 
 										}
 									}).show();
+				}else if(payeeString == null || payeeString.trim().length() == 0 || payeeString.trim().equals("")){
+					
+					new AlertDialog.Builder(AccountTransferActivity.this)
+					.setTitle("Warning! ")
+					.setMessage(" Payee is required! ")
+					.setPositiveButton("Retry",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+								}
+					 }).show();
+									
 				} else {
 
-					String payeeString = payeeEditText.getText().toString();
 					if (payeeString != null && payeeString.trim().length() != 0
 							&& !payeeString.trim().equals("")) {
 
@@ -441,60 +495,60 @@ public class AccountTransferActivity extends BaseHomeActivity {
 
 				break;
 
-			case R.id.add_payee_btn:
-
-				View view = inflater.inflate(R.layout.dialog_choose_type, null);
-				payeeListView = (ListView) view.findViewById(R.id.mListView);
-				payeeListViewAdapter = new PayeeListViewAdapter(
-						AccountTransferActivity.this);
-
-				final List<Map<String, Object>> mList = TransactionDao
-						.selectPayee(AccountTransferActivity.this);
-
-				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				payeeListView.setAdapter(payeeListViewAdapter);
-				payeeListView
-						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
-								: 0);
-				payeeListViewAdapter.setItemChecked(payeeCheckItem);
-				payeeListViewAdapter.setAdapterDate(mList);
-				payeeListViewAdapter.notifyDataSetChanged();
-				payeeListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						payeeCheckItem = arg2;
-						payeeListViewAdapter.setItemChecked(payeeCheckItem);
-						payeeListViewAdapter.notifyDataSetChanged();
-						String nameString = (String) mList.get(arg2)
-								.get("name");
-						payeeEditText.setText(nameString);
-						payeeEditText.setSelection(nameString.length());
-
-						payeeId = (Integer) mList.get(arg2).get("_id");
-						mDialog.dismiss();
-					}
-				});
-
-				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
-						AccountTransferActivity.this);
-				mBuilder.setTitle("Choose Payee");
-				mBuilder.setView(view);
-				mBuilder.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
-							}
-						});
-
-				mDialog = mBuilder.create();
-				mDialog.show();
-				break;
+//			case R.id.add_payee_btn:
+//
+//				View view = inflater.inflate(R.layout.dialog_choose_type, null);
+//				payeeListView = (ListView) view.findViewById(R.id.mListView);
+//				payeeListViewAdapter = new PayeeListViewAdapter(
+//						AccountTransferActivity.this);
+//
+//				final List<Map<String, Object>> mList = TransactionDao
+//						.selectPayee(AccountTransferActivity.this);
+//
+//				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//				payeeListView.setAdapter(payeeListViewAdapter);
+//				payeeListView
+//						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
+//								: 0);
+//				payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//				payeeListViewAdapter.setAdapterDate(mList);
+//				payeeListViewAdapter.notifyDataSetChanged();
+//				payeeListView.setOnItemClickListener(new OnItemClickListener() {
+//
+//					@Override
+//					public void onItemClick(AdapterView<?> arg0, View arg1,
+//							int arg2, long arg3) {
+//						// TODO Auto-generated method stub
+//						payeeCheckItem = arg2;
+//						payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//						payeeListViewAdapter.notifyDataSetChanged();
+//						String nameString = (String) mList.get(arg2)
+//								.get("name");
+//						payeeEditText.setText(nameString);
+//						payeeEditText.setSelection(nameString.length());
+//
+//						payeeId = (Integer) mList.get(arg2).get("_id");
+//						mDialog.dismiss();
+//					}
+//				});
+//
+//				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
+//						AccountTransferActivity.this);
+//				mBuilder.setTitle("Choose Payee");
+//				mBuilder.setView(view);
+//				mBuilder.setNegativeButton("Cancel",
+//						new DialogInterface.OnClickListener() {
+//
+//							@Override
+//							public void onClick(DialogInterface dialog,
+//									int which) {
+//								// TODO Auto-generated method stub
+//							}
+//						});
+//
+//				mDialog = mBuilder.create();
+//				mDialog.show();
+//				break;
 
 			case R.id.from_btn:
 

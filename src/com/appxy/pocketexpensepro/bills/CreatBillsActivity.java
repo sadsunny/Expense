@@ -121,6 +121,7 @@ public class CreatBillsActivity extends BaseHomeActivity {
 	private int temRemindDateSelectPosition;
 	private String remindTimeString = "";
 	private TextView reminderLabel ;
+	private long selectDate;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -130,6 +131,8 @@ public class CreatBillsActivity extends BaseHomeActivity {
 
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
+		Intent intent = getIntent();
+		selectDate = intent.getLongExtra("selectDate", 0); 
 
 		inflater = LayoutInflater.from(CreatBillsActivity.this);
 		ActionBar mActionBar = getActionBar();
@@ -244,15 +247,18 @@ public class CreatBillsActivity extends BaseHomeActivity {
 				});
 
 		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(selectDate);
 		mYear = c.get(Calendar.YEAR);
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 		updateDisplay();
-		uYear = c.get(Calendar.YEAR);
-		uMonth = c.get(Calendar.MONTH);
-		uDay = c.get(Calendar.DAY_OF_MONTH);
-		mHour = c.get(Calendar.HOUR_OF_DAY);
-		mMinute = c.get(Calendar.MINUTE);
+		
+		Calendar c1 = Calendar.getInstance();
+		uYear = c1.get(Calendar.YEAR);
+		uMonth = c1.get(Calendar.MONTH);
+		uDay = c1.get(Calendar.DAY_OF_MONTH);
+		mHour = c1.get(Calendar.HOUR_OF_DAY);
+		mMinute = c1.get(Calendar.MINUTE);
 	}
 
 	private OnClickListener mClickListener = new OnClickListener() {

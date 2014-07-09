@@ -21,7 +21,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal" >
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/payee_edit"
                     style="@style/TextAppearance.EditEvent_Value"
                     android:layout_width="match_parent"
@@ -33,14 +33,6 @@
                     android:minHeight="48dip"
                     android:singleLine="true" />
 
-                <ImageButton
-                    android:id="@+id/add_payee_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="12dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/b_add" />
             </LinearLayout>
 
             <LinearLayout

@@ -44,7 +44,7 @@
             android:layout_marginLeft="15dp"
             android:layout_toRightOf="@+id/mImageView"
             android:gravity="bottom"
-            android:maxEms="7"
+            android:maxEms="12"
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearance"

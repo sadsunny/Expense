@@ -24,6 +24,8 @@ import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
+import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
+import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
@@ -36,6 +38,7 @@ import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.reports.ReCashListActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -135,6 +138,7 @@ public class OverviewFragment extends Fragment implements
 	private TextView currency_label1;
 	private TextView currency_label2;
 	private TextView networthTextView;
+	private List<Map<String, Object>> mBudgetList ;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -157,6 +161,9 @@ public class OverviewFragment extends Fragment implements
 				BigDecimal b1 = new BigDecimal("0");
 				for (Map<String, Object> iMap : mNetworthDataList) {
 					String amount = (String) iMap.get("lastAmount");
+					if (amount == null) {
+						amount="1";
+					}
 					BigDecimal b2 = new BigDecimal(amount);
 					b1 = b1.add(b2);
 				}
@@ -164,13 +171,13 @@ public class OverviewFragment extends Fragment implements
 				double netWorth = b1.doubleValue();
 				networthTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
 				
-				if (!(mDataList != null) || mDataList.size() == 0) {
+				if ((mBudgetList == null) || mBudgetList.size() == 0) {
 					mProgressBar.setProgress(0);
 					mProgressBar.setSecondaryProgress(100);
 					mProgressBar.setMax(100);
 				} else {
 					mProgressBar.setProgress((int)(transactionAmount*0.8));
-					mProgressBar.setSecondaryProgress((int)budgetAmount);
+					mProgressBar.setSecondaryProgress((int)budgetAmount*1);
 					mProgressBar.setMax((int)budgetAmount);
 				}
 				
@@ -192,8 +199,6 @@ public class OverviewFragment extends Fragment implements
 		}
 	};
 
-		
-	
 
 	@Override
 	public void onResume() {
@@ -365,7 +370,7 @@ public class OverviewFragment extends Fragment implements
 		mListViewAdapter = new ListViewAdapter(mActivity);
 		mListView.setAdapter(mListViewAdapter);
 		mListView.setOnItemLongClickListener(longClickListener);
-		
+		mListView.setOnItemClickListener(onClickListener);
 		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
@@ -386,10 +391,13 @@ public class OverviewFragment extends Fragment implements
 					selectedDate);
 			reFillData(mDataList);
 
-			List<Map<String, Object>>  mBudgetList = OverViewDao.selectBudget(mActivity);
+			mBudgetList = OverViewDao.selectBudget(mActivity);
 			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(mActivity);
 			long firstDay = MEntity.getFirstDayOfMonthMillis(MainActivity.selectedDate);
 			long lastDay = MEntity.getLastDayOfMonthMillis(MainActivity.selectedDate);
+			
+			Log.v("mtest", "firstDay"+MEntity.turnToDateString(firstDay));
+			Log.v("mtest", "lastDay"+MEntity.turnToDateString(lastDay));
 			
 			BigDecimal budgetBig = new BigDecimal("0");
 			BigDecimal transactionBig = new BigDecimal("0");
@@ -436,6 +444,10 @@ public class OverviewFragment extends Fragment implements
 			budgetAmount = budgetBig.doubleValue();
 			transactionAmount = transactionBig.doubleValue();
 			
+			Log.v("mtest", "budgetAmount"+budgetAmount);
+			Log.v("mtest", "transactionAmount"+transactionAmount);
+			
+			
 			
 			mNetworthDataList = AccountDao.selectAccount(mActivity);
 
@@ -470,6 +482,37 @@ public class OverviewFragment extends Fragment implements
 			
 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+		}
+	};
+	
+	private OnItemClickListener onClickListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> paramAdapterView,
+				View paramView, int paramInt, long paramLong) {
+			
+			// TODO Auto-generated method stub
+			final int tId = (Integer) mDataList.get(paramInt).get("_id");
+			int expenseAccount = (Integer) (Integer) mDataList.get(paramInt).get("expenseAccount");
+			int incomeAccount = (Integer) mDataList.get(paramInt).get("incomeAccount");
+
+			if (expenseAccount > 0 && incomeAccount > 0) {
+
+				Intent intent = new Intent();
+				intent.putExtra("_id", tId);
+				intent.setClass(mActivity,
+						EditTransferActivity.class);
+				startActivityForResult(intent, 13);
+
+			} else {
+
+				Intent intent = new Intent();
+				intent.putExtra("_id", tId);
+				intent.setClass(mActivity,
+						EditTransactionActivity.class);
+				startActivityForResult(intent, 13);
+
+			}
 		}
 	};
 	
@@ -534,6 +577,7 @@ public class OverviewFragment extends Fragment implements
 
 
 						mHandler.post(mTask);
+						onBackTimeListener.OnBackTime(MainActivity.selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 
 					} else if (arg2 == 1) {
 
@@ -541,6 +585,7 @@ public class OverviewFragment extends Fragment implements
 								mActivity, _id);
 						alertDialog.dismiss();
 						mHandler.post(mTask);
+						onBackTimeListener.OnBackTime(MainActivity.selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 					}
 				}
 			});
@@ -675,6 +720,14 @@ public class OverviewFragment extends Fragment implements
 			if (data != null) {
 
 				mHandler.post(mTask);
+			}
+			break;
+			
+		case 13:
+
+			if (data != null) {
+
+				onBackTimeListener.OnBackTime(MainActivity.selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
 			break;
 		}

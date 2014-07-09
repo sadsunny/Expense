@@ -29,7 +29,7 @@ public class OverViewDao {
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from 'Transaction' a where a.dateTime = "+ time
-				+ " and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+				+ " and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

@@ -71,7 +71,7 @@ public class PayeeListViewAdapter extends BaseAdapter {
 		}
 
 
-		viewholder.mImageView.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer)mData.get(position).get("iconName")]);
+		viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[(Integer)mData.get(position).get("iconName")]);
 		viewholder.payeeTextView.setText(mData.get(position).get("name")+"");
 		viewholder.categoryTextView.setText(mData.get(position).get("categoryName")+"");
 		

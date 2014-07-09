@@ -68,7 +68,7 @@ public class SplitCategoryActivity extends BaseHomeActivity {
 								.findViewById(R.id.amount_edit);
 
 						mImageView
-								.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mDataList
+								.setImageResource(Common.CATEGORY_ICON[(Integer) mDataList
 										.get(i).get("iconName")]);
 						categoryTextView.setText((String) mDataList.get(i).get(
 								"categoryName"));

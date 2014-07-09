@@ -132,7 +132,7 @@ public class ExpandableListViewAdapter extends
 			viewholder = (cViewHolder) convertView.getTag();
 
 		}
-		viewholder.mIcon.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer)childList.get(groupPosition).get(childPosition).get("iconName")]);
+		viewholder.mIcon.setImageResource(Common.CATEGORY_ICON[(Integer)childList.get(groupPosition).get(childPosition).get("iconName")]);
 		viewholder.accountTextView.setText(childList.get(groupPosition).get(childPosition).get("ep_billName")+"");
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		long dueDate = (Long) childList.get(groupPosition).get(childPosition).get("ep_billDueDate");

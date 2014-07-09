@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,17 +28,22 @@ import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
+import com.appxy.pocketexpensepro.passcode.Activity_Start;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.reports.ReportCashFragment;
 import com.appxy.pocketexpensepro.reports.ReportCategoryFragment;
 import com.appxy.pocketexpensepro.reports.ReportOverviewFragment;
+import com.appxy.pocketexpensepro.search.SearchActivity;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.OnNavigationListener;
+import android.app.ProgressDialog;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,12 +59,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 @SuppressLint("ResourceAsColor")
 public class MainActivity extends BaseHomeActivity implements
 		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener,
 		OnTellUpdateMonthListener, OnBillToActivityListener {
 
+	private static final int MSG_SUCCESS = 1;
+	private static final int MSG_FAILURE = 0;
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
 
@@ -95,12 +104,42 @@ public class MainActivity extends BaseHomeActivity implements
 	
 	private ArrayList<LinearLayout> layoutArrayList = new ArrayList<LinearLayout>();
 	private ArrayList<View> viewArrayList = new ArrayList<View>();
+    private ProgressDialog mDialog;
+	
+   private Handler mHandler = new Handler() {
+		public void handleMessage(Message msg) {// 此方法在ui线程运行
+			switch (msg.what) {
+			case MSG_SUCCESS:
+				
+				mDialog.dismiss();
 
+				break;
+
+			case MSG_FAILURE:
+				Toast.makeText(MainActivity.this, "Exception", Toast.LENGTH_SHORT)
+						.show();
+				break;
+			}
+		}
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+//		
 		
+//			 new Thread(new Runnable() {
+//					
+//					@Override
+//					public void run() {
+//						// TODO Auto-generated method stub
+						TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
+////						mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+//					}
+//				}).start();
+//       
+        
 		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		Common.CURRENCY = (Integer) mList.get(0).get("currency");
@@ -609,7 +648,11 @@ public class MainActivity extends BaseHomeActivity implements
 		// Handle action buttons
 		switch (item.getItemId()) {
 		case R.id.action_search:
-
+			
+			Intent intent1 = new Intent();
+			intent1.setClass(MainActivity.this, SearchActivity.class);
+			startActivity(intent1);
+			
 			return true;
 		case R.id.action_settings:
 

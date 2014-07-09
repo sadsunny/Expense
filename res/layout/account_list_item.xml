@@ -14,7 +14,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="13dp" 
+            android:layout_marginLeft="15dp" 
+            android:layout_alignBottom="@+id/account_txt"
+            android:src="@drawable/asset_type"
             />
 
         <TextView
@@ -38,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_below="@+id/account_txt"
-            android:layout_marginLeft="12dp"
+            android:layout_marginLeft="15dp"
             android:layout_toRightOf="@+id/account_type_img"
             android:gravity="top"
             android:maxEms="12"
@@ -96,7 +98,7 @@
              android:layout_height="0.5dp"
              android:layout_alignParentBottom="true"
              android:background="@color/line_devide_gray"
-             android:layout_marginLeft="60dp"/>
+             android:layout_marginLeft="48dp"/>
         
     </RelativeLayout>
 

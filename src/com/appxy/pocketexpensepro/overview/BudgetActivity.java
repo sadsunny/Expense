@@ -84,6 +84,7 @@ public class BudgetActivity extends BaseHomeActivity {
 
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
+				
 				budgetListApdater.setAdapterDate(mBudgetList);
 				budgetListApdater.notifyDataSetChanged();
 				
@@ -175,6 +176,7 @@ public class BudgetActivity extends BaseHomeActivity {
 				Intent intent = new Intent();
 				intent.putExtra("_id", category_id);
 				intent.putExtra("categoryName", categoryName);
+				intent.putExtra("date", month.getTimeInMillis());
 				intent.setClass(BudgetActivity.this, BudgetToTransactionActivity.class);
 				startActivityForResult(intent, 17);
 			}

@@ -13,6 +13,9 @@ import java.util.Map;
 import org.apache.http.util.EncodingUtils;
 
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.TransactionRecurringCheck;
+import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.app.Activity;
@@ -76,6 +79,7 @@ public class Activity_Start extends Activity {
  		} else {
  			isPasscode = 0;
  		}
+ 		
      	 
          if (isPasscode == 1) {
  			Intent intent = new Intent(this, Activity_Login.class);
@@ -86,6 +90,7 @@ public class Activity_Start extends Activity {
  			startActivity(intent);
  			this.finish();
  		}
+         
          
 //         if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
 // 		} else {

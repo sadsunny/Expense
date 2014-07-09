@@ -67,7 +67,7 @@ public class BillDetailsActivity extends BaseHomeActivity{
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				categoryImageView.setImageResource(Common.ACCOUNT_TYPE_ICON[iconName]);
+				categoryImageView.setImageResource(Common.CATEGORY_ICON[iconName]);
 				nameTextView.setText(ep_billName);
 				dueDaTextView.setText(MEntity.turnToDateString(ep_billDueDate));
 				currencyTextView1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);

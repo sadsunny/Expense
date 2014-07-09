@@ -12,12 +12,35 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "ExpenseDatabase";
 	private static final int DATABASE_VERSION = 1;
 	private SQLiteDatabase db;
-
+	private static ExpenseDBHelper instance;
+	
 	public ExpenseDBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		// TODO Auto-generated constructor stub
 	}
+	
 
+    public static synchronized ExpenseDBHelper getHelper(Context context)
+    {
+        if (instance == null)
+            instance = new ExpenseDBHelper(context);
+
+        return instance;
+    }
+
+	private volatile static ExpenseDBHelper uniqueInstance;  
+    public static ExpenseDBHelper getInstance(Context context) {  
+      if (uniqueInstance == null) {  
+        synchronized (ExpenseDBHelper.class) {  
+          if (uniqueInstance == null) {  
+            uniqueInstance = new ExpenseDBHelper(context);  
+          }  
+        }  
+      }  
+      return uniqueInstance;  
+    }  
+  
+    
 	@Override
 	public void onCreate(SQLiteDatabase paramSQLiteDatabase) {
 		// TODO Auto-generated method stub
@@ -55,15 +78,16 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		String CREAT_Setting_TABLE = "CREATE TABLE Setting ( _id INTEGER PRIMARY KEY AUTOINCREMENT ,accDRendDate TEXT, accDRstartDate TEXT, accDRstring TEXT, budgetNewStyle TEXT, budgetNewStyleCycle TEXT, cateDRendDate TEXT, cateDRstartDate TEXT, cateDRstring TEXT, currency TEXT, dateTime TEXT, expDRString TEXT, expenseLastView TEXT, isBefore TEXT, otherBool TEXT, otherBool1 TEXT, otherBool2 TEXT, otherBool3 TEXT, otherBool4 TEXT, otherBool5 TEXT, otherBool6 TEXT, otherBool7 TEXT, otherBool8 TEXT, otherBool9 TEXT, otherBool10 TEXT, otherBool11 TEXT, otherBool12 TEXT, otherBool13 TEXT, otherBool14 TEXT, otherBool15 TEXT, otherBool16 TEXT, otherBool17 TEXT, otherBool18 TEXT, otherBool19 TEXT, otherBool20 TEXT, others TEXT, others1 TEXT, others2 TEXT, others3 TEXT, others4 TEXT, others5 TEXT, others6 TEXT, others7 TEXT, others8 TEXT, others9 TEXT, others10 TEXT, others11 TEXT, others12 TEXT, others13 TEXT, others14 TEXT, others15 TEXT, others16 TEXT, others17 TEXT, others18 TEXT, others19 TEXT, others20 TEXT, passcode TEXT, payeeCategory INTEGER, payeeCfged INTEGER, payeeMemo INTEGER, payeeName INTEGER, payeeTranAmount INTEGER, payeeTranClear INTEGER, payeeTranMemo INTEGER, payeeTranType INTEGER, playorder INTEGER, sortType TEXT, state TEXT, uuid TEXT, weekstartday TEXT)" ;
 	    paramSQLiteDatabase.execSQL(CREAT_Setting_TABLE);
 
-		accountTypeIni(0, 0, "Others");
-		accountTypeIni(1, 0, "Asset");
-		accountTypeIni(2, 0, "Cash");
-		accountTypeIni(3, 0, "Checking");
-		accountTypeIni(4, 0, "Credit Card");
-		accountTypeIni(5, 0, "Debit Card");
-		accountTypeIni(6, 0, "Investing/Retirement");
-		accountTypeIni(7, 0, "Loan");
-		accountTypeIni(8, 0, "Savings");
+	
+		accountTypeIni(0, 1, "Asset");
+		accountTypeIni(1, 1, "Cash");
+		accountTypeIni(2, 1, "Checking");
+		accountTypeIni(3, 1, "Credit Card");
+		accountTypeIni(4, 1, "Debit Card");
+		accountTypeIni(5, 1, "Investing/Retirement");
+		accountTypeIni(6, 1, "Loan");
+		accountTypeIni(8, 1, "Others");
+		accountTypeIni(7, 1, "Savings");
 
 		categoryIni("Auto", 0, 0, 15, 0);
 		categoryIni("Auto:Gas", 0, 0, 15, 0);

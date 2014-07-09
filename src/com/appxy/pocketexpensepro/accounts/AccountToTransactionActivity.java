@@ -746,7 +746,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 			}
 			viewholder.mImageView
-					.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) childList
+					.setImageResource(Common.CATEGORY_ICON[(Integer) childList
 							.get(groupPosition).get(childPosition)
 							.get("iconName")]);
 			viewholder.currency_textView

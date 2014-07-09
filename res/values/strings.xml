@@ -22,7 +22,7 @@
     <string name="sub">-</string>
     <string name="open_date_label">OPEN DATE</string>
     <string name="account_type_label">TYPE</string>
-    <string name="auto_clear_label">AUTO CLEAR</string>
+    <string name="auto_clear_label">CLEARED</string>
     <string name="type_label">TYPE NAME</string>
     <string name="hint_account_type_name">Account Type Name</string>
     <string name="icon_label">Icon</string>

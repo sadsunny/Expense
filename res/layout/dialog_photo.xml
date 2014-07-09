@@ -3,17 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
-    <Button
+    
+      <LinearLayout
         android:id="@+id/take_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:text="@string/photo_camera"/>
+        android:layout_height="48dp"
+        android:background="@drawable/button_selector"
+        android:gravity="center"
+        android:orientation="vertical" >
 
-    <Button
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_camera"
+            android:textColor="@color/text_black1" 
+            android:textSize="18sp"
+            />
+    </LinearLayout>
+    
+    <View 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/devide_gray"/>
+    
+     <LinearLayout
         android:id="@+id/pick_btn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/photo_library" />
+        android:layout_height="48dp"
+        android:background="@drawable/button_selector"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/photo_library"
+            android:textColor="@color/text_black1" 
+            android:textSize="18sp"
+            />
+    </LinearLayout>
 
 </LinearLayout>

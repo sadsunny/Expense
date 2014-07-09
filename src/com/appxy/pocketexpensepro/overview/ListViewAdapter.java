@@ -101,7 +101,7 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 
 		viewholder.currency_textView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-		viewholder.mImageView.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mData.get(position).get("iconName")]);
+		viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[(Integer) mData.get(position).get("iconName")]);
 		
 		long dateTime = (Long) mData.get(position).get("dateTime");
 		viewholder.mTextView2.setText(turnToDateString(dateTime));

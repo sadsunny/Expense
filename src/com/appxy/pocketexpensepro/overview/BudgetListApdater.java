@@ -92,7 +92,7 @@ public class BudgetListApdater extends BaseAdapter {
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		
 		viewholder.mIcon
-				.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mData.get(
+				.setImageResource(Common.CATEGORY_ICON[(Integer) mData.get(
 						position).get("iconName")]);
 		viewholder.categoryTextView.setText((String) mData.get(position).get(
 				"categoryName"));

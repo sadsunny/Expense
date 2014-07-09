@@ -59,6 +59,7 @@ public class BillsFragmentMonth extends Fragment implements
 	private BillListViewAdapter billListViewAdapter;
 	private List<Map<String, Object>> mListViewData;
 	private View lineView;
+	private long selectDate;
 	public BillsFragmentMonth() {
 		
 	}
@@ -119,6 +120,7 @@ public class BillsFragmentMonth extends Fragment implements
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_bill_month, container,
 				false);
+		selectDate =  MainActivity.selectedMonth;
 		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
 		mGridView = (GridView) view.findViewById(R.id.mGridview);
 		mListView = (ListView) view.findViewById(R.id.mListView);
@@ -139,6 +141,7 @@ public class BillsFragmentMonth extends Fragment implements
 				// TODO Auto-generated method stub
 				long mChooseTime = getMilltoDate(calendarGridViewAdapter
 						.getDayString().get(paramInt));
+				selectDate = mChooseTime;
 				Log.v("mtest",
 						"mChooseTime" + MEntity.getMilltoDate(mChooseTime));
 
@@ -220,7 +223,7 @@ public class BillsFragmentMonth extends Fragment implements
 		public void run() {
 			// TODO Auto-generated method stub
 			long thSelectedTime = MainActivity.selectedMonth;
-			calendarGridViewAdapter.setCheckDat(thSelectedTime);
+			calendarGridViewAdapter.setCheckDat(selectDate);
 			month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(thSelectedTime));
 			mDateList = RecurringEventBE.recurringData(mActivity,
 					MEntity.getFirstDayOfMonthMillis(thSelectedTime),
@@ -399,6 +402,7 @@ public class BillsFragmentMonth extends Fragment implements
 		case R.id.action_add:
 
 			Intent intent = new Intent();
+			intent.putExtra("selectDate", selectDate);
 			intent.setClass(getActivity(), CreatBillsActivity.class);
 			startActivityForResult(intent, 8);
 			return true;

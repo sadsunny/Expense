@@ -57,13 +57,13 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 	private ImageView addButton;
 	private ImageView subButton;
 
-	private int checkedItem = 0; // choosed position
+	private int checkedItem = 7; // choosed position
 	private ChooseTypeListViewAdapter mListViewAdapter;
 	private ListView mListView;
 	private AlertDialog mDialog;
 	private List<Map<String, Object>> mTypeList;
 	private int accountTypeSize = 0;
-	private int typeId = 1; // the type id default 1
+	private int typeId = 8; // the type id default 8
 	private String balenceAmountString = "0.00";
 	private int balenceCheck = 1; // 1 add, 0 sub
 

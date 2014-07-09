@@ -84,7 +84,7 @@ public class CategoryExpandableListViewAdapter extends
 		}
 
 		viewholder.mImageView
-				.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) groupList
+				.setImageResource(Common.CATEGORY_ICON[(Integer) groupList
 						.get(groupPosition).get("iconName")]);
 		viewholder.mTextView.setText(groupList.get(groupPosition).get(
 				"categoryName")
@@ -136,7 +136,7 @@ public class CategoryExpandableListViewAdapter extends
 
 		}
 		viewholder.mImageView
-		.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) childList.get(groupPosition).get(childPosition).get("iconName")]);
+		.setImageResource(Common.CATEGORY_ICON[(Integer) childList.get(groupPosition).get(childPosition).get("iconName")]);
 		
 		String cName = (String) childList.get(groupPosition).get(childPosition)
 				.get("categoryName");

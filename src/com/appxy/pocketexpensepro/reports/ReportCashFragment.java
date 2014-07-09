@@ -817,4 +817,21 @@ public class ReportCashFragment extends Fragment {
 
 	}
 	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (resultCode) {
+		case 1:
+			Log.v("mtest", "onActivityResult11");
+			if (data != null) {
+				mHandler.post(mTask);
+				Log.v("mtest", "onActivityResult22");
+			}
+			break;
+		}
+		Log.v("mtest", "onActivityResult");
+	}
+	
+	
 }

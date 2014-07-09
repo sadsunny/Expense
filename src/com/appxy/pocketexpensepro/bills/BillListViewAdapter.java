@@ -84,7 +84,7 @@ public class BillListViewAdapter extends BaseAdapter {
 			viewholder = (ViewHolder) convertView.getTag();
 		}
 		
-		viewholder.mIcon.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer)mData.get(position).get("iconName")]);
+		viewholder.mIcon.setImageResource(Common.CATEGORY_ICON[(Integer)mData.get(position).get("iconName")]);
 		viewholder.accountTextView.setText(mData.get(position).get("ep_billName")+"");
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		long dueDate = (Long) mData.get(position).get("ep_billDueDate");

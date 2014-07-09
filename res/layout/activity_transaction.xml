@@ -14,6 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
+            
+            
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -21,7 +23,7 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal" >
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/payee_edit"
                     style="@style/TextAppearance.EditEvent_Value"
                     android:layout_width="match_parent"
@@ -30,17 +32,12 @@
                     android:layout_weight="100"
                     android:hint="@string/payee_label"
                     android:maxLength="13"
+                    android:ems="10"
                     android:minHeight="48dip"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:completionThreshold="1"
+                    />
 
-                <ImageButton
-                    android:id="@+id/add_payee_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginRight="12dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/b_add" />
             </LinearLayout>
 
             <LinearLayout

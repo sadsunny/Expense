@@ -10,22 +10,27 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
+import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 
+import android.R.integer;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -35,6 +40,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -49,6 +56,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -61,6 +69,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -73,11 +82,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private static final int expenseAccountDefault = 0;
 	private static final int incomeAccountDefault = 0;
 	private static final int parTransactionDefault = 0;
-	
+
 	private LayoutInflater inflater;
 
-	private EditText payeeEditText;
-	private ImageButton payeeButton;
+	private AutoCompleteTextView payeeEditText;
 	private Button categoryButton;
 	private EditText amountEditText;
 	private Button dateButton;
@@ -124,10 +132,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 	private AlertDialog mPhotoDialog;
 	private AlertDialog mPhotoSeDialog;
-	private Button takePhotoButton;
-	private Button pickPhotoButton;
-	private Button deletePhotoButton;
-	private Button viewPhotoButton;
+	private LinearLayout takePhotoButton;
+	private LinearLayout pickPhotoButton;
+	private LinearLayout deletePhotoButton;
+	private LinearLayout viewPhotoButton;
 	private String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
@@ -135,9 +143,12 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private int recurringTpye = 0; // default on 1
 	private Bitmap camorabitmap;
 	private LinearLayout recurringLinearLayout;
-	
+
 	private int splitCheck;
 	private List<Map<String, Object>> mReturnList;
+	private AutoListAdapter autoListAdapter;
+	private Cursor mCursor;
+	private CharSequence sKey;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -169,8 +180,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		mReturnList = new ArrayList<Map<String, Object>>();
 
 		mImageView = (ImageView) findViewById(R.id.imageView1);
-		payeeEditText = (EditText) findViewById(R.id.payee_edit);
-		payeeButton = (ImageButton) findViewById(R.id.add_payee_btn);
+		payeeEditText = (AutoCompleteTextView) findViewById(R.id.payee_edit);
 		categoryButton = (Button) findViewById(R.id.category_btn);
 		amountEditText = (EditText) findViewById(R.id.amount_edit);
 		dateButton = (Button) findViewById(R.id.date_btn);
@@ -179,19 +189,99 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		photoButton = (Button) findViewById(R.id.photo_btn);
 		clearSpinner = (Spinner) findViewById(R.id.clear_spin); // spinner
 		memoEditText = (EditText) findViewById(R.id.memo_edit); // spinner
-		recurringLinearLayout = (LinearLayout)findViewById(R.id.recurringLinearLayout);
-		
-		payeeButton.setOnClickListener(mClickListener);
-		categoryButton.setOnClickListener(mClickListener);
-		dateButton.setOnClickListener(mClickListener);
-		accountButton.setOnClickListener(mClickListener);
-		photoButton.setOnClickListener(mClickListener);
+		recurringLinearLayout = (LinearLayout) findViewById(R.id.recurringLinearLayout);
 
-		List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
+		payeeEditText.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+				mCursor = TransactionDao.selectPayee(
+						CreatTransactionActivity.this, MEntity.sqliteEscape(s.toString()));
+				autoListAdapter = new AutoListAdapter(
+						CreatTransactionActivity.this, mCursor, true);
+				payeeEditText.setAdapter(autoListAdapter);
+				Log.v("mtest", "mCursor11" + mCursor);
+				sKey = s;
+
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+
+			}
+
+		});
+
+		final List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
 				CreatTransactionActivity.this, 0);
 		if (mDataList != null) {
 			filterData(mDataList);
 		}
+
+		payeeEditText.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+
+				Cursor cursor = (Cursor) arg0.getItemAtPosition(0);
+
+				// Get the state's capital from this row in the database.
+				payeeId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+				categoryId = cursor.getInt(cursor
+						.getColumnIndexOrThrow("category"));
+				String categoryName = cursor.getString(cursor
+						.getColumnIndexOrThrow("categoryName"));
+				categoryButton.setText(categoryName);
+
+				if (categoryName.contains(":")) {
+					String parentString[] = categoryName.split(":");
+					String groupString = parentString[0];
+					gCheckedItem = locationPositionByName(groupDataList,
+							groupString);
+
+					int i = 0;
+
+					for (Map<String, Object> iMap : mDataList) {
+
+						String cName = (String) iMap.get("categoryName");
+						int cId = (Integer) iMap.get("_id");
+						String temp[] = cName.split(":");
+						if (temp[0].equals(groupString) && cName.contains(":")) {
+							
+							if (cId == categoryId) {
+								cCheckedItem = i;
+							}
+							i = i + 1;
+						}
+
+					}
+
+				} else {
+					gCheckedItem = locationPositionById(groupDataList,
+							categoryId);
+					cCheckedItem = -1;
+				}
+			}
+		});
+
+		categoryButton.setOnClickListener(mClickListener);
+		dateButton.setOnClickListener(mClickListener);
+		accountButton.setOnClickListener(mClickListener);
+		photoButton.setOnClickListener(mClickListener);
 
 		if (groupDataList != null && groupDataList.size() > 0) {
 			categoryId = locationOthersId(groupDataList);
@@ -234,7 +324,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 			}
 
 		});
-		
 
 		ArrayAdapter<CharSequence> adapterSpinner1 = ArrayAdapter
 				.createFromResource(CreatTransactionActivity.this,
@@ -332,6 +421,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				});
 
 		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(MainActivity.selectedDate);
 		mYear = c.get(Calendar.YEAR);
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -355,6 +445,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				} catch (NumberFormatException e) {
 					amountDouble = 0.00;
 				}
+				
+				String payeeString = payeeEditText.getText().toString();
+				
 				if (amountDouble == 0) {
 
 					new AlertDialog.Builder(CreatTransactionActivity.this)
@@ -409,11 +502,26 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else {
+				} else if(payeeString == null || payeeString.trim().length() == 0 || payeeString.trim().equals("")){
+					
+					new AlertDialog.Builder(CreatTransactionActivity.this)
+					.setTitle("Warning! ")
+					.setMessage(" Payee is required! ")
+					.setPositiveButton("Retry",
+							new DialogInterface.OnClickListener() {
 
-					String payeeString = payeeEditText.getText().toString();
-					if (payeeString != null && payeeString.trim().length() != 0
-							&& !payeeString.trim().equals("")) {
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+								}
+					 }).show();
+									
+				}else {
+
+					if (payeeString != null && payeeString.trim().length() != 0 && !payeeString.trim().equals("")) {
 
 						boolean check = checkPayee(payeeString);
 						if (!check) {
@@ -426,39 +534,200 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						}
 					}
 
-					String memoString = memoEditText.getText().toString();
-                              //context, amount, dateTime,  isClear,  notes,  photoName, recurringType, category, childTransactions, expenseAccount , incomeAccount,  parTransaction, payee)
-				
+					final String memoString = memoEditText.getText().toString();
+					// context, amount, dateTime, isClear, notes, photoName,
+					// recurringType, category, childTransactions,
+					// expenseAccount , incomeAccount, parTransaction, payee)
 
-					if (mReturnList != null && mReturnList.size() > 1) {
+					if (mReturnList != null && mReturnList.size() > 1) { //category splite情况
 
-						   Log.v("mtest","mReturnList"+mReturnList);
-                  long row = TransactionDao.insertTransactionAll(CreatTransactionActivity.this,amountString,dateLong,isCleared, memoString, picPath, 0, categoryDefault, childTransactionsDefault+"", accountId , incomeAccountDefault, -1,payeeId); //-1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
-						
-                  String idList = "";
-                  
-                     for (Map<String, Object> iMap : mReturnList) {
+						Log.v("mtest", "mReturnList" + mReturnList);
+						long row = TransactionDao.insertTransactionAll(
+								CreatTransactionActivity.this, amountString,
+								dateLong, isCleared, memoString, picPath, 0,
+								categoryDefault, childTransactionsDefault + "",
+								accountId, incomeAccountDefault, -1, payeeId); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
+
+						String idList = "";
+
+						for (Map<String, Object> iMap : mReturnList) {
 							String amount = (String) iMap.get("amount");
 							int cId = (Integer) iMap.get("categoryId");
-			    	        long id = TransactionDao.insertTransactionAll(CreatTransactionActivity.this,amount,dateLong,isCleared, memoString, picPath, 0, cId, 1+"", accountId , incomeAccountDefault, (int)row,payeeId); 
-			    	        idList = idList+id+",";
-                     }
-                     Log.v("mtest","row"+row);
-                     Log.v("mtest","idList"+idList);
-                     
-                    long rid= TransactionDao.updateParTransactionChild(CreatTransactionActivity.this,row, idList);
-                    Log.v("mtest","rid"+rid);
-                    
-					} else {
-						List<Map<String, Object>> mCategoryList = TransactionDao.selectCategoryAll(CreatTransactionActivity.this);
-						int categoryType =judgeCategoryType(mCategoryList,categoryId);
-						if(categoryType == 0){
-				           long row = TransactionDao.insertTransactionAll(CreatTransactionActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, categoryId, childTransactionsDefault+"", accountId , incomeAccountDefault, 0,payeeId); 		
-						}else{
-						   long row = TransactionDao.insertTransactionAll(CreatTransactionActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, categoryId, childTransactionsDefault+"", expenseAccountDefault , accountId, 0,payeeId); 
+							long id = TransactionDao.insertTransactionAll(
+									CreatTransactionActivity.this, amount,
+									dateLong, isCleared, memoString, picPath,
+									0, cId, 1 + "", accountId,
+									incomeAccountDefault, (int) row, payeeId);
+							idList = idList + id + ",";
 						}
+						Log.v("mtest", "row" + row);
+						Log.v("mtest", "idList" + idList);
+
+						long rid = TransactionDao.updateParTransactionChild(
+								CreatTransactionActivity.this, row, idList);
+						Log.v("mtest", "rid" + rid);
+
+					} else {
+						
+						List<Map<String, Object>> mCategoryList = TransactionDao.selectCategoryAll(CreatTransactionActivity.this);
+						final int categoryType = judgeCategoryType(mCategoryList,categoryId);
+						
+						if(recurringTpye > 0 && recurringTpye < 14){
+							
+							if( dateLong <= MEntity.getNowMillis() ){ //交易重复事件
+								
+								Thread mThread = new Thread(new Runnable() {
+									
+									@Override
+									public void run() {
+										// TODO Auto-generated method stub
+										Calendar calendar = Calendar.getInstance();
+										calendar.setTimeInMillis(dateLong);
+										
+										ExpenseDBHelper helper = new ExpenseDBHelper(CreatTransactionActivity.this);
+										SQLiteDatabase db = helper.getWritableDatabase();
+										db.beginTransaction();  //手动设置开始事务
+										
+										Calendar calendar1 = Calendar.getInstance();
+										calendar1.setTimeInMillis(dateLong);
+										Log.v("mtest", "recurringTpye"+recurringTpye);
+										if (recurringTpye == 1) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 1);
+										} else if (recurringTpye == 2) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 7);
+										}else if (recurringTpye == 3) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 14);
+										}else if (recurringTpye == 4) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 21);
+										}else if (recurringTpye == 5) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 28);
+										}else if (recurringTpye == 6) {
+											calendar1.add(Calendar.DAY_OF_MONTH, 15);
+										}else if (recurringTpye == 7) {
+											calendar1.add(Calendar.MONTH, 1);
+										}else if (recurringTpye == 8) {
+											calendar1.add(Calendar.MONTH, 2);
+										}else if (recurringTpye == 9) {
+											calendar1.add(Calendar.MONTH, 3);
+										}else if (recurringTpye == 10) {
+											calendar1.add(Calendar.MONTH, 4);
+										}else if (recurringTpye == 11) {
+											calendar1.add(Calendar.MONTH, 5);
+										}else if (recurringTpye == 12) {
+											calendar1.add(Calendar.MONTH, 6);
+										}else if (recurringTpye == 13) {
+											calendar1.add(Calendar.YEAR, 1);
+										}
+										
+										if (calendar1.getTimeInMillis() <= MEntity.getNowMillis()) {
+											
+								        try{
+								            //批量处理操作
+								        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
+								        		
+								        		if (categoryType == 0) {
+													 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+																	memoString, picPath, 0,
+																	categoryId,
+																	childTransactionsDefault + "",
+																	accountId, incomeAccountDefault, 0,
+																	payeeId);
+												} else {
+													TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+															memoString, picPath, 0,
+															categoryId, childTransactionsDefault + "",
+															expenseAccountDefault, accountId, 0,
+															payeeId);
+												}
+								        		
+												if (recurringTpye == 1) {
+													calendar.add(Calendar.DAY_OF_MONTH, 1);
+												} else if (recurringTpye == 2) {
+													calendar.add(Calendar.DAY_OF_MONTH, 7);
+												}else if (recurringTpye == 3) {
+													calendar.add(Calendar.DAY_OF_MONTH, 14);
+												}else if (recurringTpye == 4) {
+													calendar.add(Calendar.DAY_OF_MONTH, 21);
+												}else if (recurringTpye == 5) {
+													calendar.add(Calendar.DAY_OF_MONTH, 28);
+												}else if (recurringTpye == 6) {
+													calendar.add(Calendar.DAY_OF_MONTH, 15);
+												}else if (recurringTpye == 7) {
+													calendar.add(Calendar.MONTH, 1);
+												}else if (recurringTpye == 8) {
+													calendar.add(Calendar.MONTH, 2);
+												}else if (recurringTpye == 9) {
+													calendar.add(Calendar.MONTH, 3);
+												}else if (recurringTpye == 10) {
+													calendar.add(Calendar.MONTH, 4);
+												}else if (recurringTpye == 11) {
+													calendar.add(Calendar.MONTH, 5);
+												}else if (recurringTpye == 12) {
+													calendar.add(Calendar.MONTH, 6);
+												}else if (recurringTpye == 13) {
+													calendar.add(Calendar.YEAR, 1);
+												}
+											}
+							        		
+											
+								        	if (categoryType == 0) {
+												 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+																memoString, picPath, recurringTpye,
+																categoryId,
+																childTransactionsDefault + "",
+																accountId, incomeAccountDefault, 0,
+																payeeId);
+											} else {
+												TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+														memoString, picPath, recurringTpye,
+														categoryId, childTransactionsDefault + "",
+														expenseAccountDefault, accountId, 0,
+														payeeId);
+											}
+								        	
+								            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
+								           
+								           }catch(Exception e){
+								              Log.v("mtest", "******Exception******"+e);
+								              
+								           }finally{
+								               db.endTransaction(); //处理完成
+								               db.close();
+								           }
+								        
+										}
+										
+									}
+								});
+								
+								mThread.start();
+								
+							}
+							
+						}else{
+							
+							if (categoryType == 0) {
+								long row = TransactionDao
+										.insertTransactionAll(CreatTransactionActivity.this,amountString, dateLong, isCleared,
+												memoString, picPath, recurringTpye,
+												categoryId,
+												childTransactionsDefault + "",
+												accountId, incomeAccountDefault, 0,
+												payeeId);
+							} else {
+								long row = TransactionDao.insertTransactionAll(
+										CreatTransactionActivity.this,
+										amountString, dateLong, isCleared,
+										memoString, picPath, recurringTpye,
+										categoryId, childTransactionsDefault + "",
+										expenseAccountDefault, accountId, 0,
+										payeeId);
+							}
+							
+						}
+						
 					}
-					
+
 					Intent intent = new Intent();
 					intent.putExtra("done", 1);
 					setResult(6, intent);
@@ -469,60 +738,60 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 				break;
 
-			case R.id.add_payee_btn:
-
-				View view = inflater.inflate(R.layout.dialog_choose_type, null);
-				payeeListView = (ListView) view.findViewById(R.id.mListView);
-				payeeListViewAdapter = new PayeeListViewAdapter(
-						CreatTransactionActivity.this);
-
-				final List<Map<String, Object>> mList = TransactionDao
-						.selectPayee(CreatTransactionActivity.this);
-
-				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				payeeListView.setAdapter(payeeListViewAdapter);
-				payeeListView
-						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
-								: 0);
-				payeeListViewAdapter.setItemChecked(payeeCheckItem);
-				payeeListViewAdapter.setAdapterDate(mList);
-				payeeListViewAdapter.notifyDataSetChanged();
-				payeeListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						payeeCheckItem = arg2;
-						payeeListViewAdapter.setItemChecked(payeeCheckItem);
-						payeeListViewAdapter.notifyDataSetChanged();
-						String nameString = (String) mList.get(arg2)
-								.get("name");
-						payeeEditText.setText(nameString);
-						payeeEditText.setSelection(nameString.length());
-
-						payeeId = (Integer) mList.get(arg2).get("_id");
-						mDialog.dismiss();
-					}
-				});
-
-				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
-						CreatTransactionActivity.this);
-				mBuilder.setTitle("Choose Payee");
-				mBuilder.setView(view);
-				mBuilder.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
-							}
-						});
-
-				mDialog = mBuilder.create();
-				mDialog.show();
-				break;
+			// case R.id.add_payee_btn:
+			//
+			// View view = inflater.inflate(R.layout.dialog_choose_type, null);
+			// payeeListView = (ListView) view.findViewById(R.id.mListView);
+			// payeeListViewAdapter = new PayeeListViewAdapter(
+			// CreatTransactionActivity.this);
+			//
+			// final List<Map<String, Object>> mList = TransactionDao
+			// .selectPayee(CreatTransactionActivity.this);
+			//
+			// payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+			// payeeListView.setAdapter(payeeListViewAdapter);
+			// payeeListView
+			// .setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
+			// : 0);
+			// payeeListViewAdapter.setItemChecked(payeeCheckItem);
+			// payeeListViewAdapter.setAdapterDate(mList);
+			// payeeListViewAdapter.notifyDataSetChanged();
+			// payeeListView.setOnItemClickListener(new OnItemClickListener() {
+			//
+			// @Override
+			// public void onItemClick(AdapterView<?> arg0, View arg1,
+			// int arg2, long arg3) {
+			// // TODO Auto-generated method stub
+			// payeeCheckItem = arg2;
+			// payeeListViewAdapter.setItemChecked(payeeCheckItem);
+			// payeeListViewAdapter.notifyDataSetChanged();
+			// String nameString = (String) mList.get(arg2)
+			// .get("name");
+			// payeeEditText.setText(nameString);
+			// payeeEditText.setSelection(nameString.length());
+			//
+			// payeeId = (Integer) mList.get(arg2).get("_id");
+			// mDialog.dismiss();
+			// }
+			// });
+			//
+			// AlertDialog.Builder mBuilder = new AlertDialog.Builder(
+			// CreatTransactionActivity.this);
+			// mBuilder.setTitle("Choose Payee");
+			// mBuilder.setView(view);
+			// mBuilder.setNegativeButton("Cancel",
+			// new DialogInterface.OnClickListener() {
+			//
+			// @Override
+			// public void onClick(DialogInterface dialog,
+			// int which) {
+			// // TODO Auto-generated method stub
+			// }
+			// });
+			//
+			// mDialog = mBuilder.create();
+			// mDialog.show();
+			// break;
 
 			case R.id.category_btn:
 				if (splitCheck == 0) {
@@ -767,15 +1036,16 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						filterData(mDataList);
 						mDialogExpandableListViewAdapter.setAdapterData(
 								groupDataList, childrenAllDataList);
-					
+
 						int groupCount = groupDataList.size();
 
 						for (int i = 0; i < groupCount; i++) {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-						
-						mExpandableListView.setSelectedChild( gCheckedItem, cCheckedItem, true) ;
+
+						mExpandableListView.setSelectedChild(gCheckedItem,
+								cCheckedItem, true);
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
@@ -792,8 +1062,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-						
-						mExpandableListView.setSelectedChild( gCheckedItem, cCheckedItem, true) ;
+
+						mExpandableListView.setSelectedChild(gCheckedItem,
+								cCheckedItem, true);
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
@@ -873,7 +1144,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 									return true;
 								}
 							});
-
 
 					AlertDialog.Builder mBuilder1 = new AlertDialog.Builder(
 							CreatTransactionActivity.this);
@@ -992,9 +1262,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 					View view9 = inflater.inflate(R.layout.dialog_photo_second,
 							null);
-					deletePhotoButton = (Button) view9
+					deletePhotoButton = (LinearLayout) view9
 							.findViewById(R.id.delete_btn);
-					viewPhotoButton = (Button) view9
+					viewPhotoButton = (LinearLayout) view9
 							.findViewById(R.id.view_btn);
 					deletePhotoButton.setOnClickListener(new OnClickListener() {
 
@@ -1049,9 +1319,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				} else {
 
 					View view4 = inflater.inflate(R.layout.dialog_photo, null);
-					takePhotoButton = (Button) view4
+					takePhotoButton = (LinearLayout) view4
 							.findViewById(R.id.take_btn);
-					pickPhotoButton = (Button) view4
+					pickPhotoButton = (LinearLayout) view4
 							.findViewById(R.id.pick_btn);
 					takePhotoButton.setOnClickListener(new OnClickListener() {
 
@@ -1213,6 +1483,35 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		}
 	}
 
+	public int locationPositionById(List<Map<String, Object>> mData, int id) { // 定位的位置
+		int i = 0;
+		int position = -1;
+		for (Map<String, Object> mMap : mData) {
+			int mId = (Integer) mMap.get("_id");
+			if (mId == id) {
+				position = i;
+			}
+			i = i + 1;
+		}
+
+		return position;
+	}
+
+	public int locationPositionByName(List<Map<String, Object>> mData,
+			String name) { // 定位的位置
+		int i = 0;
+		int position = 0;
+		for (Map<String, Object> mMap : mData) {
+			String categoryName = (String) mMap.get("categoryName");
+			if (categoryName.equals(name)) {
+				position = i;
+			}
+			i = i + 1;
+		}
+
+		return position;
+	}
+
 	public int locationOthersPosition(List<Map<String, Object>> mData) { // 定位others的位置
 		int i = 0;
 		int position = 0;
@@ -1227,10 +1526,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		return position;
 	}
 
-	public int judgeCategoryType(List<Map<String, Object>> mList ,int cId) { //判断该transaction，category是属于expense还是income
-		
+	public int judgeCategoryType(List<Map<String, Object>> mList, int cId) { // 判断该transaction，category是属于expense还是income
+
 		int rId = 0;
-		for (Map<String, Object> iMap:mList) {
+		for (Map<String, Object> iMap : mList) {
 			int id = (Integer) iMap.get("_id");
 			if (id == cId) {
 				rId = (Integer) iMap.get("categoryType");
@@ -1238,7 +1537,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		}
 		return rId;
 	}
-	
+
 	public int locationOthersId(List<Map<String, Object>> mData) { // 定位others的位置
 		int id = 0;
 		for (Map<String, Object> mMap : mData) {
@@ -1258,13 +1557,13 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 		switch (requestCode) {
 		case 6:
-			    File file = new File(picPath);
-			    if (file.exists()) {
-			    	camorabitmap = BitmapFactory.decodeFile(picPath);
-					Log.v("mtest", "camorabitmap"+camorabitmap);
-					mImageView.setImageBitmap(camorabitmap);
-				}
-				
+			File file = new File(picPath);
+			if (file.exists()) {
+				camorabitmap = BitmapFactory.decodeFile(picPath);
+				Log.v("mtest", "camorabitmap" + camorabitmap);
+				mImageView.setImageBitmap(camorabitmap);
+			}
+
 			break;
 		case 7:
 

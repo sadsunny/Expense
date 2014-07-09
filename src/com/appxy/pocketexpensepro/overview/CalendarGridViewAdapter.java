@@ -47,11 +47,11 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	String itemvalue;
 	DateFormat df;
 
-	public  List<String> dayString;
+	public List<String> dayString;
 	private List<Map<String, Object>> mDataList;
 	private String checkDate;
 	private ArrayList<String> items;
-    private int itemWidth;
+	private int itemWidth;
 
 	public CalendarGridViewAdapter(Context c, Calendar monthCalendar) {
 
@@ -65,7 +65,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		itemWidth = getWeekItemWidth();
 		this.items = new ArrayList<String>();
 	}
-	
+
 	public List<String> getDayString() {
 		return this.dayString;
 	}
@@ -135,7 +135,8 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			// attributes
 			LayoutInflater vi = LayoutInflater.from(mContext);
 
-			convertView = vi.inflate(R.layout.fragment_overview_calender_item, null);
+			convertView = vi.inflate(R.layout.fragment_overview_calender_item,
+					null);
 			viewholder = new ViewHolder();
 
 			viewholder.dayView = (TextView) convertView
@@ -156,14 +157,14 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 				.getLayoutParams();
 		relativeParams.width = itemWidth;
 		viewholder.mLayout.setLayoutParams(relativeParams);
-		
+
 		String everyDay = dayString.get(position); // 定位为当天
 		// separates daystring into parts.
 		String[] separatedTime = dayString.get(position).split("-");
 		// taking last part of date. ie; 2 from 2012-12-02
 		String gridvalue = separatedTime[2].replaceFirst("^0*", "");
 		// checking whether the day is in current month or not.
-		
+
 		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
 			// setting offdays to white color.
 			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
@@ -174,13 +175,13 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else {
-			
+
 			if (everyDay.equals(turnToDate())) {
 				viewholder.dayView.setTextColor(Color.rgb(3, 128, 255));
 			} else {
 				viewholder.dayView.setTextColor(Color.rgb(94, 99, 117));
 			}
-			
+
 		}
 		viewholder.dayView.setText(gridvalue);
 
@@ -190,7 +191,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			} else {
 				viewholder.mLayout.setBackgroundResource(R.color.sel_gray);
 			}
-		
+
 		} else {
 			viewholder.mLayout.setBackgroundResource(R.color.bag_gray);
 		}
@@ -208,13 +209,24 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 					income = (Double) iMap.get("income");
 				}
 			}
-
-			viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
-					+ ""));
-			viewholder.expenseTextView.setTextColor(Color.rgb(208, 47, 58));
-			viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
-					+ ""));
-			viewholder.incomeTextView.setTextColor(Color.rgb(83, 150, 39));
+			
+			if (expense != 0) {
+				viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
+						+ ""));
+				viewholder.expenseTextView.setTextColor(Color.rgb(208, 47, 58));
+			} else {
+				viewholder.expenseTextView.setText("");
+			}
+			
+			if (income != 0) {
+				viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
+						+ ""));
+				viewholder.incomeTextView.setTextColor(Color.rgb(83, 150, 39));
+			} else {
+				viewholder.incomeTextView.setText("");
+			}
+		
+			
 
 		} else {
 			viewholder.expenseTextView.setText("");
@@ -241,7 +253,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		dayString.clear();
 		Locale.setDefault(Locale.ENGLISH);
 		pmonth = (Calendar) month.clone();
-//		Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
+		// Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
 		// month start day. ie; sun, mon, etc
 		firstDay = month.get(Calendar.DAY_OF_WEEK);
 		// finding number of weeks in current month.
@@ -271,13 +283,11 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 	private int getMaxP() {
 		int maxP;
-		if (month.get(Calendar.MONTH) == month
-				.getActualMinimum(Calendar.MONTH)) {
+		if (month.get(Calendar.MONTH) == month.getActualMinimum(Calendar.MONTH)) {
 			pmonth.set((month.get(Calendar.YEAR) - 1),
 					month.getActualMaximum(Calendar.MONTH), 1);
 		} else {
-			pmonth.set(Calendar.MONTH,
-					month.get(Calendar.MONTH) - 1);
+			pmonth.set(Calendar.MONTH, month.get(Calendar.MONTH) - 1);
 		}
 		maxP = pmonth.getActualMaximum(Calendar.DAY_OF_MONTH);
 

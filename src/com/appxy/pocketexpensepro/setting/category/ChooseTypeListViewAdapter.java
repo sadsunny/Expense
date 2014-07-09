@@ -83,7 +83,7 @@ public class ChooseTypeListViewAdapter extends BaseAdapter {
 			viewholder.mTextView.setChecked(false);
 		}
 
-		viewholder.mIcon.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer)mData.get(position).get("iconName")]);
+		viewholder.mIcon.setImageResource(Common.CATEGORY_ICON[(Integer)mData.get(position).get("iconName")]);
 		viewholder.mTextView.setText(mData.get(position).get("categoryName")+"");
 		
 		return convertView;

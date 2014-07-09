@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
@@ -73,6 +74,8 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	private List<Map<String, Object>> mDataList;
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
+	private long date;
+	
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -130,8 +133,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		if (_id <= 0) {
 			finish();
 		}
-		
-		Log.v("mtest", "**************4");
+		date =  intent.getLongExtra("date", 0);
 		
 		accName = intent.getStringExtra("accName");
 		
@@ -164,16 +166,14 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		public void run() {
 			
 			Calendar calendar = Calendar.getInstance();
-			long firstDay = MEntity.getFirstDayOfMonthMillis(calendar
-					.getTimeInMillis());
-			long lastDay = MEntity.getLastDayOfMonthMillis(calendar
-					.getTimeInMillis());
+			long firstDay = MEntity.getFirstDayOfMonthMillis(date);
+			long lastDay = MEntity.getLastDayOfMonthMillis(date);
 
 			mDataList = OverViewDao.selectTransactionByCategoryIdAndTime(
 								BudgetToTransactionActivity.this, _id, firstDay,
 								lastDay);
 
-
+			Log.v("mtest", "预算mDataList"+mDataList);
 			if (mDataList != null ) {
 				reFillData(mDataList);
 				filterData(mDataList);
