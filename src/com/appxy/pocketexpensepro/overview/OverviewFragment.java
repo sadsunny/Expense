@@ -20,6 +20,7 @@ import com.appxy.pocketexpensepro.CircleView;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.RoundProgressBar;
+import com.appxy.pocketexpensepro.TransactionRecurringCheck;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
@@ -204,6 +205,8 @@ public class OverviewFragment extends Fragment implements
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();	
+		
+		TransactionRecurringCheck.recurringCheck(mActivity, MEntity.getNowMillis());
 		mListViewAdapter.notifyDataSetChanged();
 		
 		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);

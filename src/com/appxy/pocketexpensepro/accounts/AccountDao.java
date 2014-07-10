@@ -24,25 +24,6 @@ public class AccountDao {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		return db;
 	}
-	public static long updateTransactionRecurring(Context context, int _id) { // AccountType插入
-
-		SQLiteDatabase db = getConnection(context);
-		ContentValues cv = new ContentValues();
-		cv.put("recurringType", 0);
-		
-		String mId = _id + "";
-		try {
-			long id = db
-					.update("'Transaction'", cv, "_id = ?", new String[] { mId });
-			db.close();
-			return id;
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-			return 0;
-		}
-
-	}
 	
 	public static List<Map<String, Object>> selectTransactionRecurringOverToday(Context context, long today) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -470,7 +451,7 @@ public class AccountDao {
 				+ accountId
 				+ " or a.incomeAccount = "
 				+ accountId
-				+ ") and a.childTransactions != 1 and isClear != 1 order by a.dateTime DESC ";
+				+ ") and a.childTransactions != 1 and isClear != 1 order by a.dateTime DESC, a._id DESC  ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

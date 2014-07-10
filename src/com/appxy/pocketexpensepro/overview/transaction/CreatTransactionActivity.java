@@ -572,139 +572,140 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						List<Map<String, Object>> mCategoryList = TransactionDao.selectCategoryAll(CreatTransactionActivity.this);
 						final int categoryType = judgeCategoryType(mCategoryList,categoryId);
 						
-						if(recurringTpye > 0 && recurringTpye < 14){
-							
-							if( dateLong <= MEntity.getNowMillis() ){ //交易重复事件
-								
-								Thread mThread = new Thread(new Runnable() {
-									
-									@Override
-									public void run() {
-										// TODO Auto-generated method stub
-										Calendar calendar = Calendar.getInstance();
-										calendar.setTimeInMillis(dateLong);
-										
-										ExpenseDBHelper helper = new ExpenseDBHelper(CreatTransactionActivity.this);
-										SQLiteDatabase db = helper.getWritableDatabase();
-										db.beginTransaction();  //手动设置开始事务
-										
-										Calendar calendar1 = Calendar.getInstance();
-										calendar1.setTimeInMillis(dateLong);
-										Log.v("mtest", "recurringTpye"+recurringTpye);
-										if (recurringTpye == 1) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 1);
-										} else if (recurringTpye == 2) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 7);
-										}else if (recurringTpye == 3) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 14);
-										}else if (recurringTpye == 4) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 21);
-										}else if (recurringTpye == 5) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 28);
-										}else if (recurringTpye == 6) {
-											calendar1.add(Calendar.DAY_OF_MONTH, 15);
-										}else if (recurringTpye == 7) {
-											calendar1.add(Calendar.MONTH, 1);
-										}else if (recurringTpye == 8) {
-											calendar1.add(Calendar.MONTH, 2);
-										}else if (recurringTpye == 9) {
-											calendar1.add(Calendar.MONTH, 3);
-										}else if (recurringTpye == 10) {
-											calendar1.add(Calendar.MONTH, 4);
-										}else if (recurringTpye == 11) {
-											calendar1.add(Calendar.MONTH, 5);
-										}else if (recurringTpye == 12) {
-											calendar1.add(Calendar.MONTH, 6);
-										}else if (recurringTpye == 13) {
-											calendar1.add(Calendar.YEAR, 1);
-										}
-										
-										if (calendar1.getTimeInMillis() <= MEntity.getNowMillis()) {
-											
-								        try{
-								            //批量处理操作
-								        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
-								        		
-								        		if (categoryType == 0) {
-													 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-																	memoString, picPath, 0,
-																	categoryId,
-																	childTransactionsDefault + "",
-																	accountId, incomeAccountDefault, 0,
-																	payeeId);
-												} else {
-													TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-															memoString, picPath, 0,
-															categoryId, childTransactionsDefault + "",
-															expenseAccountDefault, accountId, 0,
-															payeeId);
-												}
-								        		
-												if (recurringTpye == 1) {
-													calendar.add(Calendar.DAY_OF_MONTH, 1);
-												} else if (recurringTpye == 2) {
-													calendar.add(Calendar.DAY_OF_MONTH, 7);
-												}else if (recurringTpye == 3) {
-													calendar.add(Calendar.DAY_OF_MONTH, 14);
-												}else if (recurringTpye == 4) {
-													calendar.add(Calendar.DAY_OF_MONTH, 21);
-												}else if (recurringTpye == 5) {
-													calendar.add(Calendar.DAY_OF_MONTH, 28);
-												}else if (recurringTpye == 6) {
-													calendar.add(Calendar.DAY_OF_MONTH, 15);
-												}else if (recurringTpye == 7) {
-													calendar.add(Calendar.MONTH, 1);
-												}else if (recurringTpye == 8) {
-													calendar.add(Calendar.MONTH, 2);
-												}else if (recurringTpye == 9) {
-													calendar.add(Calendar.MONTH, 3);
-												}else if (recurringTpye == 10) {
-													calendar.add(Calendar.MONTH, 4);
-												}else if (recurringTpye == 11) {
-													calendar.add(Calendar.MONTH, 5);
-												}else if (recurringTpye == 12) {
-													calendar.add(Calendar.MONTH, 6);
-												}else if (recurringTpye == 13) {
-													calendar.add(Calendar.YEAR, 1);
-												}
-											}
-							        		
-											
-								        	if (categoryType == 0) {
-												 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-																memoString, picPath, recurringTpye,
-																categoryId,
-																childTransactionsDefault + "",
-																accountId, incomeAccountDefault, 0,
-																payeeId);
-											} else {
-												TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-														memoString, picPath, recurringTpye,
-														categoryId, childTransactionsDefault + "",
-														expenseAccountDefault, accountId, 0,
-														payeeId);
-											}
-								        	
-								            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
-								           
-								           }catch(Exception e){
-								              Log.v("mtest", "******Exception******"+e);
-								              
-								           }finally{
-								               db.endTransaction(); //处理完成
-								               db.close();
-								           }
-								        
-										}
-										
-									}
-								});
-								
-								mThread.start();
-								
-							}
-							
-						}else{
+//						if(recurringTpye > 0 && recurringTpye < 14){
+//							
+////							if( dateLong <= MEntity.getNowMillis() ){ //交易重复事件
+////								
+////								Thread mThread = new Thread(new Runnable() {
+////									
+////									@Override
+////									public void run() {
+////										// TODO Auto-generated method stub
+////										Calendar calendar = Calendar.getInstance();
+////										calendar.setTimeInMillis(dateLong);
+////										
+////										ExpenseDBHelper helper = new ExpenseDBHelper(CreatTransactionActivity.this);
+////										SQLiteDatabase db = helper.getWritableDatabase();
+////										db.beginTransaction();  //手动设置开始事务
+////										
+////										Calendar calendar1 = Calendar.getInstance();
+////										calendar1.setTimeInMillis(dateLong);
+////										Log.v("mtest", "recurringTpye"+recurringTpye);
+////										if (recurringTpye == 1) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 1);
+////										} else if (recurringTpye == 2) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 7);
+////										}else if (recurringTpye == 3) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 14);
+////										}else if (recurringTpye == 4) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 21);
+////										}else if (recurringTpye == 5) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 28);
+////										}else if (recurringTpye == 6) {
+////											calendar1.add(Calendar.DAY_OF_MONTH, 15);
+////										}else if (recurringTpye == 7) {
+////											calendar1.add(Calendar.MONTH, 1);
+////										}else if (recurringTpye == 8) {
+////											calendar1.add(Calendar.MONTH, 2);
+////										}else if (recurringTpye == 9) {
+////											calendar1.add(Calendar.MONTH, 3);
+////										}else if (recurringTpye == 10) {
+////											calendar1.add(Calendar.MONTH, 4);
+////										}else if (recurringTpye == 11) {
+////											calendar1.add(Calendar.MONTH, 5);
+////										}else if (recurringTpye == 12) {
+////											calendar1.add(Calendar.MONTH, 6);
+////										}else if (recurringTpye == 13) {
+////											calendar1.add(Calendar.YEAR, 1);
+////										}
+////										
+////										if (calendar1.getTimeInMillis() <= MEntity.getNowMillis()) {
+////											
+////								        try{
+////								            //批量处理操作
+////								        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
+////								        		
+////								        		if (categoryType == 0) {
+////													 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+////																	memoString, picPath, 0,
+////																	categoryId,
+////																	childTransactionsDefault + "",
+////																	accountId, incomeAccountDefault, 0,
+////																	payeeId);
+////												} else {
+////													TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+////															memoString, picPath, 0,
+////															categoryId, childTransactionsDefault + "",
+////															expenseAccountDefault, accountId, 0,
+////															payeeId);
+////												}
+////								        		
+////												if (recurringTpye == 1) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 1);
+////												} else if (recurringTpye == 2) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 7);
+////												}else if (recurringTpye == 3) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 14);
+////												}else if (recurringTpye == 4) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 21);
+////												}else if (recurringTpye == 5) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 28);
+////												}else if (recurringTpye == 6) {
+////													calendar.add(Calendar.DAY_OF_MONTH, 15);
+////												}else if (recurringTpye == 7) {
+////													calendar.add(Calendar.MONTH, 1);
+////												}else if (recurringTpye == 8) {
+////													calendar.add(Calendar.MONTH, 2);
+////												}else if (recurringTpye == 9) {
+////													calendar.add(Calendar.MONTH, 3);
+////												}else if (recurringTpye == 10) {
+////													calendar.add(Calendar.MONTH, 4);
+////												}else if (recurringTpye == 11) {
+////													calendar.add(Calendar.MONTH, 5);
+////												}else if (recurringTpye == 12) {
+////													calendar.add(Calendar.MONTH, 6);
+////												}else if (recurringTpye == 13) {
+////													calendar.add(Calendar.YEAR, 1);
+////												}
+////											}
+////							        		
+////											
+////								        	if (categoryType == 0) {
+////												 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+////																memoString, picPath, recurringTpye,
+////																categoryId,
+////																childTransactionsDefault + "",
+////																accountId, incomeAccountDefault, 0,
+////																payeeId);
+////											} else {
+////												TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
+////														memoString, picPath, recurringTpye,
+////														categoryId, childTransactionsDefault + "",
+////														expenseAccountDefault, accountId, 0,
+////														payeeId);
+////											}
+////								        	
+////								            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
+////								           
+////								           }catch(Exception e){
+////								              Log.v("mtest", "******Exception******"+e);
+////								              
+////								           }finally{
+////								               db.endTransaction(); //处理完成
+////								               db.close();
+////								           }
+////								        
+////										}
+////										
+////									}
+////								});
+////								
+////								mThread.start();
+////								
+////							}
+//							
+//						}else
+						{
 							
 							if (categoryType == 0) {
 								long row = TransactionDao

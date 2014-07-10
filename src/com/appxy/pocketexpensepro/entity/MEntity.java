@@ -16,7 +16,7 @@ import android.util.Log;
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
-	
+
 	public static String sqliteEscape(String keyWord) {
 		keyWord = keyWord.replace("/", "//");
 		keyWord = keyWord.replace("'", "''");
@@ -28,6 +28,23 @@ public class MEntity {
 		keyWord = keyWord.replace("(", "/(");
 		keyWord = keyWord.replace(")", "/)");
 		return keyWord;
+	}
+
+	public static class MapComparatorTime implements
+			Comparator<Map<String, Object>> {
+		@Override
+		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+			// TODO Auto-generated method stub
+			long due1 = (Long) o1.get("dateTime");
+			long due2 = (Long) o2.get("dateTime");
+			if (due1 > due2) {
+				return -1;
+			} else if (due1 < due2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
 	}
 
 	public static class MapComparator implements

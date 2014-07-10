@@ -44,13 +44,24 @@ public class BudgetListActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
 	private LinearLayout mRootLayout;
 	private List<LinearLayout> mViewList;
+	private TextView count_txt;
+	private TextView count_label;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
+				int count = mDataList.size();
+				count_txt.setText(count+"");
+				if (count > 1) {
+					count_label.setText("ITEMS");
+				} else {
+					count_label.setText("ITEM");
+				}
+				
 				if (mDataList != null && mDataList.size() > 0) {
+					
 					mRootLayout.removeAllViews();
 					mViewList.clear();
 					for (int i = 0; i < mDataList.size(); i++) {
@@ -69,7 +80,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 								.findViewById(R.id.amount_edit);
 
 						mImageView
-								.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) mDataList
+								.setImageResource(Common.CATEGORY_ICON[(Integer) mDataList
 										.get(i).get("iconName")]);
 						categoryTextView.setText((String) mDataList.get(i).get(
 								"categoryName"));
@@ -173,7 +184,10 @@ public class BudgetListActivity extends BaseHomeActivity {
 
 		mViewList = new ArrayList<LinearLayout>();
 		mDataList = new ArrayList<Map<String, Object>>();
-
+		
+		count_txt =(TextView) findViewById(R.id.count_txt);
+		count_label = (TextView) findViewById(R.id.count_label); 
+		
 		ActionBar mActionBar = getActionBar();
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT);

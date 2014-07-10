@@ -127,19 +127,6 @@ public class MainActivity extends BaseHomeActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-//		
-		
-//			 new Thread(new Runnable() {
-//					
-//					@Override
-//					public void run() {
-//						// TODO Auto-generated method stub
-						TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
-////						mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
-//					}
-//				}).start();
-//       
-        
 		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		Common.CURRENCY = (Integer) mList.get(0).get("currency");
@@ -170,6 +157,16 @@ public class MainActivity extends BaseHomeActivity implements
 		viewArrayList.add(choose_view3);
 		viewArrayList.add(choose_view4);
 		
+//		 new Thread(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					// TODO Auto-generated method stub
+					TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
+////					mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+//				}
+//			}).start();
+		 
 		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,

@@ -12,6 +12,7 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 
 import android.accounts.Account;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -75,7 +76,7 @@ public class TransactionRecurringCheck {
 			}
 			
 			if (calendar.getTimeInMillis() <= MEntity.getNowMillis()) {
-		    AccountDao.updateTransactionRecurring(context, id);
+				updateTransactionRecurring(db, context, id);
 			
 			db.beginTransaction();  //手动设置开始事务
 			
@@ -135,6 +136,23 @@ public class TransactionRecurringCheck {
 			
 		
 		}
+	}
+	
+	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id) { // AccountType插入
+
+		ContentValues cv = new ContentValues();
+		cv.put("recurringType", 0);
+		
+		String mId = _id + "";
+		try {
+			long id = db
+					.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+
 	}
 	
 }

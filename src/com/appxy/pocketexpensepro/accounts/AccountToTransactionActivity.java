@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -22,9 +23,12 @@ import com.appxy.pocketexpensepro.accounts.ExpandableListViewAdapter.gViewHolder
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 
 import android.R.anim;
 import android.annotation.SuppressLint;
@@ -40,6 +44,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -236,6 +241,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 				mDataList = AccountDao.selectTransactionByAccount(
 						AccountToTransactionActivity.this, _id);
+				Log.v("mtest", "mDataList降序"+mDataList);
 
 			} else if (queryCheck == 1) {
 
@@ -561,6 +567,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 			long dateTime = turnMillsToMonth((Long) mMap.get("dateTime"));
 			mDatelist.add(dateTime);
 		}
+		
 
 		Iterator<Long> it1 = mDatelist.iterator();
 		Map<Long, Long> msp = new TreeMap<Long, Long>();
@@ -575,8 +582,11 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 			mMap.put("dateTime", (Long) it2.next());
 			groupDataList.add(mMap);
 		}
+		Collections.sort(groupDataList, new MEntity.MapComparatorTime());
+		Log.v("mtest", "groupDataList降序"+groupDataList);
 
 		for (Map<String, Object> iMap : groupDataList) {
+			
 			long dateTime = (Long) iMap.get("dateTime");
 			List<Map<String, Object>> childrenDataList = new ArrayList<Map<String, Object>>();
 			for (Map<String, Object> mMap : mData) {
@@ -917,6 +927,15 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// TODO Auto-generated method stub
+		getMenuInflater().inflate(R.menu.add_menu, menu);
+//		Menu itemMenu = (Menu) menu.findItem(R.id.navigation_but);
+//		Menu itemMenu1 = (Menu) menu.findItem(R.id.action_add);
+		return super.onCreateOptionsMenu(menu);
+	}
+	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -926,7 +945,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		case android.R.id.home:
 			finish();
 			return true;
-
+		case R.id.action_add:
+			Intent intent = new Intent();
+			intent.putExtra("acount_id", _id);
+			intent.setClass(AccountToTransactionActivity.this, CreatTransactonByAccountActivity.class);
+			startActivityForResult(intent, 6);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -937,6 +961,14 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (resultCode) {
 		case 13:
+
+			if (data != null) {
+				// mThread = new Thread(mTask);
+				// mThread.start();
+				mHandler.post(mTask);
+			}
+			break;
+		case 6:
 
 			if (data != null) {
 				// mThread = new Thread(mTask);

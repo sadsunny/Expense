@@ -75,14 +75,12 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
 	private long date;
-	
-	
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
 			case MSG_SUCCESS:
-				
-				
+
 				mExpandableListViewAdapter.setAdapterData(groupDataList,
 						childrenAllDataList);
 				mExpandableListViewAdapter.notifyDataSetChanged();
@@ -133,10 +131,10 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		if (_id <= 0) {
 			finish();
 		}
-		date =  intent.getLongExtra("date", 0);
-		
+		date = intent.getLongExtra("date", 0);
+
 		accName = intent.getStringExtra("accName");
-		
+
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 
@@ -153,7 +151,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
-		
+
 		Intent resultintent = new Intent();
 		resultintent.putExtra("row", 1);
 		setResult(16, resultintent);
@@ -164,17 +162,16 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 		@Override
 		public void run() {
-			
+
 			Calendar calendar = Calendar.getInstance();
 			long firstDay = MEntity.getFirstDayOfMonthMillis(date);
 			long lastDay = MEntity.getLastDayOfMonthMillis(date);
 
 			mDataList = OverViewDao.selectTransactionByCategoryIdAndTime(
-								BudgetToTransactionActivity.this, _id, firstDay,
-								lastDay);
+					BudgetToTransactionActivity.this, _id, firstDay, lastDay);
 
-			Log.v("mtest", "预算mDataList"+mDataList);
-			if (mDataList != null ) {
+			Log.v("mtest", "预算mDataList" + mDataList);
+			if (mDataList != null) {
 				reFillData(mDataList);
 				filterData(mDataList);
 			}
@@ -182,19 +179,20 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		}
 	};
 
-
 	private OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
-			
-			
-			// TODO Auto-generated method stub
-			final int groupPosition = mExpandableListView.getPackedPositionGroup(arg3);
-			final int childPosition = mExpandableListView.getPackedPositionChild(arg3);
 
-			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,null);
+			// TODO Auto-generated method stub
+			final int groupPosition = mExpandableListView
+					.getPackedPositionGroup(arg3);
+			final int childPosition = mExpandableListView
+					.getPackedPositionChild(arg3);
+
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
+					null);
 
 			String[] data = { "Duplicate", "Delete" };
 			ListView diaListView = (ListView) dialogView
@@ -216,16 +214,18 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 						Map<String, Object> mMap = childrenAllDataList.get(
 								groupPosition).get(childPosition);
 
-						Calendar c = Calendar.getInstance(); //处理为当天固定格式时间
+						Calendar c = Calendar.getInstance(); // 处理为当天固定格式时间
 						Date date = new Date(c.getTimeInMillis());
-						SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy");
+						SimpleDateFormat sdf = new SimpleDateFormat(
+								"MM-dd-yyyy");
 						try {
-							c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(sdf.format(date)));
+							c.setTime(new SimpleDateFormat("MM-dd-yyyy")
+									.parse(sdf.format(date)));
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
+
 						String amount = (String) mMap.get("amount");
 						long dateTime = c.getTimeInMillis();
 						int isClear = (Integer) mMap.get("isClear");
@@ -249,7 +249,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 								expenseAccount, incomeAccount, parTransaction,
 								payee);
 						alertDialog.dismiss();
-
 
 						mHandler.post(mTask);
 
@@ -290,7 +289,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					.get("expenseAccount");
 			int incomeAccount = (Integer) childrenAllDataList
 					.get(groupPosition).get(childPosition).get("incomeAccount");
-			Log.v("mtest", "**************1");
 			if (expenseAccount > 0 && incomeAccount > 0) {
 
 				Intent intent = new Intent();
@@ -298,17 +296,14 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 				intent.setClass(BudgetToTransactionActivity.this,
 						EditTransferActivity.class);
 				startActivityForResult(intent, 13);
-				Log.v("mtest", "**************2");
 
 			} else {
 
 				Intent intent = new Intent();
 				intent.putExtra("_id", tId);
-				Log.v("mtest", "**************3tId"+tId);
 				intent.setClass(BudgetToTransactionActivity.this,
 						EditTransactionActivity.class);
 				startActivityForResult(intent, 13);
-				Log.v("mtest", "**************3");
 			}
 			return true;
 		}
@@ -424,7 +419,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 		Iterator<Long> it1 = mDatelist.iterator();
 		Map<Long, Long> msp = new TreeMap<Long, Long>();
-		
+
 		while (it1.hasNext()) {
 			long obj = it1.next();
 			msp.put(obj, obj);
@@ -606,7 +601,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 			}
 			viewholder.mImageView
-					.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer) childList
+					.setImageResource(Common.CATEGORY_ICON[(Integer) childList
 							.get(groupPosition).get(childPosition)
 							.get("iconName")]);
 			viewholder.currency_textView
@@ -727,7 +722,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 								.get(childPosition).get("amount")));
 			}
 
-
 			if (childPosition == 0) {
 				viewholder.mline_label.setVisibility(View.INVISIBLE);
 			} else {
@@ -780,7 +774,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		}
 
 	}
-	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -794,7 +787,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub

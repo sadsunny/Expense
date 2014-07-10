@@ -95,7 +95,7 @@ public class BudgetsListViewAdapter extends BaseAdapter {
 			viewholder = (ViewHolder) convertView.getTag();
 		}
 
-		viewholder.mIcon.setImageResource(Common.ACCOUNT_TYPE_ICON[(Integer)mData.get(position).get("iconName")]);
+		viewholder.mIcon.setImageResource(Common.CATEGORY_ICON[(Integer)mData.get(position).get("iconName")]);
 		viewholder.categoryTextView.setText((String)mData.get(position).get("categoryName"));
 		
 			int hasChild = chooseArray.get(position);

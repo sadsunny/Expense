@@ -28,17 +28,17 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
         return instance;
     }
 
-	private volatile static ExpenseDBHelper uniqueInstance;  
-    public static ExpenseDBHelper getInstance(Context context) {  
-      if (uniqueInstance == null) {  
-        synchronized (ExpenseDBHelper.class) {  
-          if (uniqueInstance == null) {  
-            uniqueInstance = new ExpenseDBHelper(context);  
-          }  
-        }  
-      }  
-      return uniqueInstance;  
-    }  
+//	private volatile static ExpenseDBHelper uniqueInstance;  
+//    public static ExpenseDBHelper getInstance(Context context) {  
+//      if (uniqueInstance == null) {  
+//        synchronized (ExpenseDBHelper.class) {  
+//          if (uniqueInstance == null) {  
+//            uniqueInstance = new ExpenseDBHelper(context);  
+//          }  
+//        }  
+//      }  
+//      return uniqueInstance;  
+//    }  
   
     
 	@Override
