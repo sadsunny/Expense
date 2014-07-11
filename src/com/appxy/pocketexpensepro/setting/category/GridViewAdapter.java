@@ -30,7 +30,7 @@ public class GridViewAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return Common.ACCOUNT_TYPE_ICON.length;
+		return Common.CATEGORY_ICON.length;
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class GridViewAdapter extends BaseAdapter {
 		}
 
 		wrapper.imageView
-				.setBackgroundResource(Common.ACCOUNT_TYPE_ICON[position]);
+				.setBackgroundResource(Common.CATEGORY_ICON[position]);
 
 		return view;
 	}

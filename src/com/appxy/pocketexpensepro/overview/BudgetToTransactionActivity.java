@@ -25,12 +25,14 @@ import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.reports.ReCashListActivity;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -75,6 +77,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
 	private long date;
+	private String categoryName;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -126,14 +129,12 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 		Intent intent = getIntent();
 		_id = intent.getIntExtra("_id", 0);
-		String categoryName = intent.getStringExtra("categoryName");
+		categoryName = intent.getStringExtra("categoryName");
 		actionBar.setTitle(categoryName);
 		if (_id <= 0) {
 			finish();
 		}
 		date = intent.getLongExtra("date", 0);
-
-		accName = intent.getStringExtra("accName");
 
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
@@ -168,9 +169,9 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			long lastDay = MEntity.getLastDayOfMonthMillis(date);
 
 			mDataList = OverViewDao.selectTransactionByCategoryIdAndTime(
-					BudgetToTransactionActivity.this, _id, firstDay, lastDay);
+					BudgetToTransactionActivity.this, categoryName, firstDay,
+					lastDay);
 
-			Log.v("mtest", "预算mDataList" + mDataList);
 			if (mDataList != null) {
 				reFillData(mDataList);
 				filterData(mDataList);
@@ -190,88 +191,119 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					.getPackedPositionGroup(arg3);
 			final int childPosition = mExpandableListView
 					.getPackedPositionChild(arg3);
+			String childTransactionstring = (String) childrenAllDataList
+					.get(groupPosition).get(childPosition)
+					.get("childTransactions");
+			int childTransactions = 0;
+			try {
+				childTransactions = Integer.parseInt(childTransactionstring);
+			} catch (Exception e) {
+				// TODO: handle exception
+				childTransactions = 1;
+			}
+			if (childTransactions == 1) {
 
-			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
-					null);
+				new AlertDialog.Builder(BudgetToTransactionActivity.this)
+						.setTitle("Warning! ")
+						.setMessage(
+								"This is a part of a transaction splite, and ot can not be edit alone! ")
+						.setPositiveButton("Retry",
+								new DialogInterface.OnClickListener() {
 
-			String[] data = { "Duplicate", "Delete" };
-			ListView diaListView = (ListView) dialogView
-					.findViewById(R.id.dia_listview);
-			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
-					BudgetToTransactionActivity.this, data);
-			diaListView.setAdapter(mDialogItemAdapter);
-			diaListView.setOnItemClickListener(new OnItemClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+										dialog.dismiss();
 
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					// TODO Auto-generated method stub
+									}
+								}).show();
 
-					int _id = (Integer) childrenAllDataList.get(groupPosition)
-							.get(childPosition).get("_id");
+			} else {
+				View dialogView = mInflater.inflate(
+						R.layout.dialog_item_operation, null);
 
-					if (arg2 == 0) {
-						Map<String, Object> mMap = childrenAllDataList.get(
-								groupPosition).get(childPosition);
+				String[] data = { "Duplicate", "Delete" };
+				ListView diaListView = (ListView) dialogView
+						.findViewById(R.id.dia_listview);
+				DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
+						BudgetToTransactionActivity.this, data);
+				diaListView.setAdapter(mDialogItemAdapter);
+				diaListView.setOnItemClickListener(new OnItemClickListener() {
 
-						Calendar c = Calendar.getInstance(); // 处理为当天固定格式时间
-						Date date = new Date(c.getTimeInMillis());
-						SimpleDateFormat sdf = new SimpleDateFormat(
-								"MM-dd-yyyy");
-						try {
-							c.setTime(new SimpleDateFormat("MM-dd-yyyy")
-									.parse(sdf.format(date)));
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
+
+						int _id = (Integer) childrenAllDataList
+								.get(groupPosition).get(childPosition)
+								.get("_id");
+
+						if (arg2 == 0) {
+							Map<String, Object> mMap = childrenAllDataList.get(
+									groupPosition).get(childPosition);
+
+							Calendar c = Calendar.getInstance(); // 处理为当天固定格式时间
+							Date date = new Date(c.getTimeInMillis());
+							SimpleDateFormat sdf = new SimpleDateFormat(
+									"MM-dd-yyyy");
+							try {
+								c.setTime(new SimpleDateFormat("MM-dd-yyyy")
+										.parse(sdf.format(date)));
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							String amount = (String) mMap.get("amount");
+							long dateTime = c.getTimeInMillis();
+							int isClear = (Integer) mMap.get("isClear");
+							String notes = (String) mMap.get("notes");
+							String photoName = (String) mMap.get("photoName");
+							int recurringType = (Integer) mMap
+									.get("recurringType");
+							int category = (Integer) mMap.get("category");
+							String childTransactions = (String) mMap
+									.get("childTransactions");
+							int expenseAccount = (Integer) mMap
+									.get("expenseAccount");
+							int incomeAccount = (Integer) mMap
+									.get("incomeAccount");
+							int parTransaction = (Integer) mMap
+									.get("parTransaction");
+							int payee = (Integer) mMap.get("payee");
+
+							long row = TransactionDao.insertTransactionAll(
+									BudgetToTransactionActivity.this, amount,
+									dateTime, isClear, notes, photoName,
+									recurringType, category, childTransactions,
+									expenseAccount, incomeAccount,
+									parTransaction, payee);
+							alertDialog.dismiss();
+
+							mHandler.post(mTask);
+
+						} else if (arg2 == 1) {
+
+							long row = AccountDao.deleteTransaction(
+									BudgetToTransactionActivity.this, _id);
+							alertDialog.dismiss();
+							Intent intent = new Intent();
+							intent.putExtra("row", row);
+							setResult(12, intent);
+							mHandler.post(mTask);
 						}
 
-						String amount = (String) mMap.get("amount");
-						long dateTime = c.getTimeInMillis();
-						int isClear = (Integer) mMap.get("isClear");
-						String notes = (String) mMap.get("notes");
-						String photoName = (String) mMap.get("photoName");
-						int recurringType = (Integer) mMap.get("recurringType");
-						int category = (Integer) mMap.get("category");
-						String childTransactions = (String) mMap
-								.get("childTransactions");
-						int expenseAccount = (Integer) mMap
-								.get("expenseAccount");
-						int incomeAccount = (Integer) mMap.get("incomeAccount");
-						int parTransaction = (Integer) mMap
-								.get("parTransaction");
-						int payee = (Integer) mMap.get("payee");
-
-						long row = TransactionDao.insertTransactionAll(
-								BudgetToTransactionActivity.this, amount,
-								dateTime, isClear, notes, photoName,
-								recurringType, category, childTransactions,
-								expenseAccount, incomeAccount, parTransaction,
-								payee);
-						alertDialog.dismiss();
-
-						mHandler.post(mTask);
-
-					} else if (arg2 == 1) {
-
-						long row = AccountDao.deleteTransaction(
-								BudgetToTransactionActivity.this, _id);
-						alertDialog.dismiss();
-						Intent intent = new Intent();
-						intent.putExtra("row", row);
-						setResult(12, intent);
-						mHandler.post(mTask);
 					}
+				});
 
-				}
-			});
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(
-					BudgetToTransactionActivity.this);
-			builder.setView(dialogView);
-			alertDialog = builder.create();
-			alertDialog.show();
-
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						BudgetToTransactionActivity.this);
+				builder.setView(dialogView);
+				alertDialog = builder.create();
+				alertDialog.show();
+			}
 			return true;
 		}
 	};
@@ -289,21 +321,52 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					.get("expenseAccount");
 			int incomeAccount = (Integer) childrenAllDataList
 					.get(groupPosition).get(childPosition).get("incomeAccount");
-			if (expenseAccount > 0 && incomeAccount > 0) {
 
-				Intent intent = new Intent();
-				intent.putExtra("_id", tId);
-				intent.setClass(BudgetToTransactionActivity.this,
-						EditTransferActivity.class);
-				startActivityForResult(intent, 13);
+			String childTransactionstring = (String) childrenAllDataList
+					.get(groupPosition).get(childPosition)
+					.get("childTransactions");
+			int childTransactions = 0;
+			try {
+				childTransactions = Integer.parseInt(childTransactionstring);
+			} catch (Exception e) {
+				// TODO: handle exception
+				childTransactions = 1;
+			}
+			if (childTransactions == 1) {
+
+				new AlertDialog.Builder(BudgetToTransactionActivity.this)
+						.setTitle("Warning! ")
+						.setMessage(
+								"This is a part of a transaction splite, and ot can not be edit alone! ")
+						.setPositiveButton("Retry",
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+										dialog.dismiss();
+
+									}
+								}).show();
 
 			} else {
+				if (expenseAccount > 0 && incomeAccount > 0) {
 
-				Intent intent = new Intent();
-				intent.putExtra("_id", tId);
-				intent.setClass(BudgetToTransactionActivity.this,
-						EditTransactionActivity.class);
-				startActivityForResult(intent, 13);
+					Intent intent = new Intent();
+					intent.putExtra("_id", tId);
+					intent.setClass(BudgetToTransactionActivity.this,
+							EditTransferActivity.class);
+					startActivityForResult(intent, 13);
+
+				} else {
+
+					Intent intent = new Intent();
+					intent.putExtra("_id", tId);
+					intent.setClass(BudgetToTransactionActivity.this,
+							EditTransactionActivity.class);
+					startActivityForResult(intent, 13);
+				}
 			}
 			return true;
 		}

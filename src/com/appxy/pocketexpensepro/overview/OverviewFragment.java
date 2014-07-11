@@ -182,13 +182,11 @@ public class OverviewFragment extends Fragment implements
 					mProgressBar.setMax((int)budgetAmount);
 				}
 				
-				
 				if ((budgetAmount-transactionAmount) < 0) {
 					mProgressBar.setPaintColor(Color.rgb(246, 48, 48));
 				} else {
 					mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
 				}
-				
 				
 				break;
 
@@ -408,6 +406,7 @@ public class OverviewFragment extends Fragment implements
 				int _id = (Integer) iMap.get("_id");
 				String amount = (String) iMap.get("amount");
 				int category_id = (Integer) iMap.get("category");
+				String  catrgoryName = (String) iMap.get("categoryName");
 				
 				BigDecimal big1 = new BigDecimal(amount);
 				budgetBig = budgetBig.add(big1);
@@ -427,7 +426,7 @@ public class OverviewFragment extends Fragment implements
 				iMap.put("amount", big1.doubleValue()+"");
 				
 				BigDecimal bigz = new BigDecimal("0");
-				List<Map<String, Object>> mTransactionList = OverViewDao.selectTransactionByCategoryIdAndTime(mActivity, category_id, firstDay, lastDay) ;
+				List<Map<String, Object>> mTransactionList = OverViewDao.selectTransactionByCategoryIdAndTime(mActivity, catrgoryName, firstDay, lastDay) ;
 				for (Map<String, Object> tMap: mTransactionList){
 					
 					String tAmount = (String) tMap.get("amount");
@@ -449,8 +448,6 @@ public class OverviewFragment extends Fragment implements
 			
 			Log.v("mtest", "budgetAmount"+budgetAmount);
 			Log.v("mtest", "transactionAmount"+transactionAmount);
-			
-			
 			
 			mNetworthDataList = AccountDao.selectAccount(mActivity);
 

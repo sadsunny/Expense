@@ -89,7 +89,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 		mRelativeLayout.setOnClickListener(mClickListener);
 		mButton.setOnClickListener(mClickListener);
 
-		mImageView.setImageResource(Common.ACCOUNT_TYPE_ICON[0]);
+		mImageView.setImageResource(Common.CATEGORY_ICON[0]);
 		mButton.setText("Select Parent");
 
 	}
@@ -197,7 +197,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 						iconPosition = arg2;
 						mCaDialog.dismiss();
 						mImageView
-								.setImageResource(Common.ACCOUNT_TYPE_ICON[iconPosition]);
+								.setImageResource(Common.CATEGORY_ICON[iconPosition]);
 					}
 				});
 

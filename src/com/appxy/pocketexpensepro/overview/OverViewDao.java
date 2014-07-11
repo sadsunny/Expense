@@ -256,11 +256,11 @@ public class OverViewDao {
 		return mList;
 	}
 	
-	public static List<Map<String, Object>> selectTransactionByCategoryIdAndTime(Context context, int categoryId,long beginTime, long endTime) { // Account查询
+	public static List<Map<String, Object>> selectTransactionByCategoryIdAndTime(Context context, String categorName,long beginTime, long endTime) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.category = "+categoryId+" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.category = b._id and b.categoryName like '"+ categorName +"%' and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

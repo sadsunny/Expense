@@ -238,6 +238,7 @@ public class BudgetActivity extends BaseHomeActivity {
 			BigDecimal bt0 = new BigDecimal("0");
 			for (Map<String, Object> iMap : mBudgetList) {
 				int _id = (Integer) iMap.get("_id");
+				String  catrgoryName = (String) iMap.get("categoryName");
 				String amount = (String) iMap.get("amount");
 				int category_id = (Integer) iMap.get("category");
 
@@ -261,7 +262,7 @@ public class BudgetActivity extends BaseHomeActivity {
 				BigDecimal bz = new BigDecimal("0");
 				List<Map<String, Object>> mTransactionList = OverViewDao
 						.selectTransactionByCategoryIdAndTime(
-								BudgetActivity.this, category_id, firstDay,
+								BudgetActivity.this, catrgoryName, firstDay,
 								lastDay);
 				for (Map<String, Object> tMap : mTransactionList) {
 

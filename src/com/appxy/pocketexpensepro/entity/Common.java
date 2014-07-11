@@ -70,7 +70,7 @@ public class Common {
 	public final static Integer[] CATEGORY_ICON = { R.drawable.airplane,
 			R.drawable.apple, R.drawable.appliances, R.drawable.asset,
 			R.drawable.auto_gas, R.drawable.auto2, R.drawable.bag,
-			R.drawable.ball, R.drawable.bank, R.drawable.bill_main,
+			R.drawable.ball, R.drawable.bank, R.drawable.bill,
 			R.drawable.bonus, R.drawable.book, R.drawable.bus,
 			R.drawable.business, R.drawable.cable_tv, R.drawable.car,
 			R.drawable.category_cash, R.drawable.ceremony, R.drawable.charity,

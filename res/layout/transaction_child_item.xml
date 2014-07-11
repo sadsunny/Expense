@@ -17,6 +17,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="13dp"
             android:checked="true" 
+            android:visibility="invisible"
             android:focusable="false"/>
 
         <ImageView
