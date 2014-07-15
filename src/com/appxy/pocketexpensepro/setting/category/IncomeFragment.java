@@ -41,6 +41,10 @@ public class IncomeFragment extends Fragment {
 	private DialogItemAdapter mDialogItemAdapter;
 	private AlertDialog alertDialog;
 
+	public IncomeFragment() {
+
+	}
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {

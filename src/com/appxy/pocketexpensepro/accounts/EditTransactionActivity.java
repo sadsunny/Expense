@@ -219,12 +219,17 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		if (payee > 0) {
 			List<Map<String, Object>> mPayeeDataList = AccountDao
 					.selectPayeeById(this, payee);
-			String pNameString = (String) mPayeeDataList.get(0).get("name");
-			payeeEditText.setText(pNameString);
-			payeeId = payee;
-			List<Map<String, Object>> mPList = TransactionDao
-					.selectPayee(EditTransactionActivity.this);
-			payeeCheckItem = locationIdPosition(mPList, payee);
+			if (mPayeeDataList != null && mPayeeDataList.size()  >0) {
+				String pNameString = (String) mPayeeDataList.get(0).get("name");
+				payeeEditText.setText(pNameString);
+				payeeId = payee;
+				List<Map<String, Object>> mPList = TransactionDao
+						.selectPayee(EditTransactionActivity.this);
+				payeeCheckItem = locationIdPosition(mPList, payee);
+			}else {
+				finish();
+			}
+		
 		}
 		
 		payeeEditText.addTextChangedListener(new TextWatcher() {

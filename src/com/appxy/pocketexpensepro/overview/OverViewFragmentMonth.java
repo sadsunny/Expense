@@ -46,6 +46,11 @@ public class OverViewFragmentMonth extends Fragment {
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static MenuItem item;
 	
+	public OverViewFragmentMonth() {
+
+	}
+
+	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub

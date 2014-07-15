@@ -716,6 +716,21 @@ public class AccountDao {
 		return row;
 	}
 	
+	public static long deleteTransactionChild(Context context, int pid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		String p_id = pid + "";
+		long row = 0;
+		try {
+			row = db.delete("'Transaction'", "parTransaction = ?", new String[] { p_id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
 	
 	public static long updateTransactionClear(Context context, long _id, int clear) { // Account更新排序字段
 		SQLiteDatabase db = getConnection(context);

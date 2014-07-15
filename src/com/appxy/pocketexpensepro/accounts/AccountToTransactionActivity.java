@@ -484,7 +484,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 			if (payee > 0) {
 				List<Map<String, Object>> mList = AccountDao.selectPayeeById(
 						AccountToTransactionActivity.this, payee);
-				if (mList != null) {
+				if (mList != null && mList.size() > 0) {
 					String payeeName = (String) mList.get(0).get("name");
 					mMap.put("payeeName", payeeName);
 				} else {

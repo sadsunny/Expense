@@ -785,12 +785,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 								.get(childPosition).get("amount")));
 			}
 
-			if (childPosition == 0) {
-				viewholder.mline_label.setVisibility(View.INVISIBLE);
-			} else {
-				viewholder.mline_label.setVisibility(View.VISIBLE);
-			}
-
 			return convertView;
 		}
 

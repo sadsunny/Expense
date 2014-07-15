@@ -94,6 +94,7 @@ public class ReportCashFragment extends Fragment {
 	private List<Map<String, Object>> mIncomeData;
 	private int rangeType =  0;
 	
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

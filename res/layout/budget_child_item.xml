@@ -3,7 +3,8 @@
     android:id="@+id/childView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:background="@color/white">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,7 +29,9 @@
             android:layout_toRightOf="@+id/category_img"
             android:maxLength="15"
             android:singleLine="true"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:text="Auto"
+            android:textColor="@color/text_black1" />
 
         <TextView
             android:id="@+id/currency_txt"
@@ -37,7 +40,8 @@
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/amount_edit"
             android:text="@string/dollar" 
-             android:textSize="16sp"/>
+             android:textSize="16sp"
+             android:textColor="@color/text_black1" />
 
         <EditText
             android:id="@+id/amount_edit"
@@ -50,15 +54,11 @@
             android:maxLength="13"
             android:minHeight="48dip"
             android:singleLine="true"
+            android:textColor="@color/text_black1" 
+            android:textSize="16sp"
             android:text="@string/zero_label" >
         </EditText>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp" 
-            android:layout_marginLeft="48dp"
-            android:background="@color/line_devide"
-            android:layout_alignParentBottom="true"/>
     </RelativeLayout>
 
 </LinearLayout>

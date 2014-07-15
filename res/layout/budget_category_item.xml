@@ -3,7 +3,8 @@
     android:id="@+id/childView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:background="@color/white" >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="12dp"
             android:background="@drawable/appliances" />
 
         <TextView
@@ -24,11 +25,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="12dp"
             android:layout_toRightOf="@+id/category_img"
             android:maxLength="15"
             android:singleLine="true"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@color/text_black1" />
 
         <CheckBox
             android:id="@+id/checkBox1"
@@ -44,10 +46,10 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginLeft="48dp"
-            android:background="@color/bill_gray" />
+            android:layout_alignLeft="@+id/category_txt"
+            android:background="@color/devide_gray" />
     </RelativeLayout>
 
 </LinearLayout>

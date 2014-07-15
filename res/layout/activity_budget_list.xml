@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="24dp"
+        android:layout_alignParentTop="true"
+        android:background="@color/bag_gray"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -16,6 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
             android:text="7"
+            android:textSize="14sp"
             android:textColor="@color/bill_gray" />
 
         <TextView
@@ -24,36 +29,64 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="2dp"
             android:text="ITEM"
+             android:textSize="14sp"
             android:textColor="@color/bill_gray" />
     </LinearLayout>
 
-      <ScrollView
+    <View
+        android:id="@+id/line1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-        
+        android:layout_height="0.5dp"
+        android:layout_below="@+id/LinearLayout1"
+        android:background="@color/line_devide_gray" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line1"
+        android:layout_marginBottom="65dp" >
+
         <LinearLayout
             android:id="@+id/LinearLayout1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
-            
-        <LinearLayout
-            android:id="@+id/rootView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-        </LinearLayout>
-        
-         <Button
-         android:id="@+id/mButton"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:text="Select Category"
-         android:layout_gravity="center_horizontal"
-        /> 
-          </LinearLayout>
-    </ScrollView>
-    
-   
 
-</LinearLayout>
+            <LinearLayout
+                android:id="@+id/rootView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_above="@+id/mRelativeLayout2"
+            android:background="@color/line_devide_gray" />
+    
+    <RelativeLayout
+        android:id="@+id/mRelativeLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/bag_gray"
+        android:gravity="center_vertical" >
+
+        <Button
+            android:id="@+id/mButton"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_marginLeft="55dp"
+            android:layout_marginRight="55dp"
+            android:background="@drawable/add_payment_selector"
+            android:gravity="center"
+            android:text="Select Category"
+            android:textColor="@color/text_black2"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+</RelativeLayout>

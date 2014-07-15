@@ -7,50 +7,58 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         android:focusable="true"
         android:orientation="vertical"
-        android:paddingBottom="6dp" >
+         >
 
         <TextView
             android:id="@+id/optional_label3"
             style="@style/TextAppearance.EditEvent_LabelSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dip"
+            android:layout_height="24dp"
+            android:layout_marginBottom="1.5dp"
+            android:gravity="bottom"
+            android:textSize="14sp"
+            android:textColor="@color/text_gray1" 
             android:text="@string/from_budget" />
 
         <Button
             android:id="@+id/from_btn"
             style="@style/TextAppearance.EditEvent_SpinnerButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-12dip"
+            android:layout_height="48dp"
+            android:textSize="16sp"
+            android:textColor="@color/text_black1"
             android:gravity="left|center_vertical" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="0dp"
         android:focusable="true"
         android:orientation="vertical"
-        android:paddingBottom="6dp" >
+        >
 
         <TextView
             android:id="@+id/optional_label3"
             style="@style/TextAppearance.EditEvent_LabelSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dip"
+            android:layout_height="24dp"
+             android:layout_marginBottom="1.5dp"
+            android:gravity="bottom"
+            android:textSize="14sp"
+            android:textColor="@color/text_gray1" 
             android:text="@string/to_budget" />
 
         <Button
             android:id="@+id/to_btn"
             style="@style/TextAppearance.EditEvent_SpinnerButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-12dip"
+            android:layout_height="48dp"
+            android:textSize="16sp"
+            android:textColor="@color/text_black1"
             android:gravity="left|center_vertical" />
     </LinearLayout>
 
@@ -58,25 +66,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="10dp" >
+        android:layout_marginTop="0dp" >
 
         <TextView
             android:id="@+id/optional_label1"
             style="@style/TextAppearance.EditEvent_LabelSmall"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="24dp"
+             android:layout_marginBottom="1.5dp"
+            android:gravity="bottom"
+            android:textSize="14sp"
+            android:textColor="@color/text_gray1" 
             android:text="@string/amount_label" />
 
         <EditText
             android:id="@+id/amount_edit"
             style="@style/TextAppearance.EditEvent_Value"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:ems="10"
             android:inputType="number"
             android:maxLength="13"
             android:minHeight="48dip"
             android:singleLine="true"
+            android:textSize="16sp"
+            android:textColor="@color/text_black1"
             android:text="@string/zero_label" >
 
             <requestFocus />

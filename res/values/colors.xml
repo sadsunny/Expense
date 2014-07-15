@@ -64,6 +64,7 @@
     <color name="main_text_black">#303642</color>
     <color name="payee_text">#5a79a8</color>
     <color name="button_color_se">#d9d9d9</color>
-     <color name="button_color">#ededed</color>
+    <color name="button_color">#ededed</color>
+    <color name="bag_gray_color">#efefef</color>
 
 </resources>

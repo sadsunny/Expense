@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:background="@color/white" >
     
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="40dp"
          android:layout_alignParentTop="true"
-        android:background="@color/top_bac" >
+        android:background="@color/bag_gray_color" >
 
         <TextView
             android:id="@+id/date_txt"
@@ -16,7 +17,8 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center_horizontal|center"
-            android:textSize="18.7sp" />
+            android:textColor="@color/text_black1"
+            android:textSize="16.5sp" />
 
         <RelativeLayout
             android:id="@+id/previous"
@@ -32,7 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:paddingLeft="10dp"
-                android:src="@drawable/previous_month_selector"
+                android:padding="10dp"
+                android:src="@drawable/previous_month"
                 />
         </RelativeLayout>
 
@@ -49,8 +52,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:paddingRight="10dp"
-                android:src="@drawable/next_month_selector" />
+                android:padding="10dp"
+                android:src="@drawable/next_month" />
             
         </RelativeLayout>
     </RelativeLayout>
@@ -58,16 +61,16 @@
     <RelativeLayout
         android:id="@+id/budget_relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
+        android:layout_height="80dp"
         android:layout_below="@+id/header"
-        android:background="@color/top_bac" >
+        android:background="@color/bag_gray_color" >
 
 
         <ProgressBar
             android:id="@+id/mProgressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="13dp"
+            android:layout_height="15dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
             android:layout_marginTop="15dp"
@@ -81,9 +84,8 @@
             android:layout_below="@+id/mProgressBar"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="12dp"
-            android:layout_marginTop="2dp" 
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:layout_marginTop="5dp" 
+            android:textSize="15sp"
             android:text="@string/dollar"
             android:textColor="@color/text_black"
             />
@@ -94,9 +96,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/currency_label1"
             android:layout_below="@+id/mProgressBar"
-            android:layout_marginTop="2dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:layout_marginTop="5dp"
+            android:textSize="15sp"
             android:textColor="@color/text_black"
             android:text="100" />
         
@@ -108,7 +109,7 @@
             android:layout_below="@+id/currency_label1"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="12dp"
-            android:layout_marginTop="2dp" 
+            android:layout_marginTop="0dp" 
             android:textSize="12sp"
             android:text="TOTAL"
             android:textColor="@color/text_gray1"
@@ -121,10 +122,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="12dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="5dp"
             android:layout_below="@+id/mProgressBar"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:textSize="15sp"
             android:text="@string/zero_label"
             android:textColor="@color/text_black" />
 
@@ -132,9 +132,8 @@
             android:id="@+id/currency_label2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
+            android:layout_marginTop="5dp"
+            android:textSize="15sp"
             android:layout_below="@+id/mProgressBar"
             android:layout_toLeftOf="@+id/budget_amount"
             android:text="@string/dollar"
@@ -147,15 +146,21 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="12dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="0dp"
             android:layout_below="@+id/budget_amount"
             android:textSize="12sp"
             android:text="SPENT" 
             android:textColor="@color/text_gray1"/>
         
         
+      <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp" 
+            android:layout_alignParentBottom="true"
+            android:background="@color/line_devide_gray"/>
+        
+      
     </RelativeLayout>
-
     <ListView
         android:id="@+id/budget_listview"
         android:layout_width="match_parent"
@@ -164,6 +169,12 @@
         android:layout_marginBottom="50dp"
         android:dividerHeight="0dp" >
     </ListView>
+    
+     <View 
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp" 
+            android:layout_above="@+id/relativeLayout2"
+            android:background="@color/line_devide_gray"/>
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
@@ -171,55 +182,42 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true" >
 
-        <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp" 
-            android:background="@color/devide_gray"/>
-        
         <LinearLayout
             android:id="@+id/setbudget_linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="12dp"
-            android:orientation="horizontal" >
+            android:layout_marginLeft="0dp"
+            android:orientation="horizontal"
+             android:gravity="center"
+            android:background="@drawable/button1_selector" >
 
             <ImageView
                 android:id="@+id/setbudget_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/airplane" />
+                android:src="@drawable/setbudget" />
 
-            <TextView
-                android:id="@+id/setbudget_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/set_budget" />
         </LinearLayout>
         
         
         <LinearLayout
             android:id="@+id/transfer_linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="12dp"
-            android:orientation="horizontal" >
+            android:layout_marginRight="0dp"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:background="@drawable/button1_selector" >
 
             <ImageView
                 android:id="@+id/setbudget_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/apple" />
+                android:src="@drawable/settransfer" />
 
-            <TextView
-                android:id="@+id/transfer_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/tranfer_label" />
         </LinearLayout>
         
     </RelativeLayout>

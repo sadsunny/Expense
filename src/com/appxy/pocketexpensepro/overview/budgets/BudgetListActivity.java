@@ -79,6 +79,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 						final EditText mEditText = (EditText) mchildLayout
 								.findViewById(R.id.amount_edit);
 
+						currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 						mImageView
 								.setImageResource(Common.CATEGORY_ICON[(Integer) mDataList
 										.get(i).get("iconName")]);
@@ -247,6 +248,10 @@ public class BudgetListActivity extends BaseHomeActivity {
 
 			case R.id.action_done:
 				BudgetsDao.deleteBudgetAll(BudgetListActivity.this);
+				Intent intent = new Intent();
+				intent.putExtra("done", 1);
+				setResult(4, intent);
+				
 				int checkDo = 1;
 				if (mViewList != null && mViewList.size() > 0) {
 					for (int i = 0; i < mViewList.size(); i++) {
@@ -309,9 +314,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 											BudgetListActivity.this, amountString,
 											(int) temId);
 								}
-								Intent intent = new Intent();
-								intent.putExtra("done", 1);
-								setResult(4, intent);
+								
 							}
 						}
 						finish();
@@ -358,6 +361,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 						mHandler.post(mTask);
 					} else {
 						mDataList.clear();
+						mViewList.clear();
 						mHandler.post(mTask);
 					}
 				} 
