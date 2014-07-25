@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro;
 
 import com.appxy.pocketexpensepro.R;
 
+import android.R.integer;
 import android.content.Context;  
 import android.content.res.TypedArray;
 import android.graphics.Canvas;  
@@ -17,14 +18,15 @@ public class CircleView extends View {
     private final  Paint paint;  
     private final Context context;  
     private int background;
-    private double dp = 4;
+    private double dp = 3;
     
     public CircleView(Context context) {  
           
         // TODO Auto-generated constructor stub  
+    	
         this(context, null);  
     }  
-  
+    
     public CircleView(Context context, AttributeSet attrs) {  
         super(context, attrs);  
         // TODO Auto-generated constructor stub  
@@ -35,11 +37,16 @@ public class CircleView extends View {
         
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.MyView); 
         background = a.getColor(R.styleable.MyView_background, 0XFFFFFFFF);
-        dp = a.getDimension(R.styleable.MyView_radius, 4);
+        dp = a.getDimension(R.styleable.MyView_radius, 3);
         this.paint.setColor(background);
         a.recycle();
     }  
   
+    public synchronized void setBacground(int bac) {
+    	this.background = bac;
+    	this.paint.setColor(background);
+    	invalidate();
+	}
     @Override  
     protected void onDraw(Canvas canvas) {  
         // TODO Auto-generated method stub  

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-       xmlns:myView="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"   
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/rootView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-   >
+    android:orientation="vertical" >
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="46dp"
-        android:layout_height="50dp" 
+        android:layout_height="50dp"
         android:background="@color/bag_gray" >
 
         <TextView
@@ -20,60 +18,50 @@
             android:layout_alignParentRight="true"
             android:layout_marginRight="8dp"
             android:layout_marginTop="3dp"
-            android:textSize="16.5sp"
+            android:text="14"
             android:textColor="@color/text_gray"
-            android:text="14" />
+            android:textSize="16.5sp" />
 
-        <com.appxy.pocketexpensepro.CircleView
-            android:id="@+id/circle_red"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+        <LinearLayout
+            android:id="@+id/LinearLayout1"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_marginBottom="3dp"
             android:layout_marginLeft="3dp"
-            myView:background="@color/bill_red"
-             android:visibility="invisible"
-            />
-        
-        <com.appxy.pocketexpensepro.CircleView
-            android:id="@+id/circle_green"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/LinearLayout2"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
             android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/circle_red"
             android:layout_marginBottom="3dp"
-            android:layout_marginLeft="3dp"
-            myView:background="@color/bill_green"
-             android:visibility="invisible"
-            />
-        
-        <com.appxy.pocketexpensepro.RingView
-            android:id="@+id/ring_green"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_alignParentLeft="true"
-            android:layout_above="@+id/circle_red"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/LinearLayout1"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/LinearLayout3"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentBottom="true"
             android:layout_marginBottom="3dp"
-            android:layout_marginLeft="3dp"
-             android:visibility="invisible"
-            />
-        
-        <com.appxy.pocketexpensepro.CircleView
-            android:id="@+id/circle_gray"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:layout_alignBottom="@+id/ring_green"
-            android:layout_toRightOf="@+id/ring_green"
-             android:layout_marginLeft="3dp"
-            myView:background="@color/bill_gray" 
-            android:visibility="invisible"/>
-        
-        
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/LinearLayout2"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent"
+            android:visibility="visible"  />
+
 
         <View
             android:id="@+id/line_view"
-            android:layout_width=".05dp"
+            android:layout_width="0.5dp"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:background="@color/devide_gray" />
@@ -84,8 +72,6 @@
             android:layout_height="0.5dp"
             android:layout_alignParentBottom="true"
             android:background="@color/devide_gray" />
-
-
     </RelativeLayout>
 
 </LinearLayout>

@@ -265,24 +265,6 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else if (balanceDouble == 0) {
-
-					new AlertDialog.Builder(CreatNewAccountActivity.this)
-							.setTitle("Warning! ")
-							.setMessage(
-									"Please make sure the balance amount is not zero! ")
-							.setPositiveButton("Retry",
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											// TODO Auto-generated method stub
-											dialog.dismiss();
-
-										}
-									}).show();
 				} else {
 
 					if (balenceCheck == 0) {
@@ -291,7 +273,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 
 					long _id = AccountDao.insertAccount(
 							CreatNewAccountActivity.this, accountName,
-							balenceAmountString, dateLong, clearCheck, typeId);
+							balanceDouble+"", dateLong, clearCheck, typeId);
 					AccountDao.updateAccountIndex(CreatNewAccountActivity.this, _id, _id);
 					
 					Intent intent = new Intent();
@@ -339,7 +321,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 						CreatNewAccountActivity.this);
 				mBuilder.setTitle("Choose Account Type");
 				mBuilder.setView(view);
-				mBuilder.setPositiveButton("New Tpye",
+				mBuilder.setPositiveButton("New Type",
 						new DialogInterface.OnClickListener() {
 
 							@Override

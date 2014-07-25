@@ -25,6 +25,14 @@ public class Common {
 			R.drawable.savings_type, R.drawable.wenhao_type
 
 	};
+	
+	public final static Integer[] ACCOUNT_TYPE_ICON_SELECTOR = { R.drawable.asset_type_selector,
+		R.drawable.cash_type_selector, R.drawable.checking_type_selector,
+		R.drawable.credit_card_type_selector, R.drawable.debit_card_type_selector,
+		R.drawable.investing_type_selector, R.drawable.loan_type_selector,
+		R.drawable.savings_type_selector, R.drawable.wenhao_type_selector
+
+};
 
 	public final static int[] ExpenseColors = new int[] {
 			Color.argb(255, 246, 90, 70), Color.argb(255, 239, 48, 48),

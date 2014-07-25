@@ -16,7 +16,7 @@
             android:id="@+id/count_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SELECT CATEGORY FOR MONITER"
+            android:text="SELECT CATEGORYS FOR MONITOR"
             android:textColor="@color/bill_gray"
             android:textSize="15sp" />
     </LinearLayout>

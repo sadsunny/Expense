@@ -49,6 +49,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -69,6 +70,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
@@ -104,8 +106,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private int checkedItem;
 	private int gCheckedItem;// 选择位置
 	private int cCheckedItem;
-	private Button expenseButton;
-	private Button incomeButton;
+	private RelativeLayout expenseButton;
+	private RelativeLayout incomeButton;
+	private View chooseView1;
+	private View chooseView2;
 	private int mCategoryType = 0; // 0 expense 1 income
 	private ExpandableListView mExpandableListView;
 	private DialogExpandableListViewAdapter mDialogExpandableListViewAdapter;
@@ -158,6 +162,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 		inflater = LayoutInflater.from(CreatTransactionActivity.this);
 		ActionBar mActionBar = getActionBar();
+		
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT);
 		View customActionBarView = inflater.inflate(
@@ -191,6 +196,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		memoEditText = (EditText) findViewById(R.id.memo_edit); // spinner
 		recurringLinearLayout = (LinearLayout) findViewById(R.id.recurringLinearLayout);
 
+		memoEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+		
 		payeeEditText.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -246,7 +253,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				String categoryName = cursor.getString(cursor
 						.getColumnIndexOrThrow("categoryName"));
 				categoryButton.setText(categoryName);
-
+				Log.v("mtest", "categoryName"+categoryName);
+				Log.v("mtest", "categoryId"+categoryId);
+				
+				
 				if (categoryName.contains(":")) {
 					String parentString[] = categoryName.split(":");
 					String groupString = parentString[0];
@@ -572,139 +582,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						List<Map<String, Object>> mCategoryList = TransactionDao.selectCategoryAll(CreatTransactionActivity.this);
 						final int categoryType = judgeCategoryType(mCategoryList,categoryId);
 						
-//						if(recurringTpye > 0 && recurringTpye < 14){
-//							
-////							if( dateLong <= MEntity.getNowMillis() ){ //交易重复事件
-////								
-////								Thread mThread = new Thread(new Runnable() {
-////									
-////									@Override
-////									public void run() {
-////										// TODO Auto-generated method stub
-////										Calendar calendar = Calendar.getInstance();
-////										calendar.setTimeInMillis(dateLong);
-////										
-////										ExpenseDBHelper helper = new ExpenseDBHelper(CreatTransactionActivity.this);
-////										SQLiteDatabase db = helper.getWritableDatabase();
-////										db.beginTransaction();  //手动设置开始事务
-////										
-////										Calendar calendar1 = Calendar.getInstance();
-////										calendar1.setTimeInMillis(dateLong);
-////										Log.v("mtest", "recurringTpye"+recurringTpye);
-////										if (recurringTpye == 1) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 1);
-////										} else if (recurringTpye == 2) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 7);
-////										}else if (recurringTpye == 3) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 14);
-////										}else if (recurringTpye == 4) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 21);
-////										}else if (recurringTpye == 5) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 28);
-////										}else if (recurringTpye == 6) {
-////											calendar1.add(Calendar.DAY_OF_MONTH, 15);
-////										}else if (recurringTpye == 7) {
-////											calendar1.add(Calendar.MONTH, 1);
-////										}else if (recurringTpye == 8) {
-////											calendar1.add(Calendar.MONTH, 2);
-////										}else if (recurringTpye == 9) {
-////											calendar1.add(Calendar.MONTH, 3);
-////										}else if (recurringTpye == 10) {
-////											calendar1.add(Calendar.MONTH, 4);
-////										}else if (recurringTpye == 11) {
-////											calendar1.add(Calendar.MONTH, 5);
-////										}else if (recurringTpye == 12) {
-////											calendar1.add(Calendar.MONTH, 6);
-////										}else if (recurringTpye == 13) {
-////											calendar1.add(Calendar.YEAR, 1);
-////										}
-////										
-////										if (calendar1.getTimeInMillis() <= MEntity.getNowMillis()) {
-////											
-////								        try{
-////								            //批量处理操作
-////								        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
-////								        		
-////								        		if (categoryType == 0) {
-////													 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-////																	memoString, picPath, 0,
-////																	categoryId,
-////																	childTransactionsDefault + "",
-////																	accountId, incomeAccountDefault, 0,
-////																	payeeId);
-////												} else {
-////													TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-////															memoString, picPath, 0,
-////															categoryId, childTransactionsDefault + "",
-////															expenseAccountDefault, accountId, 0,
-////															payeeId);
-////												}
-////								        		
-////												if (recurringTpye == 1) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 1);
-////												} else if (recurringTpye == 2) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 7);
-////												}else if (recurringTpye == 3) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 14);
-////												}else if (recurringTpye == 4) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 21);
-////												}else if (recurringTpye == 5) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 28);
-////												}else if (recurringTpye == 6) {
-////													calendar.add(Calendar.DAY_OF_MONTH, 15);
-////												}else if (recurringTpye == 7) {
-////													calendar.add(Calendar.MONTH, 1);
-////												}else if (recurringTpye == 8) {
-////													calendar.add(Calendar.MONTH, 2);
-////												}else if (recurringTpye == 9) {
-////													calendar.add(Calendar.MONTH, 3);
-////												}else if (recurringTpye == 10) {
-////													calendar.add(Calendar.MONTH, 4);
-////												}else if (recurringTpye == 11) {
-////													calendar.add(Calendar.MONTH, 5);
-////												}else if (recurringTpye == 12) {
-////													calendar.add(Calendar.MONTH, 6);
-////												}else if (recurringTpye == 13) {
-////													calendar.add(Calendar.YEAR, 1);
-////												}
-////											}
-////							        		
-////											
-////								        	if (categoryType == 0) {
-////												 TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-////																memoString, picPath, recurringTpye,
-////																categoryId,
-////																childTransactionsDefault + "",
-////																accountId, incomeAccountDefault, 0,
-////																payeeId);
-////											} else {
-////												TransactionDao.insertTransactionOne(db,CreatTransactionActivity.this,amountString, calendar.getTimeInMillis(), isCleared,
-////														memoString, picPath, recurringTpye,
-////														categoryId, childTransactionsDefault + "",
-////														expenseAccountDefault, accountId, 0,
-////														payeeId);
-////											}
-////								        	
-////								            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
-////								           
-////								           }catch(Exception e){
-////								              Log.v("mtest", "******Exception******"+e);
-////								              
-////								           }finally{
-////								               db.endTransaction(); //处理完成
-////								               db.close();
-////								           }
-////								        
-////										}
-////										
-////									}
-////								});
-////								
-////								mThread.start();
-////								
-////							}
-//							
-//						}else
 						{
 							
 							if (categoryType == 0) {
@@ -799,15 +676,29 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 					View view1 = inflater.inflate(
 							R.layout.dialog_choose_category, null);
-					expenseButton = (Button) view1
+					expenseButton = (RelativeLayout) view1
 							.findViewById(R.id.expense_btn);
-					incomeButton = (Button) view1.findViewById(R.id.income_btn);
-
+					incomeButton = (RelativeLayout) view1.findViewById(R.id.income_btn);
+					chooseView1  = (View) view1.findViewById(R.id.view1);
+					chooseView2  = (View) view1.findViewById(R.id.view2);
+					
+					if(mCategoryType == 0){
+						chooseView1.setVisibility(View.VISIBLE);
+						chooseView2.setVisibility(View.INVISIBLE);
+					}else{
+						chooseView1.setVisibility(View.INVISIBLE);
+						chooseView2.setVisibility(View.VISIBLE);
+					}
+					
+					
 					expenseButton.setOnClickListener(new OnClickListener() {
 
 						@Override
 						public void onClick(View paramView) {
 							// TODO Auto-generated method stub
+							chooseView1.setVisibility(View.VISIBLE);
+							chooseView2.setVisibility(View.INVISIBLE);
+							
 							List<Map<String, Object>> mDataList = PayeeDao
 									.selectCategory(
 											CreatTransactionActivity.this, 0);
@@ -913,7 +804,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						@Override
 						public void onClick(View paramView) {
 							// TODO Auto-generated method stub
-
+							chooseView1.setVisibility(View.INVISIBLE);
+							chooseView2.setVisibility(View.VISIBLE);
 							List<Map<String, Object>> mDataList = PayeeDao
 									.selectCategory(
 											CreatTransactionActivity.this, 1);
@@ -1601,7 +1493,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						categoryButton.setText("-Split-");
 						splitCheck = 1;
 						recurringLinearLayout.setVisibility(View.GONE);
+						payeeEditText.setFocusable(true);
 						amountEditText.setEnabled(false);
+						amountEditText.setFocusable(false);
+						amountEditText.setFocusableInTouchMode(false);
 						BigDecimal b1 = new BigDecimal("0");
 						for (Map<String, Object> iMap : mReturnList) {
 							String amount = (String) iMap.get("amount");
@@ -1616,7 +1511,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 					splitCheck = 0;
 					recurringLinearLayout.setVisibility(View.VISIBLE);
 					amountEditText.setEnabled(true);
-
+					amountEditText.requestFocus();
+					amountEditText.setFocusable(true);
+					amountEditText.setFocusableInTouchMode(true);
+					
 					mReturnList.clear();
 					if (groupDataList != null && groupDataList.size() > 0) {
 						categoryId = locationOthersId(groupDataList);
@@ -1649,8 +1547,11 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 					} else if (mReturnList.size() > 1) {
 						recurringLinearLayout.setVisibility(View.GONE);
 						categoryButton.setText("-Split-");
+						payeeEditText.setFocusable(true);
 						amountEditText.setEnabled(false);
-
+						amountEditText.setFocusable(false);
+						amountEditText.setFocusableInTouchMode(false);
+						
 						splitCheck = 1;
 						BigDecimal b1 = new BigDecimal("0");
 						for (Map<String, Object> iMap : mReturnList) {
@@ -1667,7 +1568,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 					splitCheck = 0;
 					recurringLinearLayout.setVisibility(View.VISIBLE);
 					amountEditText.setEnabled(true);
-
+					amountEditText.requestFocus();
+					amountEditText.setFocusable(true);
+					amountEditText.setFocusableInTouchMode(true);
+					
 					mReturnList.clear();
 					if (groupDataList != null && groupDataList.size() > 0) {
 						categoryId = locationOthersId(groupDataList);

@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.PrivateCredentialPermission;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
@@ -70,6 +72,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -104,8 +107,10 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private int checkedItem;
 	private int gCheckedItem;// 选择位置
 	private int cCheckedItem;
-	private Button expenseButton;
-	private Button incomeButton;
+	private RelativeLayout expenseButton;
+	private RelativeLayout incomeButton;
+	private View chooseView1;
+	private View chooseView2;
 	private int mCategoryType = 0; // 0 expense 1 income
 	private ExpandableListView mExpandableListView;
 	private DialogExpandableListViewAdapter mDialogExpandableListViewAdapter;
@@ -151,6 +156,8 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private Cursor mCursor;
 	private CharSequence sKey;
 	private List<Map<String, Object>> mDataList1;
+	private int transactionHasBillItem  ;
+	private int transactionHasBillRule  ;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +192,8 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 		List<Map<String, Object>> mInitializeDataList = AccountDao
 				.selectTransactionByID(this, _id);
+		Log.v("mtest", "mInitializeDataList"+mInitializeDataList);
+		
 		Map<String, Object> mMap = mInitializeDataList.get(0);
 
 		String amount = (String) mMap.get("amount");
@@ -199,7 +208,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		int incomeAccount = (Integer) mMap.get("incomeAccount");
 		int parTransaction = (Integer) mMap.get("parTransaction");
 		int payee = (Integer) mMap.get("payee");
-
+		 transactionHasBillItem = (Integer) mMap.get("transactionHasBillItem");
+		 transactionHasBillRule = (Integer) mMap.get("transactionHasBillRule");
+		
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 		mReturnList = new ArrayList<Map<String, Object>>();
@@ -394,7 +405,10 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			categoryButton.setText("-Split-");
 			splitCheck = 1;
 			categoryId = 0;
+			amountEditText.setFocusable(false);
 			amountEditText.setEnabled(false);
+			payeeEditText.setFocusable(true);
+			
 			recurringLinearLayout.setVisibility(View.GONE);
 			List<Map<String, Object>> mChildList = AccountDao
 					.selectTransactionChildById(EditTransactionActivity.this,
@@ -406,8 +420,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				categoryId = category;
 				splitCheck = 0;
 				amountEditText.setEnabled(true);
-				recurringLinearLayout.setVisibility(View.VISIBLE);
 
+				if (( transactionHasBillItem >0) || (transactionHasBillRule >0)) {
+					recurringLinearLayout.setVisibility(View.GONE);
+				} else {
+					recurringLinearLayout.setVisibility(View.VISIBLE);
+				}
+				
 				if (groupDataList != null && groupDataList.size() > 0) {
 					List<Map<String, Object>> tList = locationPosition(
 							mDataList1, groupDataList, childrenAllDataList,
@@ -798,15 +817,27 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 					View view1 = inflater.inflate(
 							R.layout.dialog_choose_category, null);
-					expenseButton = (Button) view1
+					expenseButton = (RelativeLayout) view1
 							.findViewById(R.id.expense_btn);
-					incomeButton = (Button) view1.findViewById(R.id.income_btn);
+					incomeButton = (RelativeLayout) view1.findViewById(R.id.income_btn);
+					chooseView1  = (View) view1.findViewById(R.id.view1);
+					chooseView2  = (View) view1.findViewById(R.id.view2);
+					
+					if(mCategoryType == 0){
+						chooseView1.setVisibility(View.VISIBLE);
+						chooseView2.setVisibility(View.INVISIBLE);
+					}else{
+						chooseView1.setVisibility(View.INVISIBLE);
+						chooseView2.setVisibility(View.VISIBLE);
+					}
 
 					expenseButton.setOnClickListener(new OnClickListener() {
 
 						@Override
 						public void onClick(View paramView) {
 							// TODO Auto-generated method stub
+							chooseView1.setVisibility(View.VISIBLE);
+							chooseView2.setVisibility(View.INVISIBLE);
 							List<Map<String, Object>> mDataList = PayeeDao
 									.selectCategory(
 											EditTransactionActivity.this, 0);
@@ -913,6 +944,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 						public void onClick(View paramView) {
 							// TODO Auto-generated method stub
 
+							chooseView1.setVisibility(View.INVISIBLE);
+							chooseView2.setVisibility(View.VISIBLE);
+							
 							List<Map<String, Object>> mDataList = PayeeDao
 									.selectCategory(
 											EditTransactionActivity.this, 1);
@@ -1646,7 +1680,6 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			File file = new File(picPath);
 			if (file.exists()) {
 				camorabitmap = BitmapFactory.decodeFile(picPath);
-				Log.v("mtest", "camorabitmap" + camorabitmap);
 				mImageView.setImageBitmap(camorabitmap);
 			}
 
@@ -1673,7 +1706,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 					if (mReturnList.size() == 1) {
 						splitCheck = 0;
-						recurringLinearLayout.setVisibility(View.VISIBLE);
+						
+						if (( transactionHasBillItem >0) || (transactionHasBillRule >0)) {
+							recurringLinearLayout.setVisibility(View.GONE);
+							recurringTpye = 0;
+						} else {
+							recurringLinearLayout.setVisibility(View.VISIBLE);
+						}
 						amountEditText.setEnabled(true);
 						amountString = (String) mReturnList.get(0)
 								.get("amount");
@@ -1699,7 +1738,12 @@ public class EditTransactionActivity extends BaseHomeActivity {
 					}
 				} else {
 					splitCheck = 0;
-					recurringLinearLayout.setVisibility(View.VISIBLE);
+					if (( transactionHasBillItem >0) || (transactionHasBillRule >0)) {
+						recurringLinearLayout.setVisibility(View.GONE);
+						recurringTpye = 0;
+					} else {
+						recurringLinearLayout.setVisibility(View.VISIBLE);
+					}
 					amountEditText.setEnabled(true);
 					mReturnList.clear();
 					if (groupDataList != null && groupDataList.size() > 0) {
@@ -1719,8 +1763,14 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				if (mReturnList != null && mReturnList.size() > 0) {
 
 					if (mReturnList.size() == 1) {
+						
 						splitCheck = 0;
-						recurringLinearLayout.setVisibility(View.VISIBLE);
+						if (( transactionHasBillItem >0) || (transactionHasBillRule >0)) {
+							recurringLinearLayout.setVisibility(View.GONE);
+							recurringTpye = 0;
+						} else {
+							recurringLinearLayout.setVisibility(View.VISIBLE);
+						}
 						amountEditText.setEnabled(true);
 						amountString = (String) mReturnList.get(0)
 								.get("amount");
@@ -1731,9 +1781,11 @@ public class EditTransactionActivity extends BaseHomeActivity {
 								"categoryName"));
 					} else if (mReturnList.size() > 1) {
 						recurringLinearLayout.setVisibility(View.GONE);
+						recurringTpye = 0;
 						categoryButton.setText("-Split-");
 						splitCheck = 1;
 						amountEditText.setEnabled(false);
+						amountEditText.setFocusable(false);
 						BigDecimal b1 = new BigDecimal("0");
 						for (Map<String, Object> iMap : mReturnList) {
 							String amount = (String) iMap.get("amount");
@@ -1747,8 +1799,17 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 				} else {
 					splitCheck = 0;
-					recurringLinearLayout.setVisibility(View.VISIBLE);
+					if (( transactionHasBillItem >0) || (transactionHasBillRule >0)) {
+						recurringLinearLayout.setVisibility(View.GONE);
+						recurringTpye = 0;
+					} else {
+						recurringLinearLayout.setVisibility(View.VISIBLE);
+					}
 					amountEditText.setEnabled(true);
+					amountEditText.requestFocus();
+					amountEditText.setFocusable(true);
+					amountEditText.setFocusableInTouchMode(true);
+					
 					mReturnList.clear();
 					if (groupDataList != null && groupDataList.size() > 0) {
 						categoryId = locationOthersId(groupDataList);

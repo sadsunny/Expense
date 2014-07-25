@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.bills;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,11 +15,13 @@ import java.util.TreeMap;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,10 +35,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ExpandableListView;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ExpandableListView.OnChildClickListener;
 
 public class BillsFragmentMonth extends Fragment implements
 		OnActivityToBillListener {
@@ -60,6 +66,12 @@ public class BillsFragmentMonth extends Fragment implements
 	private List<Map<String, Object>> mListViewData;
 	private View lineView;
 	private long selectDate;
+	private LayoutInflater mInflater;
+	private AlertDialog alertDialog;
+	private AlertDialog editDialog;
+	private ListView diaListView;
+	private DialogDeleteBillAdapter dialogEditBillAdapter ;
+	
 	public BillsFragmentMonth() {
 		
 	}
@@ -73,6 +85,8 @@ public class BillsFragmentMonth extends Fragment implements
 										.turnMilltoMonthYear(MainActivity.selectedMonth));
 				calendarGridViewAdapter.setMonth(month);
 				calendarGridViewAdapter.setDataList(mCalendartList);
+				calendarGridViewAdapter.setCheckDat(MainActivity.selectedMonth);
+				
 				calendarGridViewAdapter.notifyDataSetChanged();
 				
 				getListviewData(MainActivity.selectedMonth, mDateList);
@@ -112,6 +126,7 @@ public class BillsFragmentMonth extends Fragment implements
 		onBillToActivityListener = (OnBillToActivityListener) mActivity;
 		mCalendartList = new ArrayList<Map<String, Object>>();
 		mListViewData = new ArrayList<Map<String, Object>>();
+		mInflater = LayoutInflater.from(mActivity);
 	}
 
 	@Override
@@ -127,6 +142,8 @@ public class BillsFragmentMonth extends Fragment implements
 		billListViewAdapter = new BillListViewAdapter(mActivity);
 		mListView.setAdapter(billListViewAdapter);
 		mListView.setDividerHeight(0);
+		mListView.setOnItemClickListener(mClickListener);
+		mListView.setOnItemLongClickListener(mLongClickListener);
 		
 		lineView = (View)view.findViewById(R.id.line_view2);
 		 
@@ -147,6 +164,8 @@ public class BillsFragmentMonth extends Fragment implements
 
 				calendarGridViewAdapter.setCheckDat(mChooseTime);
 				calendarGridViewAdapter.notifyDataSetChanged();
+				
+				MainActivity.selectedMonth = mChooseTime;
 				
 				getListviewData(mChooseTime, mDateList);
 				billListViewAdapter.setAdapterDate(mListViewData);
@@ -216,12 +235,83 @@ public class BillsFragmentMonth extends Fragment implements
 
 		return view;
 	}
+	
+	private OnItemClickListener mClickListener = new OnItemClickListener() {
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			// TODO Auto-generated method stub
+			    Map<String, Object> mMap = mListViewData.get(arg2);
+				Intent intent = new Intent();
+				intent.putExtra("dataMap",(Serializable)mMap);
+				intent.setClass(mActivity, BillDetailsActivity.class);
+				startActivityForResult(intent, 16);
+			
+		}
+	};
+	
+	private OnItemLongClickListener mLongClickListener = new OnItemLongClickListener() {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			
+			// TODO Auto-generated method stub
+			
+			final int _id = (Integer) mListViewData.get(arg2).get("_id");
+			final int indexflag = (Integer) mListViewData.get(arg2).get("indexflag");
+			final Map<String, Object> mMap =  mListViewData.get(arg2);
+
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,null);
+
+			String[] data = { "Edit", "Delete" };
+			ListView diaListView = (ListView) dialogView
+					.findViewById(R.id.dia_listview);
+			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(mActivity, data);
+			diaListView.setAdapter(mDialogItemAdapter);
+			diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+
+				
+					if (arg2 == 0) {
+						Intent intent = new Intent();
+						intent.putExtra("dataMap",(Serializable)mMap);
+						intent.setClass(mActivity, BillEditActivity.class);
+						startActivityForResult(intent, 19);
+						alertDialog.dismiss();
+
+					} else if (arg2 == 1) {
+						judgementDialog(indexflag, _id, mMap);
+						alertDialog.dismiss();
+						mHandler.post(mTask);
+						MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE+ MEntity.getOffsetByMonth(MainActivity.selectedMonth));
+						monthFragment.refresh();
+					}
+
+				}
+			});
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+			builder.setView(dialogView);
+			alertDialog = builder.create();
+			alertDialog.show();
+
+			return true;
+		}
+	};
+	
 
 	public Runnable mTask = new Runnable() {
 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+			Log.v("mtest", "+**++++++++++pay返回**************************");
 			long thSelectedTime = MainActivity.selectedMonth;
 			calendarGridViewAdapter.setCheckDat(selectDate);
 			month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(thSelectedTime));
@@ -363,6 +453,407 @@ public class BillsFragmentMonth extends Fragment implements
 		}
 
 	}
+	
+	
+	public void judgementDialog(int mFlag , int mId , Map<String, Object> mMap) { 
+
+		if (mFlag == 0) {
+
+			deleteThisBill(mFlag,mId,mMap);
+			mHandler.post(mTask);
+			
+		}else if (mFlag == 1) {
+
+			int temPaydate = judgeTemPayDate(mId);		
+			long firstPayDate = judgePayDate(mId);
+
+			if (temPaydate > 0) {
+				deleteThisBill(mFlag,mId,mMap);
+				mHandler.post(mTask);
+				
+			} else {
+
+				if (firstPayDate == 0) {
+
+					editDialogShow(mFlag,mId,mMap);
+
+				} else {
+
+					deleteThisBill(mFlag,mId,mMap);
+					mHandler.post(mTask);
+				}
+
+			}
+
+		}else if(mFlag == 2){
+			long firstPayDate = judgePayDate(mId);
+			long mbk_billDuedate = (Long)mMap.get("ep_billDueDate");
+			if (firstPayDate == 0) {
+				editDialogShow(mFlag,mId,mMap);
+			} else {
+
+				if (firstPayDate < mbk_billDuedate) {
+
+					editDialogShow(mFlag,mId,mMap);
+
+				} else {
+					deleteThisBill(mFlag,mId,mMap);
+					mHandler.post(mTask);
+				}
+
+			}
+
+		}else if(mFlag == 3){
+
+			if (mMap.containsKey("billItemHasBillRule")) {
+				int billo_id = (Integer)mMap.get("billItemHasBillRule");
+				long firstPayDate = judgePayDate(billo_id);
+				long mbk_billDuedate = (Long)mMap.get("ep_billDueDate");
+				
+				if (firstPayDate == 0) {
+					editDialogShow(mFlag,mId,mMap);
+				} else {
+
+					if (firstPayDate < mbk_billDuedate) {
+
+						editDialogShow(mFlag,mId,mMap);
+						
+					} else {
+						deleteThisBill(mFlag,mId,mMap);
+						mHandler.post(mTask);
+					}
+				}
+			}else {
+
+				deleteThisBill(mFlag,mId,mMap);
+				mHandler.post(mTask);
+		}
+
+		}
+	}
+	
+	public void editDialogShow(final int mFlag , final int mId , final Map<String, Object> mMap) {
+
+		View  dialogview = mInflater.inflate(R.layout.dialog_upcoming_item_operation,null); 
+		dialogEditBillAdapter = new DialogDeleteBillAdapter(mActivity);
+		diaListView = (ListView)dialogview.findViewById(R.id.dia_listview);
+		diaListView.setAdapter(dialogEditBillAdapter);
+		diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				if (arg2 == 0) {
+					
+					deleteThisBill(mFlag,mId,mMap);
+				    mHandler.post(mTask);
+					editDialog.dismiss();
+
+				} else if (arg2 == 1) {
+					deleteAllFuture(mFlag,mId,mMap);
+					mHandler.post(mTask);
+					editDialog.dismiss();
+				}
+			}
+
+		});
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("Details");
+		builder.setView(dialogview);
+		editDialog = builder.create();
+		editDialog.show();
+	}
+	
+	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
+
+		if(mFlag == 1){
+			BillsDao.deleteBill(mActivity, theId);
+			BillsDao.deleteBillObjectByParId(mActivity, theId);
+		}else if(mFlag == 2){
+
+			billVirtualFutuDelete(theId,mMap);
+
+		}else if (mFlag == 3) {
+			int billo_id =0 ;
+
+			if (mMap.containsKey("billObjecthasBill")) {
+				billo_id = (Integer)mMap.get("billObjecthasBill");
+			}else{
+				
+			}
+			billVirtualFutuDelete(billo_id,mMap);
+		}
+	}
+	
+	public long billVirtualFutuDelete(int rowid ,Map<String, Object> mMap){
+		
+		long row = 0;
+		long bk_billDuedate = (Long) mMap.get("ep_billDueDate"); // 相当于事件的开始日期
+		long bk_billEndDate = (Long) mMap.get("ep_billEndDate"); // 重复事件的截止日期
+		int bk_billRepeatType = (Integer) mMap.get("ep_recurringType");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(bk_billDuedate);
+		
+		if (bk_billRepeatType == 1) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-7);
+
+		} else if (bk_billRepeatType == 2) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-14);
+
+		} else if (bk_billRepeatType == 3) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-28);
+
+		} else if (bk_billRepeatType == 4) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)-15);
+
+		} else if (bk_billRepeatType == 5) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -1);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -1 - 1);
+				} else {
+					calendar.add(Calendar.MONTH, -1);
+				}
+
+
+		} else if (bk_billRepeatType == 6) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -2);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -2 - 2);
+				} else {
+					calendar.add(Calendar.MONTH, -2);
+				}
+
+
+		} else if (bk_billRepeatType == 7) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, -3);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, -3 - 3);
+				} else {
+					calendar.add(Calendar.MONTH, -3);
+				}
+
+
+		} else if (bk_billRepeatType == 8) {
+
+				calendar.add(Calendar.YEAR, -1);
+
+		}
+		
+
+		long preDuedate = calendar.getTimeInMillis();
+
+		BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
+		return row;
+	}
+	
+	
+	public int judgeTemPayDate(int b_id) {
+
+		List<Map<String, Object>> mList = BillsDao.selectTransactionByBillRuleId(mActivity, b_id);
+		if (mList.size() > 0) {
+			return 1;
+		}else {
+			return 0;
+		}
+
+	}
+	
+	public long judgePayDate(int b_id) {
+
+		List<Map<String, Object>> dataList = BillsDao.selectBillItemByRuleId(mActivity, b_id);
+		
+		if (dataList.size() > 0) {
+			ArrayList<Long> OPayList = new ArrayList<Long>();
+			long reData = 0;
+			for (Map<String, Object> oMap:dataList) {
+				int Object_id = (Integer) oMap.get("_id");
+				long bk_billODueDate = (Long) oMap.get("ep_billDueDate");
+				List<Map<String, Object>> mList = BillsDao.selectTransactionByBillItemId(mActivity, Object_id);
+				
+				if (mList.size()  > 0) {
+					OPayList.add(bk_billODueDate);
+				} 
+			}
+			
+			if (OPayList.size()>0) {
+
+				long max = OPayList.get(0);
+				for (int i = 0; i < OPayList.size(); i++) {
+
+					if (OPayList.get(i)>max) {
+						max=OPayList.get(i);
+					} 
+
+				}
+				reData = max;
+			} else {
+				reData = 0;
+			}
+
+			return reData;
+
+		}else {
+			return 0;
+		}
+
+	}
+	
+	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
+
+		if (mFlag == 0) {
+			BillsDao.deleteBill(mActivity, theId);
+		} else if(mFlag == 1){
+			billParentDelete(theId,mMap);
+		}else if(mFlag == 2){
+			billVirtualThisDelete(theId,mMap);
+		}else if (mFlag == 3) {
+			BillsDao.deleteBillObject(mActivity, theId);
+		}
+
+	}
+	
+	public long billVirtualThisDelete(int rowid, Map<String, Object> mMap){
+		long ep_billItemDueDate = (Long)mMap.get("ep_billDueDate");
+		long row = BillsDao.insertBillItem(mActivity, 1, "1", ep_billItemDueDate,
+				ep_billItemDueDate, ep_billItemDueDate, " ", "",
+				1, 1, ep_billItemDueDate,
+				rowid, 1, 1);
+		return row;
+	}
+	
+	
+	
+	public long billParentDelete(int rowid, Map<String, Object> mMap){
+		
+		long row = 0;
+		long bk_billDuedate = (Long) mMap.get("ep_billDueDate"); // 相当于事件的开始日期
+		long bk_billEndDate = (Long) mMap.get("ep_billEndDate"); // 重复事件的截止日期
+		int bk_billRepeatType = (Integer) mMap.get("ep_recurringType");
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(bk_billDuedate);
+		
+		if (bk_billRepeatType == 1) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+7);
+
+		} else if (bk_billRepeatType == 2) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+14);
+
+		} else if (bk_billRepeatType == 3) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+28);
+
+		} else if (bk_billRepeatType == 4) {
+
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH)+15);
+
+		} else if (bk_billRepeatType == 5) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 1);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 1 + 1);
+				} else {
+					calendar.add(Calendar.MONTH, 1);
+				}
+
+
+		} else if (bk_billRepeatType == 6) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 2);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 2 + 2);
+				} else {
+					calendar.add(Calendar.MONTH, 2);
+				}
+
+
+		} else if (bk_billRepeatType == 7) {
+
+
+				Calendar calendarCloneCalendar = (Calendar) calendar
+						.clone();
+				int currentMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+				calendarCloneCalendar.add(Calendar.MONTH, 3);
+				int nextMonthDay = calendarCloneCalendar
+						.get(Calendar.DAY_OF_MONTH);
+
+				if (currentMonthDay > nextMonthDay) {
+					calendar.add(Calendar.MONTH, 3 + 3);
+				} else {
+					calendar.add(Calendar.MONTH, 3);
+				}
+
+
+		} else if (bk_billRepeatType == 8) {
+
+				calendar.add(Calendar.YEAR, 1);
+
+		}
+		long nextDuedate = calendar.getTimeInMillis();
+		
+		if (nextDuedate > bk_billEndDate) { 
+
+			row =BillsDao.deleteBill(mActivity, rowid);
+
+		} else {
+
+			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
+			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+		}
+		return row;
+	}
+	
 
 	public long getMilltoDate(String date) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -386,7 +877,26 @@ public class BillsFragmentMonth extends Fragment implements
 
 			if (data != null) {
 				mHandler.post(mTask);
-				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE);
+				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE+ MEntity.getOffsetByMonth(MainActivity.selectedMonth));
+				monthFragment.refresh();
+			}
+			break;
+			
+		case 16:
+
+			if (data != null) {
+				Log.v("mtest", "pay返回**************************");
+				mHandler.post(mTask);
+				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE+ MEntity.getOffsetByMonth(MainActivity.selectedMonth));
+				monthFragment.refresh();
+			}
+			break;
+			
+		case 19:
+
+			if (data != null) {
+				mHandler.post(mTask);
+				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE+ MEntity.getOffsetByMonth(MainActivity.selectedMonth));
 				monthFragment.refresh();
 			}
 			break;

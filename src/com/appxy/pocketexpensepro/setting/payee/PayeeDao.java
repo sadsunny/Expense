@@ -106,6 +106,7 @@ public class PayeeDao {
 	
 	public static long deletePayee(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
 		long row = 0;
 		try {
@@ -150,5 +151,26 @@ public class PayeeDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectPayeeRelate(Context context,int id) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, b._id from Payee a,'Transaction' b where a._id = b.payee and a._id = "+id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			mMap.put("_id", _id);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	
 }

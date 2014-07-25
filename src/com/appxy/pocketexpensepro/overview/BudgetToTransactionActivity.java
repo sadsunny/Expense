@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -23,6 +24,7 @@ import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.EditBudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
@@ -174,6 +176,8 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 			if (mDataList != null) {
 				reFillData(mDataList);
+				mDataList.addAll(OverViewDao.selectBudgetTransfer(
+						BudgetToTransactionActivity.this, firstDay, lastDay));
 				filterData(mDataList);
 			}
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
@@ -187,6 +191,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 				int arg2, long arg3) {
 
 			// TODO Auto-generated method stub
+
 			final int groupPosition = mExpandableListView
 					.getPackedPositionGroup(arg3);
 			final int childPosition = mExpandableListView
@@ -194,115 +199,127 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			String childTransactionstring = (String) childrenAllDataList
 					.get(groupPosition).get(childPosition)
 					.get("childTransactions");
-			int childTransactions = 0;
-			try {
-				childTransactions = Integer.parseInt(childTransactionstring);
-			} catch (Exception e) {
-				// TODO: handle exception
-				childTransactions = 1;
-			}
-			if (childTransactions == 1) {
+			final int index = (Integer) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("index");
 
-				new AlertDialog.Builder(BudgetToTransactionActivity.this)
-						.setTitle("Warning! ")
-						.setMessage(
-								"This is a part of a transaction splite, and ot can not be edit alone! ")
-						.setPositiveButton("Retry",
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// TODO Auto-generated method stub
-										dialog.dismiss();
-
-									}
-								}).show();
-
-			} else {
+			if (index == 1) {
+				
 				View dialogView = mInflater.inflate(
 						R.layout.dialog_item_operation, null);
 
-				String[] data = { "Duplicate", "Delete" };
+				String[] data = {"Delete" };
 				ListView diaListView = (ListView) dialogView
 						.findViewById(R.id.dia_listview);
 				DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
 						BudgetToTransactionActivity.this, data);
 				diaListView.setAdapter(mDialogItemAdapter);
-				diaListView.setOnItemClickListener(new OnItemClickListener() {
+				diaListView
+						.setOnItemClickListener(new OnItemClickListener() {
 
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
+							@Override
+							public void onItemClick(AdapterView<?> arg0,
+									View arg1, int arg2, long arg3) {
+								// TODO Auto-generated method stub
 
-						int _id = (Integer) childrenAllDataList
-								.get(groupPosition).get(childPosition)
-								.get("_id");
+								int _id = (Integer) childrenAllDataList
+										.get(groupPosition)
+										.get(childPosition).get("_id");
 
-						if (arg2 == 0) {
-							Map<String, Object> mMap = childrenAllDataList.get(
-									groupPosition).get(childPosition);
+							   if (arg2 == 0) {
 
-							Calendar c = Calendar.getInstance(); // 处理为当天固定格式时间
-							Date date = new Date(c.getTimeInMillis());
-							SimpleDateFormat sdf = new SimpleDateFormat(
-									"MM-dd-yyyy");
-							try {
-								c.setTime(new SimpleDateFormat("MM-dd-yyyy")
-										.parse(sdf.format(date)));
-							} catch (ParseException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+									long row = AccountDao.deleteBudgetTransfer(
+													BudgetToTransactionActivity.this,
+													_id);
+									alertDialog.dismiss();
+									Intent intent = new Intent();
+									intent.putExtra("row", row);
+									setResult(12, intent);
+									mHandler.post(mTask);
+								}
+
 							}
-
-							String amount = (String) mMap.get("amount");
-							long dateTime = c.getTimeInMillis();
-							int isClear = (Integer) mMap.get("isClear");
-							String notes = (String) mMap.get("notes");
-							String photoName = (String) mMap.get("photoName");
-							int recurringType = (Integer) mMap
-									.get("recurringType");
-							int category = (Integer) mMap.get("category");
-							String childTransactions = (String) mMap
-									.get("childTransactions");
-							int expenseAccount = (Integer) mMap
-									.get("expenseAccount");
-							int incomeAccount = (Integer) mMap
-									.get("incomeAccount");
-							int parTransaction = (Integer) mMap
-									.get("parTransaction");
-							int payee = (Integer) mMap.get("payee");
-
-							long row = TransactionDao.insertTransactionAll(
-									BudgetToTransactionActivity.this, amount,
-									dateTime, isClear, notes, photoName,
-									recurringType, category, childTransactions,
-									expenseAccount, incomeAccount,
-									parTransaction, payee);
-							alertDialog.dismiss();
-
-							mHandler.post(mTask);
-
-						} else if (arg2 == 1) {
-
-							long row = AccountDao.deleteTransaction(
-									BudgetToTransactionActivity.this, _id);
-							alertDialog.dismiss();
-							Intent intent = new Intent();
-							intent.putExtra("row", row);
-							setResult(12, intent);
-							mHandler.post(mTask);
-						}
-
-					}
-				});
+						});
 
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						BudgetToTransactionActivity.this);
 				builder.setView(dialogView);
 				alertDialog = builder.create();
 				alertDialog.show();
+				
+
+			} else {
+
+				int childTransactions = 0;
+				try {
+					childTransactions = Integer
+							.parseInt(childTransactionstring);
+				} catch (Exception e) {
+					// TODO: handle exception
+					childTransactions = 0;
+				}
+				if (childTransactions == 1) {
+
+					new AlertDialog.Builder(BudgetToTransactionActivity.this)
+							.setTitle("Warning! ")
+							.setMessage(
+									"This is a part of a transaction splite, and ot can not be edit alone! ")
+							.setPositiveButton("Retry",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+
+										}
+									}).show();
+
+				} else {
+					View dialogView = mInflater.inflate(
+							R.layout.dialog_item_operation, null);
+
+					String[] data = {"Delete" };
+					ListView diaListView = (ListView) dialogView
+							.findViewById(R.id.dia_listview);
+					DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
+							BudgetToTransactionActivity.this, data);
+					diaListView.setAdapter(mDialogItemAdapter);
+					diaListView
+							.setOnItemClickListener(new OnItemClickListener() {
+
+								@Override
+								public void onItemClick(AdapterView<?> arg0,
+										View arg1, int arg2, long arg3) {
+									// TODO Auto-generated method stub
+
+									int _id = (Integer) childrenAllDataList
+											.get(groupPosition)
+											.get(childPosition).get("_id");
+
+								   if (arg2 == 0) {
+
+										long row = AccountDao
+												.deleteTransaction(
+														BudgetToTransactionActivity.this,
+														_id);
+										alertDialog.dismiss();
+										Intent intent = new Intent();
+										intent.putExtra("row", row);
+										setResult(12, intent);
+										mHandler.post(mTask);
+									}
+
+								}
+							});
+
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							BudgetToTransactionActivity.this);
+					builder.setView(dialogView);
+					alertDialog = builder.create();
+					alertDialog.show();
+				}
 			}
 			return true;
 		}
@@ -314,60 +331,77 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		public boolean onChildClick(ExpandableListView parent, View v,
 				int groupPosition, int childPosition, long id) {
 			// TODO Auto-generated method stub
+			final int index = (Integer) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("index");
 			final int tId = (Integer) childrenAllDataList.get(groupPosition)
 					.get(childPosition).get("_id");
-			int expenseAccount = (Integer) childrenAllDataList
-					.get(groupPosition).get(childPosition)
-					.get("expenseAccount");
-			int incomeAccount = (Integer) childrenAllDataList
-					.get(groupPosition).get(childPosition).get("incomeAccount");
+			if (index == 0) {
 
-			String childTransactionstring = (String) childrenAllDataList
-					.get(groupPosition).get(childPosition)
-					.get("childTransactions");
-			int childTransactions = 0;
-			try {
-				childTransactions = Integer.parseInt(childTransactionstring);
-			} catch (Exception e) {
-				// TODO: handle exception
-				childTransactions = 1;
-			}
-			if (childTransactions == 1) {
+				int expenseAccount = (Integer) childrenAllDataList
+						.get(groupPosition).get(childPosition)
+						.get("expenseAccount");
+				int incomeAccount = (Integer) childrenAllDataList
+						.get(groupPosition).get(childPosition)
+						.get("incomeAccount");
 
-				new AlertDialog.Builder(BudgetToTransactionActivity.this)
-						.setTitle("Warning! ")
-						.setMessage(
-								"This is a part of a transaction splite, and ot can not be edit alone! ")
-						.setPositiveButton("Retry",
-								new DialogInterface.OnClickListener() {
+				String childTransactionstring = (String) childrenAllDataList
+						.get(groupPosition).get(childPosition)
+						.get("childTransactions");
+				int childTransactions = 0;
+				try {
+					childTransactions = Integer
+							.parseInt(childTransactionstring);
+				} catch (Exception e) {
+					// TODO: handle exception
+					childTransactions = 1;
+				}
+				if (childTransactions == 1) {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// TODO Auto-generated method stub
-										dialog.dismiss();
+					new AlertDialog.Builder(BudgetToTransactionActivity.this)
+							.setTitle("Warning! ")
+							.setMessage(
+									"This is a part of a transaction splite, and ot can not be edit alone! ")
+							.setPositiveButton("Retry",
+									new DialogInterface.OnClickListener() {
 
-									}
-								}).show();
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
 
-			} else {
-				if (expenseAccount > 0 && incomeAccount > 0) {
-
-					Intent intent = new Intent();
-					intent.putExtra("_id", tId);
-					intent.setClass(BudgetToTransactionActivity.this,
-							EditTransferActivity.class);
-					startActivityForResult(intent, 13);
+										}
+									}).show();
 
 				} else {
+					if (expenseAccount > 0 && incomeAccount > 0) {
 
-					Intent intent = new Intent();
-					intent.putExtra("_id", tId);
-					intent.setClass(BudgetToTransactionActivity.this,
-							EditTransactionActivity.class);
-					startActivityForResult(intent, 13);
+						Intent intent = new Intent();
+						intent.putExtra("_id", tId);
+						intent.setClass(BudgetToTransactionActivity.this,
+								EditTransferActivity.class);
+						startActivityForResult(intent, 13);
+
+					} else {
+
+						Intent intent = new Intent();
+						intent.putExtra("_id", tId);
+						intent.setClass(BudgetToTransactionActivity.this,
+								EditTransactionActivity.class);
+						startActivityForResult(intent, 13);
+					}
 				}
+
+			} else {
+
+				Intent intent = new Intent();
+				intent.putExtra("_id", tId);
+				intent.setClass(BudgetToTransactionActivity.this,
+						EditBudgetTransferActivity.class);
+				startActivityForResult(intent, 15);
 			}
+
 			return true;
 		}
 
@@ -493,6 +527,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			mMap.put("dateTime", (Long) it2.next());
 			groupDataList.add(mMap);
 		}
+		Collections.sort(groupDataList, new MEntity.MapComparatorTime());
 
 		for (Map<String, Object> iMap : groupDataList) {
 			long dateTime = (Long) iMap.get("dateTime");
@@ -634,17 +669,10 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			cViewHolder viewholder = null;
 			if (convertView == null) {
 				viewholder = new cViewHolder();
-				convertView = inflater.inflate(R.layout.transaction_child_item,
-						parent, false);
+				convertView = inflater.inflate(
+						R.layout.budget_to_transaction_child_item, parent,
+						false);
 
-				viewholder.mCheckBox = (CheckBox) convertView
-						.findViewById(R.id.checkBox1);
-				viewholder.mImageView = (ImageView) convertView
-						.findViewById(R.id.mImageView);
-				viewholder.mImageView1 = (ImageView) convertView
-						.findViewById(R.id.mImageView1);
-				viewholder.mImageView2 = (ImageView) convertView
-						.findViewById(R.id.mImageView2);
 				viewholder.mTextView1 = (TextView) convertView
 						.findViewById(R.id.TextView1);
 				viewholder.mTextView2 = (TextView) convertView
@@ -663,73 +691,15 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 				viewholder = (cViewHolder) convertView.getTag();
 
 			}
-			viewholder.mImageView
-					.setImageResource(Common.CATEGORY_ICON[(Integer) childList
-							.get(groupPosition).get(childPosition)
-							.get("iconName")]);
 			viewholder.currency_textView
 					.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
-			if (reconcileCheck == 1) {
-				viewholder.mCheckBox.setVisibility(View.VISIBLE);
-				viewholder.mImageView.setVisibility(View.INVISIBLE);
-			} else {
-				viewholder.mCheckBox.setVisibility(View.INVISIBLE);
-				viewholder.mImageView.setVisibility(View.VISIBLE);
-			}
-
-			final int cleard = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("isClear");
-
-			if (cleard == 1) {
-				viewholder.mCheckBox.setChecked(true);
-			} else {
-				viewholder.mCheckBox.setChecked(false);
-			}
-
-			final int _id = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("_id");
-			viewholder.mCheckBox.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					if (cleard == 1) {
-						// childList.get(groupPosition).get(childPosition).put("isClear",
-						// 0);
-						AccountDao.updateTransactionClear(context, _id, 0);
-					} else {
-						// childList.get(groupPosition).get(childPosition).put("isClear",
-						// 1);
-						AccountDao.updateTransactionClear(context, _id, 1);
-					}
-
-					mHandler.post(mTask);
-
-				}
-			});
+			int index = (Integer) childList.get(groupPosition)
+					.get(childPosition).get("index"); // 判断属于哪种数据
 
 			long dateTime = (Long) childList.get(groupPosition)
 					.get(childPosition).get("dateTime");
 			viewholder.mTextView2.setText(turnToDateString(dateTime));
-
-			int recurringType = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("recurringType");
-			if (recurringType > 0) {
-				viewholder.mImageView1.setVisibility(View.VISIBLE);
-			} else {
-				viewholder.mImageView1.setVisibility(View.INVISIBLE);
-			}
-
-			String photoName = (String) childList.get(groupPosition)
-					.get(childPosition).get("photoName");
-			File file = new File(photoName);
-			if (photoName.length() > 0 && file.exists()) {
-
-				viewholder.mImageView2.setVisibility(View.VISIBLE);
-			} else {
-				viewholder.mImageView2.setVisibility(View.INVISIBLE);
-			}
 
 			Double mAmount;
 			try {
@@ -739,26 +709,32 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 				// TODO: handle exception
 				mAmount = 0.0;
 			}
+			if (index == 0) {
+				int expenseAccount = (Integer) childList.get(groupPosition)
+						.get(childPosition).get("expenseAccount");
+				int incomeAccount = (Integer) childList.get(groupPosition)
+						.get(childPosition).get("incomeAccount");
 
-			int expenseAccount = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("expenseAccount");
-			int incomeAccount = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("incomeAccount");
+				if (expenseAccount == accountId) {
+					mAmount = 0 - mAmount;
+				}
 
-			if (expenseAccount == accountId) {
-				mAmount = 0 - mAmount;
-			}
-
-			if (expenseAccount > 0 && incomeAccount > 0) {
-				List<Map<String, Object>> mList1 = AccountDao
-						.selectAccountById(context, expenseAccount);
-				List<Map<String, Object>> mList2 = AccountDao
-						.selectAccountById(context, incomeAccount);
-				String mFromAccount = (String) mList1.get(0).get("accName");
-				String mInAccount = (String) mList2.get(0).get("accName");
-				viewholder.mTextView1.setText((String) childList
-						.get(groupPosition).get(childPosition).get("payeeName")
-						+ "(" + mFromAccount + " > " + mInAccount + ")");
+				if (expenseAccount > 0 && incomeAccount > 0) {
+					List<Map<String, Object>> mList1 = AccountDao
+							.selectAccountById(context, expenseAccount);
+					List<Map<String, Object>> mList2 = AccountDao
+							.selectAccountById(context, incomeAccount);
+					String mFromAccount = (String) mList1.get(0).get("accName");
+					String mInAccount = (String) mList2.get(0).get("accName");
+					viewholder.mTextView1.setText((String) childList
+							.get(groupPosition).get(childPosition)
+							.get("payeeName")
+							+ "(" + mFromAccount + " > " + mInAccount + ")");
+				} else {
+					viewholder.mTextView1.setText((String) childList
+							.get(groupPosition).get(childPosition)
+							.get("payeeName"));
+				}
 			} else {
 				viewholder.mTextView1
 						.setText((String) childList.get(groupPosition)
@@ -768,18 +744,20 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			if (mAmount < 0) {
 				viewholder.symbol_txt.setVisibility(View.VISIBLE);
 				viewholder.symbol_txt.setText("-");
-				viewholder.symbol_txt.setTextColor(Color.RED);
-				viewholder.currency_textView.setTextColor(Color.RED);
-				viewholder.amount_textView.setTextColor(Color.RED);
+				viewholder.symbol_txt.setTextColor(Color.rgb(208, 47, 58));
+				viewholder.currency_textView.setTextColor(Color
+						.rgb(208, 47, 58));
+				viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
 				double amount = 0 - mAmount;
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str(amount + ""));
 			} else {
 				viewholder.symbol_txt.setVisibility(View.INVISIBLE);
 				viewholder.symbol_txt.setText("");
-				viewholder.symbol_txt.setTextColor(Color.GREEN);
-				viewholder.currency_textView.setTextColor(Color.GREEN);
-				viewholder.amount_textView.setTextColor(Color.GREEN);
+				viewholder.symbol_txt.setTextColor(Color.rgb(83, 150, 39));
+				viewholder.currency_textView.setTextColor(Color
+						.rgb(83, 150, 39));
+				viewholder.amount_textView.setTextColor(Color.rgb(83, 150, 39));
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str((String) childList.get(groupPosition)
 								.get(childPosition).get("amount")));
@@ -789,10 +767,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		}
 
 		public class cViewHolder {
-			public CheckBox mCheckBox;
-			public ImageView mImageView;
-			public ImageView mImageView1;
-			public ImageView mImageView2;
 			public TextView mTextView1;
 			public TextView mTextView2;
 			public TextView symbol_txt;
@@ -851,6 +825,15 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (resultCode) {
 		case 13:
+
+			if (data != null) {
+				// mThread = new Thread(mTask);
+				// mThread.start();
+				mHandler.post(mTask);
+			}
+			break;
+			
+		case 15:
 
 			if (data != null) {
 				// mThread = new Thread(mTask);

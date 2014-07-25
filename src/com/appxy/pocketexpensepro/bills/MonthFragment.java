@@ -202,7 +202,8 @@ public class MonthFragment extends Fragment {
 
 				mMap.put("monthTime", firstDayOfMonth);
 
-				List<Map<String, Object>> mTemList = RecurringOnlyCount.recurringData(mActivity, firstDayOfMonth, lastDayOfMonth);
+				List<Map<String, Object>> mTemList = RecurringEventBE.recurringData(mActivity, firstDayOfMonth, lastDayOfMonth);
+//				judgePayment(mTemList);
 				mMap.put("count", mTemList.size());
 
 				calendar.add(Calendar.MONTH, 1);
@@ -214,6 +215,73 @@ public class MonthFragment extends Fragment {
 	
 	public void refresh () {
 		mHandler.post(mTask);
+	}
+	
+	public void judgePayment(List<Map<String, Object>> dataList) { //当前之前未支付账单个数
+
+		for (Map<String, Object> iMap : dataList) {
+
+			int _id = (Integer) iMap.get("_id");
+			String ep_billAmount = (String) iMap.get("ep_billAmount");
+			int indexflag = (Integer) iMap.get("indexflag");
+			BigDecimal b0 = new BigDecimal(ep_billAmount);
+
+			if (indexflag == 0 || indexflag == 1) {
+
+				List<Map<String, Object>> pDataList = BillsDao
+						.selectTransactionByBillRuleId(mActivity, _id);
+				BigDecimal b1 = new BigDecimal(0.0); // pay的总额
+				for (Map<String, Object> pMap : pDataList) {
+					String pAmount = (String) pMap.get("amount");
+					BigDecimal b2 = new BigDecimal(pAmount);
+					b1 = b1.add(b2);
+				}
+				double remain = (b1.subtract(b0)).doubleValue();
+				double payTotal = b1.doubleValue();
+				if (payTotal > 0) {
+
+					if (remain >= 0) {
+						iMap.put("payState", 2);// 全部支付
+					} else {
+						iMap.put("payState", 1);// 部分支付
+					}
+
+				} else {
+					iMap.put("payState", 0);// 完全未支付
+				}
+
+			} else if (indexflag == 2) {
+
+				iMap.put("payState", 0);
+
+			}
+			if (indexflag == 3) {
+
+				List<Map<String, Object>> pDataList = BillsDao
+						.selectTransactionByBillItemId(mActivity, _id);
+				BigDecimal b1 = new BigDecimal(0.0); // pay的总额
+				for (Map<String, Object> pMap : pDataList) {
+					String pAmount = (String) pMap.get("amount");
+					BigDecimal b2 = new BigDecimal(pAmount);
+					b1 = b1.add(b2);
+				}
+				double remain = (b1.subtract(b0)).doubleValue();
+				double payTotal = b1.doubleValue();
+				if (payTotal > 0) {
+
+					if (remain >= 0) {
+						iMap.put("payState", 2);
+					} else {
+						iMap.put("payState", 1);
+					}
+
+				} else {
+					iMap.put("payState", 0);
+				}
+			}
+
+		}
+
 	}
 
 }

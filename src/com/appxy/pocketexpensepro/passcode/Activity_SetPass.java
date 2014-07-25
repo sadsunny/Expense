@@ -58,7 +58,6 @@ public class Activity_SetPass extends BaseHomeActivity {
 		}
 		context = this;
 
-
 		line1 = (ImageView) findViewById(R.id.passwordline1);
 		line2 = (ImageView) findViewById(R.id.passwordline2);
 		line3 = (ImageView) findViewById(R.id.passwordline3);

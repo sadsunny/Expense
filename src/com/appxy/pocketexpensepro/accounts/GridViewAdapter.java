@@ -54,13 +54,13 @@ public class GridViewAdapter extends BaseAdapter {
 			view = inflater.inflate(R.layout.gridview_item, null);
 			wrapper.imageView = (ImageView) view.findViewById(R.id.image_item);
 			view.setTag(wrapper);
-			// view.setPadding(-5,-5, -5,-5); //Ã¿¸ñµÄ¼ä¾à
+			// view.setPadding(-5,-5, -5,-5); //Ã¿ï¿½ï¿½Ä¼ï¿½ï¿½
 		} else {
 			wrapper = (ImgTextWrapper) view.getTag();
 		}
 
 		wrapper.imageView
-				.setBackgroundResource(Common.ACCOUNT_TYPE_ICON[position]);
+				.setBackgroundResource(Common.ACCOUNT_TYPE_ICON_SELECTOR[position]);
 
 		return view;
 	}

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.R.color;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.passcode.Activity_ChangePass;
@@ -93,15 +94,15 @@ public class SettingActivity extends BaseHomeActivity {
 		spent_txt = (TextView) findViewById(R.id.spent_txt);
 
 		if (BdgetSetting ==0) {
-			left_LinearLayout.setBackgroundResource(R.drawable.left_corners_sel);
+			left_LinearLayout.setBackgroundColor(Color.parseColor("#4ea3cc"));
 			left_txt.setTextColor(Color.rgb(255, 255, 255));
-			spent_LinearLayout.setBackgroundResource(R.drawable.right_corners);
-			spent_txt.setTextColor(Color.rgb(90, 121, 168));
+			spent_LinearLayout.setBackgroundColor(Color.parseColor("#d4d4d4"));
+			spent_txt.setTextColor(Color.parseColor("#36373c"));
 
 		} else {
-			left_LinearLayout.setBackgroundResource(R.drawable.left_corners);
-			left_txt.setTextColor(Color.rgb(90, 121, 168) );
-			spent_LinearLayout.setBackgroundResource(R.drawable.right_corners_sel);
+			left_LinearLayout.setBackgroundColor(Color.parseColor("#d4d4d4"));
+			left_txt.setTextColor(Color.parseColor("#36373c") );
+			spent_LinearLayout.setBackgroundColor(Color.parseColor("#4ea3cc"));
 			spent_txt.setTextColor(Color.rgb(255, 255, 255) );
 
 		}
@@ -111,10 +112,10 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				left_LinearLayout.setBackgroundResource(R.drawable.left_corners_sel);
+				left_LinearLayout.setBackgroundColor(Color.parseColor("#4ea3cc"));
 				left_txt.setTextColor(Color.rgb(255, 255, 255));
-				spent_LinearLayout.setBackgroundResource(R.drawable.right_corners);
-				spent_txt.setTextColor(Color.rgb(90, 121, 168));
+				spent_LinearLayout.setBackgroundColor(Color.parseColor("#d4d4d4"));
+				spent_txt.setTextColor(Color.parseColor("#36373c"));
 				
 				SharedPreferences.Editor editor = mPreferences
 						.edit();
@@ -129,10 +130,10 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				left_LinearLayout.setBackgroundResource(R.drawable.left_corners);
-				left_txt.setTextColor(Color.rgb(90, 121, 168));
-				spent_LinearLayout.setBackgroundResource(R.drawable.right_corners_sel);
-				spent_txt.setTextColor(Color.rgb(255, 255, 255));
+				left_LinearLayout.setBackgroundColor(Color.parseColor("#d4d4d4"));
+				left_txt.setTextColor(Color.parseColor("#36373c") );
+				spent_LinearLayout.setBackgroundColor(Color.parseColor("#4ea3cc"));
+				spent_txt.setTextColor(Color.rgb(255, 255, 255) );
 				
 				SharedPreferences.Editor editor = mPreferences
 						.edit();

@@ -32,7 +32,7 @@ public class RingView extends View {
 		// TODO Auto-generated method stub
 		super.onDraw(canvas);
 		 int center = getWidth()/2;
-		 int innerCircle = dip2px(context, 4); //设置内圆半径
+		 int innerCircle = dip2px(context, 3.5); //设置内圆半径
 		 int ringWidth = dip2px(context, 1); //设置圆环宽度
 		
 		 //绘制内圆
@@ -57,7 +57,7 @@ public class RingView extends View {
 	/**
 	 * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
 	 */
-	public static int dip2px(Context context, float dpValue) {
+	public static int dip2px(Context context, double dpValue) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dpValue * scale + 0.5f);
 	}

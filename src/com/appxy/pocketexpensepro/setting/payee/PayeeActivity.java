@@ -4,17 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.R.id;
+import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.DialogItemAdapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +28,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
+
 /*
  * add code 4,edit code 5
  */
@@ -38,7 +43,7 @@ public class PayeeActivity extends BaseHomeActivity {
 	private ListView diaListView;
 	private DialogItemAdapter mDialogItemAdapter;
 	private AlertDialog alertDialog;
-	
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -63,17 +68,17 @@ public class PayeeActivity extends BaseHomeActivity {
 		setContentView(R.layout.activity_payee);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		mInflater = LayoutInflater.from(this);
-		
+
 		mListView = (ListView) findViewById(R.id.mListView);
 		mDataList = new ArrayList<Map<String, Object>>();
 		mAdapter = new PayeeListViewAdapter(PayeeActivity.this);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(mListener);
 		mListView.setOnItemLongClickListener(mLongListener);
-		
+
 		Thread mThread = new Thread(mTask);
 		mThread.start();
-		
+
 	}
 
 	public Runnable mTask = new Runnable() {
@@ -87,70 +92,126 @@ public class PayeeActivity extends BaseHomeActivity {
 		}
 		//
 	};
-	
+
 	private OnItemClickListener mListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			// TODO Auto-generated method stub
-		    int _id = (Integer)mDataList.get(arg2).get("_id");
-		    
+			int _id = (Integer) mDataList.get(arg2).get("_id");
+
 			Intent intent = new Intent();
 			intent.setClass(PayeeActivity.this, EditPayeeActivity.class);
 			intent.putExtra("_id", _id);
 			startActivityForResult(intent, 5);
-			
-			
+
 		}
 	};
-	
+
 	private OnItemLongClickListener mLongListener = new OnItemLongClickListener() {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
-			
-			 final int _id = (Integer)mDataList.get(arg2).get("_id");
-				
-				View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
-						null);
-				diaListView = (ListView) dialogView.findViewById(R.id.dia_listview);
-				mDialogItemAdapter = new DialogItemAdapter(PayeeActivity.this);
-				diaListView.setAdapter(mDialogItemAdapter);
-				diaListView.setOnItemClickListener(new OnItemClickListener() {
 
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						if (arg2 == 0) {
-							
-							long id = PayeeDao.deletePayee(PayeeActivity.this,_id);
-							 
+			final int _id = (Integer) mDataList.get(arg2).get("_id");
+
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
+					null);
+			diaListView = (ListView) dialogView.findViewById(R.id.dia_listview);
+			mDialogItemAdapter = new DialogItemAdapter(PayeeActivity.this);
+			diaListView.setAdapter(mDialogItemAdapter);
+			diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+					if (arg2 == 0) {
+
+						List<Map<String, Object>> mList = PayeeDao
+								.selectPayeeRelate(PayeeActivity.this, _id);
+						if (mList.size() > 0) {
+
+							new AlertDialog.Builder(PayeeActivity.this)
+									.setTitle("Delete This Payee? ")
+									.setMessage(
+											" There have already been transactions " +
+											"related to this payee. Deleting a payee will" +
+											" also cause to delete all related transactions. Are you sure you want to delete it? ")
+									.setNegativeButton(
+											"No",
+											new DialogInterface.OnClickListener() {
+
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													// TODO Auto-generated
+													// method stub
+													dialog.dismiss();
+													alertDialog.dismiss();
+												}
+
+											})
+									.setPositiveButton(
+											"Yes",
+											new DialogInterface.OnClickListener() {
+
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													// TODO Auto-generated
+													// method stub
+													long id = PayeeDao
+															.deletePayee(
+																	PayeeActivity.this,
+																	_id);
+													mHandler.post(mTask);
+													dialog.dismiss();
+													alertDialog.dismiss();
+													Log.v("mtest", ""+id);
+													if (id >0 && MainActivity.mItemPosition == 0) {
+														MainActivity.sqlChange = 1;
+													} 
+												}
+											}).show();
+
+						} else {
+
+							long id = PayeeDao.deletePayee(PayeeActivity.this,
+									_id);
 							mHandler.post(mTask);
 							alertDialog.dismiss();
+							
+							if (id >0 && MainActivity.mItemPosition == 0) {
+								MainActivity.sqlChange = 1;
+							} 
+
 						}
-						
 					}
-				});
-				AlertDialog.Builder builder = new AlertDialog.Builder(PayeeActivity.this);
-				builder.setView(dialogView);
-				alertDialog = builder.create();
-				alertDialog.show();
-				
+
+				}
+			});
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					PayeeActivity.this);
+			builder.setView(dialogView);
+			alertDialog = builder.create();
+			alertDialog.show();
+
 			return true;
 		}
 	};
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
 		getMenuInflater().inflate(R.menu.add_menu, menu);
-//		Menu itemMenu = (Menu) menu.findItem(R.id.navigation_but);
-//		Menu itemMenu1 = (Menu) menu.findItem(R.id.action_add);
+		// Menu itemMenu = (Menu) menu.findItem(R.id.navigation_but);
+		// Menu itemMenu1 = (Menu) menu.findItem(R.id.action_add);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -167,7 +228,7 @@ public class PayeeActivity extends BaseHomeActivity {
 			startActivityForResult(intent, 4);
 			break;
 		case R.id.navigation_but:
-			
+
 			break;
 		}
 
@@ -181,10 +242,15 @@ public class PayeeActivity extends BaseHomeActivity {
 
 		switch (resultCode) {
 		case 4:
-			 mHandler.post(mTask);
+			mHandler.post(mTask);
 			break;
 		case 5:
-			 mHandler.post(mTask);
+			mHandler.post(mTask);
+			
+			if (MainActivity.mItemPosition == 0) {
+				MainActivity.sqlChange = 1;
+			}
+			
 			break;
 		}
 	}

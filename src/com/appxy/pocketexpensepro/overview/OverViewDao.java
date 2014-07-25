@@ -38,10 +38,8 @@ public class OverViewDao {
 			String amount = mCursor.getString(1);
 			long dateTime = mCursor.getLong(2);
 			int isClear = mCursor.getInt(5);
-
 			String notes = mCursor.getString(6);
 			String photoName = mCursor.getString(9);
-
 			int recurringType = mCursor.getInt(10);
 			int category = mCursor.getInt(18);
 			String childTransactions = mCursor.getString(19);
@@ -49,6 +47,8 @@ public class OverViewDao {
 			int incomeAccount = mCursor.getInt(21);
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
 
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
@@ -63,6 +63,8 @@ public class OverViewDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 
 			mList.add(mMap);
 		}
@@ -111,7 +113,11 @@ public class OverViewDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -161,7 +167,11 @@ public class OverViewDao {
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
 			mMap.put("categoryType", categoryType);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -228,26 +238,60 @@ public class OverViewDao {
 
 		return mList;
 	}
-
-	public static List<Map<String, Object>> selectBudgetTransfer(Context context) { // 查询Category
+	public static List<Map<String, Object>> selectBudgetTransferById(Context context , int id) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select * from BudgetTransfer";
+		String sql = "select * from BudgetTransfer a where a._id = "+id+" ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
 			mMap = new HashMap<String, Object>();
 			int _id = mCursor.getInt(0);
 			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
 			int fromBudget = mCursor.getInt(6);
 			int toBudget = mCursor.getInt(7);
 
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
 			mMap.put("fromBudget", fromBudget);
 			mMap.put("toBudget", toBudget);
+			mMap.put("payeeName", "--");
+			mMap.put("index", 1);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
 
+		return mList;
+	}
+
+	public static List<Map<String, Object>> selectBudgetTransfer(Context context , long beginTime , long endTime) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select * from BudgetTransfer a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			mMap = new HashMap<String, Object>();
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int fromBudget = mCursor.getInt(6);
+			int toBudget = mCursor.getInt(7);
+
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("fromBudget", fromBudget);
+			mMap.put("toBudget", toBudget);
+			mMap.put("payeeName", "--");
+			mMap.put("index", 1);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -256,7 +300,8 @@ public class OverViewDao {
 		return mList;
 	}
 	
-	public static List<Map<String, Object>> selectTransactionByCategoryIdAndTime(Context context, String categorName,long beginTime, long endTime) { // Account查询
+	public static List<Map<String, Object>> selectTransactionByCategoryIdAndTime(Context context, String categorName,long beginTime, long endTime) { // 根据category的名字查询transaction
+		
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
@@ -294,7 +339,12 @@ public class OverViewDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
-
+			mMap.put("index", 0);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();

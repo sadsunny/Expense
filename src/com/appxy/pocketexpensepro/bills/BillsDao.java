@@ -21,6 +21,68 @@ public class BillsDao {
 		return db;
 	}
 	
+	public static long deleteBillPayById(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("'Transaction'", "_id = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	public static long updateBillPay(Context context,int _id, String amount, long dateTime,int expenseAccount) {  //更新payment
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("expenseAccount", expenseAccount);
+		long row = db.insert("'Transaction'", null, cv);
+		String mId = _id + "";
+		try {
+			long id = db.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+	}
+	
+	public static List<Map<String, Object>> selectTransactionById(Context context, int id) {  //bill payment记录
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, b.accName, b.iconName  from 'Transaction' a, Accounts b where a._id = "+ id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int expenseAccount = mCursor.getInt(3);
+            
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("expenseAccount", expenseAccount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	
 	public static long deleteBillPayTransaction(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
 		String _id = id + "";
@@ -531,7 +593,7 @@ public class BillsDao {
 		return mList;
 	}
 	
-	public static List<Map<String, Object>> selectTransactionByBillItemId(Context context, int id) { // Account查询
+	public static List<Map<String, Object>> selectTransactionByBillItemId(Context context, int id) { 
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
@@ -561,26 +623,40 @@ public class BillsDao {
 
 		return mList;
 	}
+	
 
-	public static long insertTransactionRule(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillRule) {
+	public static long insertTransactionRule(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillRule, int category, int payee,int cleared, int recurring) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("expenseAccount", expenseAccount);
 		cv.put("transactionHasBillRule", transactionHasBillRule);
+		cv.put("category", category);
+		cv.put("payee", payee);
+		cv.put("isClear", cleared);
+		cv.put("recurringType", 0);
+		cv.put("parTransaction", 0);
+		cv.put("childTransactions", 0);
+		
 		long row = db.insert("'Transaction'", null, cv);
 		db.close();
 		return row;
 	}
 	
-	public static long insertTransactionItem(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillItem) {
+	public static long insertTransactionItem(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillItem, int category,int payee,int cleared, int recurring) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("expenseAccount", expenseAccount);
 		cv.put("transactionHasBillItem", transactionHasBillItem);
+		cv.put("category", category);
+		cv.put("payee", payee);
+		cv.put("isClear", cleared);
+		cv.put("recurringType", 0);
+		cv.put("parTransaction", 0);
+		cv.put("childTransactions", 0);
 		long row = db.insert("'Transaction'", null, cv);
 		db.close();
 		return row;

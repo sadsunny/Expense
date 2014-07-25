@@ -792,6 +792,13 @@ public class BillsFragment extends Fragment{
 				mHandler.post(mTask);
 			}
 			break;
+			
+		case 16:
+
+			if (data != null) {
+				mHandler.post(mTask);
+			}
+			break;
 		}
 	}
 	
@@ -804,6 +811,7 @@ public class BillsFragment extends Fragment{
 		case R.id.action_add:
 			
 			Intent intent = new Intent();
+			intent.putExtra("selectDate", MEntity.getNowMillis());
 			intent.setClass(getActivity(), CreatBillsActivity.class);
 			startActivityForResult(intent, 8);
 			return true;

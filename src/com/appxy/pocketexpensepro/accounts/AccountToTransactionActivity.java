@@ -815,9 +815,24 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 			String photoName = (String) childList.get(groupPosition)
 					.get(childPosition).get("photoName");
+			if (photoName != null) {
+			
 			File file = new File(photoName);
 			if (photoName.length() > 0 && file.exists()) {
 
+				viewholder.mImageView1.setVisibility(View.VISIBLE);
+			} else {
+				viewholder.mImageView1.setVisibility(View.INVISIBLE);
+			}
+			} else {
+				viewholder.mImageView1.setVisibility(View.INVISIBLE);
+			}
+			
+			String notes = (String) childList.get(groupPosition)
+					.get(childPosition).get("notes");
+			Log.v("mtest", "notes"+notes);
+			
+			if (notes != null && notes.length()>0) {
 				viewholder.mImageView2.setVisibility(View.VISIBLE);
 			} else {
 				viewholder.mImageView2.setVisibility(View.INVISIBLE);

@@ -18,18 +18,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingBottom="6dp" >
-
-                <TextView
-                    android:id="@+id/optional_label1"
-                    style="@style/TextAppearance.EditEvent_LabelSmall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/account_name_label" />
+                >
 
                 <EditText
                     android:id="@+id/account_edit"
@@ -39,27 +31,29 @@
                     android:layout_gravity="bottom"
                     android:capitalize="sentences"
                     android:hint="@string/hint_account_name"
-                    android:minHeight="48dip" />
+                    android:minHeight="48dip" 
+                    android:gravity="bottom"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="6dp" >
+                 android:layout_marginTop="10dp"
+                 >
 
                 <TextView
                     android:id="@+id/optional_label2"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
                     android:text="@string/start_balance_label" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" >
+                    android:orientation="horizontal" 
+                     >
 
                     <EditText
                         android:id="@+id/balance_edit"
@@ -72,16 +66,19 @@
                         android:maxLength="13"
                         android:minHeight="48dip"
                         android:singleLine="true"
-                        android:text="@string/zero_label" />
+                        android:text="@string/zero_label" 
+                        android:textColor="@color/text_black1"
+                        android:gravity="bottom"/>
 
                     <ImageView
                         android:id="@+id/add_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="5dp"
+                        android:layout_marginLeft="1dp"
                         android:layout_weight="1"
                         android:src="@drawable/b_add"
+                        android:background="@color/bill_gray"
                         />
 
                     <ImageView
@@ -89,9 +86,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
                         android:layout_weight="1"
+                        android:background="@color/bill_gray"
                         android:src="@drawable/b_sub"
                          />
                 </LinearLayout>
@@ -102,14 +100,14 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingBottom="6dp" >
+                android:layout_marginTop="10dp"
+                 >
 
                 <TextView
                     android:id="@+id/optional_label3"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
                     android:text="@string/open_date_label" />
 
                 <Button
@@ -117,8 +115,8 @@
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-12dip"
-                    android:gravity="left|center_vertical" />
+                    android:gravity="bottom"
+                    android:textColor="@color/text_black1"/>
             </LinearLayout>
 
             <LinearLayout
@@ -126,14 +124,14 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingBottom="6dp" >
+                android:layout_marginTop="10dp"
+                >
 
                 <TextView
                     android:id="@+id/optional_label4"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
                     android:text="@string/account_type_label" />
 
                 <Button
@@ -141,8 +139,8 @@
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-12dip"
-                    android:gravity="left|center_vertical" />
+                    android:gravity="bottom"
+                    android:textColor="@color/text_black1" />
             </LinearLayout>
 
             <LinearLayout
@@ -150,22 +148,24 @@
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 android:orientation="vertical"
-                android:paddingBottom="6dp" >
+                android:layout_marginTop="10dp"
+                 >
 
                 <TextView
                     android:id="@+id/optional_label4"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/auto_clear_label" />
+                    android:text="@string/auto_clear_label"
+                    android:layout_marginBottom="-12dip" />
 
                 <Spinner
                     android:id="@+id/clear_spin"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginLeft="12dp"
-                    android:layout_marginRight="12dp" />
+                    android:layout_marginRight="12dp"
+                    android:textColor="@color/text_black1" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -167,9 +167,9 @@ public class ReportCategoryFragment extends Fragment {
 				// TODO Auto-generated method stub
 				mCategoryType = (mCategoryType == 0) ? 1 : 0;
 				if (mCategoryType == 0) {
-					changeButton.setText("EXPENSE");
+					changeButton.setText("Expense");
 				} else {
-					changeButton.setText("INCOME");
+					changeButton.setText("Income");
 				}
 				mHandler.post(mTask);
 			}

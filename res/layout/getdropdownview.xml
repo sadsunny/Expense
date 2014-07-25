@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical" 
-    android:background="@color/darkblue"
+    android:background="@drawable/button1_selector"
     >
     
     <RelativeLayout 
@@ -18,7 +18,7 @@
          android:textAppearance="?android:attr/textAppearanceMedium" 
          android:layout_marginLeft="10dp"
          android:layout_centerVertical="true"
-         android:textColor="@color/white"
+         android:textColor="@color/text_black"
          android:textSize="16sp"
           />
      <!-- <View

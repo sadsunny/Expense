@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.TransactionRecurringCheck;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
+import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
@@ -40,6 +41,8 @@ import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
+import com.appxy.pocketexpensepro.search.SearchActivity;
+import com.appxy.pocketexpensepro.setting.SettingActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -48,6 +51,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -181,14 +185,19 @@ public class OverviewFragment extends Fragment implements
 						.valueOf(netWorth)));
 
 				if ((mBudgetList == null) || mBudgetList.size() == 0) {
-					Log.v("mdb", mBudgetList.size()+"daxiao");
+					Log.v("mdb", mBudgetList.size() + "daxiao");
 					mProgressBar.setProgress(0);
-					mProgressBar.setSecondaryProgress((int)100);
-					mProgressBar.setMax((int)1);
+					mProgressBar.setMax((int) 1);
+					mProgressBar.setSecondaryProgress((int) 100);
 				} else {
+					Log.v("mdb", "budgetAmount" + budgetAmount);
+					Log.v("mdb", "transactionAmount" + transactionAmount);
 					mProgressBar.setProgress((int) (transactionAmount * 0.8));
-					mProgressBar.setSecondaryProgress((int) budgetAmount * 1);
 					mProgressBar.setMax((int) budgetAmount);
+					mProgressBar
+							.setSecondaryProgress((int) (budgetAmount * 10));
+					Log.v("mdb", "budgetAmountX" + (int) (budgetAmount * 10));
+					Log.v("mdb", "budgetAmountINT" + (int) budgetAmount);
 				}
 
 				if ((budgetAmount - transactionAmount) < 0) {
@@ -211,6 +220,7 @@ public class OverviewFragment extends Fragment implements
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+
 		Log.v("mdb", "super.onResume()");
 		TransactionRecurringCheck.recurringCheck(mActivity,
 				MEntity.getNowMillis());
@@ -236,6 +246,12 @@ public class OverviewFragment extends Fragment implements
 
 		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+
+		if (MainActivity.sqlChange == 1) {
+			onBackTimeListener.OnBackTime(MainActivity.selectedDate,
+					viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+			MainActivity.sqlChange = 0;
+		}
 	}
 
 	@Override
@@ -301,7 +317,7 @@ public class OverviewFragment extends Fragment implements
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				intent.setClass(getActivity(), AccountActivity.class);
-				startActivityForResult(intent, 6);
+				startActivityForResult(intent, 14);
 
 			}
 		});
@@ -311,9 +327,40 @@ public class OverviewFragment extends Fragment implements
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), CreatTransactionActivity.class);
-				startActivityForResult(intent, 6);
+				List<Map<String, Object>> mAccountList1 = AccountDao
+						.selectAccount(mActivity);
+				if (mAccountList1.size() == 0) {
+
+					new AlertDialog.Builder(mActivity)
+							.setTitle("No Accounts! ")
+							.setMessage(
+									"In order to add a transaction please add an account first! ")
+							.setPositiveButton("Add Account",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											Intent intent = new Intent();
+											intent.setClass(
+													getActivity(),
+													CreatNewAccountActivity.class);
+											startActivityForResult(intent, 6);
+											dialog.dismiss();
+
+										}
+									}).show();
+
+				} else {
+
+					Intent intent = new Intent();
+					intent.setClass(getActivity(),
+							CreatTransactionActivity.class);
+					startActivityForResult(intent, 6);
+
+				}
 
 			}
 		});
@@ -408,15 +455,17 @@ public class OverviewFragment extends Fragment implements
 
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
+			Log.v("mtest", "mDataList是否含有"+mDataList);
 			reFillData(mDataList);
 
 			mBudgetList = OverViewDao.selectBudget(mActivity);
-			List<Map<String, Object>> mTransferList = OverViewDao
-					.selectBudgetTransfer(mActivity);
+
 			long firstDay = MEntity
 					.getFirstDayOfMonthMillis(MainActivity.selectedDate);
 			long lastDay = MEntity
 					.getLastDayOfMonthMillis(MainActivity.selectedDate);
+			List<Map<String, Object>> mTransferList = OverViewDao
+					.selectBudgetTransfer(mActivity, firstDay, lastDay);
 
 			Log.v("mtest", "firstDay" + MEntity.turnToDateString(firstDay));
 			Log.v("mtest", "lastDay" + MEntity.turnToDateString(lastDay));
@@ -546,8 +595,9 @@ public class OverviewFragment extends Fragment implements
 			// TODO Auto-generated method stub
 			final int _id = (Integer) mDataList.get(arg2).get("_id");
 			final Map<String, Object> mMap = mDataList.get(arg2);
-			final int parTransaction = (Integer) mDataList.get(arg2).get("parTransaction");
-			
+			final int parTransaction = (Integer) mDataList.get(arg2).get(
+					"parTransaction");
+
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
 
@@ -610,7 +660,7 @@ public class OverviewFragment extends Fragment implements
 						long row = AccountDao.deleteTransaction(mActivity, _id);
 						if (parTransaction == -1) {
 							AccountDao.deleteTransactionChild(mActivity, _id);
-						} 
+						}
 						alertDialog.dismiss();
 						mHandler.post(mTask);
 						onBackTimeListener.OnBackTime(
@@ -708,7 +758,8 @@ public class OverviewFragment extends Fragment implements
 		float ascentY = fontMetrics.ascent;
 		float descentY = fontMetrics.descent;
 
-		canvas.drawText(String.valueOf(contacyCount), size / 2, size - px- (ascentY + descentY) / 2, countPaint);
+		canvas.drawText(String.valueOf(contacyCount), size / 2, size - px
+				- (ascentY + descentY) / 2, countPaint);
 		BitmapDrawable bd = new BitmapDrawable(mActivity.getResources(),
 				originalBitmap);
 		return bd;
@@ -745,7 +796,6 @@ public class OverviewFragment extends Fragment implements
 		case 14:
 
 			if (data != null) {
-Log.v("mdb", "resultCode");
 				mHandler.post(mTask);
 			}
 			break;

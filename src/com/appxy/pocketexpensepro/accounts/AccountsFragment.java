@@ -145,6 +145,9 @@ public class AccountsFragment extends Fragment {
 		this.mInflater = inflater;
 		View view = inflater.inflate(R.layout.fragment_account, container,
 				false);
+		
+		getActivity().getActionBar().setTitle("Accounts");
+
 
 		tranfer_linearLayout = (LinearLayout) view
 				.findViewById(R.id.tranfer_linearLayout);

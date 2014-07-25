@@ -25,6 +25,25 @@ public class BudgetsDao {
 		return db;
 	}
 	
+	public static void updateBudgetTransfer(Context context, int id ,String amount,long dateTime ,int fromBudget, int toBudget) {
+		SQLiteDatabase db = getConnection(context);
+
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("fromBudget", fromBudget);
+		cv.put("toBudget", toBudget);
+
+		String mId = id + "";
+		try {
+			long tid = db.update("BudgetTransfer", cv, "_id = ?",
+					new String[] { mId });
+			db.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+		}
+	}
 
 	public static long updateBudget(Context context, int _id, String amount) {
 		SQLiteDatabase db = getConnection(context);
@@ -147,11 +166,11 @@ public class BudgetsDao {
 		return row;
 	}
 
-	public static long insertBudgetTransfer(Context context, String amount,
-			int fromBudget, int toBudget) {
+	public static long insertBudgetTransfer(Context context, String amount,long dateTime ,int fromBudget, int toBudget) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
 		cv.put("fromBudget", fromBudget);
 		cv.put("toBudget", toBudget);
 		long row = db.insert("BudgetTransfer", null, cv);

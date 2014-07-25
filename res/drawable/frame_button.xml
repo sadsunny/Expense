@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_selected="true"><shape>
+            <stroke android:width="0.5dp" android:color="@color/line_devide_gray" />
+
+            <solid android:color="@android:color/transparent" />
+        </shape></item>
+        
+    <item android:state_pressed="true" android:state_selected="false"><shape>
+            <stroke android:width="0.5dp" android:color="@color/line_devide_gray" />
+
+            <solid android:color="@color/bag_gray1" />
+        </shape></item>
+        
+    <item android:state_activated="false" android:state_selected="false"><shape>
+            <stroke android:width="0.5dp" android:color="@color/line_devide_gray" />
+
+            <solid android:color="@android:color/transparent" />
+        </shape></item>
+
+</selector>

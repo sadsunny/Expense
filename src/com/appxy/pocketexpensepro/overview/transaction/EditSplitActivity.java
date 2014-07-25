@@ -46,8 +46,8 @@ public class EditSplitActivity extends BaseHomeActivity {
 	private List<LinearLayout> mViewList;
 	private List<Map<String, Object>> mDataList;
 	private List<Map<String, Object>> mReturnList;
-	private Button chooseButton;
-	private Button clearButton;
+	private LinearLayout chooseButton;
+	private LinearLayout clearButton;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -195,8 +195,8 @@ public class EditSplitActivity extends BaseHomeActivity {
 				.findViewById(R.id.action_done);
 		doneActionView.setOnClickListener(mClickListener);
 
-		chooseButton = (Button) findViewById(R.id.choose_btn);
-		clearButton = (Button) findViewById(R.id.clear_btn);
+		chooseButton = (LinearLayout) findViewById(R.id.choose_btn);
+		clearButton = (LinearLayout) findViewById(R.id.clear_btn);
 		
 		chooseButton.setOnClickListener(new  OnClickListener() {
 			

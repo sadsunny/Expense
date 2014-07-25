@@ -71,12 +71,12 @@
         <item name="android:layout_marginRight">16dip</item>
         <item name="android:paddingLeft">8dip</item>
         <item name="android:paddingRight">8dip</item>
-        <item name="android:layout_marginBottom">-12dip</item>
+        <item name="android:layout_marginBottom">-19dip</item>
     </style>
 
     <style name="TextAppearance.EditEvent_Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">14sp</item>
         <item name="android:textColor">#FFAAAAAA</item>
     </style>
 
@@ -98,10 +98,11 @@
     <style name="TextAppearance.EditEvent_SpinnerButton" parent="TextAppearance.EditEvent_Spinner">
         <item name="android:paddingLeft">12dp</item>
         <item name="android:paddingRight">12dp</item>
+        <item name="android:gravity">bottom</item>
     </style>
 
     <style name="TextAppearance.EditEvent_Spinner" parent="android:style/Widget.Holo.Light.Spinner">
-        <item name="android:textSize">16.5sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:textColor">#FF333333</item>
         <item name="android:layout_marginRight">12dp</item>
         <item name="android:layout_marginLeft">12dp</item>

@@ -99,7 +99,6 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Charity", 0, 0, 18, 0);
 		categoryIni("Childcare", 0, 0, 19, 0);
 		categoryIni("Clothing", 0, 0, 20, 0);
-
 		categoryIni("Credit Card Payment", 0, 0, 25, 0);
 		categoryIni("Eating Out", 0, 0, 28, 0);
 		categoryIni("Education", 0, 0, 29, 0);
@@ -110,7 +109,6 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Home Repair", 0, 0, 59, 0);
 		categoryIni("Household", 0, 0, 2, 0);
 		categoryIni("Insurance", 0, 0, 43, 0);
-
 		categoryIni("Interest Exp", 0, 0, 61, 0);
 		categoryIni("Loan", 0, 0, 45, 0);
 		categoryIni("Medical", 0, 0, 47, 0);
@@ -119,7 +117,6 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Others", 0, 0, 56, 0);
 		categoryIni("Others", 1, 0, 57, 0);
 		categoryIni("Pets", 0, 0, 52, 0);
-		
 		categoryIni("Rent", 0, 0, 58, 0);
 		categoryIni("Salary", 1, 0, 60, 0);
 		categoryIni("Savings Deposit", 1, 0, 62, 0);
@@ -132,7 +129,6 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Tax:SDI", 0, 0, 64, 0);
 		categoryIni("Tax:Soc Sec", 0, 0, 64, 0);
 		categoryIni("Tax:State", 0, 0, 64, 0);
-
 		categoryIni("Transport", 0, 0, 12, 0);
 		categoryIni("Travel", 0, 0, 0, 0);
 		categoryIni("Utilities", 0, 0, 42, 0);

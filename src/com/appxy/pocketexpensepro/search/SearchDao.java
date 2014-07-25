@@ -64,7 +64,10 @@ public class SearchDao {
 			mMap.put("payee", payee);
 			mMap.put("iconName", iconName);
 			mMap.put("payeeName", payeeName);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 			mList.add(mMap);
 		}
 		mCursor.close();

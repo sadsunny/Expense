@@ -28,8 +28,8 @@
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/name_label" />
+                    android:text="@string/name_label" 
+                     android:layout_marginBottom="-12dip"/>
 
                 <EditText
                     android:id="@+id/payee_edit"
@@ -37,6 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:gravity="bottom"
                     android:capitalize="sentences"
                     android:hint="@string/hide_name_label"
                     android:minHeight="48dip" />
@@ -54,7 +55,6 @@
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
                     android:text="@string/up_category_label" />
 
                 <Button
@@ -62,14 +62,13 @@
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="-12dip"
-                    android:gravity="left|center_vertical" />
+                    android:gravity="bottom" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
                 android:orientation="vertical"
                 android:paddingBottom="6dp" >
@@ -79,7 +78,7 @@
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="0dip"
+                     android:layout_marginBottom="-12dip"
                     android:text="@string/memo_label" />
 
                 <EditText
@@ -88,6 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:gravity="bottom"
                     android:capitalize="sentences"
                     android:hint="@string/hide_memo_label"
                     android:minHeight="48dip" />

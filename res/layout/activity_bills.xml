@@ -18,226 +18,186 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical" >
 
                 <EditText
                     android:id="@+id/bill_edit"
                     style="@style/TextAppearance.EditEvent_Value"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
+                    android:gravity="bottom"
                     android:capitalize="sentences"
-                    android:singleLine="true"
                     android:hint="@string/hint_bill"
-                    android:minHeight="48dip" 
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
+                    android:minHeight="48dip" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                 >
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/optional_label2"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:gravity="bottom"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/amount_label" 
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/amount_label" />
 
                 <EditText
                     android:id="@+id/amount_edit"
                     style="@style/TextAppearance.EditEvent_Value"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_weight="100"
                     android:inputType="number"
                     android:maxLength="13"
                     android:minHeight="48dip"
                     android:singleLine="true"
-                    android:text="@string/zero_label"
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp"  >
+                    android:gravity="bottom"
+                    android:text="@string/zero_label" >
                 </EditText>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/duedate_label"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginBottom="0dip"
-                       android:gravity="bottom"
-                    android:text="@string/category_up_label"
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/category_up_label" />
 
                 <Button
                     android:id="@+id/category_btn"
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
+                    android:layout_height="wrap_content"
                     android:hint="@string/category_label" 
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
+                    android:gravity="bottom"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/duedate_label"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/duedate" 
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp"
-                           android:gravity="bottom"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/duedate" />
 
                 <Button
                     android:id="@+id/duedate_btn"
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:hint="@string/duedate" 
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:hint="@string/duedate" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                >
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/repeat_label"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/recurring"
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp"
-                           android:gravity="bottom" />
+                    android:layout_height="wrap_content"
+                    android:text="@string/recurring" />
 
                 <Button
                     android:id="@+id/recurring_btn"
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:hint="@string/no_recurring"
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp"  />
+                    android:layout_height="wrap_content"
+                   android:gravity="bottom"
+                    android:text="@string/no_recurring" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                 >
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/event_info_reminders_label"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/reminder"
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp" 
-                           android:gravity="bottom"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/reminder" />
 
                 <Button
                     android:id="@+id/reminder_btn"
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:hint="@string/no_reminder" 
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="@string/no_reminder" />
             </LinearLayout>
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:focusable="true"
-                android:orientation="vertical"
-                 >
+                android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/event_info_reminders_label"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
-                    android:layout_height="24dp"
-                    android:layout_marginBottom="0dip"
-                    android:text="@string/payee_up"
-                      android:textColor="@color/text_gray1" 
-                        android:textSize="14sp" 
-                           android:gravity="bottom"/>
+                    android:layout_height="wrap_content"
+                    android:text="@string/payee_up" />
 
                 <Button
                     android:id="@+id/payee_btn"
                     style="@style/TextAppearance.EditEvent_SpinnerButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:hint="@string/unknown" 
-                     android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:text="@string/unknown" />
             </LinearLayout>
-            
-         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dip"
-        android:focusable="true"
-        android:orientation="vertical"
-         >
 
-        <EditText
-            android:id="@+id/memo_edit"
-            style="@style/TextAppearance.EditEvent_Value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:capitalize="sentences"
-            android:hint="@string/hide_memo_label"
-            android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
-            android:minHeight="48dip" 
-             android:textColor="@color/text_black1"
-                    android:textSize="16sp" />
-    </LinearLayout>
-            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dip"
+                android:layout_marginTop="10dip"
+                android:focusable="true"
+                android:orientation="vertical" >
+
+                <EditText
+                    android:id="@+id/memo_edit"
+                    style="@style/TextAppearance.EditEvent_Value"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:capitalize="sentences"
+                    android:hint="@string/hide_memo_label"
+                    android:gravity="bottom"
+                    android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+                    android:minHeight="48dip" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

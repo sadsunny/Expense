@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountTransferActivity;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 
@@ -235,9 +236,7 @@ public class BudgetTransferActivity extends BaseHomeActivity {
 				} else {
 					if (from_id != to_id) {
 
-						long _id = BudgetsDao.insertBudgetTransfer(
-								BudgetTransferActivity.this, amountString,
-								from_id, to_id);
+						long _id = BudgetsDao.insertBudgetTransfer(BudgetTransferActivity.this, amountString,MEntity.getNowMillis(),from_id, to_id);
 						
 						Intent intent = new Intent();
 						intent.putExtra("done", 1);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
@@ -46,7 +48,7 @@ public class ExpenseFragment extends Fragment {
 	public ExpenseFragment() {
 
 	}
-	
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -59,17 +61,17 @@ public class ExpenseFragment extends Fragment {
 				for (int i = 0; i < groupCount; i++) {
 					mExpandableListView.expandGroup(i);
 				}
-				mExpandableListView
-						.setOnGroupClickListener(new OnGroupClickListener() {
-
-							@Override
-							public boolean onGroupClick(
-									ExpandableListView parent, View v,
-									int groupPosition, long id) {
-								// TODO Auto-generated method stub
-								return true;
-							}
-						});
+				// mExpandableListView
+				// .setOnGroupClickListener(new OnGroupClickListener() {
+				//
+				// @Override
+				// public boolean onGroupClick(
+				// ExpandableListView parent, View v,
+				// int groupPosition, long id) {
+				// // TODO Auto-generated method stub
+				// return true;
+				// }
+				// });
 
 				mExpandableListView.setCacheColorHint(0);
 
@@ -107,14 +109,58 @@ public class ExpenseFragment extends Fragment {
 
 		mExpandableListView.setAdapter(mAdapter);
 		mExpandableListView.setGroupIndicator(null);
-		
 		mExpandableListView.setOnItemLongClickListener(listener);
-		
+		mExpandableListView.setOnChildClickListener(onChildClickListener);
+		mExpandableListView.setOnGroupClickListener(onGroupClickListener);
+
 		Thread mThread = new Thread(mTask);
 		mThread.start();
 
 		return view;
 	}
+
+	private OnChildClickListener onChildClickListener = new OnChildClickListener() {
+
+		@Override
+		public boolean onChildClick(ExpandableListView parent, View v,
+				int groupPosition, int childPosition, long id) {
+			// TODO Auto-generated method stub
+			int cId = (Integer) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("_id");
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
+
+				Intent intent = new Intent();
+				intent.putExtra("_id", cId);
+				intent.setClass(getActivity(), EditCategoryActivity.class);
+				startActivityForResult(intent, 11);
+				return true;
+			}
+
+		}
+	};
+
+	private OnGroupClickListener onGroupClickListener = new OnGroupClickListener() {
+
+		@Override
+		public boolean onGroupClick(ExpandableListView parent, View v,
+				int groupPosition, long id) {
+			// TODO Auto-generated method stub
+			int cId = (Integer) groupDataList.get(groupPosition).get("_id");
+
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
+				Intent intent = new Intent();
+				intent.putExtra("_id", cId);
+				intent.setClass(getActivity(), EditCategoryActivity.class);
+				startActivityForResult(intent, 11);
+				return true;
+			}
+
+		}
+	};
 
 	private OnItemLongClickListener listener = new OnItemLongClickListener() {
 
@@ -129,61 +175,83 @@ public class ExpenseFragment extends Fragment {
 
 			final int mPositionType = ExpandableListView
 					.getPackedPositionType(arg3);
+			int cId = 0;
 
+			if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+				cId = (Integer) childrenAllDataList.get(groupPosition)
+						.get(childPosition).get("_id");
 
-			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
-					null);
-			diaListView = (ListView) dialogView.findViewById(R.id.dia_listview);
-			mDialogItemAdapter = new DialogItemAdapter(getActivity());
-			diaListView.setAdapter(mDialogItemAdapter);
-			diaListView.setOnItemClickListener(new OnItemClickListener() {
+			} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+				cId = (Integer) groupDataList.get(groupPosition).get("_id");
 
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					// TODO Auto-generated method stub
+			}
 
-					if (arg2 == 0) {
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
+				View dialogView = mInflater.inflate(
+						R.layout.dialog_item_operation, null);
+				diaListView = (ListView) dialogView
+						.findViewById(R.id.dia_listview);
+				mDialogItemAdapter = new DialogItemAdapter(getActivity());
+				diaListView.setAdapter(mDialogItemAdapter);
+				diaListView.setOnItemClickListener(new OnItemClickListener() {
 
-						int _id = 0;
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
 
-						if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-							_id = (Integer) childrenAllDataList
-									.get(groupPosition).get(childPosition)
-									.get("_id");
-							if (_id > 0) {
-								long row = CategoryDao.deleteCategory(
-										getActivity(), _id);
+						if (arg2 == 0) {
+
+							int _id = 0;
+
+							if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+								_id = (Integer) childrenAllDataList
+										.get(groupPosition).get(childPosition)
+										.get("_id");
+								if (_id > 0) {
+									long row = CategoryDao.deleteCategory(
+											getActivity(), _id);
+									if (row > 0) {
+										MainActivity.sqlChange = 1;
+									}
+								}
+
+							} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+								_id = (Integer) groupDataList
+										.get(groupPosition).get("_id");
+								String cName = (String) groupDataList.get(
+										groupPosition).get("categoryName");
+								Log.v("mtest", "cName" + cName);
+								if (_id > 0) {
+									long row = CategoryDao.deleteCategory(
+											getActivity(), _id);
+									long row2 = CategoryDao.deleteCategoryLike(
+											getActivity(), cName);
+									if (row > 0) {
+										MainActivity.sqlChange = 1;
+									}
+								}
 							}
 
-						} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-							_id = (Integer) groupDataList.get(groupPosition)
-									.get("_id");
-							String cName = (String) groupDataList.get(
-									groupPosition).get("categoryName");
-							Log.v("mtest", "cName" + cName);
-							if (_id > 0) {
-								long row = CategoryDao.deleteCategory(
-										getActivity(), _id);
-								long row2 = CategoryDao.deleteCategoryLike(
-										getActivity(), cName);
-							}
+							mHandler.post(mTask);
+							alertDialog.dismiss();
+
 						}
 
-						mHandler.post(mTask);
-						alertDialog.dismiss();
-
 					}
+				});
 
-				}
-			});
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						getActivity());
+				builder.setView(dialogView);
+				alertDialog = builder.create();
+				alertDialog.show();
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setView(dialogView);
-			alertDialog = builder.create();
-			alertDialog.show();
+				return false;
+			}
 
-			return true;
 		}
 
 	};
@@ -256,17 +324,22 @@ public class ExpenseFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		switch (resultCode) {
 		case 3:
-			
-			 if (data != null) {
-				 mHandler.post(mTask);
+
+			if (data != null) {
+				mHandler.post(mTask);
+			}
+			break;
+
+		case 11:
+
+			if (data != null) {
+				mHandler.post(mTask);
 			}
 			break;
 		}
 	}
-	
-	
 
 }

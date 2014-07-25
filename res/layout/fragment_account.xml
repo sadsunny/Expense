@@ -26,7 +26,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="@string/net_worth_label"
-                android:textColor="@color/over_label_text" 
+                android:textColor="@color/text_black1" 
                 android:alpha="0.6"
                 android:textSize="14sp"/>
 
@@ -42,7 +42,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:text="@string/dollar"
-                    android:textColor="@color/text_orange"
+                    android:textColor="@color/text_black1"
                     android:textSize="16sp" 
                     />
 
@@ -54,7 +54,7 @@
                     android:gravity="center"
                     android:maxLength="18"
                     android:text="@string/zero_label"
-                    android:textColor="@color/text_orange"
+                    android:textColor="@color/text_black1"
                     android:textSize="16sp" 
                     />
                 
@@ -85,7 +85,7 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:text="@string/outstanding_label" 
-                     android:textColor="@color/over_label_text" 
+                     android:textColor="@color/text_orange" 
                      android:alpha="0.6"
                       android:textSize="14sp"/>
 
@@ -102,7 +102,7 @@
                         android:layout_gravity="center_horizontal"
                         android:text="@string/dollar"
                         android:textSize="16sp" 
-                        android:textColor="@color/text_black1"/>
+                        android:textColor="@color/text_orange"/>
 
                     <TextView
                         android:id="@+id/outstanding_txt"
@@ -113,7 +113,7 @@
                         android:maxLength="14"
                         android:text="@string/zero_label"
                         android:textSize="16sp" 
-                        android:textColor="@color/text_black1"/>
+                        android:textColor="@color/text_orange"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -164,13 +164,14 @@
             android:id="@+id/tranfer_linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="5dp"
+            android:paddingTop="0.5dp"
             android:orientation="horizontal" >
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:background="@drawable/button1_selector"
                 android:src="@drawable/transfer_account" />
 
         </LinearLayout>
@@ -182,7 +183,8 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="5dp"
-            android:src="@drawable/export_account" />
+            android:src="@drawable/export_account"
+            android:visibility="invisible" />
         
 
         <ImageView

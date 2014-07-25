@@ -69,7 +69,7 @@
             android:layout_below="@+id/TextView1"
             android:layout_marginLeft="15dp"
             android:layout_toRightOf="@+id/TextView2"
-            android:src="@drawable/recurring" />
+            android:src="@drawable/photo_icon" />
 
         <ImageView
             android:id="@+id/mImageView2"
@@ -79,7 +79,7 @@
             android:layout_below="@+id/TextView1"
             android:layout_marginLeft="12dp"
             android:layout_toRightOf="@+id/mImageView1"
-            android:src="@drawable/photo" />
+            android:src="@drawable/memo_cion" />
 
         <TextView
             android:id="@+id/symbol_txt"

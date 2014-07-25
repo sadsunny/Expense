@@ -81,7 +81,7 @@ public class BudgetActivity extends BaseHomeActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
-
+				
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
 
@@ -226,13 +226,13 @@ public class BudgetActivity extends BaseHomeActivity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mBudgetList = OverViewDao.selectBudget(BudgetActivity.this);
-			List<Map<String, Object>> mTransferList = OverViewDao
-					.selectBudgetTransfer(BudgetActivity.this);
+			
 			Calendar calendar = Calendar.getInstance();
 			long firstDay = MEntity.getFirstDayOfMonthMillis(month
 					.getTimeInMillis());
 			long lastDay = MEntity.getLastDayOfMonthMillis(month
 					.getTimeInMillis());
+			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(BudgetActivity.this, firstDay , lastDay);
 
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");
@@ -404,6 +404,14 @@ public class BudgetActivity extends BaseHomeActivity {
 			break;
 
 		case 16:
+
+			if (data != null) {
+
+				mHandler.post(mTask);
+			}
+			break;
+			
+		case 12:
 
 			if (data != null) {
 

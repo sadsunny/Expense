@@ -66,5 +66,10 @@
     <color name="button_color_se">#d9d9d9</color>
     <color name="button_color">#ededed</color>
     <color name="bag_gray_color">#efefef</color>
+     <color name="paid_bag">#fdc7a0</color>
+     <color name="paid_text">#947156</color>
+     <color name="paid_divid">#e69966</color>
+     <color name="switch_color">#4ea3cc</color>
+     <color name="switch_gray">#d4d4d4</color>
 
 </resources>

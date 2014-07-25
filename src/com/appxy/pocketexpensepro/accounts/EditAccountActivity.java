@@ -114,7 +114,16 @@ public class EditAccountActivity extends BaseHomeActivity {
 		typeId = seTypeId;
 		dateLong = seDate;
 		checkedItem = locationTypePosition(AccountDao.selectAccountType(EditAccountActivity.this), seTypeId);
-		balenceAmountString = seAmount;
+		
+		Log.v("mtest", "seAmount"+seAmount);
+		double theAmount = 0;
+		try {
+			theAmount = Double.parseDouble(seAmount);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		Log.v("mtest", "theAmount1"+theAmount);
+		
 		
 		inflater = LayoutInflater.from(EditAccountActivity.this);
 		ActionBar mActionBar = getActionBar();
@@ -149,12 +158,30 @@ public class EditAccountActivity extends BaseHomeActivity {
 		accountEditText.setSelection(seAcccountName.length());
 		accountEditText.setSelectAllOnFocus(true);
 
-		balanceEditText.setText(MEntity.doubl2str(seAmount));
-
 		typeButton.setOnClickListener(mClickListener);
 		dateButton.setOnClickListener(mClickListener);
 		addButton.setOnClickListener(mClickListener);
 		subButton.setOnClickListener(mClickListener);
+		
+		if (theAmount >= 0) {
+			
+			balenceCheck = 1;
+			addButton.setImageResource(R.drawable.b_add_sel);
+			subButton.setImageResource(R.drawable.b_sub);
+
+		} else {
+			
+			balenceCheck = 0;
+			addButton.setImageResource(R.drawable.b_add);
+			subButton.setImageResource(R.drawable.b_sub_sel);
+			
+		}
+		
+		if (theAmount < 0) {
+			theAmount = 0 - theAmount;
+		}
+		balenceAmountString = theAmount+"";
+		balanceEditText.setText(MEntity.doubl2str(theAmount+""));
 
 		ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter
 				.createFromResource(EditAccountActivity.this, R.array.on_off,
@@ -313,31 +340,13 @@ public class EditAccountActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else if (balanceDouble == 0) {
-
-					new AlertDialog.Builder(EditAccountActivity.this)
-							.setTitle("Warning! ")
-							.setMessage(
-									"Please make sure the balance amount is not zero! ")
-							.setPositiveButton("Retry",
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											// TODO Auto-generated method stub
-											dialog.dismiss();
-
-										}
-									}).show();
 				} else {
 
 					if (balenceCheck == 0) {
 						balanceDouble = 0 - balanceDouble;
 					}
 
-					long row = AccountDao.updateAccount(EditAccountActivity.this,_id,accountName,balenceAmountString, dateLong, clearCheck, typeId);
+					long row = AccountDao.updateAccount(EditAccountActivity.this,_id,accountName,balanceDouble+"", dateLong, clearCheck, typeId);
 
 					Intent intent = new Intent();
 					intent.putExtra("aName", accountName);

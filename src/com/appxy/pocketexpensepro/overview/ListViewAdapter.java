@@ -100,8 +100,14 @@ public class ListViewAdapter extends BaseAdapter {
 			viewholder = (ViewHolder) convertView.getTag();
 		}
 
+		int  parTransaction = (Integer) mData.get(position).get("parTransaction");
 		viewholder.currency_textView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-		viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[(Integer) mData.get(position).get("iconName")]);
+		if (parTransaction == -1) {
+			viewholder.mImageView.setImageResource(R.drawable.mind);
+		} else {
+			viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[(Integer) mData.get(position).get("iconName")]);
+		}
+		
 		
 		long dateTime = (Long) mData.get(position).get("dateTime");
 		viewholder.mTextView2.setText(turnToDateString(dateTime));
@@ -114,15 +120,27 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 
 		String photoName = (String) mData.get(position).get("photoName");
+		if (photoName!=null) {
+			
+		
 		File file = new File(photoName);
 		if (photoName.length() > 0 && file.exists()) {
 
+			viewholder.mImageView1.setVisibility(View.VISIBLE);
+		} else {
+			viewholder.mImageView1.setVisibility(View.INVISIBLE);
+		}
+		
+		}else {
+			viewholder.mImageView1.setVisibility(View.INVISIBLE);
+		}
+
+		String notes = (String) mData.get(position).get("notes");
+		if (notes != null && notes.length()>0) {
 			viewholder.mImageView2.setVisibility(View.VISIBLE);
 		} else {
 			viewholder.mImageView2.setVisibility(View.INVISIBLE);
 		}
-
-		String notes = (String) mData.get(position).get("notes");
 		
 		Double mAmount;
 		try {

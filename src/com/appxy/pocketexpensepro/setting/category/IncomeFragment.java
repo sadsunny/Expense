@@ -24,6 +24,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 public class IncomeFragment extends Fragment {
@@ -59,17 +60,6 @@ public class IncomeFragment extends Fragment {
 					mExpandableListView.expandGroup(i);
 				}
 
-				mExpandableListView
-						.setOnGroupClickListener(new OnGroupClickListener() {
-
-							@Override
-							public boolean onGroupClick(
-									ExpandableListView parent, View v,
-									int groupPosition, long id) {
-								// TODO Auto-generated method stub
-								return true;
-							}
-						});
 				mExpandableListView.setCacheColorHint(0);
 
 				break;
@@ -106,7 +96,9 @@ public class IncomeFragment extends Fragment {
 		mExpandableListView.setAdapter(mAdapter);
 		mExpandableListView.setGroupIndicator(null);
 		mExpandableListView.setOnItemLongClickListener(listener);
-
+		mExpandableListView.setOnChildClickListener(onChildClickListener);
+		mExpandableListView.setOnGroupClickListener(onGroupClickListener);
+		
 		Thread mThread = new Thread(mTask);
 		mThread.start();
 
@@ -126,6 +118,50 @@ public class IncomeFragment extends Fragment {
 		}
 	};
 	
+	private OnChildClickListener onChildClickListener = new OnChildClickListener() {
+
+		@Override
+		public boolean onChildClick(ExpandableListView parent, View v,
+				int groupPosition, int childPosition, long id) {
+			// TODO Auto-generated method stub
+			int cId = (Integer) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("_id");
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
+
+				Intent intent = new Intent();
+				intent.putExtra("_id", cId);
+				intent.setClass(getActivity(), EditCategoryActivity.class);
+				startActivityForResult(intent, 11);
+				return true;
+			}
+
+		}
+	};
+
+	private OnGroupClickListener onGroupClickListener = new OnGroupClickListener() {
+
+		@Override
+		public boolean onGroupClick(ExpandableListView parent, View v,
+				int groupPosition, long id) {
+			// TODO Auto-generated method stub
+			int cId = (Integer) groupDataList.get(groupPosition).get("_id");
+
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
+				Intent intent = new Intent();
+				intent.putExtra("_id", cId);
+				intent.setClass(getActivity(), EditCategoryActivity.class);
+				startActivityForResult(intent, 11);
+				return true;
+			}
+
+		}
+	};
+
+	
 	private OnItemLongClickListener listener = new OnItemLongClickListener() {
 
 		@Override
@@ -138,8 +174,20 @@ public class IncomeFragment extends Fragment {
 					.getPackedPositionChild(arg3);
 			
 			final int mPositionType = ExpandableListView.getPackedPositionType(arg3);
-			  
-			Log.v("mtest", "groupPosition"+groupPosition+"  childPosition"+childPosition);
+			int cId = 0;
+
+			if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+				cId = (Integer) childrenAllDataList.get(groupPosition)
+						.get(childPosition).get("_id");
+
+			} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+				cId = (Integer) groupDataList.get(groupPosition).get("_id");
+
+			}
+
+			if (0 <= cId && cId <= 49) {
+				return true;
+			} else {
 			
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
@@ -188,6 +236,7 @@ public class IncomeFragment extends Fragment {
 			alertDialog.show();
 
 			return true;
+			}
 		}
 
 	};

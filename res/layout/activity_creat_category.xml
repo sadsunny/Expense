@@ -16,7 +16,7 @@
             style="@style/TextAppearance.EditEvent_LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dip"
+            android:layout_marginBottom="-12dip"
             android:text="@string/category_name_label" />
 
         <EditText
@@ -25,11 +25,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-             android:focusable="true"
             android:capitalize="sentences"
+            android:gravity="bottom"
             android:hint="@string/hint_category_name"
-            android:minHeight="48dip" />
+            android:minHeight="48dip" >
+
+            <requestFocus />
+        </EditText>
     </LinearLayout>
+    
 
     <RelativeLayout
         android:id="@+id/mRelativeLayout"
@@ -58,9 +62,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:focusable="true"
         android:orientation="vertical"
-        android:layout_marginTop="10dp"
         android:paddingBottom="6dp" >
 
         <TextView
@@ -68,7 +72,6 @@
             style="@style/TextAppearance.EditEvent_LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="0dip"
             android:text="@string/select_parent" />
 
         <Button
@@ -76,8 +79,7 @@
             style="@style/TextAppearance.EditEvent_SpinnerButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-12dip"
-            android:gravity="left|center_vertical" />
+            android:gravity="bottom" />
     </LinearLayout>
 
 </LinearLayout>

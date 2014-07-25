@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name="com.appxy.pocketexpensepro.MainActivity"
-            android:label="@string/app_name"
+            android:label="@string/account"
             android:logo="@drawable/logo_inside"
             android:screenOrientation="portrait" >
         </activity>
@@ -130,6 +130,14 @@
              android:logo="@drawable/logo_inside"
             android:screenOrientation="portrait" >
         </activity>
+        
+         <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.EditBudgetTransferActivity"
+            android:label="@string/budget"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
         <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountTransferActivity"
             android:label="@string/account"
@@ -192,7 +200,7 @@
         </activity>
         <activity
             android:name="com.appxy.pocketexpensepro.accounts.AccountActivity"
-            android:label="@string/expense_label"
+            android:label="@string/account"
              android:logo="@drawable/logo_inside"
             android:screenOrientation="portrait" >
         </activity>
@@ -271,6 +279,19 @@
             android:name="com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity"
             android:label="@string/app_name"
              android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+          <activity
+            android:name="com.appxy.pocketexpensepro.setting.category.EditCategoryActivity"
+            android:label="@string/edit_category"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.EditBillPayActivity"
+            android:label="@string/edit_category"
+            android:logo="@drawable/logo_inside"
             android:screenOrientation="portrait" >
         </activity>
         

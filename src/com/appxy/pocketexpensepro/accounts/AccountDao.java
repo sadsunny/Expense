@@ -49,7 +49,9 @@ public class AccountDao {
 			int incomeAccount = mCursor.getInt(21);
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -62,7 +64,9 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
-
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -141,6 +145,7 @@ public class AccountDao {
 
 	public static long deleteAccount(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
 		long row = 0;
 		try {
@@ -332,6 +337,10 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 
 			mList.add(mMap);
 		}
@@ -370,7 +379,9 @@ public class AccountDao {
 			int incomeAccount = mCursor.getInt(21);
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -383,6 +394,8 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 
 			mList.add(mMap);
 		}
@@ -433,6 +446,10 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 
 			mList.add(mMap);
 		}
@@ -471,7 +488,9 @@ public class AccountDao {
 			int incomeAccount = mCursor.getInt(21);
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -484,6 +503,8 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
 
 			mList.add(mMap);
 		}
@@ -577,6 +598,9 @@ public class AccountDao {
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
 			
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
 			String categoryName = mCursor.getString(30);
 			int categoryType = mCursor.getInt(32);
 			int hasBudget = mCursor.getInt(35);
@@ -601,7 +625,9 @@ public class AccountDao {
 			mMap.put("expenseAccount", expenseAccount);
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
-
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -708,6 +734,21 @@ public class AccountDao {
 		long row = 0;
 		try {
 			row = db.delete("'Transaction'", "_id = ?", new String[] { _id });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	public static long deleteBudgetTransfer(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("'BudgetTransfer'", "_id = ?", new String[] { _id });
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;

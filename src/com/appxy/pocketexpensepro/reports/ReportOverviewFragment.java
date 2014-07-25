@@ -535,13 +535,15 @@ public class ReportOverviewFragment extends Fragment {
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		renderer.setAxisTitleTextSize(16);// 设置坐标轴标题文本大小
 		renderer.setChartTitleTextSize(20); // 设置图表标题文本大小
-		renderer.setLabelsTextSize(15); // 设置轴标签文本大小
-		renderer.setLegendTextSize(15); // 设置图例文本大小
+		renderer.setLabelsTextSize(18); // 设置轴标签文本大小
+		renderer.setLegendTextSize(18); // 设置图例文本大小
+		renderer.setXLabelsColor(Color.parseColor("#acadb2"));
+		renderer.setYLabelsColor(0,Color.parseColor("#acadb2"));
 		renderer.setMargins(new int[] { MEntity.dip2px(mActivity, 10),
 				MEntity.dip2px(mActivity, 25), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
 		renderer.setApplyBackgroundColor(true);
 		renderer.setBackgroundColor(Color.WHITE);
-		renderer.setMarginsColor(Color.rgb(248, 251, 253));
+		renderer.setMarginsColor(Color.WHITE);
 		renderer.setZoomEnabled(false, false); // 设置是否可缩放XY
 		renderer.setShowGrid(true);
 		renderer.setPanEnabled(true, false);// 设置XY轴的滑动
@@ -632,13 +634,13 @@ public class ReportOverviewFragment extends Fragment {
 			mHandler.post(mTask);
 		} else if (rangPosition == 2) {
 			Calendar c2 = Calendar.getInstance();
-			GetQuarter(c2.get(Calendar.YEAR), c2.get(Calendar.MONTH));
+			GetQuarter(c2.get(Calendar.YEAR), c2.get(Calendar.MONTH)+1);
 			Log.v("mtest", "Calendar.MONTH" + Calendar.MONTH);
 			mHandler.post(mTask);
 		} else if (rangPosition == 3) {
 			Calendar c3 = Calendar.getInstance();
 			c3.add(Calendar.MONTH, -3);
-			GetQuarter(c3.get(Calendar.YEAR), c3.get(Calendar.MONTH));
+			GetQuarter(c3.get(Calendar.YEAR), c3.get(Calendar.MONTH)+1);
 			mHandler.post(mTask);
 		} else if (rangPosition == 4) {
 			Calendar c4 = Calendar.getInstance();

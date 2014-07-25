@@ -63,7 +63,11 @@ public class ReportDao{
 			mMap.put("incomeAccount", incomeAccount);
 			mMap.put("payee", payee);
 			mMap.put("payeeName", payeeName);
-
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();

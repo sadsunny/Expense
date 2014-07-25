@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
@@ -121,10 +122,10 @@ public class EditTransferActivity extends BaseHomeActivity {
 
 	private AlertDialog mPhotoDialog;
 	private AlertDialog mPhotoSeDialog;
-	private Button takePhotoButton;
-	private Button pickPhotoButton;
-	private Button deletePhotoButton;
-	private Button viewPhotoButton;
+	private LinearLayout takePhotoButton;
+	private LinearLayout pickPhotoButton;
+	private LinearLayout deletePhotoButton;
+	private LinearLayout viewPhotoButton;
 	private String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
@@ -747,9 +748,9 @@ public class EditTransferActivity extends BaseHomeActivity {
 
 					View view9 = inflater.inflate(R.layout.dialog_photo_second,
 							null);
-					deletePhotoButton = (Button) view9
+					deletePhotoButton = (LinearLayout) view9
 							.findViewById(R.id.delete_btn);
-					viewPhotoButton = (Button) view9
+					viewPhotoButton = (LinearLayout) view9
 							.findViewById(R.id.view_btn);
 					deletePhotoButton.setOnClickListener(new OnClickListener() {
 
@@ -778,7 +779,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 							Intent intent = new Intent();
 							intent.putExtra("picPath", picPath);
 							intent.setClass(EditTransferActivity.this,
-									ChooseListApdater.class);
+									ViewPhotoActivity.class);
 							startActivity(intent);
 							mPhotoSeDialog.dismiss();
 						}
@@ -804,9 +805,9 @@ public class EditTransferActivity extends BaseHomeActivity {
 				} else {
 
 					View view4 = inflater.inflate(R.layout.dialog_photo, null);
-					takePhotoButton = (Button) view4
+					takePhotoButton = (LinearLayout) view4
 							.findViewById(R.id.take_btn);
-					pickPhotoButton = (Button) view4
+					pickPhotoButton = (LinearLayout) view4
 							.findViewById(R.id.pick_btn);
 					takePhotoButton.setOnClickListener(new OnClickListener() {
 

@@ -19,7 +19,7 @@ public class TransactionRecurringDao {
 		return db;
 	}
 
-	public static List<Map<String, Object>> selectTransactionRecurring(Context context) { // AccountType查询
+	public static List<Map<String, Object>> selectTransactionRecurring(Context context) {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);

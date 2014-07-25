@@ -92,7 +92,7 @@ public class MainActivity extends BaseHomeActivity implements
 
 	public static long selectedDate;// overview 定位时间
 	private OnUpdateWeekSelectListener onUpdateWeekSelectListener;
-	private int mItemPosition = 0;
+	public static int mItemPosition = 0;
 	private ActionBar actionBar;
 	private OverViewNavigationListAdapter overViewNavigationListAdapter;
 	public static long selectedMonth;// bill定位时间
@@ -105,7 +105,8 @@ public class MainActivity extends BaseHomeActivity implements
 	private ArrayList<LinearLayout> layoutArrayList = new ArrayList<LinearLayout>();
 	private ArrayList<View> viewArrayList = new ArrayList<View>();
     private ProgressDialog mDialog;
-	
+	public static int sqlChange = 0;
+    
    private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -215,7 +216,7 @@ public class MainActivity extends BaseHomeActivity implements
 
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(true);
 
 		Calendar calendar1 = Calendar.getInstance();
 		calendar1.set(Calendar.HOUR_OF_DAY, 0);
@@ -460,8 +461,8 @@ public class MainActivity extends BaseHomeActivity implements
 					overViewNavigationListAdapter
 							.setSubTitle(turnToDate(MainActivity.selectedMonth));
 					List<String> billStrings = new ArrayList<String>();
-					billStrings.add("ListView                 ");
-					billStrings.add("CalendarView              ");
+					billStrings.add("List                      ");
+					billStrings.add("Calendar                  ");
 					overViewNavigationListAdapter.setDownItemData(billStrings);
 					actionBar.setListNavigationCallbacks(
 							overViewNavigationListAdapter,
@@ -587,6 +588,8 @@ public class MainActivity extends BaseHomeActivity implements
 		boolean drawerOpen = mDrawerLayout.isDrawerOpen(mLinearLayout);
 		menu.findItem(R.id.action_search).setVisible(drawerOpen);
 		menu.findItem(R.id.action_settings).setVisible(drawerOpen);
+//		actionBar.setDisplayShowTitleEnabled(drawerOpen);
+		
 		if (mItemPosition == 0 || mItemPosition == 2 ) {
 			menu.findItem(R.id.action_add).setVisible(false);
 			
@@ -612,7 +615,6 @@ public class MainActivity extends BaseHomeActivity implements
 					ReportCategoryFragment.item.setVisible(false);
 				}
 			}
-
 		} else {
 			menu.findItem(R.id.action_add).setVisible(!drawerOpen);
 		}
@@ -656,7 +658,7 @@ public class MainActivity extends BaseHomeActivity implements
 			Intent intent = new Intent();
 			intent.setClass(MainActivity.this, SettingActivity.class);
 			startActivity(intent);
-
+			Log.v("mtest", "2222");
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
-        android:layout_height="32dp" >
+        android:layout_height="34dp" >
 
         <View
             android:id="@+id/color_view"
@@ -16,14 +16,19 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dp"
             android:background="@color/blue" />
+        
+         <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+         android:layout_toRightOf="@+id/color_view" >
 
         <TextView
             android:id="@+id/account_txt"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@+id/color_view"
+            android:layout_marginLeft="8dp"
             android:gravity="bottom"
             android:maxEms="7"
             android:singleLine="true"
@@ -31,28 +36,28 @@
             android:textAppearance="?android:attr/textAppearance"
              android:textSize="14sp" 
             android:textColor="@color/text_black1"
+            android:layout_marginBottom="-1dp"
             />
         
         <TextView
             android:id="@+id/currency_txt"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/account_txt"
-            android:layout_marginLeft="12dp"
-            android:layout_toRightOf="@+id/color_view"
+            android:layout_marginLeft="8dp"
             android:gravity="top"
             android:maxEms="12"
             android:singleLine="true"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="10sp" 
             android:textColor="@color/text_gray1"
-            android:layout_marginTop="2dp"
-            android:text="$"/>
+            android:text="$"
+            android:layout_marginTop="-2dp"/>
 
         <TextView
             android:id="@+id/amonut_txt"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/account_txt"
             android:layout_toRightOf="@+id/currency_txt"
             android:gravity="top"
@@ -62,9 +67,9 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textSize="10sp" 
             android:textColor="@color/text_gray1"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="-2dp"
              />
-
+    </RelativeLayout>
 
 
         <TextView
