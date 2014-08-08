@@ -1086,7 +1086,7 @@ public class OverviewFragment extends Fragment implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-//		super.onActivityResult(requestCode, resultCode, data);
+		super.onActivityResult(requestCode, resultCode, data);
 		
 		Log.v("mtest", "requestCode"+requestCode);
 		if (mHelper == null) return;

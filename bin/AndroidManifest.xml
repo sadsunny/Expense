@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.appxy.pocketexpensepro"
+    android:versionCode="4"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="18" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />  
+    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>  
+    
+      <!-- Only Phone -->
+    <compatible-screens>
+
+        <!-- smll all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="small" />
+
+        <!-- normal all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="normal" />
+
+        <!-- xlarge all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="large" />
+    </compatible-screens>
+    
+    
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_logo"
+        android:label="@string/app_name"
+        android:theme="@style/myTheme" >
+        
+          <receiver android:name="com.appxy.pocketexpensepro.service.BootCompletedReceiver">  
+                <intent-filter>  
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>  
+         </receiver>  
+         
+         <receiver android:name="com.appxy.pocketexpensepro.service.AlamrReceiver">
+            <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.AlamrReceiver"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.appxy.pocketexpensepro.service.PastDueReceiver">
+            <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.PastDueReceiver"/>
+            </intent-filter>
+        </receiver>
+         
+         <service android:name="com.appxy.pocketexpensepro.service.NotificationService">
+             
+             <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.BillNotificationService" />
+            </intent-filter>
+         </service>  
+         
+          <service android:name="com.appxy.pocketexpensepro.service.PastDueService">
+             
+             <intent-filter>
+            </intent-filter>
+            
+         </service>  
+         
+          
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_Start"
+            android:label="@string/app_name"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.MainActivity"
+            android:label="Pocket Expense"
+            android:logo="@drawable/logo_inside"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity"
+            android:label="@string/new_account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity"
+            android:label="@string/new_type"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.SettingActivity"
+            android:label="@string/setting"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.payee.PayeeActivity"
+            android:label="@string/payee_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.category.CategoryActivity"
+            android:label="@string/category_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.category.CreatExpenseActivity"
+            android:label="@string/add_expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity"
+            android:label="@string/new_payee"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.setting.payee.EditPayeeActivity"
+            android:label="@string/edit_payee"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity"
+            android:label="@string/transaction_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.CreatBillsActivity"
+            android:label="@string/bills_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity"
+            android:label="@string/bills_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity"
+            android:label="@string/view_image"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.EditAccountActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.BudgetActivity"
+            android:label="@string/budget"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+         <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.EditBudgetTransferActivity"
+            android:label="@string/budget"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.AccountTransferActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.EditTransactionActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.EditTransferActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetTransferActivity"
+            android:label="@string/expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity"
+            android:label="@string/expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.BudgetToTransactionActivity"
+            android:label="@string/expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.BillDetailsActivity"
+            android:label="@string/bill_details"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+            
+            <meta-data 
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.appxy.pocketexpensepro.passcode.Activity_Start"/>
+            
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.BillPayActivity"
+            android:label="@string/expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.BillEditActivity"
+            android:label="@string/expense_label"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.accounts.AccountActivity"
+            android:label="@string/account"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetListActivity"
+            android:label="@string/budget_list"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.overview.budgets.BudgetSelectCategoryActivity"
+            android:label="@string/budget_list"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ChangePass"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ClosePass"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:logo="@drawable/logo_inside"
+            android:windowSoftInputMode="stateAlwaysVisible" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_HomeBack"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:logo="@drawable/logo_inside"
+            android:windowSoftInputMode="stateAlwaysVisible" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_Login"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:logo="@drawable/logo_inside"
+            android:windowSoftInputMode="stateAlwaysVisible" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_ResetPass"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+             android:logo="@drawable/logo_inside"
+            android:windowSoftInputMode="stateAlwaysVisible" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.Activity_SetPass"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysVisible" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.passcode.BaseHomeActivity"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.reports.ReCashListActivity"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.search.SearchActivity"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+          <activity
+            android:name="com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity"
+            android:label="@string/app_name"
+             android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+          <activity
+            android:name="com.appxy.pocketexpensepro.setting.category.EditCategoryActivity"
+            android:label="@string/edit_category"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.appxy.pocketexpensepro.bills.EditBillPayActivity"
+            android:label="@string/edit_category"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+    </application>
+
+</manifest>

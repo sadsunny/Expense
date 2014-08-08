@@ -908,7 +908,7 @@ public class MainActivity extends BaseHomeActivity implements
 			protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-				
+				Log.v("mtest", "main result调用");
 				if (mHelper == null) return;
 				if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
 					Log.v("mtest", "main result edn");

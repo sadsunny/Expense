@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /Users/chydan/AndroidWorkPlace/Expense/src/com/android/vending/billing/IInAppBillingService.aidl
+ * Original file: E:\\Expense\\src\\com\\android\\vending\\billing\\IInAppBillingService.aidl
  */
 package com.android.vending.billing;
 /**
