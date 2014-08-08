@@ -16,8 +16,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.android.vending.billing.IInAppBillingService;
 import com.appxy.pocketexpensepro.CircleView;
-import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.RoundProgressBar;
 import com.appxy.pocketexpensepro.TransactionRecurringCheck;
@@ -32,10 +35,12 @@ import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
+import com.appxy.pocketexpensepro.expinterface.OnRefreshADS;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.expinterface.TellMainBuyPro;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
@@ -43,6 +48,12 @@ import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
 import com.appxy.pocketexpensepro.search.SearchActivity;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
+import com.appxy.pocketexpensepro.util.IabHelper;
+import com.appxy.pocketexpensepro.util.IabResult;
+import com.appxy.pocketexpensepro.util.Inventory;
+import com.appxy.pocketexpensepro.util.Purchase;
+import com.appxy.pocketexpensepro.util.SkuDetails;
+import com.appxy.pocketexpensepro.R;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -66,6 +77,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -93,7 +105,7 @@ import android.widget.Toast;
 import android.view.animation.AccelerateInterpolator;
 
 public class OverviewFragment extends Fragment implements
-		OnChangeStateListener, OnUpdateListListener {
+		OnChangeStateListener, OnUpdateListListener, OnRefreshADS {
 
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
@@ -144,7 +156,21 @@ public class OverviewFragment extends Fragment implements
 	private TextView currency_label2;
 	private TextView networthTextView;
 	private List<Map<String, Object>> mBudgetList;
-
+	private RelativeLayout adsLayout;
+	private Button adsButton;
+	private IabHelper mHelper;
+	private boolean iap_is_ok = false;
+	private IInAppBillingService billingservice;
+	private static final String PREFS_NAME = "SAVE_INFO";
+	public static final String Paid_Id_VF = "upgrade";
+	static final String TAG = "Expense";
+	static final int RC_REQUEST = 10001;
+	private static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi803lugKTJdERpN++BDhRYY5hr0CpTsuj+g3fIZGBLn+LkZ+me0it3lP375tXqMlL0NLNlasu9vWli3QkCFBbERf+KysqUCsrqqcoq3hUini6LSiKkyuISM2Y4gWUqSVT+vkLP4psshnwJTbF6ii2jZfXFxLVoT5P30+y4rgCwncgRsX14x2bCpJlEdxrNfoxL4EqlHAt9/9vsc0PoW8QH/ChKJFkTDOsB9/42aur4zF9ua568ny1K6vlE/lnkffBP6DvsHFrIdpctRyUdrBVnUyMl+1k2ufUHJudfeGpKuExLcNOxuryCTolIFj44dB2TugNFzQwOE4xoRyCfJ7bQIDAQAB";
+	private ArrayList<String> sku_list;
+	private ArrayList<String> price_list;
+	private TextView notiTextView;
+	private TellMainBuyPro tellMainBuyPro;
+	
 	public OverviewFragment() {
 
 	}
@@ -154,10 +180,17 @@ public class OverviewFragment extends Fragment implements
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				if (mDataList != null) {
+				if (mDataList != null && mDataList.size() > 0 ) {
 					mListViewAdapter.setAdapterDate(mDataList);
 					mListViewAdapter.notifyDataSetChanged();
+					
+					notiTextView.setVisibility(View.INVISIBLE);
+					mListView.setVisibility(View.VISIBLE);
+				}else{
+					notiTextView.setVisibility(View.VISIBLE);
+					mListView.setVisibility(View.INVISIBLE);
 				}
+					
 
 				if (BdgetSetting == 0) {
 					left_label.setText("LEFT");
@@ -215,11 +248,29 @@ public class OverviewFragment extends Fragment implements
 			}
 		}
 	};
+	
+	 @Override
+	    public void onDestroy() {
+	        super.onDestroy();
+	        // very important:
+	        Log.d(TAG, "Destroying helper.");
+	        if (mHelper != null) {
+	            mHelper.dispose();
+	            mHelper = null;
+	        }
+	    }
 
 	@Override
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		
+		  SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);  
+	      Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+	        
+		if (Common.mIsPaid && adsLayout != null) {
+			adsLayout.setVisibility(View.GONE);
+		}
 
 		Log.v("mdb", "super.onResume()");
 		TransactionRecurringCheck.recurringCheck(mActivity,
@@ -248,9 +299,10 @@ public class OverviewFragment extends Fragment implements
 		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
 		if (MainActivity.sqlChange == 1) {
+			MainActivity.sqlChange = 0;
 			onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 					viewPagerPosition);// viewPagerPosition用于判断具体的fragment
-			MainActivity.sqlChange = 0;
+			
 		}
 	}
 
@@ -279,6 +331,145 @@ public class OverviewFragment extends Fragment implements
 		selectedDate = argumentsDate;
 
 	}
+	
+	Handler iapHandler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch(msg.what){
+			case 0:
+				adsButton.setText(price_list.get(0));
+				break;
+			}
+		};
+	};
+	
+	//获取价格
+		private void getPrice(){
+			ArrayList<String> skus = new ArrayList<String>();
+			skus.add(Paid_Id_VF);
+			billingservice = mHelper.getService();
+			
+			Bundle querySkus = new Bundle();
+		    querySkus.putStringArrayList("ITEM_ID_LIST", skus);
+			try {
+				Bundle skuDetails = billingservice.getSkuDetails(3, mActivity.getPackageName(),"inapp", querySkus);
+				Log.v("mtest", "skuDetails"+skuDetails);
+				ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
+				Log.v("mtest", "responseList"+responseList);
+				if (null!=responseList) {
+					for (String thisResponse : responseList) {
+			            try {
+							SkuDetails d = new SkuDetails(thisResponse);
+							
+							for (int i = 0; i < sku_list.size(); i++) {
+								if (sku_list.get(i).equals(d.getSku())) {
+									price_list.set(i, d.getPrice());
+								}
+							}
+							iapHandler.sendEmptyMessage(0);
+							
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			            
+			        }
+				}
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	
+	
+	 IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+			
+			@Override
+			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+				// TODO Auto-generated method stub
+				 if (mHelper == null) return;
+				 
+				 if (!result.isSuccess()) {
+		                return;
+		            }
+				 
+				 Purchase premiumPurchase = inv.getPurchase(Paid_Id_VF);
+				
+				 Common.mIsPaid = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
+			     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+			     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+				 meditor.putBoolean("isPaid",Common.mIsPaid ); 
+				 meditor.commit();
+				 
+				  Log.v("mtest", "查询中的pay状况"+Common.mIsPaid);
+				 if (Common.mIsPaid) {
+					 Log.v("mtest", "查询中出paid设置状态");
+					adsLayout.setVisibility(View.GONE);
+				}
+				 
+			}
+		};
+		
+        void loadIsPaid() { //查询是否支付
+        	
+			    SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);  
+		        Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+		}
+        
+	    boolean verifyDeveloperPayload(Purchase p) {
+	        String payload = p.getDeveloperPayload();
+	        return true;
+	    }
+	    
+	    void alert(String message) {
+	        AlertDialog.Builder bld = new AlertDialog.Builder(mActivity);
+	        bld.setMessage(message);
+	        bld.setNeutralButton("OK", null);
+	        bld.create().show();
+	    }
+//	    void complain(String message) {
+//	        Log.e(TAG, "**** Expense Error: " + message);
+//	        alert("Error: " + message);
+//	    }
+	    
+	    // Callback for when a purchase is finished
+	    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+	    	
+	    	@Override
+	        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+
+	            // if we were disposed of in the meantime, quit.
+	            if (mHelper == null) return;
+	   			
+	            Log.v("mtest", "*****调用查询queryInventoryAsync*****"+result);
+	             mHelper.queryInventoryAsync(mGotInventoryListener);
+	            
+	            if (!result.isSuccess()) {
+	            	Log.v("mtest", "1结果"+result);
+//	            	complain("Error purchasing: " + result);
+	                return;
+	            }
+	            if (!verifyDeveloperPayload(purchase)) {
+	            	Log.v("mtest", "2结果"+result);
+	                return;
+	            }
+
+	            if (purchase.getSku().equals(Paid_Id_VF)) {
+	                // bought the premium upgrade!
+	                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
+	            	Log.v("mtest", "3结果"+result);
+	                alert("Thank you for upgrading to pro!");
+	             Common.mIsPaid =true;
+	   		     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+	   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+	   			 meditor.putBoolean("isPaid",Common.mIsPaid ); 
+	   			 meditor.commit();
+	   			 adsLayout.setVisibility(View.GONE);
+	            }
+	        }
+
+		
+	    };
+
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -296,7 +487,8 @@ public class OverviewFragment extends Fragment implements
 
 		currency_label1 = (TextView) view.findViewById(R.id.currency_label1);
 		currency_label2 = (TextView) view.findViewById(R.id.currency_label2);
-
+		notiTextView = (TextView) view.findViewById(R.id.notice_txt);
+		
 		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
@@ -306,9 +498,78 @@ public class OverviewFragment extends Fragment implements
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);
 		left_label = (TextView) view.findViewById(R.id.left_label);
 		addView = (Button) view.findViewById(R.id.add_btn);
-
-		accountRelativeLayout = (LinearLayout) view
-				.findViewById(R.id.relativeLayout2);
+		
+		sku_list = new ArrayList<String>();
+		price_list = new ArrayList<String>();
+		sku_list.add(Paid_Id_VF);
+		price_list.add("N/A");
+		
+		 loadIsPaid();//查询是否paid
+		 
+		 adsLayout = (RelativeLayout) view.findViewById(R.id.ads_layout);
+		 adsButton = (Button) view.findViewById(R.id.ads_button);
+		 
+		    if (Common.mIsPaid) {
+				adsLayout.setVisibility(View.GONE);
+				 
+			} else {
+				 adsLayout.setVisibility(View.VISIBLE);
+				 try {
+					
+				 mHelper = new IabHelper(mActivity, base64EncodedPublicKey);
+				 mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+					
+					@Override
+					public void onIabSetupFinished(IabResult result) {
+						// TODO Auto-generated method stub
+						if (!result.isSuccess()) {
+		                   // Oh noes, there was a problem.
+		                   return;
+		               }
+						
+						 if (mHelper == null) return;
+						 iap_is_ok = true;
+						 
+						 new Thread(new Runnable() {
+								
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									getPrice();
+								}
+							}).start();
+						 
+						 mHelper.queryInventoryAsync(mGotInventoryListener);
+					}
+				});
+				 } catch (Exception e) {
+						// TODO: handle exception
+					}
+				 
+			}
+		    
+		    adsLayout.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View paramView) {
+					// TODO Auto-generated method stub
+					
+//					tellMainBuyPro = (TellMainBuyPro)mActivity;
+//					tellMainBuyPro.mainBuyPro();
+					
+					if (iap_is_ok && mHelper != null) {
+						mHelper.flagEndAsync();
+						String payload = "";
+						 mHelper.launchPurchaseFlow(mActivity, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
+					}else{
+					}
+					
+				}
+			});
+			
+		
+		 
+		accountRelativeLayout = (LinearLayout) view.findViewById(R.id.relativeLayout2);
 
 		accountRelativeLayout.setOnClickListener(new OnClickListener() {
 
@@ -327,6 +588,43 @@ public class OverviewFragment extends Fragment implements
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
+				   int tranactionSize = AccountDao.selectTransactionAllSize(mActivity);
+				   if ( !Common.mIsPaid && tranactionSize >= 70) {
+						
+				    	 new AlertDialog.Builder(mActivity)
+							.setTitle("Upgrade to Pro? ")
+							.setMessage(
+									"You've reached the max number of transactions allowed in the free version. Would you like to upgrade to pro to remove ads and transaction limitation? ")
+							.setPositiveButton("Upgrade to Pro",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											if (iap_is_ok && mHelper != null) {
+												 mHelper.flagEndAsync();
+												 mHelper.launchPurchaseFlow(mActivity, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
+											}
+											dialog.dismiss();
+
+										}
+									})
+									.setNegativeButton("No", new DialogInterface.OnClickListener(){
+
+										@Override
+										public void onClick(DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated method stub
+											dialog.dismiss();
+										}
+										
+									})
+									.show();
+				    	 
+					} else {
+						
 				List<Map<String, Object>> mAccountList1 = AccountDao
 						.selectAccount(mActivity);
 				if (mAccountList1.size() == 0) {
@@ -361,6 +659,7 @@ public class OverviewFragment extends Fragment implements
 					startActivityForResult(intent, 6);
 
 				}
+					}
 
 			}
 		});
@@ -771,20 +1070,59 @@ public class OverviewFragment extends Fragment implements
 		switch (item.getItemId()) {
 
 		case R.id.today:
-
-			onUpdateNavigationListener.OnUpdateNavigation();
+			
+			if (viewPagerPosition != MID_VALUE) {
+				onUpdateNavigationListener.OnUpdateNavigation();
+			}
+			
 
 			return true;
 
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
+//		super.onActivityResult(requestCode, resultCode, data);
+		
+		Log.v("mtest", "requestCode"+requestCode);
+		if (mHelper == null) return;
+		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+			Log.v("mtest", "fragment result edn");
+			super.onActivityResult(requestCode, resultCode, data);
+			 if (requestCode == RC_REQUEST) {     
+			      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+			      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+			      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+			        
+			      if (resultCode == mActivity.RESULT_OK) {
+			         try {
+			            JSONObject jo = new JSONObject(purchaseData);
+			            String sku = jo.getString("productId");
+			            alert("Thank you for upgrading to pro! ");
+			            adsLayout.setVisibility(View.GONE);
+			             SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+					     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+						 meditor.putBoolean("isPaid",true ); 
+						 meditor.commit();
+			          }
+			          catch (JSONException e) {
+			             alert("Failed to parse purchase data.");
+			             e.printStackTrace();
+			          }
+			      }
+			   }
+			 
+        }
+        else {
+        	
+        }
+		
 		switch (resultCode) {
+		
 		case 6:
 
 			if (data != null) {
@@ -796,7 +1134,9 @@ public class OverviewFragment extends Fragment implements
 		case 14:
 
 			if (data != null) {
-				mHandler.post(mTask);
+//				mHandler.post(mTask);
+				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
+						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
 			break;
 
@@ -808,6 +1148,16 @@ public class OverviewFragment extends Fragment implements
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
 			break;
+			
+		case 2:
+
+			if (data != null) {
+
+				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
+						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+			}
+			break;
+			
 		}
 	}
 
@@ -838,6 +1188,14 @@ public class OverviewFragment extends Fragment implements
 		this.selectedDate = selectedDate;
 		mHandler.post(mTask);
 
+	}
+
+	@Override
+	public void refreshADS() {
+		// TODO Auto-generated method stub
+		if (Common.mIsPaid && adsLayout != null) {
+			adsLayout.setVisibility(View.GONE);
+		}
 	}
 
 }

@@ -134,7 +134,7 @@ public class ReCashListActivity extends Activity {
 				new AlertDialog.Builder(ReCashListActivity.this)
 						.setTitle("Warning! ")
 						.setMessage(
-								"This is a part of a transaction splite, and ot can not be edit alone! ")
+								"This is a part of a transaction splite, and it can not be edited alone! ")
 						.setPositiveButton("Retry",
 								new DialogInterface.OnClickListener() {
 
@@ -194,7 +194,7 @@ public class ReCashListActivity extends Activity {
 				new AlertDialog.Builder(ReCashListActivity.this)
 						.setTitle("Warning! ")
 						.setMessage(
-								"This is a part of a transaction splite, and ot can not be edit alone! ")
+								"This is a part of a transaction splite, and it can not be edited alone! ")
 						.setPositiveButton("Retry",
 								new DialogInterface.OnClickListener() {
 

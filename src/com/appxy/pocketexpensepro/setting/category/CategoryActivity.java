@@ -53,7 +53,6 @@ public class CategoryActivity extends BaseHomeActivity {
 				// TODO Auto-generated method stub
 			}
 		};
-
 		actionBar.addTab(actionBar.newTab().setText("Expense")
 				.setTabListener(tabListener));
 		actionBar.addTab(actionBar.newTab().setText("Income")

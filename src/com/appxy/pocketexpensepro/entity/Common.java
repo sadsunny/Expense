@@ -17,7 +17,9 @@ import com.appxy.pocketexpensepro.R;
 public class Common {
 
 	public static int CURRENCY = 148;
-
+	// Does the user paid?
+	public static boolean mIsPaid = false;
+    
 	public final static Integer[] ACCOUNT_TYPE_ICON = { R.drawable.asset_type,
 			R.drawable.cash_type, R.drawable.checking_type,
 			R.drawable.credit_card_type, R.drawable.debit_card_type,

@@ -114,11 +114,16 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 
 		String photoName = (String) mData.get(position).get("photoName");
+		if (photoName != null) {
+	
 		File file = new File(photoName);
 		if (photoName.length() > 0 && file.exists()) {
 
 			viewholder.mImageView2.setVisibility(View.VISIBLE);
 		} else {
+			viewholder.mImageView2.setVisibility(View.INVISIBLE);
+		}
+		}else {
 			viewholder.mImageView2.setVisibility(View.INVISIBLE);
 		}
 

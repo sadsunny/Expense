@@ -108,7 +108,6 @@ public class ListViewAdapter extends BaseAdapter {
 			viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[(Integer) mData.get(position).get("iconName")]);
 		}
 		
-		
 		long dateTime = (Long) mData.get(position).get("dateTime");
 		viewholder.mTextView2.setText(turnToDateString(dateTime));
 		

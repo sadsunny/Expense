@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:roundProgress="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"   
+    xmlns:roundProgress="http://schemas.android.com/apk/res/com.appxy.pocketexpensepro"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:background="@color/white">
-    
+    android:layout_height="match_parent"
+    android:background="@color/white" >
+
     <LinearLayout
         android:id="@+id/week_view"
         android:layout_width="match_parent"
@@ -20,79 +20,78 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="SUN"
             android:textColor="@color/text_black"
-            android:textSize="12sp"
-            android:alpha="0.7" />
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="MON"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp" 
-            android:alpha="0.7"/>
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="TUE"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp" 
-            android:alpha="0.7"/>
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="WED"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp"
-            android:alpha="0.7" />
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="THU"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp"
-            android:alpha="0.7" />
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="FRI"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp" 
-            android:alpha="0.7"/>
+            android:textSize="12sp" />
 
         <TextView
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
+            android:alpha="0.7"
             android:gravity="center"
             android:text="SAT"
             android:textColor="@color/over_label_text"
-            android:textSize="12sp" 
-            android:alpha="0.7"/>
+            android:textSize="12sp" />
     </LinearLayout>
-    
 
     <RelativeLayout
         android:id="@+id/RelativeLayout1"
@@ -100,196 +99,251 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/week_view"
         android:visibility="visible" >
-        
-        
+
         <android.support.v4.view.ViewPager
             android:id="@+id/mPager"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_alignParentTop="true" />
 
+        <RelativeLayout
+            android:id="@+id/ads_layout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_below="@+id/mPager"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/ads_stroke"
+            android:paddingLeft="1dp"
+            android:paddingRight="1dp"
+            android:visibility="visible"
+            android:descendantFocusability = "blocksDescendants"
+             >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ads" />
+
+            <Button
+                android:id="@+id/ads_button"
+                android:layout_width="85dp"
+                android:layout_height="30dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/ads_button"
+                android:text="N/A"
+                android:focusable="false" 
+                android:focusableInTouchMode="false"  
+                android:clickable="false"  
+                android:textColor="@color/white" />
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/ads_line"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@+id/ads_layout"
+            android:background="@color/line_devide_gray" />
+
         <ListView
             android:id="@+id/mListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/mPager"
+            android:layout_below="@+id/ads_line"
             android:layout_marginBottom="48.5dp"
             android:dividerHeight="0dp" >
         </ListView>
         
-        <RelativeLayout 
+        <TextView
+            android:id="@+id/notice_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ads_line"
+            android:text="No transactions on this day"
+            android:layout_centerInParent="true"
+            android:textSize="19sp"
+            android:textColor="@color/text_gray1"
+            >
+        </TextView>
+        
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="48.5dp"
-            android:layout_alignParentBottom="true">
-            
-            <View 
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_above="@+id/relativeLayout1"
-            android:background="@color/line_devide_gray"/>
+            android:layout_alignParentBottom="true" >
 
-        <LinearLayout
-            android:id="@+id/relativeLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/white"
-            android:weightSum="760"
-            android:orientation="horizontal" >
-            
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_above="@+id/relativeLayout1"
+                android:background="@color/line_devide_gray" />
+
             <LinearLayout
-            android:id="@+id/budget_relativeLayout"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:background="@drawable/linerlayout_selector"
-            android:layout_weight="331"
-            android:orientation="horizontal" 
-            android:gravity="center"
-            >
-            
-               
-            <RelativeLayout
-                android:id="@+id/budget_relativeLayout1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                >
+                android:id="@+id/relativeLayout1"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:weightSum="760" >
 
-                <TextView
-                    android:id="@+id/currency_label1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dollar"
-                    android:textSize="16.5sp"
-                    android:textColor="@color/over_budget_text" />
+                <LinearLayout
+                    android:id="@+id/budget_relativeLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="331"
+                    android:background="@drawable/linerlayout_selector"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
 
-                <TextView
-                    android:id="@+id/left_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/currency_label1"
-                    android:text="@string/zero_label"
-                    android:textSize="16.5sp"
-                    android:textColor="@color/over_budget_text" />
+                    <RelativeLayout
+                        android:id="@+id/budget_relativeLayout1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" >
 
-                <TextView
-                    android:id="@+id/left_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/currency_label1"
-                    android:text="LEFT" 
-                    android:textColor="@color/over_label_text"
-                    android:textSize="10.5sp"
-                    android:alpha="0.5"
-                    />
-            </RelativeLayout>
-            
+                          <LinearLayout
+                            android:id="@+id/liner1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:orientation="horizontal" >
+                            
+                        <TextView
+                            android:id="@+id/currency_label1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dollar"
+                            android:textColor="@color/over_budget_text"
+                            android:textSize="16.5sp" />
+
+                        <TextView
+                            android:id="@+id/left_amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/currency_label1"
+                            android:text="@string/zero_label"
+                            android:textColor="@color/over_budget_text"
+                            android:textSize="16.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/left_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/liner1"
+                            android:layout_centerHorizontal="true"
+                            android:alpha="0.5"
+                            android:text="LEFT"
+                            android:textColor="@color/over_label_text"
+                            android:textSize="10.5sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/relativeLayout_mid"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="98"
+                    android:orientation="horizontal" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/relativeLayout2"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="331"
+                    android:background="@drawable/linerlayout_selector"
+                    android:gravity="center"
+                    android:orientation="horizontal" >
+
+                    <RelativeLayout
+                        android:id="@+id/relativeLayout3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center" >
+
+                        <LinearLayout
+                            android:id="@+id/liner2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:orientation="horizontal" >
+
+                            <TextView
+                                android:id="@+id/currency_label2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/dollar"
+                                android:textColor="@color/text_black"
+                                android:textSize="16.5sp" />
+
+                            <TextView
+                                android:id="@+id/net_amount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_toRightOf="@+id/currency_label2"
+                                android:text="@string/zero_label"
+                                android:textColor="@color/text_black"
+                                android:textSize="16.5sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/net_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/liner2"
+                            android:layout_centerHorizontal="true"
+                            android:alpha="0.5"
+                            android:gravity="top"
+                            android:text="NET WORTH"
+                            android:textColor="@color/over_label_text"
+                            android:textSize="10.5sp" />
+                    </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
-            
-              <LinearLayout
-             android:id="@+id/relativeLayout_mid"
-             android:layout_width="0dp"
-             android:layout_height="48dp"
-             android:layout_weight="98"
-             android:orientation="horizontal"
-             >
-            
-            </LinearLayout>
-            
-
-          <LinearLayout
-            android:id="@+id/relativeLayout2"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:background="@drawable/linerlayout_selector"
-            android:layout_weight="331"
-            android:orientation="horizontal"
-             android:gravity="center" >
-            
-            <RelativeLayout
-                android:id="@+id/relativeLayout3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-               
-                 >
-
-                <TextView
-                    android:id="@+id/currency_label2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dollar" 
-                    android:textColor="@color/text_black"
-                    android:textSize="16.5sp"/>
-
-                <TextView
-                    android:id="@+id/net_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/currency_label2"
-                    android:text="@string/zero_label"
-                    android:textColor="@color/text_black"
-                    android:textSize="16.5sp" />
-
-                <TextView
-                    android:id="@+id/net_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@+id/currency_label2"
-                    android:gravity="top"
-                    android:text="NET WORTH"
-                    android:textColor="@color/over_label_text"
-                    android:textSize="10.5sp"
-                    android:alpha="0.5"
-                     />
-            </RelativeLayout>
-            </LinearLayout>
-            
-        </LinearLayout>
-        
         </RelativeLayout>
-        
     </RelativeLayout>
-
 
     <android.support.v4.view.ViewPager
         android:id="@+id/mPager2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone" />
-    
+
     <Button
         android:id="@+id/add_btn"
         android:layout_width="68dp"
         android:layout_height="68dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/circle_button_selector"
-        android:layout_marginBottom="-10dp"/>
-    
-        <ImageView
-                android:id="@+id/add_but"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="8dp"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/add_button" />
-        
-        <com.appxy.pocketexpensepro.RoundProgressBar 
-		     android:id="@+id/roundBar"
-		     android:layout_width="68dp"  
-		     android:layout_height="68dp"
-		     android:layout_alignParentBottom="true"
-             android:layout_centerHorizontal="true"
-             android:layout_marginBottom="-10dp"
-		 	 roundProgress:max="100"
-		 	 roundProgress:fill = "false"    
-		 	 roundProgress:Inside_Interval="1"
-		     roundProgress:Paint_Color = "@color/over_budget_text" 
-		 	 roundProgress:Show_Bottom = "false"
-		    /> 
-        
+        android:layout_marginBottom="-10dp"
+        android:background="@drawable/circle_button_selector" />
+
+    <ImageView
+        android:id="@+id/add_but"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:src="@drawable/add_button" />
+
+    <com.appxy.pocketexpensepro.RoundProgressBar
+        android:id="@+id/roundBar"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="-10dp"
+        roundProgress:Inside_Interval="1"
+        roundProgress:Paint_Color="@color/over_budget_text"
+        roundProgress:Show_Bottom="false"
+        roundProgress:fill="false"
+        roundProgress:max="100" />
 
 </RelativeLayout>

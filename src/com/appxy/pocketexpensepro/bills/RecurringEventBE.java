@@ -35,17 +35,19 @@ public class RecurringEventBE {
 			long startDate = 0; // 进一步精确判断日记起止点，保证了该段时间断获取的数据不未空，减少不必要的处理
 			long endDate = 0;
 
-			startDate = (bk_billDuedate <= start) ? start : bk_billDuedate; // 进一步判断日记起止点，这样就保证了该段时间断获取的数据不未空
+			
 			if (bk_billEndDate == -1) { // 永远重复事件的处理
 
 				if (end >= bk_billDuedate) {
 					endDate = end;
+					startDate = (bk_billDuedate <= start) ? start : bk_billDuedate; // 进一步判断日记起止点，这样就保证了该段时间断获取的数据不未空
 				}
 
 			} else {
 
 				if (start <= bk_billEndDate && end >= bk_billDuedate) { // 首先判断起止时间是否落在重复区间，表示该段时间有重复事件
 					endDate = (bk_billEndDate >= end) ? end : bk_billEndDate;
+					startDate = (bk_billDuedate <= start) ? start : bk_billDuedate; // 进一步判断日记起止点，这样就保证了该段时间断获取的数据不未空
 				}
 			}
 

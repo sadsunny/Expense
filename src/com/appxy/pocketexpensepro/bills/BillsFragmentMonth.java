@@ -19,6 +19,7 @@ import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
+import com.appxy.pocketexpensepro.service.NotificationService;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -159,8 +160,6 @@ public class BillsFragmentMonth extends Fragment implements
 				long mChooseTime = getMilltoDate(calendarGridViewAdapter
 						.getDayString().get(paramInt));
 				selectDate = mChooseTime;
-				Log.v("mtest",
-						"mChooseTime" + MEntity.getMilltoDate(mChooseTime));
 
 				calendarGridViewAdapter.setCheckDat(mChooseTime);
 				calendarGridViewAdapter.notifyDataSetChanged();
@@ -185,7 +184,6 @@ public class BillsFragmentMonth extends Fragment implements
 		mViewPager.setAdapter(billMonthViewPagerAdapter);
 
 		int mOffset = MEntity.getOffsetByMonth(MainActivity.selectedMonth);
-		Log.v("mtest", "重新获取的mOffset" + mOffset);
 		mViewPager.setCurrentItem(MID_VALUE + mOffset);
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
@@ -311,7 +309,6 @@ public class BillsFragmentMonth extends Fragment implements
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			Log.v("mtest", "+**++++++++++pay返回**************************");
 			long thSelectedTime = MainActivity.selectedMonth;
 			calendarGridViewAdapter.setCheckDat(selectDate);
 			month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(thSelectedTime));
@@ -568,8 +565,13 @@ public class BillsFragmentMonth extends Fragment implements
 	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
 
 		if(mFlag == 1){
-			BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId);
 			BillsDao.deleteBillObjectByParId(mActivity, theId);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
+			
 		}else if(mFlag == 2){
 
 			billVirtualFutuDelete(theId,mMap);
@@ -674,8 +676,12 @@ public class BillsFragmentMonth extends Fragment implements
 
 		long preDuedate = calendar.getTimeInMillis();
 
-		BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
 		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
+		if (row > 0) {
+			 Intent service=new Intent(mActivity, NotificationService.class);  
+			 mActivity.startService(service);  
+		}
 		return row;
 	}
 	
@@ -734,13 +740,21 @@ public class BillsFragmentMonth extends Fragment implements
 	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
 
 		if (mFlag == 0) {
-			BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		} else if(mFlag == 1){
 			billParentDelete(theId,mMap);
 		}else if(mFlag == 2){
 			billVirtualThisDelete(theId,mMap);
 		}else if (mFlag == 3) {
-			BillsDao.deleteBillObject(mActivity, theId);
+			long row = BillsDao.deleteBillObject(mActivity, theId);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		}
 
 	}
@@ -751,6 +765,10 @@ public class BillsFragmentMonth extends Fragment implements
 				ep_billItemDueDate, ep_billItemDueDate, " ", "",
 				1, 1, ep_billItemDueDate,
 				rowid, 1, 1);
+		if (row > 0) {
+			 Intent service=new Intent(mActivity, NotificationService.class);  
+			 mActivity.startService(service);  
+		}
 		return row;
 	}
 	
@@ -845,11 +863,19 @@ public class BillsFragmentMonth extends Fragment implements
 		if (nextDuedate > bk_billEndDate) { 
 
 			row =BillsDao.deleteBill(mActivity, rowid);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 
 		} else {
 
-			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
+			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
 			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+			if (rowUp > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		}
 		return row;
 	}
@@ -885,7 +911,6 @@ public class BillsFragmentMonth extends Fragment implements
 		case 16:
 
 			if (data != null) {
-				Log.v("mtest", "pay返回**************************");
 				mHandler.post(mTask);
 				MonthFragment  monthFragment = (MonthFragment) billMonthViewPagerAdapter.registeredFragments.get(MID_VALUE+ MEntity.getOffsetByMonth(MainActivity.selectedMonth));
 				monthFragment.refresh();

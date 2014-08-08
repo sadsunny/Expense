@@ -92,10 +92,8 @@ public class MonthFragment extends Fragment {
 			if (mThread == null) {
 				mThread = new Thread(mTask);
 				mThread.start();
-				Log.v("mtest", "11"+position);
 			} else {
 				mHandler.post(mTask);
-				Log.v("mtest", "22"+position);
 			}
 		}
 
@@ -202,8 +200,12 @@ public class MonthFragment extends Fragment {
 
 				mMap.put("monthTime", firstDayOfMonth);
 
+				Log.v("mtest", "*********firstDayOfMonth******"+MEntity.turnToDateString(firstDayOfMonth));
+				Log.v("mtest", "*********lastDayOfMonth******"+MEntity.turnToDateString(lastDayOfMonth));
+				
 				List<Map<String, Object>> mTemList = RecurringEventBE.recurringData(mActivity, firstDayOfMonth, lastDayOfMonth);
 //				judgePayment(mTemList);
+				Log.v("mtest", "*********mTemList******"+mTemList);
 				mMap.put("count", mTemList.size());
 
 				calendar.add(Calendar.MONTH, 1);

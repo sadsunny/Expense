@@ -76,17 +76,25 @@ public class BudgetActivity extends BaseHomeActivity {
 	private TextView currencyTextView2;
 	private TextView leftTextLabel;
 	private TextView leftTextView;
+	private TextView notiTextView;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
-				
+
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
-
-				budgetListApdater.setAdapterDate(mBudgetList);
-				budgetListApdater.notifyDataSetChanged();
+				
+				if (mBudgetList != null && mBudgetList.size() > 0) {
+					mListView.setVisibility(View.VISIBLE);
+					notiTextView.setVisibility(View.INVISIBLE);
+					budgetListApdater.setAdapterDate(mBudgetList);
+					budgetListApdater.notifyDataSetChanged();
+				} else {
+					mListView.setVisibility(View.INVISIBLE);
+					notiTextView.setVisibility(View.VISIBLE);
+				}
 
 				totalTextView.setText(budgetAmount + "");
 				if (BdgetSetting == 0) {
@@ -128,7 +136,8 @@ public class BudgetActivity extends BaseHomeActivity {
 		dateTextView = (TextView) findViewById(R.id.date_txt);
 		previous = (RelativeLayout) findViewById(R.id.previous);
 		next = (RelativeLayout) findViewById(R.id.next);
-
+		notiTextView= (TextView)findViewById(R.id.notice_txt);
+		
 		currencyTextView1 = (TextView) findViewById(R.id.currency_label1);
 		totalTextView = (TextView) findViewById(R.id.total_txt);
 		currencyTextView2 = (TextView) findViewById(R.id.currency_label2);
@@ -226,19 +235,21 @@ public class BudgetActivity extends BaseHomeActivity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mBudgetList = OverViewDao.selectBudget(BudgetActivity.this);
-			
+
 			Calendar calendar = Calendar.getInstance();
 			long firstDay = MEntity.getFirstDayOfMonthMillis(month
 					.getTimeInMillis());
 			long lastDay = MEntity.getLastDayOfMonthMillis(month
 					.getTimeInMillis());
-			List<Map<String, Object>> mTransferList = OverViewDao.selectBudgetTransfer(BudgetActivity.this, firstDay , lastDay);
+			List<Map<String, Object>> mTransferList = OverViewDao
+					.selectBudgetTransfer(BudgetActivity.this, firstDay,
+							lastDay);
 
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");
 			for (Map<String, Object> iMap : mBudgetList) {
 				int _id = (Integer) iMap.get("_id");
-				String  catrgoryName = (String) iMap.get("categoryName");
+				String catrgoryName = (String) iMap.get("categoryName");
 				String amount = (String) iMap.get("amount");
 				int category_id = (Integer) iMap.get("category");
 
@@ -410,7 +421,7 @@ public class BudgetActivity extends BaseHomeActivity {
 				mHandler.post(mTask);
 			}
 			break;
-			
+
 		case 12:
 
 			if (data != null) {

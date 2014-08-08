@@ -23,6 +23,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.service.NotificationService;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -44,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -66,6 +68,7 @@ public class BillsFragment extends Fragment{
 	private AlertDialog editDialog;
 	private ListView diaListView;
 	private DialogDeleteBillAdapter dialogEditBillAdapter ;
+	private TextView notiTextView;
 	
 	public BillsFragment () {
 		
@@ -74,6 +77,10 @@ public class BillsFragment extends Fragment{
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
+				if (groupDataList != null && groupDataList.size() >0) {
+					
+					mExpandableListView.setVisibility(View.VISIBLE);
+					notiTextView.setVisibility(View.INVISIBLE);
 				expandableListViewAdapter.setAdapterData(groupDataList, childrenAllDataList);
 				expandableListViewAdapter.notifyDataSetChanged();
 				int groupCount = groupDataList.size();
@@ -94,6 +101,11 @@ public class BillsFragment extends Fragment{
 						});
 
 				mExpandableListView.setCacheColorHint(0);
+				
+				} else {
+					mExpandableListView.setVisibility(View.INVISIBLE);
+					notiTextView.setVisibility(View.VISIBLE);
+				}
 
 				break;
 
@@ -111,6 +123,21 @@ public class BillsFragment extends Fragment{
 		mActivity = (FragmentActivity) activity;
 	}
 	
+	
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		if (MainActivity.sqlChange == 1) {
+			mHandler.post(mTask);
+			MainActivity.sqlChange = 0;
+		}
+	}
+
+
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -128,6 +155,8 @@ public class BillsFragment extends Fragment{
 		View view = inflater.inflate(R.layout.fragment_bill_list, container,
 				false);
 		mInflater = inflater;
+		
+		notiTextView= (TextView)view.findViewById(R.id.notice_txt);
 		mExpandableListView = (ExpandableListView) view.findViewById(R.id.expandableListView1);
 		mExpandableListView.setAdapter(expandableListViewAdapter);
 		mExpandableListView.setGroupIndicator(null);
@@ -141,6 +170,7 @@ public class BillsFragment extends Fragment{
 		} else {
 			mHandler.post(mTask);
 		}
+		
 		return view;
 	}
 	
@@ -350,8 +380,14 @@ public class BillsFragment extends Fragment{
 	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
 
 		if(mFlag == 1){
-			BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId);
 			BillsDao.deleteBillObjectByParId(mActivity, theId);
+			
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
+			
 		}else if(mFlag == 2){
 
 			billVirtualFutuDelete(theId,mMap);
@@ -456,8 +492,14 @@ public class BillsFragment extends Fragment{
 
 		long preDuedate = calendar.getTimeInMillis();
 
-		BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
 		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
+		
+		if (row > 0) {
+			 Intent service=new Intent(mActivity, NotificationService.class);  
+			 mActivity.startService(service);  
+		}
+		
 		return row;
 	}
 	
@@ -516,15 +558,23 @@ public class BillsFragment extends Fragment{
 	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
 
 		if (mFlag == 0) {
-			BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		} else if(mFlag == 1){
 			billParentDelete(theId,mMap);
 		}else if(mFlag == 2){
 			billVirtualThisDelete(theId,mMap);
 		}else if (mFlag == 3) {
-			BillsDao.deleteBillObject(mActivity, theId);
+			long row = BillsDao.deleteBillObject(mActivity, theId);
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		}
-
+		
 	}
 	
 	public long billVirtualThisDelete(int rowid, Map<String, Object> mMap){
@@ -533,6 +583,11 @@ public class BillsFragment extends Fragment{
 				ep_billItemDueDate, ep_billItemDueDate, " ", "",
 				1, 1, ep_billItemDueDate,
 				rowid, 1, 1);
+		if (row > 0) {
+			 Intent service=new Intent(mActivity, NotificationService.class);  
+			 mActivity.startService(service);  
+		}
+		
 		return row;
 	}
 	
@@ -627,11 +682,20 @@ public class BillsFragment extends Fragment{
 		if (nextDuedate > bk_billEndDate) { 
 
 			row =BillsDao.deleteBill(mActivity, rowid);
-
+			
+			if (row > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		} else {
 
-			BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
+			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
 			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+			
+			if (rowUp > 0) {
+				 Intent service=new Intent(mActivity, NotificationService.class);  
+				 mActivity.startService(service);  
+			}
 		}
 		return row;
 	}

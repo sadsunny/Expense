@@ -6,9 +6,12 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 
 import android.support.v4.app.Fragment;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -201,43 +204,140 @@ public class ExpenseFragment extends Fragment {
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
 						// TODO Auto-generated method stub
+						
+						int d_id = 0;
+						if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+							d_id = (Integer) childrenAllDataList
+									.get(groupPosition).get(childPosition)
+									.get("_id");
 
+						} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+							d_id = (Integer) groupDataList
+									.get(groupPosition).get("_id");
+						}
+						
 						if (arg2 == 0) {
+							int size = CategoryDao.selectCategoryRelate(getActivity(), d_id);
+							if (size > 0) {
+								
+								new AlertDialog.Builder(getActivity())
+								.setTitle("Delete This Category? ")
+								.setMessage(
+										" Deleting a category will cause to delete all associated transactions, bills and budgets. Are you sure you want to delete it? ")
+								.setNegativeButton(
+										"No",
+										new DialogInterface.OnClickListener() {
 
-							int _id = 0;
+											@Override
+											public void onClick(
+													DialogInterface dialog,
+													int which) {
+												// TODO Auto-generated
+												// method stub
+												dialog.dismiss();
+												alertDialog.dismiss();
+											}
 
-							if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
-								_id = (Integer) childrenAllDataList
-										.get(groupPosition).get(childPosition)
-										.get("_id");
-								if (_id > 0) {
-									long row = CategoryDao.deleteCategory(
-											getActivity(), _id);
-									if (row > 0) {
-										MainActivity.sqlChange = 1;
+										})
+								.setPositiveButton(
+										"Yes",
+										new DialogInterface.OnClickListener() {
+
+											@Override
+											public void onClick(
+													DialogInterface dialog,
+													int which) {
+												// TODO Auto-generated
+												// method stub
+												
+												int _id = 0;
+												if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+													_id = (Integer) childrenAllDataList
+															.get(groupPosition).get(childPosition)
+															.get("_id");
+													if (_id > 0) {
+														long row = CategoryDao.deleteCategory(
+																getActivity(), _id);
+														if (row > 0) {
+															MainActivity.sqlChange = 1;
+														}
+														if (row > 0 && MainActivity.mItemPosition == 2) { //从report过来的删除
+															MainActivity.sqlChange3 = 1;
+														}
+													}
+
+												} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+													_id = (Integer) groupDataList
+															.get(groupPosition).get("_id");
+													String cName = (String) groupDataList.get(
+															groupPosition).get("categoryName");
+													Log.v("mtest", "cName" + cName);
+													if (_id > 0) {
+														long row = CategoryDao.deleteCategory(
+																getActivity(), _id);
+														long row2 = CategoryDao.deleteCategoryLike(
+																getActivity(), cName);
+														if (row > 0) {
+															MainActivity.sqlChange = 1;
+														}
+														if (row > 0 && MainActivity.mItemPosition == 2) { //从report过来的删除
+															MainActivity.sqlChange3 = 1;
+														}
+													}
+												}
+
+												mHandler.post(mTask);
+												alertDialog.dismiss();
+												
+											}
+										}).show();
+
+								
+								
+							} else {
+								
+								int _id = 0;
+								if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+									_id = (Integer) childrenAllDataList
+											.get(groupPosition).get(childPosition)
+											.get("_id");
+									if (_id > 0) {
+										long row = CategoryDao.deleteCategory(
+												getActivity(), _id);
+										if (row > 0) {
+											MainActivity.sqlChange = 1;
+										}
+										if (row > 0 && MainActivity.mItemPosition == 2) { //从report过来的删除
+											MainActivity.sqlChange3 = 1;
+										}
+									}
+
+								} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+									_id = (Integer) groupDataList
+											.get(groupPosition).get("_id");
+									String cName = (String) groupDataList.get(
+											groupPosition).get("categoryName");
+									Log.v("mtest", "cName" + cName);
+									if (_id > 0) {
+										long row = CategoryDao.deleteCategory(
+												getActivity(), _id);
+										long row2 = CategoryDao.deleteCategoryLike(
+												getActivity(), cName);
+										if (row > 0) {
+											MainActivity.sqlChange = 1;
+										}
+										if (row > 0 && MainActivity.mItemPosition == 2) { //从report过来的删除
+											MainActivity.sqlChange3 = 1;
+										}
 									}
 								}
 
-							} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
-								_id = (Integer) groupDataList
-										.get(groupPosition).get("_id");
-								String cName = (String) groupDataList.get(
-										groupPosition).get("categoryName");
-								Log.v("mtest", "cName" + cName);
-								if (_id > 0) {
-									long row = CategoryDao.deleteCategory(
-											getActivity(), _id);
-									long row2 = CategoryDao.deleteCategoryLike(
-											getActivity(), cName);
-									if (row > 0) {
-										MainActivity.sqlChange = 1;
-									}
-								}
+								mHandler.post(mTask);
+								alertDialog.dismiss();
+
+
 							}
-
-							mHandler.post(mTask);
-							alertDialog.dismiss();
-
+							
 						}
 
 					}
@@ -249,7 +349,7 @@ public class ExpenseFragment extends Fragment {
 				alertDialog = builder.create();
 				alertDialog.show();
 
-				return false;
+				return true;
 			}
 
 		}

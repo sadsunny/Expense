@@ -13,9 +13,13 @@ import java.util.Map;
 import org.apache.http.util.EncodingUtils;
 
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.TransactionRecurringCheck;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.entity.MyApplication;
+import com.appxy.pocketexpensepro.service.NotificationService;
+import com.appxy.pocketexpensepro.service.PastDueService;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.app.Activity;
@@ -34,6 +38,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -67,30 +72,99 @@ public class Activity_Start extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
-		 getActionBar().setTitle("Expense");
+		setContentView(R.layout.activity_start);
+		 
+		 if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
+			 Log.v("mtest", "判定NotificationService");
+	 		} else {
+	 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+	 	         long firstTime = SystemClock.elapsedRealtime();
+	 	         //   Schedule the alarm!
+	 	         am = (AlarmManager)getSystemService(ALARM_SERVICE);
+	 	         am.set(AlarmManager.RTC_WAKEUP,firstTime, mAlarmSender);
+	 	         am.setRepeating(AlarmManager.RTC_WAKEUP, getZeroTime(), days, mAlarmSender);
+	 		}
+	         
+	         if (PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
+	        	 Log.v("mtest", "判定PastDueService");
+	  		} else {
+	  			 pAlarmSender = PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_UPDATE_CURRENT);
+	  	         long firstTime = SystemClock.elapsedRealtime();
+	  	         //   Schedule the alarm!
+	  	         pm = (AlarmManager)getSystemService(ALARM_SERVICE);
+	  	         pm.set(AlarmManager.RTC_WAKEUP,firstTime, pAlarmSender);
+	  	         pm.setRepeating(AlarmManager.RTC_WAKEUP, getNineTime(), days, pAlarmSender);
+	  		}
+	         
+	 		 if (MyApplication.isFirstIn == 0) {
+				
+	         new CountDownTimer(1000, 100) {
+				
+				@Override
+				public void onTick(long millisUntilFinished) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void onFinish() {
+					// TODO Auto-generated method stub
+					 
+					MyApplication.isFirstIn = 1;
+						
+					List<Map<String, Object>> mList = SettingDao.selectSetting(Activity_Start.this);
+			 		passCode = (String) mList.get(0).get("passcode");
+			 		
+			 		if (passCode != null && passCode.length() > 2) {
+			 			isPasscode = 1;
+			 		} else {
+			 			isPasscode = 0;
+			 		}
+			 		
+			     	 
+			         if (isPasscode == 1) {
+			 			Intent intent = new Intent(Activity_Start.this, Activity_Login.class);
+			 			startActivity(intent);
+			 			Activity_Start.this.finish();
+			 		} else {
+			 			Intent intent = new Intent(Activity_Start.this, MainActivity.class);
+			 			startActivity(intent);
+			 			Activity_Start.this.finish();
+			 		}
+			         
+				         
+				}
+			}.start();
+			
+	 		} else {
+	 			
+	 			MyApplication.isFirstIn = 1;
+	 			
+	 			List<Map<String, Object>> mList = SettingDao.selectSetting(Activity_Start.this);
+		 		passCode = (String) mList.get(0).get("passcode");
+		 		
+		 		if (passCode != null && passCode.length() > 2) {
+		 			isPasscode = 1;
+		 		} else {
+		 			isPasscode = 0;
+		 		}
+		 		
+		     	 
+		         if (isPasscode == 1) {
+		 			Intent intent = new Intent(Activity_Start.this, Activity_Login.class);
+		 			startActivity(intent);
+		 			Activity_Start.this.finish();
+		 		} else {
+		 			Intent intent = new Intent(Activity_Start.this, MainActivity.class);
+		 			startActivity(intent);
+		 			Activity_Start.this.finish();
+		 		}
+	 			
+
+			}
 		 
         
-        List<Map<String, Object>> mList = SettingDao.selectSetting(Activity_Start.this);
- 		passCode = (String) mList.get(0).get("passcode");
- 		
- 		if (passCode != null && passCode.length() > 2) {
- 			isPasscode = 1;
- 		} else {
- 			isPasscode = 0;
- 		}
- 		
-     	 
-         if (isPasscode == 1) {
- 			Intent intent = new Intent(this, Activity_Login.class);
- 			startActivity(intent);
- 			this.finish();
- 		} else {
- 			Intent intent = new Intent(this, MainActivity.class);
- 			startActivity(intent);
- 			this.finish();
- 		}
-         
+       
          
 //         if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
 // 		} else {

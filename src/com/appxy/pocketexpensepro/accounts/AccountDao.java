@@ -25,6 +25,32 @@ public class AccountDao {
 		return db;
 	}
 	
+	public static int selectAccountRelate(Context context,
+			int id) { 
+		int size =  0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select b._id from Accounts a,'Transaction' b where (a._id = b.expenseAccount or a._id = b.incomeAccount) and a._id = "+id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		size = mCursor.getCount();
+		mCursor.close();
+		db.close();
+
+		return size;
+	}
+	
+	
+	public static int selectTransactionAllSize(Context context) { // Account查询
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* from 'Transaction' a ";
+		int size = 0;
+		Cursor mCursor = db.rawQuery(sql, null);
+		size = mCursor.getCount();
+		mCursor.close();
+		db.close();
+
+		return size;
+	}
+	
 	public static List<Map<String, Object>> selectTransactionRecurringOverToday(Context context, long today) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;

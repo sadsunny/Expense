@@ -49,7 +49,8 @@ public class EditCategoryActivity extends BaseHomeActivity {
 	private List<Map<String, Object>> mCategoryList;
 	private int selectWhether = -1;
 	private int _id;
-
+    private String categoryName = "";
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -85,7 +86,6 @@ public class EditCategoryActivity extends BaseHomeActivity {
 		mButton = (Button) findViewById(R.id.parent_btn);
 		mEditText = (EditText) findViewById(R.id.category_edit);
 		
-		String categoryName = "";
 		if (mList != null && mList.size() > 0) {
 			categoryName = (String) mList.get(0).get("categoryName");
 			iconPosition = (Integer) mList.get(0).get("iconName");
@@ -126,7 +126,15 @@ public class EditCategoryActivity extends BaseHomeActivity {
 			case R.id.action_done:
 				String mCategoryString = mEditText.getText().toString();
 				mCategoryString = mCategoryString.replace(":", "");
-
+				String parentNameString = mButton.getText().toString();
+				
+				String allNameSrting = "";
+				if (parentNameString != null && parentNameString.length() > 0) {
+					allNameSrting = parentNameString+":"+mCategoryString;
+				} else {
+					allNameSrting = parentNameString;
+				}
+				
 				if (mCategoryString == null
 						|| mCategoryString.trim().length() == 0
 						|| mCategoryString.trim().equals("")) {
@@ -148,7 +156,7 @@ public class EditCategoryActivity extends BaseHomeActivity {
 										}
 									}).show();
 
-				} else if (!comparisonName(mCategoryString,CategoryDao.selectCategoryAll(EditCategoryActivity.this))) {
+				} else if (!comparisonName(mCategoryString,CategoryDao.selectCategoryAll(EditCategoryActivity.this)) && !allNameSrting.equals(categoryName)) {
 
 					new AlertDialog.Builder(EditCategoryActivity.this)
 							.setTitle("Warning! ")
@@ -181,10 +189,13 @@ public class EditCategoryActivity extends BaseHomeActivity {
 								finish();
 							}
 						}else {
-
+							
 							long id = CategoryDao.updateCategory(
 									EditCategoryActivity.this,_id, mCategoryString,
 									mcheck, 0, iconPosition, 0);
+							  if(!categoryName.contains(":")){
+								  updateCategoryChild(categoryName, mCategoryString);
+							}
 							if (id > 0) {
 								Intent intent = new Intent();
 								intent.putExtra("_id", id);
@@ -321,5 +332,19 @@ public class EditCategoryActivity extends BaseHomeActivity {
 
 		return mCheck;
 	}
+	
+	public void updateCategoryChild(String parString, String newParString) {
+		List<Map<String, Object>> mList = CategoryDao.selectCategoryChild(EditCategoryActivity.this, parString);
+		if (mList.size() > 0) {
+			for (Map<String, Object> iMap:mList) {
+				String categoryNameString = (String) iMap.get("categoryName");
+				String temp[] = categoryNameString.split(":");
+				String newString = newParString+":"+temp[1];
+				int id = (Integer) iMap.get("_id");
+				CategoryDao.updateCategoryName(EditCategoryActivity.this, id, newString);
+			}
+		}
+	}
+	
 
 }

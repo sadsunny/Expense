@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragmentMonth;
@@ -18,12 +21,14 @@ import com.appxy.pocketexpensepro.expinterface.OnActivityToBillListener;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
+import com.appxy.pocketexpensepro.expinterface.OnRefreshADS;
 import com.appxy.pocketexpensepro.expinterface.OnTellUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.expinterface.TellMainBuyPro;
 import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
@@ -34,14 +39,20 @@ import com.appxy.pocketexpensepro.reports.ReportCashFragment;
 import com.appxy.pocketexpensepro.reports.ReportCategoryFragment;
 import com.appxy.pocketexpensepro.reports.ReportOverviewFragment;
 import com.appxy.pocketexpensepro.search.SearchActivity;
+import com.appxy.pocketexpensepro.service.PastDueService;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
+import com.appxy.pocketexpensepro.util.IabHelper;
+import com.appxy.pocketexpensepro.util.IabResult;
+import com.appxy.pocketexpensepro.util.Inventory;
+import com.appxy.pocketexpensepro.util.Purchase;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.ProgressDialog;
 import android.support.v4.app.FragmentTransaction;
@@ -64,7 +75,7 @@ import android.widget.Toast;
 @SuppressLint("ResourceAsColor")
 public class MainActivity extends BaseHomeActivity implements
 		OnWeekSelectedListener, OnBackTimeListener, OnUpdateNavigationListener,
-		OnTellUpdateMonthListener, OnBillToActivityListener {
+		OnTellUpdateMonthListener, OnBillToActivityListener, TellMainBuyPro {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -106,7 +117,18 @@ public class MainActivity extends BaseHomeActivity implements
 	private ArrayList<View> viewArrayList = new ArrayList<View>();
     private ProgressDialog mDialog;
 	public static int sqlChange = 0;
-    
+	public static int sqlChange2 = 2;
+	public static int sqlChange3 = 3;
+	
+	 // The helper object
+	static final int RC_REQUEST = 10001;
+	private IabHelper mHelper;
+	public static final String Paid_Id_VF = "upgrade";
+	static final String TAG = "Expense";
+	private static final String PREFS_NAME = "SAVE_INFO";
+	private boolean iap_is_ok = false;
+	private OnRefreshADS refreshADS;
+	
    private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -124,14 +146,46 @@ public class MainActivity extends BaseHomeActivity implements
 		}
 	};
 	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkeVCBLDOb3nw6/HYl+3SrvnxHB1Dlq2ppbQOEvlNdP0LrNi5ra5eDX6slG3zM2AgflC3w3fy7AqG/xUusM183PWj1mDSi29cMCdqYNLttAKN+ywktt3xtVPzOklXVLE9kz5GoflX/xcKBuiocM+nSIePf6MSbH1cMLE88miajA7slNz0s45uETm/bzzUmjRf7JOV6WhLRw+YEnyclhLAYJrjDNmJXXEFS474po8XBkVF4AGXFmdy2oi9UvZCo9mP+PxnOGRr5RMh+W9wA0cWbcOLr5nGGr5NAl7/ZSVR/G7eVX3MmXhkzoyO3cWfhKIT0utxa7jhD0h6YXrXy1r6vwIDAQAB";
+		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		Common.CURRENCY = (Integer) mList.get(0).get("currency");
 		
+		 loadIsPaid();//查询是否paid
+		 //bitcoin address: 1Po29hbdAK1jH3fMKLypRC9SZfWUHBeiMj
+		 
+		 try {
+			 
+			 mHelper = new IabHelper(this, base64EncodedPublicKey);
+			 mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+				
+				@Override
+				public void onIabSetupFinished(IabResult result) {
+					// TODO Auto-generated method stub
+					if (!result.isSuccess()) {
+	                    // Oh noes, there was a problem.
+//	                    complain("Problem setting up in-app billing: " + result);
+	                    return;
+	                }
+					
+					 if (mHelper == null) return;
+					 iap_is_ok = true;
+					 mHelper.queryInventoryAsync(mGotInventoryListener);
+				}
+			});
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		 
 		startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
 		endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
 
@@ -175,7 +229,8 @@ public class MainActivity extends BaseHomeActivity implements
 		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// getActionBar().setDisplayShowHomeEnabled(false);
-
+		
+		getActionBar().setTitle("Pocket Expense");   
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
 		mDrawerLayout, /* DrawerLayout object */
 		R.drawable.ic_drawer, /* nav drawer image to replace 'Up' caret */
@@ -183,22 +238,26 @@ public class MainActivity extends BaseHomeActivity implements
 		R.string.drawer_close /* "close drawer" description for accessibility */
 		) {
 			public void onDrawerClosed(View view) {
-				getActionBar().setTitle(mTitle);
+//				getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
 				if (mItemPosition == 1) {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+					getActionBar().setTitle("Accounts");
 				} else {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+					actionBar.setDisplayShowTitleEnabled(false);
 				}
 			}                                                                                   
                                                                                                 
 			public void onDrawerOpened(View drawerView) {                                       
-				getActionBar().setTitle(mDrawerTitle);                                          
+				                                       
 				invalidateOptionsMenu(); // creates call to                                     
-											// onPrepareOptionsMenu()                                           
+										 // onPrepareOptionsMenu()                                           
 				// onPrepareOptionsMenu()
 				actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				actionBar.setDisplayShowTitleEnabled(true);
+				getActionBar().setTitle("Pocket Expense");
 
 			}
 		};
@@ -256,6 +315,7 @@ public class MainActivity extends BaseHomeActivity implements
 		}
 
 	}
+	
 
 	class DropDownListenser implements OnNavigationListener // actionbar下拉菜单监听
 	{
@@ -328,6 +388,7 @@ public class MainActivity extends BaseHomeActivity implements
 
 				if (mItemPosition == 0) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
+					actionBar.setDisplayShowTitleEnabled(false);
 				} else {
 
 					mDrawerLayout.closeDrawer(mLinearLayout);
@@ -371,6 +432,8 @@ public class MainActivity extends BaseHomeActivity implements
 			case R.id.account_linearlayout:
 				if (mItemPosition == 1) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
+					getActionBar().setTitle("Accounts");
+					actionBar.setDisplayShowTitleEnabled(true);
 				} else {
 
 					mDrawerLayout.closeDrawer(mLinearLayout);
@@ -402,6 +465,7 @@ public class MainActivity extends BaseHomeActivity implements
 
 				if (mItemPosition == 2) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
+					actionBar.setDisplayShowTitleEnabled(false);
 				} else {
 					
 					rangePositon = 0;
@@ -442,6 +506,7 @@ public class MainActivity extends BaseHomeActivity implements
 			case R.id.bills_linearLayout:
 				if (mItemPosition == 3) {
 					mDrawerLayout.closeDrawer(mLinearLayout);
+					actionBar.setDisplayShowTitleEnabled(false);
 				} else {
 
 					Calendar calendar2 = Calendar.getInstance();
@@ -614,6 +679,7 @@ public class MainActivity extends BaseHomeActivity implements
 				if (ReportCategoryFragment.item != null) {
 					ReportCategoryFragment.item.setVisible(false);
 				}
+				
 			}
 		} else {
 			menu.findItem(R.id.action_add).setVisible(!drawerOpen);
@@ -682,28 +748,6 @@ public class MainActivity extends BaseHomeActivity implements
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		if (keyCode == KeyEvent.KEYCODE_BACK && AccountsFragment.sortCheck == 1) {
-			AccountsFragment.sortCheck = 0;
-
-			if (AccountsFragment.item1 != null) {
-
-				AccountsFragment.item1.setVisible(true);
-				AccountsFragment.item0.setVisible(false);
-				AccountsFragment.c.setSortEnabled(false);
-				AccountsFragment.mListView.setLongClickable(true);
-				AccountsFragment.mAccountsListViewAdapter.sortIsChecked(-1);
-				AccountsFragment.mAccountsListViewAdapter
-						.notifyDataSetChanged();
-
-				return true;
-			}
-		}
-		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
@@ -795,5 +839,226 @@ public class MainActivity extends BaseHomeActivity implements
 
 	}
 
+	 void loadIsPaid() {
+		    SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);  
+	        Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+	        
+	}
+	 
+	 void complain(String message) {
+	        Log.e(TAG, "**** Expense Error: " + message);
+	        alert("Error: " + message);
+	    }
+	 void alert(String message) {
+	        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+	        bld.setMessage(message);
+	        bld.setNeutralButton("OK", null);
+	        Log.d(TAG, "Showing alert dialog: " + message);
+	        bld.create().show();
+	    }
+	 
+	 /** Verifies the developer payload of a purchase. */
+	    boolean verifyDeveloperPayload(Purchase p) {
+	        String payload = p.getDeveloperPayload();
+
+	        return true;
+	    }
+	    
+	    private long exitTime = 0;
+		public boolean onKeyDown(int keyCode, KeyEvent event) {
+			
+			if (keyCode == KeyEvent.KEYCODE_BACK && AccountsFragment.sortCheck == 1) {
+				AccountsFragment.sortCheck = 0;
+
+				if (AccountsFragment.item1 != null) {
+
+					AccountsFragment.item1.setVisible(true);
+					AccountsFragment.item0.setVisible(false);
+					AccountsFragment.c.setSortEnabled(false);
+					AccountsFragment.mListView.setLongClickable(true);
+					AccountsFragment.mAccountsListViewAdapter.sortIsChecked(-1);
+					AccountsFragment.mAccountsListViewAdapter
+							.notifyDataSetChanged();
+
+				}
+			}
+			
+			if (keyCode == KeyEvent.KEYCODE_BACK
+					&& event.getAction() == KeyEvent.ACTION_DOWN) {
+				if ((System.currentTimeMillis() - exitTime) > 2000) {
+					Toast.makeText(MainActivity.this, "Press again to exit!!",
+							Toast.LENGTH_SHORT).show();
+					exitTime = System.currentTimeMillis();
+				} else {
+
+					// MyApplication.folder_id = 0;
+					// MyApplication.mMemoryCache.evictAll();
+					Intent intent = new Intent();
+					intent.setAction("ExitLogin");
+					this.sendBroadcast(intent);
+					super.finish();
+					System.exit(0);
+
+				}
+			}
+			return false;
+		}
+		
+		 @Override
+			protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+				// TODO Auto-generated method stub
+				Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
+				
+				if (mHelper == null) return;
+				if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+					Log.v("mtest", "main result edn");
+					super.onActivityResult(requestCode, resultCode, data);
+					 if (requestCode == RC_REQUEST) {     
+					      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+					      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+					      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+					        
+					      if (resultCode == RESULT_OK) {
+					         try {
+					            JSONObject jo = new JSONObject(purchaseData);
+					            String sku = jo.getString("productId");
+					            alert("Thank you for upgrading to pro! ");
+					            
+					             SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+							     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+								 meditor.putBoolean("isPaid",true ); 
+								 meditor.commit();
+								 
+					            if (overviewFragment != null) {
+					   				 Log.v("mads","******第七步第返回刷新fragment");
+					   				   refreshADS = (OnRefreshADS) overviewFragment;
+					   				   refreshADS.refreshADS();
+									
+								}
+					          }
+					          catch (JSONException e) {
+					             alert("Failed to parse purchase data.");
+					             e.printStackTrace();
+					          }
+					      }
+					   }
+					 
+		        }
+		       
+		        else {
+		            Log.d(TAG, "onActivityResult handled by IABUtil.");
+		            Log.v("mtest", "参数返回2");
+		        }
+			}
+		 
+		// Callback for when a purchase is finished
+		    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+		    	
+		    	@Override
+		        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+		            Log.d(TAG, "Purchase finished: " + result + ", purchase: " + purchase);
+
+		            // if we were disposed of in the meantime, quit.
+		            if (mHelper == null) return;
+		   			
+		            mHelper.queryInventoryAsync(mGotInventoryListener);
+		            Log.v("mads","******第三步mHelper通过");
+					
+		            if (!result.isSuccess()) {
+//		            	Log.v("mtest", "result11"+result);
+//		                complain("Error purchasing: " + result);
+		                return;
+		            }
+		            Log.v("mads","******第四步！isFailure通过");
+					
+		            if (!verifyDeveloperPayload(purchase)) {
+//		                complain("Error purchasing. Authenticity verification failed.");
+		                return;
+		            }
+		            Log.v("mads","******第五步verifyDeveloperPayload通过");
+
+		            if (purchase.getSku().equals(Paid_Id_VF)) {
+		                // bought the premium upgrade!
+		                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
+		                alert("Thank you for upgrading to pro!");
+		                
+		                Log.v("mads","******第六步关键一步purchase");
+						
+		             Common.mIsPaid =true;
+		   		     SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);   //已经设置密码 
+		   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+		   			 meditor.putBoolean("isPaid",true );  
+		   			 meditor.commit();
+		   			 
+		   			 Log.v("mads","******overviewFragment"+overviewFragment);
+						
+						
+		   			 if (overviewFragment != null) {
+		   				 
+		   				 Log.v("mads","******第七步第返回刷新fragment");
+		   				   refreshADS = (OnRefreshADS) overviewFragment;
+		   				   refreshADS.refreshADS();
+						
+					}
+		           }
+		        }
+
+			
+		    };
+		    
+		    IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+				
+				@Override
+				public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+					// TODO Auto-generated method stub
+					 if (mHelper == null) return;
+					 
+					 if (!result.isSuccess()) {
+			                return;
+			            }
+					 
+					 Purchase premiumPurchase = inv.getPurchase(Paid_Id_VF);
+					
+					 Common.mIsPaid = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
+				     SharedPreferences sharedPreferences = MainActivity.this.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+				     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+					 meditor.putBoolean("isPaid",Common.mIsPaid ); 
+					 meditor.commit();
+					 
+		   			 if (overviewFragment != null) {
+		   				 
+		   				 Log.v("mads","******第七步第返回刷新fragment");
+		   				   refreshADS = (OnRefreshADS) overviewFragment;
+		   				   refreshADS.refreshADS();
+						
+					}
+				}
+			};
+
+
+			@Override
+			public void mainBuyPro() {
+				// TODO Auto-generated method stub
+				if (iap_is_ok && mHelper != null) {
+					
+					Log.v("mads","******第二步mainBUy");
+					
+					 String payload = "";
+					 mHelper.launchPurchaseFlow(MainActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
+				}else{
+//					showMessage("提示", "Google Play初始化失败,当前无法进行支付，请确定您所在地区支持Google Play支付或重启游戏再试！");
+				}
+			}
+			
+			 @Override
+			    public void onDestroy() {
+			        super.onDestroy();
+
+			        // very important:
+			        if (mHelper != null) {
+			            mHelper.dispose();
+			            mHelper = null;
+			        }
+			    }
 
 }

@@ -1,11 +1,14 @@
 package com.appxy.pocketexpensepro.setting;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.R.color;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.passcode.Activity_ChangePass;
@@ -13,6 +16,11 @@ import com.appxy.pocketexpensepro.passcode.Activity_SetPass;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.CategoryActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
+import com.appxy.pocketexpensepro.util.IabHelper;
+import com.appxy.pocketexpensepro.util.IabResult;
+import com.appxy.pocketexpensepro.util.Purchase;
+import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.R.color;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -67,7 +75,16 @@ public class SettingActivity extends BaseHomeActivity {
 
 	private SharedPreferences mPreferences;
 	private int  BdgetSetting;
+	private RelativeLayout updateLinearLayout;
+	private LinearLayout update_layout_visi;
 	
+	static final int RC_REQUEST = 10001;
+	private IabHelper mHelper;
+	public static final String Paid_Id_VF = "upgrade";
+	static final String TAG = "Expense";
+	private static final String PREFS_NAME = "SAVE_INFO";
+	private boolean iap_is_ok = false;
+	 
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,7 +93,8 @@ public class SettingActivity extends BaseHomeActivity {
 		setContentView(R.layout.activity_setting);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		inflater = LayoutInflater.from(this);
-
+		String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi803lugKTJdERpN++BDhRYY5hr0CpTsuj+g3fIZGBLn+LkZ+me0it3lP375tXqMlL0NLNlasu9vWli3QkCFBbERf+KysqUCsrqqcoq3hUini6LSiKkyuISM2Y4gWUqSVT+vkLP4psshnwJTbF6ii2jZfXFxLVoT5P30+y4rgCwncgRsX14x2bCpJlEdxrNfoxL4EqlHAt9/9vsc0PoW8QH/ChKJFkTDOsB9/42aur4zF9ua568ny1K6vlE/lnkffBP6DvsHFrIdpctRyUdrBVnUyMl+1k2ufUHJudfeGpKuExLcNOxuryCTolIFj44dB2TugNFzQwOE4xoRyCfJ7bQIDAQAB";
+		
 		mPreferences = getSharedPreferences("Expense", MODE_PRIVATE);
 		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
 		
@@ -87,12 +105,62 @@ public class SettingActivity extends BaseHomeActivity {
 		currency_RelativeLayout = (RelativeLayout) findViewById(R.id.currency_RelativeLayout);
 		currency_TextView = (TextView) findViewById(R.id.currency_TextView);
 		feedback_RelativeLayout = (RelativeLayout) findViewById(R.id.feedback_RelativeLayout);
-
+		updateLinearLayout = (RelativeLayout) findViewById(R.id.update_layout);
+		update_layout_visi = (LinearLayout) findViewById(R.id.update_layout_visi);
+		
 		left_LinearLayout = (LinearLayout) findViewById(R.id.left_LinearLayout);
 		left_txt = (TextView) findViewById(R.id.left_txt);
 		spent_LinearLayout = (LinearLayout) findViewById(R.id.spent_LinearLayout);
 		spent_txt = (TextView) findViewById(R.id.spent_txt);
+		
+		if (Common.mIsPaid) {
+			update_layout_visi.setVisibility(View.INVISIBLE);
+		}else {
+			 update_layout_visi.setVisibility(View.VISIBLE);
+			 try {
+				
+			 mHelper = new IabHelper(this, base64EncodedPublicKey);
+			 mHelper.startSetup(new IabHelper.OnIabSetupFinishedListener() {
+				
+				@Override
+				public void onIabSetupFinished(IabResult result) {
+					// TODO Auto-generated method stub
+					Log.v("mtest", "Setting1");
+					if (!result.isSuccess()) {
+	                    // Oh noes, there was a problem.
+//	                    complain("Problem setting up in-app billing: " + result);
+	                    return;
+	                }
+					Log.v("mtest", "Setting2");
+					 if (mHelper == null) return;
+					 iap_is_ok = true;
+					 Log.v("mtest", "Setting3");
+				}
+			});
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			 
+		}
 
+		updateLinearLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Log.v("mtest", "Setting4");
+				if (iap_is_ok && mHelper != null) {
+					String payload = "";
+					Log.v("mtest", "Setting5");
+					 mHelper.launchPurchaseFlow(SettingActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
+				}else{
+//					showMessage("提示", "Google Play初始化失败,当前无法进行支付，请确定您所在地区支持Google Play支付或重启游戏再试！");
+				}
+					
+				 
+			}
+		});
+		
 		if (BdgetSetting ==0) {
 			left_LinearLayout.setBackgroundColor(Color.parseColor("#4ea3cc"));
 			left_txt.setTextColor(Color.rgb(255, 255, 255));
@@ -216,8 +284,14 @@ public class SettingActivity extends BaseHomeActivity {
 				fillinfo();
 				Intent email = new Intent(android.content.Intent.ACTION_SEND);
 				email.setType("plain/text");
-				String[] emailReciver = new String[] { "billkeeper.a@appxy.com" };
+				String[] emailReciver = new String[] { "expense.a@appxy.com" };
 				String emailSubject = "Expense+ Feedback";
+				if (Common.mIsPaid) {
+					 emailSubject = "Pocket Expense Pro Feedback";
+				} else {
+					 emailSubject = "Pocket Expense Feedback";
+				}
+			
 
 				List<Intent> targetedShareIntents = new ArrayList<Intent>();
 				List<ResolveInfo> resInfo = getPackageManager()
@@ -357,7 +431,13 @@ public class SettingActivity extends BaseHomeActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-
+		  SharedPreferences sharedPreferences = this.getSharedPreferences(PREFS_NAME, 0);  
+	      Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+	        
+		if (Common.mIsPaid && update_layout_visi != null) {
+			update_layout_visi.setVisibility(View.INVISIBLE);
+		}
+		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		passCode = (String) mList.get(0).get("passcode");
 
@@ -368,5 +448,112 @@ public class SettingActivity extends BaseHomeActivity {
 		}
 
 	}
+	
+	 @Override
+	    public void onDestroy() {
+	        super.onDestroy();
+
+	        // very important:
+	        Log.d(TAG, "Destroying helper.");
+	        if (mHelper != null) {
+	            mHelper.dispose();
+	            mHelper = null;
+	        }
+	    }
+	 
+	 @Override
+		protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+			// TODO Auto-generated method stub
+			Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
+			
+			if (mHelper == null) return;
+			if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+				Log.v("mtest", "result edn");
+				super.onActivityResult(requestCode, resultCode, data);
+				 if (requestCode == RC_REQUEST) {     
+				      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+				      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+				      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+				        
+				      if (resultCode == RESULT_OK) {
+				         try {
+				            JSONObject jo = new JSONObject(purchaseData);
+				            String sku = jo.getString("productId");
+				            alert("You have bought the " + sku + ". Excellent choice, adventurer!");
+				          }
+				          catch (JSONException e) {
+				             alert("Failed to parse purchase data.");
+				             e.printStackTrace();
+				          }
+				      }
+				   }
+				 
+	        }
+	       
+	        else {
+	            Log.d(TAG, "onActivityResult handled by IABUtil.");
+	            Log.v("mtest", "参数返回2");
+	        }
+		}
+	
+	 void complain(String message) {
+	        Log.e(TAG, "**** Expense Error: " + message);
+	        alert("Error: " + message);
+	    }
+	 void alert(String message) {
+	        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+	        bld.setMessage(message);
+	        bld.setNeutralButton("OK", null);
+	        Log.d(TAG, "Showing alert dialog: " + message);
+	        bld.create().show();
+	    }
+	 
+	 /** Verifies the developer payload of a purchase. */
+	    boolean verifyDeveloperPayload(Purchase p) {
+	        String payload = p.getDeveloperPayload();
+
+	        return true;
+	    }
+	    private void showMessage(String title,String message){
+			new AlertDialog.Builder(SettingActivity.this).setTitle(title).setMessage(message).setPositiveButton("确定", null).show();
+		}
+	    
+	 // Callback for when a purchase is finished
+	    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+	    	
+	    	@Override
+	        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+	            Log.d(TAG, "Purchase finished: " + result + ", purchase: " + purchase);
+
+	            // if we were disposed of in the meantime, quit.
+	            if (mHelper == null) return;
+	   			
+	            if (!result.isSuccess()) {
+//	            	Log.v("mtest", "result11"+result);
+//	                complain("Error purchasing: " + result);
+	                return;
+	            }
+	            if (!verifyDeveloperPayload(purchase)) {
+//	                complain("Error purchasing. Authenticity verification failed.");
+	                return;
+	            }
+	            
+
+	            if (purchase.getSku().equals(Paid_Id_VF)) {
+	                // bought the premium upgrade!
+	                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
+	                alert("Thank you for upgrading to pro!");
+	             Common.mIsPaid =true;
+	   		     SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);   //已经设置密码 
+	   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+	   			 meditor.putBoolean("isPaid",true );  
+	   			 meditor.commit();
+	   			 update_layout_visi.setVisibility(View.INVISIBLE);
+	            }
+	        }
+
+		
+	    };
+	 
 
 }

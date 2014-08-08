@@ -271,9 +271,14 @@ public class BillPayActivity extends BaseHomeActivity {
 				if (indexflag == 0 || indexflag == 1) {
 					long row = BillsDao.insertTransactionRule(BillPayActivity.this,
 							amountString, dateLong, accountId, _id,categoryId,payeeId,1,0);
-					Intent intent = new Intent();
-					intent.putExtra("_id", row);
-					setResult(17, intent);
+					if(row > 0){
+						Intent intent = new Intent();
+						intent.putExtra("_id", row);
+						setResult(17, intent);
+					}else{
+						finish();
+					}
+					
 				} else if (indexflag == 2) {
 
 					String ep_billItemAmount = (String) mMap.get("ep_billAmount");
@@ -310,19 +315,28 @@ public class BillPayActivity extends BaseHomeActivity {
 					long row1 = BillsDao.insertTransactionItem(
 							BillPayActivity.this, amountString, dateLong,
 							accountId, (int) row, categoryId,payeeId,1,0);
-
-					Intent intent = new Intent();
-					intent.putExtra("_id", row);
-					intent.putExtra("dataMap", (Serializable) mMap);
-					setResult(18, intent);
+					if(row1 > 0){
+						Intent intent = new Intent();
+						intent.putExtra("_id", row);
+						intent.putExtra("dataMap", (Serializable) mMap);
+						setResult(18, intent);	
+					}else{
+						finish();
+					}
+				
 
 				} else if (indexflag == 3) {
 
 					long row = BillsDao.insertTransactionItem(BillPayActivity.this,
 							amountString, dateLong, accountId, _id,categoryId,payeeId,1,0);
-					Intent intent = new Intent();
-					intent.putExtra("_id", row);
-					setResult(17, intent);
+					if(row >0){
+						Intent intent = new Intent();
+						intent.putExtra("_id", row);
+						setResult(17, intent);
+					}else{
+						finish();
+					}
+					
 				}
 
 				finish();

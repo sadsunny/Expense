@@ -71,5 +71,8 @@
      <color name="paid_divid">#e69966</color>
      <color name="switch_color">#4ea3cc</color>
      <color name="switch_gray">#d4d4d4</color>
-
+	<color name="ads_solid">#51a3ec</color>
+     <color name="ads_stroke">#2c7ec7</color>
+     
+     
 </resources>

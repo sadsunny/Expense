@@ -7,10 +7,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -19,6 +22,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -66,14 +70,18 @@ public class AccountActivity extends BaseHomeActivity {
 	public static MenuItem item1;
 
 	private LinearLayout tranfer_linearLayout;
-
+	private TextView notiTextView;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
 				outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
-				if (mDataList != null) {
+				if (mDataList != null && mDataList.size() > 0) {
+					mListView.setVisibility(View.VISIBLE);
+					notiTextView.setVisibility(View.INVISIBLE);
+					
 					mListView.setLongClickable(true);
 
 					mAccountsListViewAdapter.setAdapterDate(mDataList);
@@ -89,6 +97,9 @@ public class AccountActivity extends BaseHomeActivity {
 					
 					netWorth = b1.doubleValue();
 					netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+				}else {
+					mListView.setVisibility(View.INVISIBLE);
+					notiTextView.setVisibility(View.VISIBLE);
 				}
 
 				break;
@@ -129,6 +140,8 @@ public class AccountActivity extends BaseHomeActivity {
 		tranfer_linearLayout.setOnClickListener(mClickListener);
 		netTextView = (TextView)findViewById(R.id.net_worth_txt);
 		outTextView = (TextView)findViewById(R.id.outstanding_txt);
+		notiTextView= (TextView)findViewById(R.id.notice_txt);
+		
 		mListView = (DragSortListView)findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(this);
 		mListView.setAdapter(mAccountsListViewAdapter);
@@ -217,9 +230,50 @@ public class AccountActivity extends BaseHomeActivity {
 						alertDialog.dismiss();
 
 					} else if (arg2 == 1) {
-						long row = AccountDao.deleteAccount(AccountActivity.this, id);
-						mHandler.post(mTask);
-						alertDialog.dismiss();
+						int size = AccountDao.selectAccountRelate(AccountActivity.this, id);
+						if (size > 0) {
+							
+							new AlertDialog.Builder(AccountActivity.this)
+							.setTitle("Delete This Account? ")
+							.setMessage(
+									" Deleting an account will cause to remove all its transactions. Are you sure you want to delete it? ")
+							.setNegativeButton(
+									"No",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated
+											// method stub
+											dialog.dismiss();
+											alertDialog.dismiss();
+										}
+
+									})
+							.setPositiveButton(
+									"Yes",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated
+											// method stub
+											long row = AccountDao.deleteAccount(AccountActivity.this, id);
+											mHandler.post(mTask);
+											alertDialog.dismiss();
+										}
+									}).show();
+
+						} else {
+							long row = AccountDao.deleteAccount(AccountActivity.this, id);
+							mHandler.post(mTask);
+							alertDialog.dismiss();
+						}
+						
 
 					} else if (arg2 == 2) {
 						sortCheck = 1;

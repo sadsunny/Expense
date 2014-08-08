@@ -18,10 +18,12 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.PayeeListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.service.NotificationService;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 
@@ -36,6 +38,7 @@ import android.app.ActionBar.LayoutParams;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -47,11 +50,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -69,7 +74,7 @@ public class BillEditActivity extends BaseHomeActivity {
 	private Button dueDateButton;
 	private Button recurringButton;
 	private Button reminderButton;
-	private Button payeeButton;
+	private AutoCompleteTextView payeeEditText;
 	private EditText memoEditText;
 	private LayoutInflater inflater;
 
@@ -80,8 +85,10 @@ public class BillEditActivity extends BaseHomeActivity {
 	private int checkedItem;
 	private int gCheckedItem;// 选择位置
 	private int cCheckedItem;
-	private Button expenseButton;
-	private Button incomeButton;
+	private RelativeLayout expenseButton;
+	private RelativeLayout incomeButton;
+	private View chooseView1;
+	private View chooseView2;
 	private int mCategoryType = 0; // 0 expense 1 income
 	private int mCheckCategoryType = 0; // 0 expense 1 income
 	private int categoryId; // 初次others的位置
@@ -145,7 +152,10 @@ public class BillEditActivity extends BaseHomeActivity {
 
 	private int edit_status = 0;
 	private AlertDialog editDialog;
-
+	private AutoListAdapter autoListAdapter;
+	private Cursor mCursor;
+	private CharSequence sKey;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -199,14 +209,13 @@ public class BillEditActivity extends BaseHomeActivity {
 		dueDateButton = (Button) findViewById(R.id.duedate_btn);
 		recurringButton = (Button) findViewById(R.id.recurring_btn);
 		reminderButton = (Button) findViewById(R.id.reminder_btn);
-		payeeButton = (Button) findViewById(R.id.payee_btn);
+		payeeEditText = (AutoCompleteTextView) findViewById(R.id.payee_edit);
 		memoEditText = (EditText) findViewById(R.id.memo_edit);
 
 		categoryButton.setOnClickListener(mClickListener);
 		dueDateButton.setOnClickListener(mClickListener);
 		recurringButton.setOnClickListener(mClickListener);
 		reminderButton.setOnClickListener(mClickListener);
-		payeeButton.setOnClickListener(mClickListener);
 
 		billNameEditText.setText(ep_billName);
 		billNameEditText.setSelectAllOnFocus(true);
@@ -300,12 +309,61 @@ public class BillEditActivity extends BaseHomeActivity {
 			List<Map<String, Object>> mPayeeDataList = AccountDao
 					.selectPayeeById(this, billRuleHasPayee);
 			String pNameString = (String) mPayeeDataList.get(0).get("name");
-			payeeButton.setText(pNameString);
+			payeeEditText.setText(pNameString);
 			payeeId = billRuleHasPayee;
 			List<Map<String, Object>> mPList = TransactionDao
 					.selectPayee(BillEditActivity.this);
-			payeeCheckItem = locationIdPosition(mPList, payeeId);
+//			payeeCheckItem = locationIdPosition(mPList, payeeId);
 		}
+		
+		payeeEditText.addTextChangedListener(new TextWatcher() {
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+				mCursor = TransactionDao.selectPayee(
+						BillEditActivity.this, MEntity.sqliteEscape(s.toString()));
+				autoListAdapter = new AutoListAdapter(
+						BillEditActivity.this, mCursor, true);
+				payeeEditText.setAdapter(autoListAdapter);
+				Log.v("mtest", "mCursor11" + mCursor);
+				sKey = s;
+
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+				payeeEditText.setThreshold(1);
+
+			}
+
+		});
+		
+		payeeEditText.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+
+				Cursor cursor = (Cursor) arg0.getItemAtPosition(0);
+
+				// Get the state's capital from this row in the database.
+				payeeId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
+			}
+		});
+		
+		
 		memoEditText.setText(ep_note);
 
 		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
@@ -464,8 +522,8 @@ public class BillEditActivity extends BaseHomeActivity {
 								dateLong, lastDate, ep_billName, ep_note,
 								recurringType, remindDateSelectPosition,
 								remindTime, categoryId, payeeId);
-					} else if (indexflag == 1) {
 						
+					} else if (indexflag == 1) {
 						
 						if (edit_status == 1) {
 							int ep_billisDelete =0;
@@ -484,7 +542,6 @@ public class BillEditActivity extends BaseHomeActivity {
 							
 						} else if (edit_status == 2) {
 							Log.v("mtest","lastDate"+MEntity.turnToDateString(lastDate));
-							Log.v("mtest","recurringType"+recurringType);
 							
 							long row = BillsDao.updateBillRule(
 									BillEditActivity.this, _id, ep_billAmount,
@@ -492,6 +549,7 @@ public class BillEditActivity extends BaseHomeActivity {
 									recurringType, remindDateSelectPosition,
 									remindTime, categoryId, payeeId);
 							BillsDao.deleteBillObjectByParId(BillEditActivity.this, _id) ;
+							
 						}
 					} else if (indexflag == 2) {
 						if (edit_status == 1) {
@@ -555,6 +613,11 @@ public class BillEditActivity extends BaseHomeActivity {
 					intent.putExtra("_id", 1);
 					setResult(19, intent);
 
+					if(remindDateSelectPosition > 0 || ep_reminderDate > 0){
+						 Intent service=new Intent(BillEditActivity.this, NotificationService.class);  
+						 BillEditActivity.this.startService(service);  
+					}
+					
 					finish();
 				}
 				break;
@@ -563,8 +626,19 @@ public class BillEditActivity extends BaseHomeActivity {
 
 				View view = inflater.inflate(R.layout.dialog_choose_category,
 						null);
-				expenseButton = (Button) view.findViewById(R.id.expense_btn);
-				incomeButton = (Button) view.findViewById(R.id.income_btn);
+				expenseButton = (RelativeLayout) view
+						.findViewById(R.id.expense_btn);
+				incomeButton = (RelativeLayout) view.findViewById(R.id.income_btn);
+				chooseView1  = (View) view.findViewById(R.id.view1);
+				chooseView2  = (View) view.findViewById(R.id.view2);
+				
+				if(mCategoryType == 0){
+					chooseView1.setVisibility(View.VISIBLE);
+					chooseView2.setVisibility(View.INVISIBLE);
+				}else{
+					chooseView1.setVisibility(View.INVISIBLE);
+					chooseView2.setVisibility(View.VISIBLE);
+				}
 
 				expenseButton.setOnClickListener(new OnClickListener() {
 
@@ -575,6 +649,9 @@ public class BillEditActivity extends BaseHomeActivity {
 								.selectCategory(BillEditActivity.this, 0);
 						filterData(mDataList);
 
+						chooseView1.setVisibility(View.VISIBLE);
+						chooseView2.setVisibility(View.INVISIBLE);
+						
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 
 						mExpandableListView
@@ -669,7 +746,9 @@ public class BillEditActivity extends BaseHomeActivity {
 					@Override
 					public void onClick(View paramView) {
 						// TODO Auto-generated method stub
-
+						chooseView1.setVisibility(View.INVISIBLE);
+						chooseView2.setVisibility(View.VISIBLE);
+						
 						List<Map<String, Object>> mDataList = PayeeDao
 								.selectCategory(BillEditActivity.this, 1);
 						filterData(mDataList);
@@ -1148,61 +1227,61 @@ public class BillEditActivity extends BaseHomeActivity {
 
 				break;
 
-			case R.id.payee_btn:
-
-				View view6 = inflater
-						.inflate(R.layout.dialog_choose_type, null);
-				payeeListView = (ListView) view6.findViewById(R.id.mListView);
-				payeeListViewAdapter = new PayeeListViewAdapter(
-						BillEditActivity.this);
-
-				final List<Map<String, Object>> mList = TransactionDao
-						.selectPayee(BillEditActivity.this);
-
-				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				payeeListView.setAdapter(payeeListViewAdapter);
-				payeeListView
-						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
-								: 0);
-				payeeListViewAdapter.setItemChecked(payeeCheckItem);
-				payeeListViewAdapter.setAdapterDate(mList);
-				payeeListViewAdapter.notifyDataSetChanged();
-				payeeListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						// TODO Auto-generated method stub
-						payeeCheckItem = arg2;
-						payeeListViewAdapter.setItemChecked(payeeCheckItem);
-						payeeListViewAdapter.notifyDataSetChanged();
-						String nameString = (String) mList.get(arg2)
-								.get("name");
-						payeeButton.setText(nameString);
-
-						payeeId = (Integer) mList.get(arg2).get("_id");
-						mPayeeDialog.dismiss();
-					}
-				});
-
-				AlertDialog.Builder mBuilder6 = new AlertDialog.Builder(
-						BillEditActivity.this);
-				mBuilder6.setTitle("Choose Payee");
-				mBuilder6.setView(view6);
-				mBuilder6.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								// TODO Auto-generated method stub
-							}
-						});
-
-				mPayeeDialog = mBuilder6.create();
-				mPayeeDialog.show();
-
-				break;
+//			case R.id.payee_btn:
+//
+//				View view6 = inflater
+//						.inflate(R.layout.dialog_choose_type, null);
+//				payeeListView = (ListView) view6.findViewById(R.id.mListView);
+//				payeeListViewAdapter = new PayeeListViewAdapter(
+//						BillEditActivity.this);
+//
+//				final List<Map<String, Object>> mList = TransactionDao
+//						.selectPayee(BillEditActivity.this);
+//
+//				payeeListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//				payeeListView.setAdapter(payeeListViewAdapter);
+//				payeeListView
+//						.setSelection((payeeCheckItem - 1) > 0 ? (payeeCheckItem - 1)
+//								: 0);
+//				payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//				payeeListViewAdapter.setAdapterDate(mList);
+//				payeeListViewAdapter.notifyDataSetChanged();
+//				payeeListView.setOnItemClickListener(new OnItemClickListener() {
+//
+//					@Override
+//					public void onItemClick(AdapterView<?> arg0, View arg1,
+//							int arg2, long arg3) {
+//						// TODO Auto-generated method stub
+//						payeeCheckItem = arg2;
+//						payeeListViewAdapter.setItemChecked(payeeCheckItem);
+//						payeeListViewAdapter.notifyDataSetChanged();
+//						String nameString = (String) mList.get(arg2)
+//								.get("name");
+//						payeeButton.setText(nameString);
+//
+//						payeeId = (Integer) mList.get(arg2).get("_id");
+//						mPayeeDialog.dismiss();
+//					}
+//				});
+//
+//				AlertDialog.Builder mBuilder6 = new AlertDialog.Builder(
+//						BillEditActivity.this);
+//				mBuilder6.setTitle("Choose Payee");
+//				mBuilder6.setView(view6);
+//				mBuilder6.setNegativeButton("Cancel",
+//						new DialogInterface.OnClickListener() {
+//
+//							@Override
+//							public void onClick(DialogInterface dialog,
+//									int which) {
+//								// TODO Auto-generated method stub
+//							}
+//						});
+//
+//				mPayeeDialog = mBuilder6.create();
+//				mPayeeDialog.show();
+//
+//				break;
 			}
 		}
 	};

@@ -34,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 
@@ -54,8 +55,10 @@ public class EditPayeeActivity extends BaseHomeActivity {
 	private int checkedItem;
 	private int gCheckedItem;// 选择位置
 	private int cCheckedItem;
-	private Button expenseButton;
-	private Button incomeButton;
+	private RelativeLayout expenseButton;
+	private RelativeLayout incomeButton;
+	private View chooseView1;
+	private View chooseView2;
 	private int mCategoryType = 0; // 0 expense 1 income
 	private int mCheckCategoryType = 0; // 0 expense 1 income
 	private int categoryId; // 初次others的位置
@@ -182,14 +185,27 @@ public class EditPayeeActivity extends BaseHomeActivity {
 
 				View view = inflater.inflate(R.layout.dialog_choose_category,
 						null);
-				expenseButton = (Button) view.findViewById(R.id.expense_btn);
-				incomeButton = (Button) view.findViewById(R.id.income_btn);
-
+				expenseButton = (RelativeLayout) view
+						.findViewById(R.id.expense_btn);
+				incomeButton = (RelativeLayout) view.findViewById(R.id.income_btn);
+				chooseView1  = (View) view.findViewById(R.id.view1);
+				chooseView2  = (View) view.findViewById(R.id.view2);
+				
+				if(mCategoryType == 0){
+					chooseView1.setVisibility(View.VISIBLE);
+					chooseView2.setVisibility(View.INVISIBLE);
+				}else{
+					chooseView1.setVisibility(View.INVISIBLE);
+					chooseView2.setVisibility(View.VISIBLE);
+				}
 				expenseButton.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View paramView) {
 						// TODO Auto-generated method stub
+						chooseView1.setVisibility(View.VISIBLE);
+						chooseView2.setVisibility(View.INVISIBLE);
+						
 						List<Map<String, Object>> mDataList = PayeeDao
 								.selectCategory(EditPayeeActivity.this, 0);
 						filterData(mDataList);
@@ -288,6 +304,9 @@ public class EditPayeeActivity extends BaseHomeActivity {
 					@Override
 					public void onClick(View paramView) {
 						// TODO Auto-generated method stub
+						chooseView1.setVisibility(View.INVISIBLE);
+						chooseView2.setVisibility(View.VISIBLE);
+						
 						mCategoryType = 1;
 						List<Map<String, Object>> mDataList = PayeeDao
 								.selectCategory(EditPayeeActivity.this, 1);

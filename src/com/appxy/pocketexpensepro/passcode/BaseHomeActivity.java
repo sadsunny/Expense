@@ -7,6 +7,9 @@ import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.widget.Toast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +20,7 @@ import android.os.Bundle;
 public class BaseHomeActivity extends FragmentActivity{
 	
 	SharedPreferences sharedPreferences;
-	public static final String PREFS_NAME = "SAVE_INFO";
+//	private static final String PREFS_NAME = "SAVE_INFO";
 	private int isPasscode;
 	private String passCode;
 	

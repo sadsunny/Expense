@@ -30,7 +30,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="8dp"
             android:gravity="bottom"
-            android:maxEms="7"
+            android:maxEms="5"
             android:singleLine="true"
             android:text="@string/text_label"
             android:textAppearance="?android:attr/textAppearance"

@@ -310,7 +310,6 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			}
 
 		} else {
-			Log.v("mtest", "everyDay" + everyDay);
 			viewholder.LinearLayout1.removeAllViews();
 			viewholder.LinearLayout2.removeAllViews();
 			viewholder.LinearLayout3.removeAllViews();

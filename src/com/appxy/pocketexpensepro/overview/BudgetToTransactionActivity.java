@@ -262,7 +262,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					new AlertDialog.Builder(BudgetToTransactionActivity.this)
 							.setTitle("Warning! ")
 							.setMessage(
-									"This is a part of a transaction splite, and ot can not be edit alone! ")
+									"This is a part of a transaction splite, and it can not be edited alone! ")
 							.setPositiveButton("Retry",
 									new DialogInterface.OnClickListener() {
 
@@ -360,7 +360,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					new AlertDialog.Builder(BudgetToTransactionActivity.this)
 							.setTitle("Warning! ")
 							.setMessage(
-									"This is a part of a transaction splite, and ot can not be edit alone! ")
+									"This is a part of a transaction splite, and it can not be edited alone! ")
 							.setPositiveButton("Retry",
 									new DialogInterface.OnClickListener() {
 
@@ -695,7 +695,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 					.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
 			int index = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("index"); // 判断属于哪种数据
+					.get(childPosition).get("index"); // 判断属于哪种数据 1为tranfer， 0 为普通数据
 
 			long dateTime = (Long) childList.get(groupPosition)
 					.get(childPosition).get("dateTime");
@@ -735,34 +735,44 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 							.get(groupPosition).get(childPosition)
 							.get("payeeName"));
 				}
+				
+				if (expenseAccount > 0 && incomeAccount <= 0) {
+					viewholder.currency_textView.setTextColor(Color.rgb(208, 47, 58));
+					viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
+					double amount = mAmount;
+					viewholder.amount_textView.setText(MEntity.doublepoint2str(amount
+							+ ""));
+				} else if (expenseAccount <= 0 && incomeAccount > 0) {
+					viewholder.currency_textView.setTextColor(Color.rgb(83, 150, 39));
+					viewholder.amount_textView.setTextColor(Color.rgb(83, 150, 39));
+					viewholder.amount_textView.setText(MEntity
+							.doublepoint2str((String) childList.get(groupPosition).get(childPosition).get("amount")));
+				}else {
+					viewholder.currency_textView.setTextColor(Color.rgb(54, 55, 60));
+					viewholder.amount_textView.setTextColor(Color.rgb(54, 55, 60));
+					viewholder.amount_textView.setText(MEntity
+							.doublepoint2str((String) childList.get(groupPosition).get(childPosition).get("amount")));
+				}
+				
 			} else {
 				viewholder.mTextView1
 						.setText((String) childList.get(groupPosition)
 								.get(childPosition).get("payeeName"));
+				
 			}
+			
 
 			if (mAmount < 0) {
-				viewholder.symbol_txt.setVisibility(View.VISIBLE);
-				viewholder.symbol_txt.setText("-");
-				viewholder.symbol_txt.setTextColor(Color.rgb(208, 47, 58));
-				viewholder.currency_textView.setTextColor(Color
-						.rgb(208, 47, 58));
-				viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
 				double amount = 0 - mAmount;
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str(amount + ""));
 			} else {
-				viewholder.symbol_txt.setVisibility(View.INVISIBLE);
-				viewholder.symbol_txt.setText("");
-				viewholder.symbol_txt.setTextColor(Color.rgb(83, 150, 39));
-				viewholder.currency_textView.setTextColor(Color
-						.rgb(83, 150, 39));
-				viewholder.amount_textView.setTextColor(Color.rgb(83, 150, 39));
 				viewholder.amount_textView.setText(MEntity
 						.doublepoint2str((String) childList.get(groupPosition)
 								.get(childPosition).get("amount")));
 			}
 
+			
 			return convertView;
 		}
 

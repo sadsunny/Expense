@@ -178,6 +178,10 @@ public class ReportOverviewFragment extends Fragment {
 		// TODO Auto-generated method stub
 		super.onResume();
 		mAdapter.notifyDataSetChanged();
+		if (MainActivity.sqlChange3 == 1) {
+			MainActivity.sqlChange3 = 0;
+			mHandler.post(mTask);
+		}
 	}
 	
 	@Override

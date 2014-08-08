@@ -27,7 +27,7 @@ public class PayeeDao {
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select * from Category where Category.categoryType = "
-				+ type + " order by categoryName ASC ";
+				+ type + " order by lower(categoryName), categoryName ASC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

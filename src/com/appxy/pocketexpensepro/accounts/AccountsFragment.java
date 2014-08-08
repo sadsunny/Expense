@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
@@ -64,7 +65,8 @@ public class AccountsFragment extends Fragment {
 
 	private LinearLayout tranfer_linearLayout;
 	private Activity mActivity;
-
+	private TextView notiTextView;
+	
 	public AccountsFragment() {
 		
 	}
@@ -82,7 +84,9 @@ public class AccountsFragment extends Fragment {
 			case MSG_SUCCESS:
 
 				outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
-				if (mDataList != null) {
+				if (mDataList != null && mDataList.size() > 0) {
+					mListView.setVisibility(View.VISIBLE);
+					notiTextView.setVisibility(View.INVISIBLE);
 					mListView.setLongClickable(true);
 
 					mAccountsListViewAdapter.setAdapterDate(mDataList);
@@ -98,6 +102,9 @@ public class AccountsFragment extends Fragment {
 					
 					netWorth = b1.doubleValue();
 					netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+				}else {
+					mListView.setVisibility(View.INVISIBLE);
+					notiTextView.setVisibility(View.VISIBLE);
 				}
 
 				break;
@@ -154,6 +161,8 @@ public class AccountsFragment extends Fragment {
 		tranfer_linearLayout.setOnClickListener(mClickListener);
 		netTextView = (TextView) view.findViewById(R.id.net_worth_txt);
 		outTextView = (TextView) view.findViewById(R.id.outstanding_txt);
+		notiTextView= (TextView)view.findViewById(R.id.notice_txt);
+		
 		mListView = (DragSortListView) view.findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(mActivity);
 		mListView.setAdapter(mAccountsListViewAdapter);
@@ -238,9 +247,49 @@ public class AccountsFragment extends Fragment {
 						alertDialog.dismiss();
 
 					} else if (arg2 == 1) {
-						long row = AccountDao.deleteAccount(mActivity, id);
-						mHandler.post(mTask);
-						alertDialog.dismiss();
+						int size = AccountDao.selectAccountRelate(getActivity(), id);
+						if (size > 0) {
+							
+							new AlertDialog.Builder(getActivity())
+							.setTitle("Delete This Account? ")
+							.setMessage(
+									" Deleting an account will cause to remove all its transactions. Are you sure you want to delete it? ")
+							.setNegativeButton(
+									"No",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated
+											// method stub
+											dialog.dismiss();
+											alertDialog.dismiss();
+										}
+
+									})
+							.setPositiveButton(
+									"Yes",
+									new DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											// TODO Auto-generated
+											// method stub
+											long row = AccountDao.deleteAccount(getActivity(), id);
+											mHandler.post(mTask);
+											alertDialog.dismiss();
+										}
+									}).show();
+
+						} else {
+							long row = AccountDao.deleteAccount(getActivity(), id);
+							mHandler.post(mTask);
+							alertDialog.dismiss();
+						}
 
 					} else if (arg2 == 2) {
 						sortCheck = 1;

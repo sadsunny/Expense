@@ -42,7 +42,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 	private AlertDialog mPaDialog;
 	private GridView mGridView;
 	private GridViewAdapter mAdapter;
-	private int iconPosition;
+	private int iconPosition = 56;
 	private ListView mListView;
 	private ChooseTypeListViewAdapter mListViewAdapter;
 	private int checkedItem = 0;
@@ -89,7 +89,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 		mRelativeLayout.setOnClickListener(mClickListener);
 		mButton.setOnClickListener(mClickListener);
 
-		mImageView.setImageResource(Common.CATEGORY_ICON[0]);
+		mImageView.setImageResource(Common.CATEGORY_ICON[iconPosition]);
 		mButton.setText("Select Parent");
 
 	}

@@ -22,6 +22,62 @@ public class CategoryDao {
 		return db;
 	}
 	
+	public static long updateCategoryName(Context context, int id,String newName) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("categoryName", newName);
+		String _id = id + "";
+		long row =db.update("Category", cv, "_id = ?", new String[] { _id });
+		db.close();
+		return row;
+	}
+
+	
+	public static List<Map<String, Object>> selectCategoryChild(Context context, String parString) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select * from Category a where a.categoryName like '"+ parString+":"+"%'" ;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String categoryName = mCursor.getString(3);
+			int categoryType = mCursor.getInt(5);
+			int hasBudget = mCursor.getInt(8);
+			int iconName = mCursor.getInt(9);
+			int isDefault = mCursor.getInt(10);
+
+			mMap.put("_id", _id);
+			mMap.put("categoryName", categoryName);
+			mMap.put("categoryType", categoryType);
+			mMap.put("hasBudget", hasBudget);
+			mMap.put("iconName", iconName);
+			mMap.put("isDefault", isDefault);
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		return mList;
+	}
+	
+	
+	public static int selectCategoryRelate(Context context, int _id) { // 查询Category
+		
+		int size = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from 'Transaction' a, Category b where b._id = a.category and b._id = "+_id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		size = mCursor.getCount();
+		
+		mCursor.close();
+		db.close();
+		
+		return size;
+	}
+	
+	
 	
 	public static long updateCategory(Context context, int id,String categoryName,
 			int categoryType, int hasBudget, int iconName, int isDefault) {
@@ -119,7 +175,7 @@ public class CategoryDao {
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select * from Category where Category.categoryType = "
-				+ type + " order by categoryName ASC ";
+				+ type + " order by lower(categoryName), categoryName ASC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

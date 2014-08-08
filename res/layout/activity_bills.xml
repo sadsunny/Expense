@@ -169,13 +169,23 @@
                     android:layout_height="wrap_content"
                     android:text="@string/payee_up" />
 
-                <Button
-                    android:id="@+id/payee_btn"
-                    style="@style/TextAppearance.EditEvent_SpinnerButton"
+                <AutoCompleteTextView
+                    android:id="@+id/payee_edit"
+                    style="@style/TextAppearance.EditEvent_Value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="100"
+                    android:hint="Unknow"
+                    android:maxLength="13"
+                    android:ems="10"
+                    android:minHeight="48dip"
+                    android:singleLine="true"
+                    android:completionThreshold="1"
+                    android:textColor="@color/text_black1"
+                    android:inputType="textCapWords|textAutoCorrect"
                     android:gravity="bottom"
-                    android:text="@string/unknown" />
+                    />
             </LinearLayout>
 
             <LinearLayout

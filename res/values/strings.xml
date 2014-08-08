@@ -32,7 +32,7 @@
     <string name="outstanding_label">Outstanding</string>
     <string name="tranfer_label">Tranfer</string>
     <string name="text_label">text</string>
-    <string name="setting">Setting</string>
+    <string name="setting">Settings</string>
     <string name="general_label">GENERAL</string>
     <string name="payee_label">Payee</string>
     <string name="category_label">Category</string>
@@ -90,6 +90,9 @@
     <string name="edit_budget">Edit Budget</string>
     <string name="bill_details">Bill Details</string>
      <string name="pay_date">PAYMENT DATE</string>
-<string name="budget_list">Budget List</string>
+	<string name="budget_list">Budget List</string>
+	<string name="account_add">No accounts yet. Please tap the button \"+\" to add one.</string>
+	<string name="bill_add">No bills for this month. You can create them by tapping the button \"+\".</string>
+	<string name="budget_add">Please tap the button \"+\" to set up monthly budgets.</string>
 
 </resources>

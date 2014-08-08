@@ -39,6 +39,7 @@ public class MyApplication extends Application {
 	public static Matrix matrix;
 	public static boolean isHomePress = false;
 	public static int howint = 0;
+	public static int isFirstIn = 0;
 	
 	public void onCreate() {
 		super.onCreate();

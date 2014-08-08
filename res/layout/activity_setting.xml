@@ -159,7 +159,7 @@
             <LinearLayout
                 android:id="@+id/bag_view"
                 android:layout_width="103dp"
-                android:layout_height="24dp"
+                android:layout_height="25dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="12dp"
@@ -182,6 +182,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Left"
+                        android:layout_gravity="center"
                         android:textColor="@color/white"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -207,6 +208,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Spent"
+                         android:layout_gravity="center"
                         android:textColor="@color/text_black1"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -341,7 +343,7 @@
                 android:layout_marginLeft="7.3dp"
                 android:layout_marginRight="12dip"
                 android:paddingRight="8dip"
-                android:text="Seed Feedback"
+                android:text="Send Feedback"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:textColor="@color/text_black"
                 android:textSize="16sp" />
@@ -398,6 +400,49 @@
                 android:textColor="@color/text_gray1"
                 android:textSize="16sp" />
         </RelativeLayout>
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/update_layout_visi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label8"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/update_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/version_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="Upgrade to full version"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+        </RelativeLayout>
+        
+        
     </LinearLayout>
 
 </LinearLayout>

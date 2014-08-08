@@ -78,7 +78,7 @@ public class TransactionRecurringCheck {
 			if (calendar.getTimeInMillis() <= MEntity.getNowMillis()) {
 				updateTransactionRecurring(db, context, id);
 			
-			db.beginTransaction();  //手动设置开始事务
+//			db.beginTransaction();  //手动设置开始事务
 			
 	        try{
 	            //批量处理操作
@@ -123,13 +123,13 @@ public class TransactionRecurringCheck {
 						 category,
 						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee);
 	        	 
-	            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
+//	            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
 	           
 	           }catch(Exception e){
 	              Log.v("mtest", "******Exception******"+e);
 	              
 	           }finally{
-	               db.endTransaction(); //处理完成
+//	               db.endTransaction(); //处理完成
 	               db.close();
 	           }
 			}

@@ -313,6 +313,8 @@ public class BillDetailsActivity extends BaseHomeActivity {
 				intent.putExtra("_id", 1);
 				setResult(16, intent);
 				mHandler.post(mTask);
+			}else {
+				finish();
 			}
 			break;
 		case 16:
@@ -322,6 +324,8 @@ public class BillDetailsActivity extends BaseHomeActivity {
 				intent.putExtra("_id", 1);
 				setResult(16, intent);
 				mHandler.post(mTask);
+			}else {
+				finish();
 			}
 			break;
 
@@ -335,6 +339,8 @@ public class BillDetailsActivity extends BaseHomeActivity {
 				mMap = (Map<String, Object>) data
 						.getSerializableExtra("dataMap");
 				mHandler.post(mTask);
+			}else {
+				finish();
 			}
 			break;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.appxy.pocketexpensepro"
-    android:versionCode="1"
+    android:versionCode="4"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -11,17 +11,118 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />  
+    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>  
+    
+      <!-- Only Phone -->
+    <compatible-screens>
 
+        <!-- smll all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="small" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="small" />
+
+        <!-- normal all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="normal" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="normal" />
+
+        <!-- xlarge all screen -->
+
+        <screen
+            android:screenDensity="ldpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="mdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="hdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="xhdpi"
+            android:screenSize="large" />
+        <screen
+            android:screenDensity="480"
+            android:screenSize="large" />
+    </compatible-screens>
+    
+    
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
         android:theme="@style/myTheme" >
+        
+          <receiver android:name="com.appxy.pocketexpensepro.service.BootCompletedReceiver">  
+                <intent-filter>  
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>  
+         </receiver>  
+         
+         <receiver android:name="com.appxy.pocketexpensepro.service.AlamrReceiver">
+            <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.AlamrReceiver"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.appxy.pocketexpensepro.service.PastDueReceiver">
+            <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.PastDueReceiver"/>
+            </intent-filter>
+        </receiver>
+         
+         <service android:name="com.appxy.pocketexpensepro.service.NotificationService">
+             
+             <intent-filter>
+                <action android:name="com.appxy.pocketexpensepro.service.BillNotificationService" />
+            </intent-filter>
+         </service>  
+         
+          <service android:name="com.appxy.pocketexpensepro.service.PastDueService">
+             
+             <intent-filter>
+            </intent-filter>
+            
+         </service>  
+         
+          
         <activity
             android:name="com.appxy.pocketexpensepro.passcode.Activity_Start"
             android:label="@string/app_name"
             android:logo="@drawable/logo_inside"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.NoActionBar"
+            android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +131,9 @@
         </activity>
         <activity
             android:name="com.appxy.pocketexpensepro.MainActivity"
-            android:label="@string/account"
+            android:label="Pocket Expense"
             android:logo="@drawable/logo_inside"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -183,8 +285,13 @@
         <activity
             android:name="com.appxy.pocketexpensepro.bills.BillDetailsActivity"
             android:label="@string/bill_details"
-             android:logo="@drawable/logo_inside"
+            android:logo="@drawable/logo_inside"
             android:screenOrientation="portrait" >
+            
+            <meta-data 
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.appxy.pocketexpensepro.passcode.Activity_Start"/>
+            
         </activity>
         <activity
             android:name="com.appxy.pocketexpensepro.bills.BillPayActivity"

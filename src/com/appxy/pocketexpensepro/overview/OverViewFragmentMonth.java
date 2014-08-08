@@ -145,32 +145,34 @@ public class OverViewFragmentMonth extends Fragment {
      * @param icon 给定的图片
      * @return 带联系人数量的图片
      */
-    private Drawable getTodayIcon(){
-        //初始化画布
-    	Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.today).copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas=new Canvas(originalBitmap);
-        
-        int size = MEntity.dip2px(mActivity, 32);
-        int px = MEntity.dip2px(mActivity, 14.25f);
-        
-        Calendar calendar = Calendar.getInstance();
-        int contacyCount= calendar.get(Calendar.DAY_OF_MONTH);
-        //启用抗锯齿和使用设备的文本字距
-        Paint countPaint=new Paint(Paint.ANTI_ALIAS_FLAG|Paint.DEV_KERN_TEXT_FLAG);
-        countPaint.setColor(Color.WHITE);
-        countPaint.setTextSize(26f);
-        countPaint.setTextAlign(Paint.Align.CENTER);
-        FontMetrics fontMetrics = countPaint.getFontMetrics();  
-        float ascentY =  fontMetrics.ascent;  
-        float descentY = fontMetrics.descent;  
-        Log.v("mtest", "ascentY"+ascentY);
-        Log.v("mtest", "descentY"+descentY);
-        
-        canvas.drawText(String.valueOf(contacyCount), size/2, size-px-(ascentY+descentY)/2, countPaint);
-        BitmapDrawable bd= new BitmapDrawable(mActivity.getResources(), originalBitmap);
-        return bd;
-    }
- 
+	private Drawable getTodayIcon() {
+		// 初始化画布
+		Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(),
+				R.drawable.today).copy(Bitmap.Config.ARGB_8888, true);
+		Canvas canvas = new Canvas(originalBitmap);
+
+		int size = MEntity.dip2px(mActivity, 32);
+		int px = MEntity.dip2px(mActivity, 14.25f);
+		int textSize = MEntity.dip2px(mActivity, 13f);
+
+		Calendar calendar = Calendar.getInstance();
+		int contacyCount = calendar.get(Calendar.DAY_OF_MONTH);
+		// 启用抗锯齿和使用设备的文本字距
+		Paint countPaint = new Paint(Paint.ANTI_ALIAS_FLAG
+				| Paint.DEV_KERN_TEXT_FLAG);
+		countPaint.setColor(Color.WHITE);
+		countPaint.setTextSize(textSize);
+		countPaint.setTextAlign(Paint.Align.CENTER);
+		FontMetrics fontMetrics = countPaint.getFontMetrics();
+		float ascentY = fontMetrics.ascent;
+		float descentY = fontMetrics.descent;
+
+		canvas.drawText(String.valueOf(contacyCount), size / 2, size - px
+				- (ascentY + descentY) / 2, countPaint);
+		BitmapDrawable bd = new BitmapDrawable(mActivity.getResources(),
+				originalBitmap);
+		return bd;
+	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

@@ -102,9 +102,10 @@ public class SearchActivity extends BaseHomeActivity {
 				null, null);
 		TextView textView = (TextView) searchView.findViewById(mid);
 		textView.setHintTextColor(Color.WHITE); // rgb(130, 136, 139)
+		textView.setTextColor(Color.WHITE);
 		textView.setTextSize(16);
 
-		searchView.setQueryHint("Memo, Account, Category");
+		searchView.setQueryHint("Payee");
 		searchView.onActionViewExpanded();
 
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
