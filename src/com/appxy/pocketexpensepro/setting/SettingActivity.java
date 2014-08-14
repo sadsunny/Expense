@@ -480,6 +480,10 @@ public class SettingActivity extends BaseHomeActivity {
 				            JSONObject jo = new JSONObject(purchaseData);
 				            String sku = jo.getString("productId");
 				            alert("You have bought the " + sku + ". Excellent choice, adventurer!");
+				             SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);   //已经设置密码 
+				   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+				   			 meditor.putBoolean("isPaid",true );  
+				   			 meditor.commit();
 				          }
 				          catch (JSONException e) {
 				             alert("Failed to parse purchase data.");

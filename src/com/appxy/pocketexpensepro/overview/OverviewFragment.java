@@ -1089,37 +1089,6 @@ public class OverviewFragment extends Fragment implements
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		Log.v("mtest", "requestCode"+requestCode);
-		if (mHelper == null) return;
-		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-			Log.v("mtest", "fragment result edn");
-			super.onActivityResult(requestCode, resultCode, data);
-			 if (requestCode == RC_REQUEST) {     
-			      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-			      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-			      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-			        
-			      if (resultCode == mActivity.RESULT_OK) {
-			         try {
-			            JSONObject jo = new JSONObject(purchaseData);
-			            String sku = jo.getString("productId");
-			            alert("Thank you for upgrading to pro! ");
-			            adsLayout.setVisibility(View.GONE);
-			             SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
-					     SharedPreferences.Editor meditor = sharedPreferences.edit();  
-						 meditor.putBoolean("isPaid",true ); 
-						 meditor.commit();
-			          }
-			          catch (JSONException e) {
-			             alert("Failed to parse purchase data.");
-			             e.printStackTrace();
-			          }
-			      }
-			   }
-			 
-        }
-        else {
-        	
-        }
 		
 		switch (resultCode) {
 		
@@ -1159,6 +1128,39 @@ public class OverviewFragment extends Fragment implements
 			break;
 			
 		}
+		
+		if (mHelper == null) return;
+		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+			Log.v("mtest", "fragment result edn");
+			super.onActivityResult(requestCode, resultCode, data);
+			 if (requestCode == RC_REQUEST) {     
+			      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
+			      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+			      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+			        
+			      if (resultCode == mActivity.RESULT_OK) {
+			         try {
+			            JSONObject jo = new JSONObject(purchaseData);
+			            String sku = jo.getString("productId");
+			            alert("Thank you for upgrading to pro! ");
+			            adsLayout.setVisibility(View.GONE);
+			             SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+					     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+						 meditor.putBoolean("isPaid",true ); 
+						 meditor.commit();
+			          }
+			          catch (JSONException e) {
+			             alert("Failed to parse purchase data.");
+			             e.printStackTrace();
+			          }
+			      }
+			   }
+			 
+        }
+        else {
+        	
+        }
+
 	}
 
 	@Override
