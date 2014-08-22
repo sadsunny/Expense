@@ -15,6 +15,7 @@ import com.appxy.pocketexpensepro.passcode.Activity_ChangePass;
 import com.appxy.pocketexpensepro.passcode.Activity_SetPass;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.CategoryActivity;
+import com.appxy.pocketexpensepro.setting.export.ExportTransactionCSVActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
@@ -53,6 +54,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class SettingActivity extends BaseHomeActivity {
+	
+	private RelativeLayout exportLayout;
 	private RelativeLayout payeeLinearLayout;
 	private RelativeLayout categoryLinearLayout;
 	private TextView versionTextView;
@@ -107,11 +110,23 @@ public class SettingActivity extends BaseHomeActivity {
 		feedback_RelativeLayout = (RelativeLayout) findViewById(R.id.feedback_RelativeLayout);
 		updateLinearLayout = (RelativeLayout) findViewById(R.id.update_layout);
 		update_layout_visi = (LinearLayout) findViewById(R.id.update_layout_visi);
+		exportLayout = (RelativeLayout) findViewById(R.id.export_layout);
 		
 		left_LinearLayout = (LinearLayout) findViewById(R.id.left_LinearLayout);
 		left_txt = (TextView) findViewById(R.id.left_txt);
 		spent_LinearLayout = (LinearLayout) findViewById(R.id.spent_LinearLayout);
 		spent_txt = (TextView) findViewById(R.id.spent_txt);
+		
+		exportLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(SettingActivity.this, ExportTransactionCSVActivity.class);
+				startActivity(intent);
+			}
+		});
 		
 		if (Common.mIsPaid) {
 			update_layout_visi.setVisibility(View.INVISIBLE);

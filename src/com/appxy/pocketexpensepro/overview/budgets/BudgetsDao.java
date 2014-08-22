@@ -268,7 +268,7 @@ public class BudgetsDao {
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 
-		String sql = "select * from Category c left join (select c._id from BudgetItem a,BudgetTemplate b,Category c where a.budgetTemplate=b._id and b.category=c._id ) tem on c._id = tem._id where c.categoryType = 0 and categoryName not like '%:%' order by categoryName ASC";
+		String sql = "select * from Category c left join (select c._id from BudgetItem a,BudgetTemplate b,Category c where a.budgetTemplate=b._id and b.category=c._id ) tem on c._id = tem._id where c.categoryType = 0 and categoryName not like '%:%' order by lower(categoryName), categoryName ASC";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

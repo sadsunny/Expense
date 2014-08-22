@@ -1071,11 +1071,10 @@ public class OverviewFragment extends Fragment implements
 
 		case R.id.today:
 			
-			if (viewPagerPosition != MID_VALUE) {
+			if (MainActivity.selectedDate != MEntity.getNowMillis()) {
 				onUpdateNavigationListener.OnUpdateNavigation();
 			}
 			
-
 			return true;
 
 		}

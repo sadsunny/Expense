@@ -14,10 +14,12 @@
         android:orientation="horizontal" >
 
         <LinearLayout
+            android:id="@+id/networthLayout"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_weight="1"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:background="@drawable/button1_selector" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -68,15 +70,18 @@
             android:background="@color/line_devide_gray" />
 
         <LinearLayout
+             android:id="@+id/outLayout"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="60dp"
             android:layout_weight="1"
-            android:orientation="vertical" >
-
+            android:orientation="vertical" 
+             android:background="@drawable/button1_selector">
             <LinearLayout
+                 
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:orientation="vertical" >
+                android:layout_height="60dp"
+                android:orientation="vertical"
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -116,7 +121,9 @@
                         android:textColor="@color/text_orange"/>
                 </LinearLayout>
             </LinearLayout>
+            
         </LinearLayout>
+        
     </LinearLayout>
     
      <View
@@ -146,37 +153,78 @@
         dslv:track_drag_sort="true"
         dslv:use_default_controller="false" />
     
-
-    <RelativeLayout
-        android:id="@+id/RelativeLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white" >
-        
-        <View
+    <View
             android:id="@+id/line2"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_alignParentTop="true"
+            android:layout_above="@+id/RelativeLayoutBot"
             android:background="@color/line_devide_gray" />
 
-        <LinearLayout
+    <RelativeLayout
+        android:id="@+id/RelativeLayoutBot"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white" >
+        
+         <LinearLayout
             android:id="@+id/tranfer_linearLayout"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingTop="0.5dp"
-            android:orientation="horizontal" >
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="0dp"
+            android:orientation="horizontal"
+             android:gravity="center_vertical"
+             android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+            android:background="@drawable/button1_selector" >
 
             <ImageView
+                android:id="@+id/setbudget_imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/button1_selector"
-                android:src="@drawable/transfer_account" />
+                android:src="@drawable/settransfer" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transfer"
+                android:textSize="15sp"
+                android:layout_marginLeft="2dp"
+                android:textColor="@color/little_text"/>
 
         </LinearLayout>
+        
 
+         <LinearLayout
+            android:id="@+id/transfer_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="0dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingLeft="10dp"
+             android:paddingRight="10dp"
+            android:background="@drawable/button1_selector"
+            android:visibility="invisible" >
+
+            <ImageView
+                android:id="@+id/setbudget_imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/export_account" />
+            
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Export"
+                android:textSize="15sp"
+                android:layout_marginLeft="2dp"
+                android:textColor="@color/little_text"/>
+
+        </LinearLayout>
+        
         <ImageView
             android:id="@+id/search_img"
             android:layout_width="wrap_content"

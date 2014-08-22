@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutTop"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:weightSum="2" >
+
+        <RelativeLayout
+            android:id="@+id/expense_btn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_weight="1" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="EXPENSE"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+            
+            <View 
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:background="@color/blue"
+                android:layout_alignParentBottom="true"/>
+        </RelativeLayout>
+        
+        <View 
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:background="@color/bag_gray1"
+                android:layout_marginTop="12dp"
+                android:layout_alignParentBottom="true"/>
+
+        <RelativeLayout
+            android:id="@+id/income_btn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_weight="1" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="INCOME"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+            
+            <View 
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                  android:background="@color/blue"
+                android:layout_alignParentBottom="true"/>
+            
+        </RelativeLayout>
+    </LinearLayout>
+    
+    <View 
+        android:id="@+id/line1"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/LinearLayoutTop"
+                android:background="@color/line_devide_gray"
+                />
+
+
+    <ExpandableListView
+        android:id="@+id/mExpandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+          android:layout_below="@+id/line1"
+        android:layout_marginTop="5dp" 
+        android:layout_marginBottom="45.5dp"
+        >
+    </ExpandableListView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/devide_gray"
+        android:layout_above="@+id/LinearLayoutBot" />
+
+    <LinearLayout
+        android:id="@+id/LinearLayoutBot"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:orientation="horizontal"
+        android:weightSum="2" >
+
+        <LinearLayout
+            android:id="@+id/selectall_layout"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:background="@drawable/button1_selector"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:descendantFocusability="blocksDescendants" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/selectall_radio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true" 
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Select All"
+                    android:layout_marginLeft="2dp"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="0.5dp"
+            android:layout_height="match_parent"
+            android:background="@color/devide_gray" />
+
+        <LinearLayout
+            android:id="@+id/done_layout"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_weight="1"
+            android:background="@drawable/button1_selector"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Done"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+    
+</RelativeLayout>

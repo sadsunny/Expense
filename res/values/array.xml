@@ -45,5 +45,13 @@
         <item>Every 6 Months</item>
         <item>Every Year</item>
     </string-array>
+    <string-array name="group_by">
+        <item>Category</item>
+        <item>Account</item>
+    </string-array>
+    <string-array name="sequence">
+        <item>Ascending</item>
+        <item>Descending</item>
+    </string-array>
 
 </resources>

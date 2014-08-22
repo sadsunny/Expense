@@ -94,5 +94,6 @@
 	<string name="account_add">No accounts yet. Please tap the button \"+\" to add one.</string>
 	<string name="bill_add">No bills for this month. You can create them by tapping the button \"+\".</string>
 	<string name="budget_add">Please tap the button \"+\" to set up monthly budgets.</string>
-
+	<string name="Export_label">Export</string>
+	
 </resources>

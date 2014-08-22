@@ -24,9 +24,7 @@ public class SearchDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, c.iconName, c.categoryName, b.name from 'Transaction' a, Payee b , Category c where b.name like '%"
-				+ keyString
-				+ "%' and a.parTransaction != -1 and a.payee = b._id and a.category = c._id order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.*, c.iconName, c.categoryName, b.name from 'Transaction' a, Payee b , Category c where b.name like '%"+ keyString + "%' and a.parTransaction != -1 and a.payee = b._id and a.category = c._id order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

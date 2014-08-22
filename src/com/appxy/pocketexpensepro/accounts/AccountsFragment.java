@@ -66,6 +66,9 @@ public class AccountsFragment extends Fragment {
 	private LinearLayout tranfer_linearLayout;
 	private Activity mActivity;
 	private TextView notiTextView;
+	private LinearLayout networthLayout;
+	private LinearLayout outLayout;
+	
 	
 	public AccountsFragment() {
 		
@@ -155,7 +158,8 @@ public class AccountsFragment extends Fragment {
 		
 		getActivity().getActionBar().setTitle("Accounts");
 
-
+		networthLayout =  (LinearLayout)view.findViewById(R.id.networthLayout);
+		outLayout =  (LinearLayout)view.findViewById(R.id.outLayout);
 		tranfer_linearLayout = (LinearLayout) view
 				.findViewById(R.id.tranfer_linearLayout);
 		tranfer_linearLayout.setOnClickListener(mClickListener);
@@ -169,6 +173,30 @@ public class AccountsFragment extends Fragment {
 		mListView.setDividerHeight(0);
 		mListView.setOnItemLongClickListener(listener);
 		mListView.setOnItemClickListener(itemListener);
+		
+		networthLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.putExtra("type", 0);
+				intent.setClass(mActivity, NetOutActivity.class);
+				startActivityForResult(intent, 21);
+			}
+		});
+		
+		outLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.putExtra("type", 1);
+				intent.setClass(mActivity, NetOutActivity.class);
+				startActivityForResult(intent, 21);
+			}
+		});
 
 		if (mThread == null) {
 			mThread = new Thread(mTask);

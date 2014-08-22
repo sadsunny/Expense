@@ -71,6 +71,9 @@ public class AccountActivity extends BaseHomeActivity {
 
 	private LinearLayout tranfer_linearLayout;
 	private TextView notiTextView;
+	private LinearLayout networthLayout;
+	private LinearLayout outLayout;
+	
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -136,6 +139,8 @@ public class AccountActivity extends BaseHomeActivity {
 		ActionBar actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
 		
+		networthLayout =  (LinearLayout)findViewById(R.id.networthLayout);
+		outLayout =  (LinearLayout)findViewById(R.id.outLayout);
 		tranfer_linearLayout = (LinearLayout)findViewById(R.id.tranfer_linearLayout);
 		tranfer_linearLayout.setOnClickListener(mClickListener);
 		netTextView = (TextView)findViewById(R.id.net_worth_txt);
@@ -148,12 +153,36 @@ public class AccountActivity extends BaseHomeActivity {
 		mListView.setDividerHeight(0);
 		mListView.setOnItemLongClickListener(listener);
 		mListView.setOnItemClickListener(itemListener);
+		
+		
+		networthLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.putExtra("type", 0);
+				intent.setClass(AccountActivity.this, NetOutActivity.class);
+				startActivityForResult(intent, 21);
+			}
+		});
+		
+		outLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View paramView) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.putExtra("type", 1);
+				intent.setClass(AccountActivity.this, NetOutActivity.class);
+				startActivityForResult(intent, 21);
+			}
+		});
 
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
-		
 
 		Intent intent = new Intent();
 		intent.putExtra("done", 1);

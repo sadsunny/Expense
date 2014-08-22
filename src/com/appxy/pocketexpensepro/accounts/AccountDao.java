@@ -375,6 +375,58 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectTransactionAllList(
+			Context context) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* from 'Transaction' a where (a.expenseAccount > 0  or a.incomeAccount > 0) and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 
 	public static List<Map<String, Object>> selectTransactionByAccount(
 			Context context, int accountId) { // Account查询
@@ -484,6 +536,59 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectTransactionAllAndClear(
+			Context context) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* from 'Transaction' a where (a.expenseAccount > 0 or a.incomeAccount > 0) and a.childTransactions != 1 and isClear != 1 order by a.dateTime DESC, a._id DESC  ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
 	
 	public static List<Map<String, Object>> selectTransactionByAccountAndClear(
 			Context context, int accountId) { // Account查询

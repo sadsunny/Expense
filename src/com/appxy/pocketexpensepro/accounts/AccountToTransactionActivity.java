@@ -93,8 +93,10 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	private NavigationListAdapter mNavigationListAdapter;
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
+	
 	private Boolean reconcileBoolean = true;
 	private Boolean hideBoolean = false;
+	
 	private int queryCheck = 0; // 0查询所有，1查询clear的transaction
 	private double outstanding;
 	private double banlance;
@@ -113,6 +115,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	private IabHelper mHelper;
 	private static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi803lugKTJdERpN++BDhRYY5hr0CpTsuj+g3fIZGBLn+LkZ+me0it3lP375tXqMlL0NLNlasu9vWli3QkCFBbERf+KysqUCsrqqcoq3hUini6LSiKkyuISM2Y4gWUqSVT+vkLP4psshnwJTbF6ii2jZfXFxLVoT5P30+y4rgCwncgRsX14x2bCpJlEdxrNfoxL4EqlHAt9/9vsc0PoW8QH/ChKJFkTDOsB9/42aur4zF9ua568ny1K6vlE/lnkffBP6DvsHFrIdpctRyUdrBVnUyMl+1k2ufUHJudfeGpKuExLcNOxuryCTolIFj44dB2TugNFzQwOE4xoRyCfJ7bQIDAQAB";
 	private static final String PREFS_NAME = "SAVE_INFO";
+	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -191,7 +194,28 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_account_to_transaction);
+		
+		  SharedPreferences sharedPreferences = getSharedPreferences("reconcileBoolean", MODE_PRIVATE);  
+	      reconcileBoolean = sharedPreferences.getBoolean("reconcileBoolean", true);
+	      
+	      SharedPreferences sharedPreferences1 = getSharedPreferences("hideBoolean", MODE_PRIVATE);  
+	      hideBoolean = sharedPreferences1.getBoolean("hideBoolean", false);
 
+	      if (reconcileBoolean) {
+				item1 = "Reconcile OFF              ";
+			} else {
+				item1 = "Reconcile ON               ";
+			}
+	      
+	  	if (hideBoolean) {
+			queryCheck = 1;
+			item2 = "Show Cleared";
+		} else {
+			queryCheck = 0;
+			item2 = "Hide Cleared";
+		}
+		
+	  	
 		mInflater = LayoutInflater.from(this);
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -255,7 +279,6 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		mExpandableListView.setDividerHeight(0);
 		mExpandableListView.setOnChildClickListener(onChildClickListener);
 		mExpandableListView.setOnItemLongClickListener(onLongClickListener);
-		queryCheck = 0;
 
 		if (mThread == null) {
 			mThread = new Thread(mTask);
@@ -277,7 +300,6 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 				mDataList = AccountDao.selectTransactionByAccount(
 						AccountToTransactionActivity.this, _id);
-				Log.v("mtest", "mDataList降序"+mDataList);
 
 			} else if (queryCheck == 1) {
 
@@ -324,24 +346,50 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 		public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 			
-			
 			if (itemPosition == 0) {
-				reconcileBoolean = reconcileBoolean ? false : true;
-				actionBar.setSelectedNavigationItem(2);
-				
-				if (reconcileBoolean) {
-					mExpandableListViewAdapter.setReconcile(1);
-					mExpandableListViewAdapter.notifyDataSetChanged();
-					item1 = "Reconcile OFF              ";
-				} else {
-					mExpandableListViewAdapter.setReconcile(0);
-					mExpandableListViewAdapter.notifyDataSetChanged();
-					item1 = "Reconcile ON               ";
+				if (firstCheck) {
+					actionBar.setSelectedNavigationItem(2);
+					if (reconcileBoolean) {
+						mExpandableListViewAdapter.setReconcile(1);
+						mExpandableListViewAdapter.notifyDataSetChanged();
+						item1 = "Reconcile OFF              ";
+					} else {
+						mExpandableListViewAdapter.setReconcile(0);
+						mExpandableListViewAdapter.notifyDataSetChanged();
+						item1 = "Reconcile ON               ";
+					}
+				}else{
+					
+					reconcileBoolean = reconcileBoolean ? false : true;
+					actionBar.setSelectedNavigationItem(2);
+					
+					 SharedPreferences sharedPreferences = getSharedPreferences("reconcileBoolean",MODE_PRIVATE); 
+		   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+		   			 meditor.putBoolean("reconcileBoolean",reconcileBoolean );  
+		   			 meditor.commit();
+		   			 
+					if (reconcileBoolean) {
+						mExpandableListViewAdapter.setReconcile(1);
+						mExpandableListViewAdapter.notifyDataSetChanged();
+						item1 = "Reconcile OFF              ";
+					} else {
+						mExpandableListViewAdapter.setReconcile(0);
+						mExpandableListViewAdapter.notifyDataSetChanged();
+						item1 = "Reconcile ON               ";
+					}
+					
 				}
+				
+				firstCheck = false;
 				
 			} else if (itemPosition == 1) {
 				hideBoolean = hideBoolean ? false : true;
 				actionBar.setSelectedNavigationItem(2);
+				
+				 SharedPreferences sharedPreferences = getSharedPreferences("hideBoolean",MODE_PRIVATE); 
+	   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+	   			 meditor.putBoolean("hideBoolean",hideBoolean );  
+	   			 meditor.commit();
 				
 				if (hideBoolean) {
 					queryCheck = 1;
@@ -1109,6 +1157,26 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
+		
+		switch (resultCode) {
+		case 13:
+
+			if (data != null) {
+				// mThread = new Thread(mTask);
+				// mThread.start();
+				mHandler.post(mTask);
+			}
+			break;
+		case 6:
+
+			if (data != null) {
+				// mThread = new Thread(mTask);
+				// mThread.start();
+				mHandler.post(mTask);
+			}
+			break;
+		}
+		
 		if (mHelper == null) return;
 		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
 			Log.v("mtest", "result edn");
@@ -1141,24 +1209,6 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
             Log.v("mtest", "参数返回2");
         }
 		
-		switch (resultCode) {
-		case 13:
-
-			if (data != null) {
-				// mThread = new Thread(mTask);
-				// mThread.start();
-				mHandler.post(mTask);
-			}
-			break;
-		case 6:
-
-			if (data != null) {
-				// mThread = new Thread(mTask);
-				// mThread.start();
-				mHandler.post(mTask);
-			}
-			break;
-		}
 	}
 
 }
