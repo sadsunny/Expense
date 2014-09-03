@@ -95,5 +95,9 @@
 	<string name="bill_add">No bills for this month. You can create them by tapping the button \"+\".</string>
 	<string name="budget_add">Please tap the button \"+\" to set up monthly budgets.</string>
 	<string name="Export_label">Export</string>
+	<string name="Export_trans">Export Transaction</string>
+	<string name="Export_flow">Cash Flow</string>
+	<string name="Export_rep">Export Report</string>
+	<string name="payee_category">PAYEE &amp; CATEGORY</string>
 	
 </resources>

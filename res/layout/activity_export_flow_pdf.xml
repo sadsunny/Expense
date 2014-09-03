@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/account_label"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-12dip"
+            android:text="TYPE" >
+        </TextView>
+
+        <Spinner
+            android:id="@+id/type_spin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:textColor="@color/text_black1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/start_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/account_label3"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:text="START FROM" >
+        </TextView>
+
+        <Button
+            android:id="@+id/start_btn"
+            style="@style/TextAppearance.EditEvent_SpinnerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-12dip"
+            android:focusable="true"
+            android:gravity="left|center_vertical"
+            android:textColor="@color/text_black1" >
+        </Button>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/end_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingBottom="6dp" >
+
+        <TextView
+            android:id="@+id/account_label4"
+            style="@style/TextAppearance.EditEvent_LabelSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dip"
+            android:text="END TO" >
+        </TextView>
+
+        <Button
+            android:id="@+id/end_btn"
+            style="@style/TextAppearance.EditEvent_SpinnerButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-12dip"
+            android:focusable="true"
+            android:gravity="left|center_vertical"
+            android:textColor="@color/text_black1" >
+        </Button>
+    </LinearLayout>
+
+    <LinearLayout
+                android:id="@+id/sequence_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:paddingBottom="6dp" >
+
+                <TextView
+                    android:id="@+id/account_label5"
+                    style="@style/TextAppearance.EditEvent_LabelSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="-12dip"
+                    android:text="COLUMN" >
+                </TextView>
+                
+                <Spinner
+                    android:id="@+id/column_spin"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:textColor="@color/text_black1"
+                    />
+            </LinearLayout>
+            
+</LinearLayout>

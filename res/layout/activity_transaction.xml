@@ -29,7 +29,6 @@
                     android:layout_gravity="bottom"
                     android:layout_weight="100"
                     android:hint="@string/payee_label"
-                    android:maxLength="13"
                     android:ems="10"
                     android:minHeight="48dip"
                     android:singleLine="true"

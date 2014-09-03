@@ -29,6 +29,19 @@ public class MEntity {
 		keyWord = keyWord.replace(")", "/)");
 		return keyWord;
 	}
+	
+	public static long getHMSMill() { //获取当前时间的时分秒
+
+		Calendar calendar = Calendar.getInstance();
+		int hours = calendar.get(Calendar.HOUR_OF_DAY);
+		int minuts = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+		
+		long returnDate = hours*60*60*1000+minuts*60*1000+second*1000;
+		return returnDate;
+	}
+
+	
 
 	public static class MapComparatorTime implements
 			Comparator<Map<String, Object>> {

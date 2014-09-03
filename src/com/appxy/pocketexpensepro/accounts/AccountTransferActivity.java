@@ -484,14 +484,11 @@ public class AccountTransferActivity extends BaseHomeActivity {
 
 					// context, amount, dateTime, isClear, notes, photoName, recurringType, category, childTransactions, expenseAccount , incomeAccount, parTransaction, payee)
 					 if(fromId != toId){
-						 long row = TransactionDao.insertTransactionAll( AccountTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, 56, 0+"", fromId ,toId , 0 ,payeeId);
-						 Log.v("mtest","row"+row);
+						 long row = TransactionDao.insertTransactionAll( AccountTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, 0, 0+"", fromId ,toId , 0 ,payeeId);
 						    Intent intent = new Intent();
 							intent.putExtra("_id", row);
 							setResult(11, intent);
 					 }
-					 
-					   
 					
 					finish();
 				}

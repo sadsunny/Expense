@@ -586,7 +586,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							
 							if (categoryType == 0) {
 								long row = TransactionDao
-										.insertTransactionAll(CreatTransactionActivity.this,amountString, dateLong, isCleared,
+										.insertTransactionAll(CreatTransactionActivity.this,amountString, (dateLong+MEntity.getHMSMill()), isCleared,
 												memoString, picPath, recurringTpye,
 												categoryId,
 												childTransactionsDefault + "",
@@ -595,7 +595,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							} else {
 								long row = TransactionDao.insertTransactionAll(
 										CreatTransactionActivity.this,
-										amountString, dateLong, isCleared,
+										amountString, (dateLong+MEntity.getHMSMill()), isCleared,
 										memoString, picPath, recurringTpye,
 										categoryId, childTransactionsDefault + "",
 										expenseAccountDefault, accountId, 0,

@@ -15,6 +15,7 @@ import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 
 public class ReportDao{
 	
+	private final static long DAYMILLIS = 86400000L - 1L;
 	
 	public static SQLiteDatabase getConnection(Context context) {
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
@@ -27,7 +28,7 @@ public class ReportDao{
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* , Payee.name from 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* , Payee.name from 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+(endTime+DAYMILLIS)+ " and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

@@ -350,8 +350,6 @@ public class ExportTransactionCSVActivity extends Activity {
 						mDialogExpandableListViewAdapter.setSelectedList(selectedtExpenseList);
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 						
-						Log.v("mtag","selectExpenseIdSet.size()"+selectExpenseIdSet.size());
-						Log.v("mtag","mExpenseDataList.size()"+mExpenseDataList.size());
 						if( selectExpenseIdSet.size() == mExpenseDataList.size()){
 							selectAllCategoryRadio.setChecked(true);
 						}else{
@@ -380,8 +378,6 @@ public class ExportTransactionCSVActivity extends Activity {
 						mDialogExpandableListViewAdapter.setSelectedList(selectedtIncomeList);
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 						
-						Log.v("mtag","selectIncomeIdSet.size()"+selectIncomeIdSet.size());
-						Log.v("mtag","mIncomeDataList.size()"+mIncomeDataList.size());
 						
 						if(selectIncomeIdSet.size() == mIncomeDataList.size()){
 							selectAllCategoryRadio.setChecked(true);
@@ -1148,7 +1144,7 @@ public class ExportTransactionCSVActivity extends Activity {
 
 					Intent data = new Intent(Intent.ACTION_SEND);
 					data.putExtra(Intent.EXTRA_EMAIL, new String[] { "" });
-					data.putExtra(Intent.EXTRA_SUBJECT, "PocketExpense Data:"+ mstartString+"-"+ mendString);
+					data.putExtra(Intent.EXTRA_SUBJECT, "Transaction Data:"+ mstartString+"-"+ mendString);
 					data.putExtra(Intent.EXTRA_TEXT, "The attachment is exported from PocketExpense for the Android Device" +
 							".The data is formatted in 'Comma Separated Value'(CSV) format and may be imported by many common spreadsheet applications.");
 					data.putExtra(Intent.EXTRA_STREAM,Uri.parse("file:///sdcard/PocketExpense/"+ "PocketExpense_data_"+nowCreat+".csv"));
@@ -1210,40 +1206,66 @@ public class ExportTransactionCSVActivity extends Activity {
 							new FileOutputStream("/sdcard/PocketExpense/"+"PocketExpense_data_"+nowCreat+".csv"), "GBK"));
 					
 					bw.write("Pocket Expense Report");
-					bw.newLine();
-					bw.write(turnMilltoString(startDate)+" - "+turnMilltoString(endDate));
-					bw.newLine();
-					bw.newLine();
+					bw.write("\r\n");
+					bw.write(turnMilltoMDY(startDate)+" - "+turnMilltoMDY(endDate));
+					bw.write("\r\n");
+					bw.write("\r\n");
 					
 					HashSet<Integer> AllIdSet = new HashSet<Integer>();  
 			    	AllIdSet.addAll(selectExpenseIdSet);
 			    	AllIdSet.addAll(selectIncomeIdSet);
-			    	List<Map<String, Object>> mList =ExportDao.selectTransactionByTimeBE(ExportTransactionCSVActivity.this, startDate, endDate, seqType, groupType, AllIdSet, mExpenseDataList.size()+mIncomeDataList.size(), selectIdSet, mAccountList.size());
-					
-			    	BigDecimal allAmount = new BigDecimal(0);
+			    	List<Map<String, Object>> mList = ExportDao.selectTransactionByTimeBE(ExportTransactionCSVActivity.this, startDate, endDate, seqType, groupType, AllIdSet, mExpenseDataList.size()+mIncomeDataList.size(), selectIdSet, mAccountList.size());
+			    	
+			    	BigDecimal expenseAmount = new BigDecimal(0);
 			    	BigDecimal unClearAmount = new BigDecimal(0);
+			    	BigDecimal incomeAmount = new BigDecimal(0);
 			    	
 			    	for (Map<String, Object> iMap:mList) {
 			    		int isClear = (Integer) iMap.get("isClear");
 			    		String amount = (String) iMap.get("amount");
-			    		
-			    		BigDecimal b1 = new BigDecimal(amount);
-			    		allAmount = allAmount.add(b1);
-			    		if (isClear != 1) {
-			    			unClearAmount = unClearAmount.add(b1);
+			    		int expenseAccount = (Integer) iMap.get("expenseAccount");
+			 		    int incomeAccount = (Integer) iMap.get("incomeAccount");
+			 		    
+			 			BigDecimal b1 = new BigDecimal(amount);
+			 			
+			 		    if (expenseAccount > 0) {
+			 		    	expenseAmount = expenseAmount.add(b1);
+			 		    	
+			 		    	if (isClear != 1) {
+				    			unClearAmount = unClearAmount.add(b1);
+							}
+			 		    	
+						} else if (incomeAccount > 0) {
+							incomeAmount = incomeAmount.add(b1);
+							
+							if (isClear != 1) {
+				    			unClearAmount = unClearAmount.subtract(b1);
+							}
+							
 						}
+			 		    
 					}
 			    	
-					bw.write("Expense,");
-					bw.write(Common.CURRENCY_SIGN[Common.CURRENCY]+MEntity.doublepoint2str(allAmount.doubleValue()+""));
-					bw.newLine();
+			    	if ( selectExpenseIdSet.size() > 0 ) {
+			    		bw.write("Expense,");
+						bw.write(Common.CURRENCY_SIGN[Common.CURRENCY]+MEntity.doubl2str(expenseAmount.doubleValue()+""));
+						bw.write("\r\n");
+					} 
+			    	if (selectIncomeIdSet.size() > 0) {
+						bw.write("Income,");
+						bw.write(Common.CURRENCY_SIGN[Common.CURRENCY]+MEntity.doubl2str(incomeAmount.doubleValue()+""));
+						bw.write("\r\n");
+					}
+			    	
+					
 					bw.write("uncleared,");
-					bw.write(Common.CURRENCY_SIGN[Common.CURRENCY]+MEntity.doublepoint2str(unClearAmount.doubleValue()+""));
-					bw.newLine();
-					bw.newLine();
-					bw.newLine();
-					bw.newLine();
+					bw.write(Common.CURRENCY_SIGN[Common.CURRENCY]+MEntity.doubl2str(unClearAmount.doubleValue()+""));
+					bw.write("\r\n");
+					bw.write("\r\n");
+					bw.write("\r\n");
+					bw.write("\r\n");
 					bw.write("Date&Time,Account,Category,Payee/Place,Amount,Cleared,Note");
+					bw.write("\r\n");
 					
 					String currencyString = Common.CURRENCY_SIGN[Common.CURRENCY];
 					for (Map<String, Object> iMap:mList) {
@@ -1255,7 +1277,9 @@ public class ExportTransactionCSVActivity extends Activity {
 						String amount = (String) iMap.get("amount");
 						int isClear = (Integer) iMap.get("isClear");
 					    String notes =  (String) iMap.get("notes");
-					    
+					    int expenseAccount = (Integer) iMap.get("expenseAccount");
+			 		    int incomeAccount = (Integer) iMap.get("incomeAccount");
+			 		    
 				      
 				       BigDecimal b1 = new BigDecimal(amount);
 				       String isClearString = "";
@@ -1264,7 +1288,16 @@ public class ExportTransactionCSVActivity extends Activity {
 					   } else {
 						   isClearString = "No";
 					   }
-				      
+				       
+				       String amountString = "";
+			 		    
+			 		    if (expenseAccount > 0) {
+			 		    	amountString = "-"+currencyString;
+						} else if (incomeAccount > 0) {
+							amountString = currencyString;
+						} 
+			 		   amountString = amountString + MEntity.doubl2str(b1.doubleValue()+"");
+			 		   
 				         bw.write(turnMilltoString(dateTime));
 				         bw.write(",");
 				         bw.write(accName);
@@ -1273,12 +1306,12 @@ public class ExportTransactionCSVActivity extends Activity {
 				         bw.write(",");
 				         bw.write(payeeName);
 				         bw.write(",");
-				         bw.write(currencyString+MEntity.doublepoint2str(b1.doubleValue()+""));
+				         bw.write(amountString);
 				         bw.write(",");
 				         bw.write(isClearString);
 				         bw.write(",");
-				         bw.write(payeeName);
-				         bw.newLine();
+				         bw.write( (notes==null)?(""):notes);
+				         bw.write("\r\n");
 					}
 					bw.flush();
 					bw.close();
@@ -1298,14 +1331,29 @@ public class ExportTransactionCSVActivity extends Activity {
 		}
 	 
 	 public String getMilltoTime(long milliSeconds) {
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMMMdd");
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(milliSeconds);
 			return formatter.format(calendar.getTime());
 		}
 	 
 	 public String turnMilltoString(long milliSeconds) {
-			SimpleDateFormat formatter = new SimpleDateFormat("MMMM/dd/yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(milliSeconds);
+			return formatter.format(calendar.getTime());
+		}
+	 
+	 public String turnMilltoMDY(long milliSeconds) {
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(milliSeconds);
+			return formatter.format(calendar.getTime());
+		}
+	 
+	 
+	 public String getMilltoTimeDetail(long milliSeconds) {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMMMdd HH:mm:ss");
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(milliSeconds);
 			return formatter.format(calendar.getTime());

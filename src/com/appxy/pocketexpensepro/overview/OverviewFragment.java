@@ -158,6 +158,11 @@ public class OverviewFragment extends Fragment implements
 	private List<Map<String, Object>> mBudgetList;
 	private RelativeLayout adsLayout;
 	private Button adsButton;
+	private TextView notiTextView;
+	private TellMainBuyPro tellMainBuyPro;
+	/*
+	 * 
+	 */
 	private IabHelper mHelper;
 	private boolean iap_is_ok = false;
 	private IInAppBillingService billingservice;
@@ -168,8 +173,9 @@ public class OverviewFragment extends Fragment implements
 	private static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi803lugKTJdERpN++BDhRYY5hr0CpTsuj+g3fIZGBLn+LkZ+me0it3lP375tXqMlL0NLNlasu9vWli3QkCFBbERf+KysqUCsrqqcoq3hUini6LSiKkyuISM2Y4gWUqSVT+vkLP4psshnwJTbF6ii2jZfXFxLVoT5P30+y4rgCwncgRsX14x2bCpJlEdxrNfoxL4EqlHAt9/9vsc0PoW8QH/ChKJFkTDOsB9/42aur4zF9ua568ny1K6vlE/lnkffBP6DvsHFrIdpctRyUdrBVnUyMl+1k2ufUHJudfeGpKuExLcNOxuryCTolIFj44dB2TugNFzQwOE4xoRyCfJ7bQIDAQAB";
 	private ArrayList<String> sku_list;
 	private ArrayList<String> price_list;
-	private TextView notiTextView;
-	private TellMainBuyPro tellMainBuyPro;
+	/*
+	 * 
+	 */
 	
 	public OverviewFragment() {
 
@@ -272,7 +278,6 @@ public class OverviewFragment extends Fragment implements
 			adsLayout.setVisibility(View.GONE);
 		}
 
-		Log.v("mdb", "super.onResume()");
 		TransactionRecurringCheck.recurringCheck(mActivity,
 				MEntity.getNowMillis());
 		mListViewAdapter.notifyDataSetChanged();
@@ -754,7 +759,6 @@ public class OverviewFragment extends Fragment implements
 
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
-			Log.v("mtest", "mDataList是否含有"+mDataList);
 			reFillData(mDataList);
 
 			mBudgetList = OverViewDao.selectBudget(mActivity);
@@ -1003,10 +1007,10 @@ public class OverviewFragment extends Fragment implements
 					int iconName = (Integer) mList.get(0).get("iconName");
 					mMap.put("iconName", iconName);
 				} else {
-					mMap.put("iconName", 0);
+					mMap.put("iconName", 69);
 				}
 			} else {
-				mMap.put("iconName", 0); // 设置为not sure
+				mMap.put("iconName", 69); // 设置为not sure
 			}
 
 			if (payee > 0) {

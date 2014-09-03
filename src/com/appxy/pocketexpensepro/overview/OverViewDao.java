@@ -15,8 +15,8 @@ import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 
 public class OverViewDao {
 
-	private final static long DAYMILLIS = 86400000L - 1;
-
+	private final static long DAYMILLIS = 86400000L - 1L;
+	
 	public static SQLiteDatabase getConnection(Context context) {
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -28,8 +28,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime = "+ time
-				+ " and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+ time +" and a.dateTime <  "+(time+DAYMILLIS)+ " and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -79,7 +78,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.parTransaction != -1 and  (a.expenseAccount <= 0 or a.incomeAccount <= 0) order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.parTransaction != -1 and  (a.expenseAccount <= 0 or a.incomeAccount <= 0) order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -131,7 +130,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.parTransaction != -1 and a.category = b._id order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.parTransaction != -1 and a.category = b._id order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -185,7 +184,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select b.* , sum(a.amount) from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.parTransaction != -1 and a.category = b._id group by b._id ";
+		String sql = "select b.* , sum(a.amount) from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id group by b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -273,7 +272,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select * from BudgetTransfer a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " ";
+		String sql = "select * from BudgetTransfer a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -305,7 +304,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ endTime+ " and a.category = b._id and b.categoryName like '"+ categorName +"%' and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.category = b._id and b.categoryName like '"+ categorName +"%' and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

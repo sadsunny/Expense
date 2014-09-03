@@ -15,6 +15,7 @@ import com.appxy.pocketexpensepro.passcode.Activity_ChangePass;
 import com.appxy.pocketexpensepro.passcode.Activity_SetPass;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.CategoryActivity;
+import com.appxy.pocketexpensepro.setting.export.ExportAllActivity;
 import com.appxy.pocketexpensepro.setting.export.ExportTransactionCSVActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.util.IabHelper;
@@ -80,6 +81,7 @@ public class SettingActivity extends BaseHomeActivity {
 	private int  BdgetSetting;
 	private RelativeLayout updateLinearLayout;
 	private LinearLayout update_layout_visi;
+	private LinearLayout export_LinearLayout;
 	
 	static final int RC_REQUEST = 10001;
 	private IabHelper mHelper;
@@ -111,7 +113,8 @@ public class SettingActivity extends BaseHomeActivity {
 		updateLinearLayout = (RelativeLayout) findViewById(R.id.update_layout);
 		update_layout_visi = (LinearLayout) findViewById(R.id.update_layout_visi);
 		exportLayout = (RelativeLayout) findViewById(R.id.export_layout);
-		
+		export_LinearLayout = (LinearLayout) findViewById(R.id.export_LinearLayout);
+		 
 		left_LinearLayout = (LinearLayout) findViewById(R.id.left_LinearLayout);
 		left_txt = (TextView) findViewById(R.id.left_txt);
 		spent_LinearLayout = (LinearLayout) findViewById(R.id.spent_LinearLayout);
@@ -123,14 +126,16 @@ public class SettingActivity extends BaseHomeActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
-				intent.setClass(SettingActivity.this, ExportTransactionCSVActivity.class);
+				intent.setClass(SettingActivity.this, ExportAllActivity.class);
 				startActivity(intent);
 			}
 		});
 		
 		if (Common.mIsPaid) {
 			update_layout_visi.setVisibility(View.INVISIBLE);
+			export_LinearLayout.setVisibility(View.VISIBLE);
 		}else {
+			 export_LinearLayout.setVisibility(View.GONE);
 			 update_layout_visi.setVisibility(View.VISIBLE);
 			 try {
 				
@@ -157,6 +162,7 @@ public class SettingActivity extends BaseHomeActivity {
 				}
 			 
 		}
+		export_LinearLayout.setVisibility(View.VISIBLE); //测试代码
 
 		updateLinearLayout.setOnClickListener(new OnClickListener() {
 			
@@ -499,6 +505,8 @@ public class SettingActivity extends BaseHomeActivity {
 				   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
 				   			 meditor.putBoolean("isPaid",true );  
 				   			 meditor.commit();
+				   			 update_layout_visi.setVisibility(View.INVISIBLE);
+				   			 export_LinearLayout.setVisibility(View.VISIBLE);
 				          }
 				          catch (JSONException e) {
 				             alert("Failed to parse purchase data.");
@@ -568,6 +576,7 @@ public class SettingActivity extends BaseHomeActivity {
 	   			 meditor.putBoolean("isPaid",true );  
 	   			 meditor.commit();
 	   			 update_layout_visi.setVisibility(View.INVISIBLE);
+	   			 export_LinearLayout.setVisibility(View.VISIBLE);
 	            }
 	        }
 

@@ -54,4 +54,15 @@
         <item>Descending</item>
     </string-array>
 
+    <string-array name="flow_type">
+        <item>All</item>
+        <item>Out Flow</item>
+        <item>In Flow</item>
+    </string-array>
+    
+    <string-array name="column_type">
+        <item>Week</item>
+        <item>Month</item>
+    </string-array>
+    
 </resources>

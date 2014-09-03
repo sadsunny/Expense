@@ -270,7 +270,7 @@ public class BillPayActivity extends BaseHomeActivity {
 
 				if (indexflag == 0 || indexflag == 1) {
 					long row = BillsDao.insertTransactionRule(BillPayActivity.this,
-							amountString, dateLong, accountId, _id,categoryId,payeeId,1,0);
+							amountString, (dateLong+MEntity.getHMSMill()), accountId, _id,categoryId,payeeId,1,0);
 					if(row > 0){
 						Intent intent = new Intent();
 						intent.putExtra("_id", row);
@@ -313,7 +313,7 @@ public class BillPayActivity extends BaseHomeActivity {
 					mMap.put("indexflag", 3);
 
 					long row1 = BillsDao.insertTransactionItem(
-							BillPayActivity.this, amountString, dateLong,
+							BillPayActivity.this, amountString, (dateLong+MEntity.getHMSMill()),
 							accountId, (int) row, categoryId,payeeId,1,0);
 					if(row1 > 0){
 						Intent intent = new Intent();
@@ -328,7 +328,7 @@ public class BillPayActivity extends BaseHomeActivity {
 				} else if (indexflag == 3) {
 
 					long row = BillsDao.insertTransactionItem(BillPayActivity.this,
-							amountString, dateLong, accountId, _id,categoryId,payeeId,1,0);
+							amountString, (dateLong+MEntity.getHMSMill()), accountId, _id,categoryId,payeeId,1,0);
 					if(row >0){
 						Intent intent = new Intent();
 						intent.putExtra("_id", row);

@@ -15,6 +15,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 public class BillsDao {
+	
+	private final static long DAYMILLIS = 86400000L - 1L;
+	
 	public static SQLiteDatabase getConnection(Context context) {
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -360,7 +363,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+endTime+ " and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
+		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+(endTime+DAYMILLIS)+ " and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -457,7 +460,7 @@ public class BillsDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <="+endTime+ " and a.billItemHasCategory = b._id ";
+		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <=" + (endTime+DAYMILLIS) + " and a.billItemHasCategory = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -631,6 +634,7 @@ public class BillsDao {
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("expenseAccount", expenseAccount);
+		cv.put("incomeAccount", 0);
 		cv.put("transactionHasBillRule", transactionHasBillRule);
 		cv.put("category", category);
 		cv.put("payee", payee);

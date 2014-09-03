@@ -92,6 +92,7 @@ public class AccountDao {
 			mMap.put("payee", payee);
 			mMap.put("transactionHasBillItem", transactionHasBillItem);
 			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("notes", notes);
 			
 			mList.add(mMap);
 		}

@@ -749,7 +749,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									payeeId);
 						}
 					}
-					   Intent resultintent = new Intent();
+					    Intent resultintent = new Intent();
 						resultintent.putExtra("row", 1);
 						setResult(13, resultintent);
 

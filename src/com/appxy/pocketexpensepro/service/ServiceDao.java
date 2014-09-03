@@ -13,6 +13,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class ServiceDao {
 
+	private final static long DAYMILLIS = 86400000L - 1L;
+	
 	public static SQLiteDatabase getConnection(Context context) {
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -72,7 +74,7 @@ public class ServiceDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <="+endTime+ " and a.billItemHasCategory = b._id and a.ep_billItemReminderDate > 0";
+		String sql = "select a.*, b.*, Payee.* from EP_BillItem a left join Payee on a.billItemHasPayee = Payee._id ,Category b where a.ep_billItemDueDate >= "+ beginTime+ " and a.ep_billItemDueDate <="+(endTime+DAYMILLIS)+ " and a.billItemHasCategory = b._id and a.ep_billItemReminderDate > 0";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -126,7 +128,7 @@ public class ServiceDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+endTime+ " and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id and a.ep_reminderDate > 0";
+		String sql = "select a.*, b.*,Payee.* from EP_BillRule a left join Payee on a.billRuleHasPayee = Payee._id ,Category b where a.ep_billDueDate >= "+ beginTime+ " and a.ep_billDueDate <="+(endTime+DAYMILLIS)+ " and a.ep_recurringType = 0 and a.billRuleHasCategory = b._id and a.ep_reminderDate > 0";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			

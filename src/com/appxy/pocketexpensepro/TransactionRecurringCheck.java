@@ -22,7 +22,6 @@ public class TransactionRecurringCheck {
 	
 	public static void recurringCheck(Context context, long today) {
 		List<Map<String, Object>> mList = AccountDao.selectTransactionRecurringOverToday(context, today);
-		Log.v("mList", "mList"+mList);
 		
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
 		SQLiteDatabase db = helper.getWritableDatabase();
@@ -46,7 +45,6 @@ public class TransactionRecurringCheck {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(dateTime);
 			
-			Log.v("mtest", "recurringTpye"+recurringTpye);
 			if (recurringTpye == 1) {
 				calendar.add(Calendar.DAY_OF_MONTH, 1);
 			} else if (recurringTpye == 2) {
@@ -119,7 +117,7 @@ public class TransactionRecurringCheck {
 				}
         		
 	        	 TransactionDao.insertTransactionOne(db,context,amount, calendar.getTimeInMillis(), isClear,
-						 notes, photoName, 1,
+						 notes, photoName, recurringTpye,
 						 category,
 						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee);
 	        	 
