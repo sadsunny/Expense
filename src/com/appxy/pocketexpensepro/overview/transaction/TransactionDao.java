@@ -23,7 +23,7 @@ public class TransactionDao {
 	
 	public static Cursor selectPayee(Context context, String keyWord) { 
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.categoryName, b.iconName from Payee a,Category b where a.category = b._id and a.name like '%"+keyWord+"%' ";
+		String sql = "select a.*, b.categoryName, b.iconName, b.categoryType from Payee a,Category b where a.category = b._id and a.name like '%"+keyWord+"%' ";
 		Cursor mCursor = db.rawQuery(sql, null);
 
 		return mCursor;

@@ -74,7 +74,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/optional_label1"
+                    android:id="@+id/optional_label9"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

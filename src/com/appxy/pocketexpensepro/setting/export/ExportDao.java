@@ -36,7 +36,7 @@ public class ExportDao {
 			conditionString = "(a.expenseAccount > 0 and a.incomeAccount <= 0)";
 		}
 				
-		String sql = "select a.* from 'Transaction' a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.parTransaction != -1 and  "+conditionString+" order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a, Category b where a.category = b._id and a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.parTransaction != -1 and  "+conditionString+" order by lower(b.categoryName) ASC, b.categoryName ASC";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

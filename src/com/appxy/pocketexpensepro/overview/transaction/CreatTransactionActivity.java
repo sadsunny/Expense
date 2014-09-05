@@ -104,7 +104,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 	private AlertDialog mCategoryDialog;
 	private int checkedItem;
-	private int gCheckedItem;// 选择位置
+	private int gCheckedItem = 0;// 选择位置
 	private int cCheckedItem;
 	private RelativeLayout expenseButton;
 	private RelativeLayout incomeButton;
@@ -250,12 +250,17 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				payeeId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
 				categoryId = cursor.getInt(cursor
 						.getColumnIndexOrThrow("category"));
+				
+				int cType  = categoryId = cursor.getInt(cursor
+						.getColumnIndexOrThrow("categoryType"));
+				
 				String categoryName = cursor.getString(cursor
 						.getColumnIndexOrThrow("categoryName"));
 				categoryButton.setText(categoryName);
 				Log.v("mtest", "categoryName"+categoryName);
 				Log.v("mtest", "categoryId"+categoryId);
 				
+					mCategoryType = cType ; // 1 income
 				
 				if (categoryName.contains(":")) {
 					String parentString[] = categoryName.split(":");

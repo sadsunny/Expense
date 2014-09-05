@@ -162,7 +162,7 @@ public class SettingActivity extends BaseHomeActivity {
 				}
 			 
 		}
-		export_LinearLayout.setVisibility(View.VISIBLE); //测试代码
+//		export_LinearLayout.setVisibility(View.VISIBLE); //测试代码
 
 		updateLinearLayout.setOnClickListener(new OnClickListener() {
 			

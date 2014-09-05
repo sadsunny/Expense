@@ -127,7 +127,7 @@
                 android:layout_weight="1" >
 
                 <RelativeLayout
-                    android:id="@+id/mRelative1"
+                    android:id="@+id/mRelative0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true" >
@@ -214,7 +214,7 @@
                 android:layout_weight="1" >
 
                 <RelativeLayout
-                    android:id="@+id/mRelative1"
+                    android:id="@+id/mRelative2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true" >

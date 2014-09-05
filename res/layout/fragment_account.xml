@@ -210,7 +210,7 @@
             android:visibility="invisible" >
 
             <ImageView
-                android:id="@+id/setbudget_imageView"
+                android:id="@+id/setbudget_imageView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/export_account" />

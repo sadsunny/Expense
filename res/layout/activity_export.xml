@@ -50,7 +50,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/account_label"
+                    android:id="@+id/account_label2"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/account_label"
+                    android:id="@+id/account_label1"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/account_label"
+                    android:id="@+id/account_label4"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/account_label"
+                    android:id="@+id/account_label5"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -168,7 +168,7 @@
                 android:paddingBottom="6dp" >
 
                 <TextView
-                    android:id="@+id/account_label"
+                    android:id="@+id/account_label6"
                     style="@style/TextAppearance.EditEvent_LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

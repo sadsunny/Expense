@@ -214,7 +214,7 @@
             </LinearLayout>
             
               <View
-                    android:id="@+id/Line0"
+                    android:id="@+id/Line7"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_below="@+id/LinearLayout1"
@@ -254,7 +254,7 @@
             >
             
                  <View
-                    android:id="@+id/Line1"
+                    android:id="@+id/Line6"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_alignParentTop="true"
@@ -272,7 +272,7 @@
             android:textSize="14sp" />
         
                   <View
-                    android:id="@+id/Line2"
+                    android:id="@+id/Line5"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_alignParentBottom="true"
