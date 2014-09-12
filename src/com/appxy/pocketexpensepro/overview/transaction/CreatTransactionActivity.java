@@ -211,7 +211,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						CreatTransactionActivity.this, mCursor, true);
 				payeeEditText.setAdapter(autoListAdapter);
 				Log.v("mtest", "mCursor11" + mCursor);
-				sKey = s;
 
 			}
 
@@ -251,7 +250,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				categoryId = cursor.getInt(cursor
 						.getColumnIndexOrThrow("category"));
 				
-				int cType  = categoryId = cursor.getInt(cursor
+				int cType = cursor.getInt(cursor
 						.getColumnIndexOrThrow("categoryType"));
 				
 				String categoryName = cursor.getString(cursor
@@ -260,7 +259,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				Log.v("mtest", "categoryName"+categoryName);
 				Log.v("mtest", "categoryId"+categoryId);
 				
-					mCategoryType = cType ; // 1 income
+				mCategoryType = cType ; // 1 income
 				
 				if (categoryName.contains(":")) {
 					String parentString[] = categoryName.split(":");
@@ -286,8 +285,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 					}
 
 				} else {
-					gCheckedItem = locationPositionById(groupDataList,
-							categoryId);
+					gCheckedItem = locationPositionById(groupDataList,categoryId);
 					cCheckedItem = -1;
 				}
 			}
@@ -937,16 +935,21 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 						int groupCount = groupDataList.size();
 
+						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
 						for (int i = 0; i < groupCount; i++) {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-
-						mExpandableListView.setSelectedChild(gCheckedItem,
-								cCheckedItem, true);
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
+					Log.v("mtag","gCheckedItem"+gCheckedItem);
+					Log.v("mtag","cCheckedItem"+cCheckedItem);
+						mExpandableListView.setSelectedChild(gCheckedItem,
+								cCheckedItem, true);
+						
+						
 					} else if (mCategoryType == 1) {
 						List<Map<String, Object>> mDataList = PayeeDao
 								.selectCategory(CreatTransactionActivity.this,
@@ -960,12 +963,13 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-
+						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
 						mExpandableListView.setSelectedChild(gCheckedItem,
 								cCheckedItem, true);
+						
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 
 					}
 

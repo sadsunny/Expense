@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.setting.export;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 
 import android.app.Activity;
@@ -11,14 +12,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 
-public class ExportAllActivity extends Activity {
+public class ExportAllActivity extends BaseHomeActivity {
 
 	private LinearLayout transactionCSVLayout;
 	private LinearLayout transactionPDFLayout;
 	private LinearLayout flowPDFLayout;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_export_all);

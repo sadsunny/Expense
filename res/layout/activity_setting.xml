@@ -437,6 +437,46 @@
                 android:textSize="16sp" />
         </RelativeLayout>
     </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/sync_layout_visi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp" >
+
+        <View
+            android:id="@+id/line_label18"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/sync_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/item_layout_selector"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/sync_label1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="7.3dp"
+                android:layout_marginRight="12dip"
+                android:paddingRight="8dip"
+                android:text="Sync"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/text_black"
+                android:textSize="16sp" />
+        </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

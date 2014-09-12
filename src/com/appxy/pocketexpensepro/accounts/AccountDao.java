@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.R.id;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -152,12 +153,16 @@ public class AccountDao {
 			String amount, long dateTime, int autoClear, int accountType) { // Account插入
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		
 		cv.put("accName", accName);
 		cv.put("amount", amount + "");
 		cv.put("dateTime", dateTime);
 		cv.put("autoClear", autoClear);
 		cv.put("accountType", accountType);
-
+		cv.put("state", "1");
+		cv.put("uuid", MEntity.getUUID());
+		cv.put("dateTime_sync", dateTime);
+		
 		try {
 			long id = db.insert("Accounts", null, cv);
 			db.close();

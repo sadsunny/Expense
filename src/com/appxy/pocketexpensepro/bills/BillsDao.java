@@ -654,6 +654,7 @@ public class BillsDao {
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("expenseAccount", expenseAccount);
+		cv.put("incomeAccount", 0);
 		cv.put("transactionHasBillItem", transactionHasBillItem);
 		cv.put("category", category);
 		cv.put("payee", payee);

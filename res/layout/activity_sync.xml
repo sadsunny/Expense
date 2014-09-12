@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp" >
+
+        <ImageView
+            android:id="@+id/imageview1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:src="@drawable/ic_logo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@+id/imageview1"
+            android:layout_marginRight="15dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dropbox" 
+                android:textSize="18sp"
+                android:textColor="@color/text_black1"/>
+             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Link your Dropbox account, all data will be synced automatically"
+                android:textSize="16sp"
+                android:textColor="@color/text_black1" />
+        </LinearLayout>
+        
+    </RelativeLayout>
+
+         <View
+            android:id="@+id/line_label2"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+        
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="0dp"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/sync_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="12dip"
+            android:paddingRight="8dip"
+            android:text="Sync"
+            android:textAppearance="?android:attr/textAppearance"
+            android:textColor="@color/text_black1"
+            android:textSize="18sp" />
+
+        <Switch
+            android:id="@+id/sync_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:gravity="center_vertical" />
+    </RelativeLayout>
+
+         <View
+            android:id="@+id/line_label3"
+            android:layout_width="match_parent"
+            android:layout_height="0.7dp"
+            android:background="@color/black_gray" >
+        </View>
+        
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/account_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" 
+            android:textColor="@color/text_black1"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

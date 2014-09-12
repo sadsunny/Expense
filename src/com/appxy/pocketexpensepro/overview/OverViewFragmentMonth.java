@@ -50,7 +50,6 @@ public class OverViewFragmentMonth extends Fragment {
 
 	}
 
-	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub

@@ -368,6 +368,10 @@ public class EditTransactionActivity extends BaseHomeActivity {
 						.getColumnIndexOrThrow("categoryName"));
 				categoryButton.setText(categoryName);
 
+				int cType = cursor.getInt(cursor
+						.getColumnIndexOrThrow("categoryType"));
+				mCategoryType = cType ; // 1 income
+				
 				if (categoryName.contains(":")) {
 					String parentString[] = categoryName.split(":");
 					String groupString = parentString[0];

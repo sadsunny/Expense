@@ -18,6 +18,7 @@ import com.appxy.pocketexpensepro.setting.category.CategoryActivity;
 import com.appxy.pocketexpensepro.setting.export.ExportAllActivity;
 import com.appxy.pocketexpensepro.setting.export.ExportTransactionCSVActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
+import com.appxy.pocketexpensepro.setting.sync.SyncActivity;
 import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Purchase;
@@ -82,6 +83,7 @@ public class SettingActivity extends BaseHomeActivity {
 	private RelativeLayout updateLinearLayout;
 	private LinearLayout update_layout_visi;
 	private LinearLayout export_LinearLayout;
+	private RelativeLayout sync_LinearLayout;
 	
 	static final int RC_REQUEST = 10001;
 	private IabHelper mHelper;
@@ -114,11 +116,25 @@ public class SettingActivity extends BaseHomeActivity {
 		update_layout_visi = (LinearLayout) findViewById(R.id.update_layout_visi);
 		exportLayout = (RelativeLayout) findViewById(R.id.export_layout);
 		export_LinearLayout = (LinearLayout) findViewById(R.id.export_LinearLayout);
-		 
+		sync_LinearLayout = (RelativeLayout) findViewById(R.id.sync_layout);
+		
+		
 		left_LinearLayout = (LinearLayout) findViewById(R.id.left_LinearLayout);
 		left_txt = (TextView) findViewById(R.id.left_txt);
 		spent_LinearLayout = (LinearLayout) findViewById(R.id.spent_LinearLayout);
 		spent_txt = (TextView) findViewById(R.id.spent_txt);
+		
+		sync_LinearLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				intent.setClass(SettingActivity.this, SyncActivity.class);
+				startActivity(intent);
+			}
+		});
+		
 		
 		exportLayout.setOnClickListener(new OnClickListener() {
 			

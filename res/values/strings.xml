@@ -99,5 +99,6 @@
 	<string name="Export_flow">Cash Flow</string>
 	<string name="Export_rep">Export Report</string>
 	<string name="payee_category">PAYEE &amp; CATEGORY</string>
+	<string name="sync">Sync</string>
 	
 </resources>

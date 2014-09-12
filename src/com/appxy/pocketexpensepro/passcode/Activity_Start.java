@@ -98,7 +98,7 @@ public class Activity_Start extends Activity {
 	         
 	 		 if (MyApplication.isFirstIn == 0) {
 				
-	         new CountDownTimer(800, 100) {
+	         new CountDownTimer(900, 100) {
 				
 				@Override
 				public void onTick(long millisUntilFinished) {

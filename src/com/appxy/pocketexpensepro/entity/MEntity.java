@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import android.R.integer;
 import android.content.Context;
@@ -16,6 +17,29 @@ import android.util.Log;
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
+	
+	public static Date getMilltoDropBox(long milliSeconds) {// 将毫秒转化成固定格式的年月日
+		SimpleDateFormat formatter = new SimpleDateFormat("EE MM dd yyyy HH:mm:ss");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		Date date = new Date();
+		try {
+			date = (Date)formatter.parseObject( formatter.format(calendar.getTime()));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return date;
+	}
+
+
+	public static String getUUID() { //获取随机的唯一ID
+
+		UUID uuid = UUID.randomUUID();
+		String uniqueId = uuid.toString();
+		return uniqueId;
+
+	}
 
 	public static String sqliteEscape(String keyWord) {
 		keyWord = keyWord.replace("/", "//");
@@ -29,19 +53,18 @@ public class MEntity {
 		keyWord = keyWord.replace(")", "/)");
 		return keyWord;
 	}
-	
-	public static long getHMSMill() { //获取当前时间的时分秒
+
+	public static long getHMSMill() { // 获取当前时间的时分秒
 
 		Calendar calendar = Calendar.getInstance();
 		int hours = calendar.get(Calendar.HOUR_OF_DAY);
 		int minuts = calendar.get(Calendar.MINUTE);
 		int second = calendar.get(Calendar.SECOND);
-		
-		long returnDate = hours*60*60*1000+minuts*60*1000+second*1000;
+
+		long returnDate = hours * 60 * 60 * 1000 + minuts * 60 * 1000 + second
+				* 1000;
 		return returnDate;
 	}
-
-	
 
 	public static class MapComparatorTime implements
 			Comparator<Map<String, Object>> {

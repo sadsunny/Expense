@@ -120,6 +120,7 @@ public class ReportOverviewFragment extends Fragment {
 	private int eDay;
 	private long startDate;
 	private long endDate;
+	private final static long DAYMILLIS = 86400000L - 1L;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -375,10 +376,7 @@ public class ReportOverviewFragment extends Fragment {
 
 					BigDecimal amountBig = new BigDecimal(amount);
 
-					if (MEntity.getFirstDayOfMonthMillis(calendar
-							.getTimeInMillis()) <= dateTime
-							&& MEntity.getLastDayOfMonthMillis(calendar
-									.getTimeInMillis()) > dateTime) {
+					if (MEntity.getFirstDayOfMonthMillis(calendar.getTimeInMillis()) <= dateTime && MEntity.getLastDayOfMonthMillis(calendar.getTimeInMillis()) > dateTime) {
 
 						if (expenseAccount > 0) {
 							ex = ex.add(amountBig);
@@ -417,7 +415,7 @@ public class ReportOverviewFragment extends Fragment {
 
 					BigDecimal amountBig = new BigDecimal(amount);
 
-					if (dateTime == calendar.getTimeInMillis()) {
+					if (dateTime >= calendar.getTimeInMillis() && dateTime < (calendar.getTimeInMillis()+DAYMILLIS)) {
 
 						if (expenseAccount > 0) {
 							ex = ex.add(amountBig);

@@ -94,6 +94,7 @@ public class ReportCashFragment extends Fragment {
 	private List<Map<String, Object>> mIncomeData;
 	private int rangeType =  0;
 	
+	private final static long DAYMILLIS = 86400000L - 1L;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -389,7 +390,7 @@ public class ReportCashFragment extends Fragment {
 
 					BigDecimal amountBig = new BigDecimal(amount);
 
-					if (dateTime == calendar.getTimeInMillis()) {
+					if (dateTime >= calendar.getTimeInMillis() && dateTime < (calendar.getTimeInMillis()+DAYMILLIS)) {
 
 						if (expenseAccount > 0) {
 							ex = ex.add(amountBig);

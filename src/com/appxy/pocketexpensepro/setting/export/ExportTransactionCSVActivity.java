@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.AccountsListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 
@@ -57,7 +58,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class ExportTransactionCSVActivity extends Activity {
+public class ExportTransactionCSVActivity extends BaseHomeActivity {
 
 	private Spinner groupSpinner;
 	private Button categoryButton;
@@ -122,7 +123,7 @@ public class ExportTransactionCSVActivity extends Activity {
 	private String nowCreat;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_export);

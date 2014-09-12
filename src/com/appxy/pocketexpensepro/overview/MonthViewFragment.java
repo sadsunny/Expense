@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -91,7 +92,8 @@ public class MonthViewFragment extends Fragment implements
 	private TextView currency_txt1;
 	private TextView currency_txt2;
 	private TextView currency_txt3;
-
+	private final static long DAYMILLIS = 86400000L - 1L;
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -350,9 +352,10 @@ public class MonthViewFragment extends Fragment implements
 
 			long beginTime = MEntity.getFirstDayOfMonthMillis(selectedDate);
 			long endTime = MEntity.getLastDayOfMonthMillis(selectedDate);
-			List<Map<String, Object>> mCalendarDataList = OverViewDao
-					.selectTransactionByTimeBE(mActivity, beginTime, endTime);
-
+			List<Map<String, Object>> mCalendarDataList = OverViewDao.selectTransactionByTimeBE(mActivity, beginTime, endTime);
+			
+			Log.v("mtag", "1mCalendarDataList"+mCalendarDataList);
+			
 			BigDecimal b1 = new BigDecimal("0");
 			BigDecimal b2 = new BigDecimal("0");
 			for (Map<String, Object> iMap : mCalendarDataList) {
@@ -401,6 +404,7 @@ public class MonthViewFragment extends Fragment implements
 			pincome = pb2.doubleValue();
 			pamount = pb2.subtract(pb1).doubleValue();
 
+			Log.v("mtag", "mCalendarDataList"+mCalendarDataList);
 			mGridDataList = filterDataByTime(mCalendarDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
@@ -414,7 +418,8 @@ public class MonthViewFragment extends Fragment implements
 
 		for (Map<String, Object> mMap : mData) {
 			long dateTime = (Long) mMap.get("dateTime");
-			mTemlist.add(dateTime);
+			Log.v("mtag", "dateTime"+(dateTime));
+			mTemlist.add(getMilltoDateInt(dateTime));
 		}
 
 		Iterator<Long> it1 = mTemlist.iterator();
@@ -431,7 +436,7 @@ public class MonthViewFragment extends Fragment implements
 			mMap.put("dateTime", (Long) it2.next());
 			mReturnList.add(mMap);
 		}
-
+		Log.v("mtag", "1mReturnList"+mReturnList);
 		for (Map<String, Object> iMap : mReturnList) {
 			long dayTime = (Long) iMap.get("dateTime");
 			BigDecimal b1 = new BigDecimal("0");
@@ -443,8 +448,9 @@ public class MonthViewFragment extends Fragment implements
 				int expenseAccount = (Integer) mMap.get("expenseAccount");
 				int incomeAccount = (Integer) mMap.get("incomeAccount");
 
-				if (dayTime == dateTime) {
+				if (dayTime <= dateTime && (dayTime+DAYMILLIS) > dateTime) {
 
+					Log.v("mtag", "dayTime"+dayTime);
 					BigDecimal b3 = new BigDecimal(amount);
 					if (expenseAccount > 0 && incomeAccount <= 0) {
 						b1 = b1.subtract(b3);
@@ -460,6 +466,7 @@ public class MonthViewFragment extends Fragment implements
 			}
 
 		}
+		Log.v("mtag", "2mReturnList"+mReturnList);
 		return mReturnList;
 	}
 
@@ -485,6 +492,24 @@ public class MonthViewFragment extends Fragment implements
 		return calendar.getTimeInMillis();
 	}
 
+	public static long getMilltoDateInt(long datetime) { //除去时分秒
+		Date date1 = new Date();
+		date1.setTime(datetime);
+		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
+		String nowTime = formatter.format(date1);
+		Calendar c = Calendar.getInstance();
+		try {
+			c.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(nowTime));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		long nowMillis = c.getTimeInMillis();
+
+		return nowMillis;
+	}
+
+	
 	@Override
 	public void OnUpdateList(long selectedDate) {
 		// TODO Auto-generated method stub
