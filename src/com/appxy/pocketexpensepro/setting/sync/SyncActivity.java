@@ -56,10 +56,11 @@ public class SyncActivity extends BaseHomeActivity {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				  Log.v("mtag", "MSG_SUCCESS"+MSG_SUCCESS);
 				if (progressDialog != null) {
 					progressDialog.dismiss();
 				}
+				Toast.makeText(SyncActivity.this, "Sync Succ",
+						Toast.LENGTH_SHORT).show();
 
 				break;
 
@@ -117,10 +118,12 @@ public class SyncActivity extends BaseHomeActivity {
 				// TODO Auto-generated method stub
 				if (isChecked) {
 
-					if (mDbxAcctMgr != null && !mDbxAcctMgr.hasLinkedAccount())
+					if (!mDbxAcctMgr.hasLinkedAccount()) { 
 						mDbxAcctMgr.startLink(SyncActivity.this,
 								REQUEST_LINK_TO_DBX);
 
+					}
+						
 				} else {
 
 					accountNameTextView.setVisibility(View.INVISIBLE);
@@ -149,19 +152,28 @@ public class SyncActivity extends BaseHomeActivity {
 			accounts.setAccountsData(iMap);
 			accountsTable.insertRecords(accounts.getFields());
 		}
+	
 		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		
 	}
-
-	public void justSync() { // 同步并上传数据库
-
+	
+	public void justSync(boolean justLinked) { // 同步并上传数据库
+		
+		Log.v("mtag", "是否链接"+mDbxAcctMgr.hasLinkedAccount());
+		
 		if (isSync) {
 			if (mDbxAcctMgr.hasLinkedAccount()) {
 
 				try {
+					
+					if (null == mDbxAcct) {
+						 mDbxAcct=mDbxAcctMgr.getLinkedAccount();
+						 Log.v("mtag", "mDbxAcctMgr重新链接么"+mDbxAcctMgr);
+			         }
+					
 					if (null == mDatastore) {
-						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
-								.getLinkedAccount());
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+						 Log.v("mtag", "mDatastore 重新链接么"+mDatastore);
 					}
 
 					progressDialog = ProgressDialog.show(SyncActivity.this, null, "Syncing....");
@@ -181,9 +193,7 @@ public class SyncActivity extends BaseHomeActivity {
 					});
 					mThread.start();
 					
-					if (null == mDbxAcct) {
-						 mDbxAcct=mDbxAcctMgr.getLinkedAccount();
-			         }
+					
 					 mDbxAcct.addListener(mAccountListener);
 
 					 String accName = mPreferences.getString("accountName", "");
@@ -207,7 +217,7 @@ public class SyncActivity extends BaseHomeActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		justSync() ;
+		justSync(false) ;
 	}
 
 	@Override
@@ -218,6 +228,7 @@ public class SyncActivity extends BaseHomeActivity {
 		if (mDbxAcct != null) {
 			mDbxAcct.removeListener(mAccountListener);
 			mDbxAcct = null;
+			Log.v("mtag", "onPause");
 	    }
 
 	}
@@ -228,7 +239,6 @@ public class SyncActivity extends BaseHomeActivity {
 		if (requestCode == REQUEST_LINK_TO_DBX) {
 			if (resultCode == RESULT_OK) {
 				isSync = true;
-				mDbxAcct = mDbxAcctMgr.getLinkedAccount();
 
 				if (mDbxAcctMgr != null && mDbxAcctMgr.hasLinkedAccount()) {
 
