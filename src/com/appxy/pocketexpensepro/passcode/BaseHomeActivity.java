@@ -41,10 +41,13 @@ public class BaseHomeActivity extends FragmentActivity{
 	        	
 	            if (ds.getSyncStatus().hasIncoming) {
 	                try {
+	                	
+	                	  Log.v("mtag", "onDatastoreStatusChange");
+		                    onPause();
+		                    onResume();
 	                    mDatastore.sync();
-	                    onPause();
-	                    onResume();
-	                    Log.v("mtag", "哈哈哈哈");
+	                  
+	                   
 	                } catch (DbxException e) {
 	                    handleException(e);
 	                }
@@ -63,11 +66,16 @@ public class BaseHomeActivity extends FragmentActivity{
 			
 			if (mDbxAcctMgr.hasLinkedAccount())
 			{
-			mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
-					.getLinkedAccount());
+				if (mDatastore == null) {
+					mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
+							.getLinkedAccount());
+				}
+		
 			mDatastore.addSyncStatusListener(mDatastoreListener);
 			mDatastore.sync();
+			 Log.v("mtag", "是否启动监听");
 			}
+			
 		} catch (DbxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,6 +93,7 @@ public class BaseHomeActivity extends FragmentActivity{
 		context = this;
 		receiver = new HomeKeyEventBroadCastReceiver();
 		registerReceiver(receiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+		
 	}
 
 
@@ -93,6 +102,8 @@ public class BaseHomeActivity extends FragmentActivity{
 		// TODO Auto-generated method stub
 		super.onResume();
 		
+		  Log.v("mtag", " Base onResume");
+		  
 		if(MyApplication.isHomePress){
 			MyApplication.isHomePress = false;
 			

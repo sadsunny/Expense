@@ -31,6 +31,12 @@ public class MEntity {
 		}
 		return date;
 	}
+	
+	public static Date getMilltoDateFormat(long milliSeconds) {// 将毫秒转化成Date
+		Date date = new Date();
+		date.setTime(milliSeconds);
+		return date;
+	}
 
 
 	public static String getUUID() { //获取随机的唯一ID

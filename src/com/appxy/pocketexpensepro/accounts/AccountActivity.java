@@ -191,15 +191,6 @@ public class AccountActivity extends BaseHomeActivity {
 
 	
 	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		mHandler.post(mTask);
-		Log.v("mtag", "*--------------*+++++++++++++++*");
-	}
-
-
-	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		sortCheck = 0;
