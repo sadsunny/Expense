@@ -280,4 +280,10 @@ public class Activity_ResetPass extends BaseHomeActivity{
 		outState.putString("newpass", newpass);
 		}
 	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 }

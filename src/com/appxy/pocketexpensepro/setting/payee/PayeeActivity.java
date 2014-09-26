@@ -32,7 +32,6 @@ import android.widget.Toast;
 /*
  * add code 4,edit code 5
  */
-
 public class PayeeActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -253,5 +252,11 @@ public class PayeeActivity extends BaseHomeActivity {
 			
 			break;
 		}
+	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
 	}
 }

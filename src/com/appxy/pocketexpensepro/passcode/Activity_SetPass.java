@@ -256,4 +256,10 @@ public class Activity_SetPass extends BaseHomeActivity {
 		outState.putString("password", password);
 		outState.putBoolean("isConfirm", isConfirm);
 	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 }

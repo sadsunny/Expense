@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 public class TransactionDao {
 
@@ -102,6 +103,10 @@ public class TransactionDao {
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
 
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		try {
 			long id = db.insert("'Transaction'", null, cv);
 			db.close();
@@ -114,7 +119,7 @@ public class TransactionDao {
 
 	}
 	
-	public static void insertTransactionOne(SQLiteDatabase db ,Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee) { // AccountType插入
+	public static void insertTransactionOne(SQLiteDatabase db ,Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, String transactionstring) { // AccountType插入
 
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
@@ -129,7 +134,12 @@ public class TransactionDao {
 		cv.put("incomeAccount", incomeAccount);
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
-
+		cv.put("transactionstring", transactionstring);
+		
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		try {
 			long id = db.insert("'Transaction'", null, cv);
 		} catch (Exception e) {

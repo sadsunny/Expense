@@ -1229,4 +1229,10 @@ public class CreatBillsActivity extends BaseHomeActivity {
 		return id;
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

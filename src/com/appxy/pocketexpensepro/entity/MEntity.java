@@ -18,6 +18,59 @@ public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
 	
+	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
+		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		return formatter.format(calendar.getTime());
+	}
+	
+	
+	public static String reminderDate(int remindDate) { // 转换提前提醒
+		String before = "None";
+		if (remindDate == 0) {
+			before = "None";
+		} else if (remindDate == 1) {
+			before = "1 day before";
+		} else if (remindDate == 2) {
+			before = "2 days before";
+		} else if (remindDate == 3) {
+			before = "3 days before";
+		} else if (remindDate == 4) {
+			before = "1 week before";
+		} else if (remindDate == 5) {
+			before = "2 weeks before";
+		} else if (remindDate == 6) {
+			before = "on date of event";
+		}
+		return before;
+	}
+
+	public static String turnTorecurring(int remindDate) { // 转换提前提醒
+		String recurring = "Never";
+		if (remindDate == 0) {
+			recurring = "Never";
+		} else if (remindDate == 1) {
+			recurring = "Weekly";
+		} else if (remindDate == 2) {
+			recurring = "Every 2 Weeks";
+		} else if (remindDate == 3) {
+			recurring = "Every 4 Weeks";
+		} else if (remindDate == 4) {
+			recurring = "Semimonthly";
+		} else if (remindDate == 5) {
+			recurring = "Monthly";
+		} else if (remindDate == 6) {
+			recurring = "Every 2 Months";
+		} else if (remindDate == 7) {
+			recurring = "Every 3 Months";
+		} else if (remindDate == 8) {
+			recurring = "Every Year";
+		}
+		return recurring;
+	}
+	
+	
 	public static Date getMilltoDropBox(long milliSeconds) {// 将毫秒转化成固定格式的年月日
 		SimpleDateFormat formatter = new SimpleDateFormat("EE MM dd yyyy HH:mm:ss");
 		Calendar calendar = Calendar.getInstance();

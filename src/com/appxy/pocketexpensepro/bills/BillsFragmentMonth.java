@@ -49,7 +49,8 @@ public class BillsFragmentMonth extends Fragment implements
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
-
+	public final static long DAYMILLIS = 86400000L -1;
+	
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
 	private FragmentActivity mActivity;
@@ -377,7 +378,7 @@ public class BillsFragmentMonth extends Fragment implements
 		for(Map<String, Object> bMap:dataList){ 
 	   		long mbillduedate = (Long) bMap.get("ep_billDueDate");
 	   		
-	   		if (selectedGridDate == mbillduedate) {
+	   		if (selectedGridDate <= mbillduedate &&  mbillduedate <= (selectedGridDate+DAYMILLIS) ) {
 		        
 		        mListViewData.add(bMap);
 			}

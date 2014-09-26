@@ -41,6 +41,7 @@ public class TransactionRecurringCheck {
 			int incomeAccount = (Integer) mMap.get("incomeAccount");
 			int parTransaction = (Integer) mMap.get("parTransaction");
 			int payee = (Integer) mMap.get("payee");
+			String uuid = (String) mMap.get("uuid");
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(dateTime);
@@ -74,7 +75,9 @@ public class TransactionRecurringCheck {
 			}
 			
 			if (calendar.getTimeInMillis() <= MEntity.getNowMillis()) {
-				updateTransactionRecurring(db, context, id);
+				
+				String transactionstring1 = uuid+MEntity.turnMilltoDate(dateTime);
+				updateTransactionRecurring(db, context, id, transactionstring1);
 			
 //			db.beginTransaction();  //手动设置开始事务
 			
@@ -82,10 +85,11 @@ public class TransactionRecurringCheck {
 	            //批量处理操作
 	        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
 	        		
+	        		String transactionstring = uuid+MEntity.turnMilltoDate(calendar.getTimeInMillis());
 						 TransactionDao.insertTransactionOne(db,context,amount, calendar.getTimeInMillis(), isClear,
 								 notes, photoName, 0,
 								 category,
-								 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee);
+								 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,transactionstring);
 	        		
 					if (recurringTpye == 1) {
 						calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -119,7 +123,7 @@ public class TransactionRecurringCheck {
 	        	 TransactionDao.insertTransactionOne(db,context,amount, calendar.getTimeInMillis(), isClear,
 						 notes, photoName, recurringTpye,
 						 category,
-						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee);
+						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,"");
 	        	 
 //	            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
 	           
@@ -136,10 +140,11 @@ public class TransactionRecurringCheck {
 		}
 	}
 	
-	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id) { // AccountType插入
+	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id, String transactionstring) { // AccountType插入
 
 		ContentValues cv = new ContentValues();
 		cv.put("recurringType", 0);
+		cv.put("transactionstring",transactionstring);
 		
 		String mId = _id + "";
 		try {

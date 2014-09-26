@@ -304,4 +304,10 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 		return mCheck;
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

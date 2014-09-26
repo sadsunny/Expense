@@ -158,32 +158,45 @@ public class AccountsTable {
 		return accounts;
 	}
 
-	public AccountsTable(DbxDatastore datastore) {
+	public AccountsTable(DbxDatastore datastore) throws DbxException {
 
 		mDatastore = datastore;
-		mTable = datastore.getTable("db_account_table3");
+		mTable = datastore.getTable("db_account_table");
+		
 	}
-
+	
+	 public void deleteall(Iterator<DbxRecord> it) throws DbxException{
+	    	
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
+	 
+	
 	public void insertRecords(DbxFields accountsFields) throws DbxException {
 
-		DbxFields queryParams = new DbxFields().set("uuid",accountsFields.getString("uuid"));
-		DbxTable.QueryResult results = mTable.query(queryParams);
+		DbxFields queryParams = new DbxFields();
+		queryParams.set("uuid",accountsFields.getString("uuid"));
+		DbxTable.QueryResult results = mTable.query(queryParams);;
 		Iterator<DbxRecord> it = results.iterator();
-
-		Log.v("mtag", "判断1results"+results);
 		
 		if (it.hasNext()) {
 			DbxRecord firstResult = it.next();
 			if (firstResult.getDate("dateTime_sync").getTime() < accountsFields.getDate("dateTime_sync").getTime()) { //比对同步时间
 				
 				 firstResult.setAll(accountsFields);
-				 mDatastore.sync();
+				 while(it.hasNext())
+	    			{	DbxRecord  r=it.next();
+	    			r.deleteRecord();
+	    			}
 			}
 
 		} else {
 			mTable.insert(accountsFields);
-			mDatastore.sync();
-			Log.v("mtag", "判断3");
 		}
 
 	}

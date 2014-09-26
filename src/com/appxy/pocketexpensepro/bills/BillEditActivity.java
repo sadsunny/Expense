@@ -1814,4 +1814,10 @@ public class BillEditActivity extends BaseHomeActivity {
 		return preDuedate;
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

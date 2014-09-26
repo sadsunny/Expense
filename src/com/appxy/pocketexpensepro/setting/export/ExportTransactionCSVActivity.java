@@ -1367,4 +1367,10 @@ public class ExportTransactionCSVActivity extends BaseHomeActivity {
 		getMenuInflater().inflate(R.menu.export, menu);
 		return true;
 	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 }

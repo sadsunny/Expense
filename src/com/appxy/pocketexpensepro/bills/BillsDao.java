@@ -1,11 +1,14 @@
 package com.appxy.pocketexpensepro.bills;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -136,6 +139,8 @@ public class BillsDao {
 		cv.put("billItemHasBillRule", billItemHasBillRule);
 		cv.put("billItemHasCategory", billItemHasCategory);
 		cv.put("billItemHasPayee", billItemHasPayee);
+		cv.put("dateTime", System.currentTimeMillis());
+		
 		String mId = _id + "";
 		long row = db.update("EP_BillItem",cv, "_id = ?", new String[] { mId });
 		db.close();
@@ -155,6 +160,8 @@ public class BillsDao {
 		cv.put("ep_reminderTime", ep_reminderTime);
 		cv.put("billRuleHasCategory", billRuleHasCategory);
 		cv.put("billRuleHasPayee", billRuleHasPayee);
+		cv.put("dateTime", System.currentTimeMillis());
+		
 		String mId = _id + "";
 		long row = db.update("EP_BillRule", cv, "_id = ?", new String[] { mId });
 		db.close();
@@ -222,10 +229,11 @@ public class BillsDao {
 			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		long hmMills = MEntity.getHMSMill();
 		cv.put("ep_billItemAmount", ep_billItemAmount);
 		cv.put("ep_billisDelete", ep_billisDelete);
-		cv.put("ep_billItemDueDate", ep_billItemDueDate);
-		cv.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
+		cv.put("ep_billItemDueDate", ep_billItemDueDate+hmMills);
+		cv.put("ep_billItemDueDateNew", ep_billItemDueDateNew+hmMills);
 		cv.put("ep_billItemEndDate", ep_billItemEndDate);
 		cv.put("ep_billItemName", ep_billItemName);
 		cv.put("ep_billItemNote", ep_billItemNote);
@@ -235,17 +243,31 @@ public class BillsDao {
 		cv.put("billItemHasBillRule", billItemHasBillRule);
 		cv.put("billItemHasCategory", billItemHasCategory);
 		cv.put("billItemHasPayee", billItemHasPayee);
+		
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		cv.put("ep_billItemString1", billItemHasBillRule+" "+turnMilltoDate(System.currentTimeMillis()));
+		
 		long row = db.insert("EP_BillItem", null, cv);
 		db.close();
 		return row;
 	}
 	
+	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
+		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		return formatter.format(calendar.getTime());
+	}
 
 	public static long insertBillRule(Context context, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		long hmMills = MEntity.getHMSMill();
+		
 		cv.put("ep_billAmount", ep_billAmount);
-		cv.put("ep_billDueDate", ep_billDueDate);
+		cv.put("ep_billDueDate", ep_billDueDate+hmMills);
 		cv.put("ep_billEndDate", ep_billEndDate);
 		cv.put("ep_billName", ep_billName);
 		cv.put("ep_note", ep_note);
@@ -254,7 +276,13 @@ public class BillsDao {
 		cv.put("ep_reminderTime", ep_reminderTime);
 		cv.put("billRuleHasCategory", billRuleHasCategory);
 		cv.put("billRuleHasPayee", billRuleHasPayee);
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("EP_BillRule", null, cv);
+		
+		
 		db.close();
 		return row;
 	}
@@ -627,7 +655,11 @@ public class BillsDao {
 		return mList;
 	}
 	
-
+	
+	/*
+	 * 普通Bill的pay
+	 */
+	
 	public static long insertTransactionRule(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillRule, int category, int payee,int cleared, int recurring) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
@@ -643,10 +675,19 @@ public class BillsDao {
 		cv.put("parTransaction", 0);
 		cv.put("childTransactions", 0);
 		
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("'Transaction'", null, cv);
 		db.close();
 		return row;
 	}
+	
+	
+	/*
+	 * Bill重复特例的pay
+	 */
 	
 	public static long insertTransactionItem(Context context, String amount, long dateTime,int expenseAccount, int transactionHasBillItem, int category,int payee,int cleared, int recurring) {
 		SQLiteDatabase db = getConnection(context);
@@ -662,6 +703,11 @@ public class BillsDao {
 		cv.put("recurringType", 0);
 		cv.put("parTransaction", 0);
 		cv.put("childTransactions", 0);
+		
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("'Transaction'", null, cv);
 		db.close();
 		return row;

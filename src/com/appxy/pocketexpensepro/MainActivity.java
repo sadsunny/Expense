@@ -768,9 +768,12 @@ public class MainActivity extends BaseHomeActivity implements
 	public void OnBackTime(long selectedDate, int viewPagerPosition) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-		onUpdateWeekSelectListener = (OnUpdateWeekSelectListener) (ViewPagerAdapter.registeredFragments
-				.get(viewPagerPosition));
-		onUpdateWeekSelectListener.OnUpdateWeekSelect(selectedDate);
+		if (ViewPagerAdapter.registeredFragments.get(viewPagerPosition) != null) {
+			onUpdateWeekSelectListener = (OnUpdateWeekSelectListener) (ViewPagerAdapter.registeredFragments
+					.get(viewPagerPosition));
+			onUpdateWeekSelectListener.OnUpdateWeekSelect(selectedDate);
+		}
+		
 	}
 
 	@Override
@@ -1060,5 +1063,11 @@ public class MainActivity extends BaseHomeActivity implements
 			            mHelper = null;
 			        }
 			    }
+
+			@Override
+			public void syncDateChange() {
+				// TODO Auto-generated method stub
+				
+			}
 
 }

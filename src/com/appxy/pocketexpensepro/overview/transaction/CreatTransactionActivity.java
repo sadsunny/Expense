@@ -1594,4 +1594,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 			break;
 		}
 	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 }

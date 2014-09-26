@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -59,6 +60,11 @@ public class PayeeDao {
 		cv.put("name", name);
 		cv.put("memo", memo);
 		cv.put("category", category);
+		
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("Payee", null, cv);
 		db.close();
 		return row;

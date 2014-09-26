@@ -582,5 +582,11 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 			childrenAllDataList.add(tempList);
 		}
 	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -20,7 +20,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-public class BaseHomeActivity extends FragmentActivity{
+public abstract class BaseHomeActivity extends FragmentActivity{
 	
 	SharedPreferences sharedPreferences;
 //	private static final String PREFS_NAME = "SAVE_INFO";
@@ -29,57 +29,37 @@ public class BaseHomeActivity extends FragmentActivity{
 	
 	private DbxAccountManager mDbxAcctMgr;
     private DbxDatastore mDatastore;
-	private static final String APP_KEY = "lyil3ng9zuj5eht";
-	private static final String APP_SECRET = "sxxce9lm9kgvyhg";
+	private static final String APP_KEY = "6rdffw1lvpr4zuc";
+	private static final String APP_SECRET = "gxqx0uiav4744o3";
 	
 	Context context;
 	HomeKeyEventBroadCastReceiver receiver;
 	
-	 private DbxDatastore.SyncStatusListener mDatastoreListener = new DbxDatastore.SyncStatusListener() {
-	        @Override
-	        public void onDatastoreStatusChange(DbxDatastore ds) {
-	        	
-	            if (ds.getSyncStatus().hasIncoming) {
-	                try {
-	                	
-	                	  Log.v("mtag", "onDatastoreStatusChange");
-		                    onPause();
-		                    onResume();
-	                    mDatastore.sync();
-	                  
-	                   
-	                } catch (DbxException e) {
-	                    handleException(e);
-	                }
-	            }
-	        }
-	    };
-	    
+	  
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
-				APP_KEY, APP_SECRET);
-		try {
-			
-			if (mDbxAcctMgr.hasLinkedAccount())
-			{
-				if (mDatastore == null) {
-					mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
-							.getLinkedAccount());
-				}
-		
-			mDatastore.addSyncStatusListener(mDatastoreListener);
-			mDatastore.sync();
-			 Log.v("mtag", "是否启动监听");
-			}
-			
-		} catch (DbxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
+//				APP_KEY, APP_SECRET);
+//		try {
+//			
+//			if (mDbxAcctMgr.hasLinkedAccount())
+//			{
+//				if (mDatastore == null) {
+//					mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
+//							.getLinkedAccount());
+//				}
+//		
+//			mDatastore.addSyncStatusListener(mDatastoreListener);
+//			mDatastore.sync();
+//			}
+//			
+//		} catch (DbxException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(BaseHomeActivity.this);
@@ -96,6 +76,7 @@ public class BaseHomeActivity extends FragmentActivity{
 		
 	}
 
+	public abstract void syncDateChange();
 
 	@Override
 	protected void onResume() {

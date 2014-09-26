@@ -77,5 +77,11 @@ public class ExportAllActivity extends BaseHomeActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

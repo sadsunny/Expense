@@ -883,4 +883,10 @@ public class ExportFlowPDFActivity extends BaseHomeActivity {
 		return formatter.format(calendar.getTime());
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

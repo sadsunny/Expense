@@ -152,4 +152,10 @@ public class SearchActivity extends BaseHomeActivity {
 
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

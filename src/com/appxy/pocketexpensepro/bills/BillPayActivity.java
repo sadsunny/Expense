@@ -463,5 +463,11 @@ public class BillPayActivity extends BaseHomeActivity {
 		return check;
 	}
 
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

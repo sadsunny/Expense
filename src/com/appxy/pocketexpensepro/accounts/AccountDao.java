@@ -78,7 +78,9 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
+			String uuid = mCursor.getString(16);
 			
+			mMap.put("uuid", uuid);
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -114,7 +116,10 @@ public class AccountDao {
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
 		cv.put("typeName", typeName);
-
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		try {
 			long id = db.insert("AccountType", null, cv);
 			db.close();
@@ -161,7 +166,7 @@ public class AccountDao {
 		cv.put("accountType", accountType);
 		cv.put("state", "1");
 		cv.put("uuid", MEntity.getUUID());
-		cv.put("dateTime_sync", dateTime);
+		cv.put("dateTime_sync", System.currentTimeMillis());
 		
 		try {
 			long id = db.insert("Accounts", null, cv);
@@ -195,6 +200,7 @@ public class AccountDao {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("orderIndex", orderIndex);
+		cv.put("dateTime_sync", System.currentTimeMillis());
 		String mId = _id + "";
 		try {
 			long id = db

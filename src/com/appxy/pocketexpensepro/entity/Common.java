@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.R.integer;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -13,13 +14,37 @@ import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
 
 import com.appxy.pocketexpensepro.R;
+import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 public class Common {
 
 	public static int CURRENCY = 148;
 	// Does the user paid?
 	public static boolean mIsPaid = false;
-    
+
+	public static int getName2Identity(Context context, String name) { // 文件名转化成ID
+		int resId = R.drawable.ic_logo;
+		try {
+			resId = context.getResources().getIdentifier(name, "drawable",
+					"com.appxy.pocketexpensepro");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resId = R.drawable.ic_logo;
+		}
+		return resId;
+	}
+
+	public static String getID2Name(Context context, int id) { //Id转化为文件名
+		String imgName = "ic_logo"; 
+		try {
+			imgName = context.getResources().getResourceName(id).split("/")[1];
+		} catch (Exception e) {
+			// TODO: handle exception
+			imgName = "ic_logo"; 
+		}
+		return imgName+".png";
+	}
+	
 	public final static Integer[] ACCOUNT_TYPE_ICON = { R.drawable.asset_type,
 			R.drawable.cash_type, R.drawable.checking_type,
 			R.drawable.credit_card_type, R.drawable.debit_card_type,
@@ -27,14 +52,16 @@ public class Common {
 			R.drawable.savings_type, R.drawable.wenhao_type
 
 	};
-	
-	public final static Integer[] ACCOUNT_TYPE_ICON_SELECTOR = { R.drawable.asset_type_selector,
-		R.drawable.cash_type_selector, R.drawable.checking_type_selector,
-		R.drawable.credit_card_type_selector, R.drawable.debit_card_type_selector,
-		R.drawable.investing_type_selector, R.drawable.loan_type_selector,
-		R.drawable.savings_type_selector, R.drawable.wenhao_type_selector
 
-};
+	public final static Integer[] ACCOUNT_TYPE_ICON_SELECTOR = {
+			R.drawable.asset_type_selector, R.drawable.cash_type_selector,
+			R.drawable.checking_type_selector,
+			R.drawable.credit_card_type_selector,
+			R.drawable.debit_card_type_selector,
+			R.drawable.investing_type_selector, R.drawable.loan_type_selector,
+			R.drawable.savings_type_selector, R.drawable.wenhao_type_selector
+
+	};
 
 	public final static int[] ExpenseColors = new int[] {
 			Color.argb(255, 246, 90, 70), Color.argb(255, 239, 48, 48),
@@ -104,7 +131,6 @@ public class Common {
 			R.drawable.teeth, R.drawable.traffic_other, R.drawable.transfer,
 			R.drawable.utilities_gas, R.drawable.vegatable,
 			R.drawable.vocation, R.drawable.water, R.drawable.wedding };
-
 
 	public final static String[] CURRENCY_SIGN = { "Lek", "Kz", "$", "դր",
 			"Afl.", "$", "AZN", "د.ج", "؋", "B$", "৳", "Bds$", "BYR", "$",

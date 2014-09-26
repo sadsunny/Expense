@@ -240,6 +240,15 @@ public class Activity_ClosePass extends BaseHomeActivity{
 		super.onSaveInstanceState(outState);
 		outState.putString("text", et.getText().toString());
 	}
+
+
+
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

@@ -48,7 +48,6 @@ import android.widget.AdapterView.OnItemClickListener;
 public class EditBillPayActivity extends BaseHomeActivity {
 	private ActionBar actionBar;
 	private Map<String, Object> mMap;
-	private int _id;
 	private EditText amountEditText;
 	private Button accountButton;
 	private Button dateButton;
@@ -374,6 +373,12 @@ public class EditBillPayActivity extends BaseHomeActivity {
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy");
 		dateButton.setText(sdf.format(date));
 
+	}
+
+	@Override
+	public void syncDateChange() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

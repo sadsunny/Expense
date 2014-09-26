@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 public class CategoryDao {
 
@@ -26,6 +27,7 @@ public class CategoryDao {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("categoryName", newName);
+		cv.put("dateTime", System.currentTimeMillis());
 		String _id = id + "";
 		long row =db.update("Category", cv, "_id = ?", new String[] { _id });
 		db.close();
@@ -88,6 +90,7 @@ public class CategoryDao {
 		cv.put("hasBudget", hasBudget);
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
+		cv.put("dateTime", System.currentTimeMillis());
 		String _id = id + "";
 		long row =db.update("Category", cv, "_id = ?", new String[] { _id });
 		db.close();
@@ -104,6 +107,10 @@ public class CategoryDao {
 		cv.put("hasBudget", hasBudget);
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
+		cv.put("isSystemRecord", 0);
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
 		long row = db.insert("Category", null, cv);
 		db.close();
 		return row;

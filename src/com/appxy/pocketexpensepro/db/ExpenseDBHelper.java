@@ -1,5 +1,7 @@
 package com.appxy.pocketexpensepro.db;
 
+import com.appxy.pocketexpensepro.entity.MEntity;
+
 import android.R.integer;
 import android.content.ContentValues;
 import android.content.Context;
@@ -152,6 +154,11 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		cv.put("hasBudget", hasBudget);
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
+		cv.put("isSystemRecord", 1);
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("Category", null, cv);
 		return row;
 	}
@@ -162,6 +169,10 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
 		cv.put("typeName", typeName);
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
+		
 		long row = db.insert("AccountType", null, cv);
 		return row;
 	}

@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview.budgets;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 public class BudgetsDao {
 
@@ -33,7 +35,7 @@ public class BudgetsDao {
 		cv.put("dateTime", dateTime);
 		cv.put("fromBudget", fromBudget);
 		cv.put("toBudget", toBudget);
-
+		cv.put("dateTime_sync", System.currentTimeMillis());
 		String mId = id + "";
 		try {
 			long tid = db.update("BudgetTransfer", cv, "_id = ?",
@@ -160,8 +162,19 @@ public class BudgetsDao {
 			int category) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
-		cv.put("amount", amount);
+		
+		cv.put("uuid", MEntity.getUUID());
 		cv.put("category", category);
+		cv.put("isRollover", 0);
+		cv.put("isNew", 1);
+		
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("startDate", System.currentTimeMillis());
+		cv.put("amount", amount);
+		cv.put("cycleType", "No Cycle");
+		
+		
 		long row = db.insert("BudgetTemplate", null, cv);
 		return row;
 	}
@@ -173,6 +186,9 @@ public class BudgetsDao {
 		cv.put("dateTime", dateTime);
 		cv.put("fromBudget", fromBudget);
 		cv.put("toBudget", toBudget);
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		cv.put("state", 1);
+		cv.put("uuid", MEntity.getUUID());
 		long row = db.insert("BudgetTransfer", null, cv);
 		return row;
 	}
@@ -181,8 +197,18 @@ public class BudgetsDao {
 			int budgetTemplate) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		
+		cv.put("uuid", MEntity.getUUID());
+		cv.put("startDate", System.currentTimeMillis());
 		cv.put("amount", amount);
+		cv.put("endDate", System.currentTimeMillis());
+		cv.put("rolloverAmount", 0);
+		
+		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("state", 1);
 		cv.put("budgetTemplate", budgetTemplate);
+		cv.put("isRollover", 0);
+		
 		long row = db.insert("BudgetItem", null, cv);
 		return row;
 	}
