@@ -71,10 +71,9 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_payee);
 
-		
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
-
+		
 		inflater = LayoutInflater.from(CreatPayeeActivity.this);
 		ActionBar mActionBar = getActionBar();
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,

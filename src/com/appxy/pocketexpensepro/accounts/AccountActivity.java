@@ -14,6 +14,7 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.appxy.pocketexpensepro.setting.sync.SyncActivity;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -560,7 +561,14 @@ public class AccountActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange() {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
+		Log.v("mtag", "刷新页面aa");
+		mHandler.post(mTask);
+
+		Intent intent = new Intent();
+		intent.putExtra("done", 1);
+		setResult(14, intent);
 	}
 
 }

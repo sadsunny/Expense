@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -18,6 +20,7 @@ public class AccountsTable {
 
 	private DbxDatastore mDatastore;
 	private DbxTable mTable;
+	private Context context ;
 
 	public class Accounts {
 
@@ -106,7 +109,37 @@ public class AccountsTable {
 		public Accounts() {
 
 		}
+		
+		public void setAccountsDownData(DbxRecord iRecord) {
 
+			name = iRecord.getString("name");
+			state = iRecord.getString("state");;
+			datetime = iRecord.getDate("datetime");
+			autoclear = (int) iRecord.getLong("autoclear");
+			amount = iRecord.getDouble("amount");
+			accountType = iRecord.getString("accountType");
+			orderindex = (int) iRecord.getLong("orderindex");
+			dateTime_sync = iRecord.getDate("dateTime_sync");
+			uuid = iRecord.getString("uuid");
+			
+		}
+		
+		public long turnDate2long(Date date) {
+			return date.getTime();
+		}
+		
+		public void insertOrUpdate() { //根据state操作数据库
+			
+			if (state.equals("0")) {
+				AccountDao.deleteAccountByUUID(context, uuid);
+			} else if (state.equals("1")){
+				
+				AccountDao.insertAccountAll(context, name, amount+"", turnDate2long(datetime), autoclear, Integer.parseInt(accountType),state ,uuid, turnDate2long(dateTime_sync));
+			}
+			
+		}
+		
+		
 		public void setAccountsData(Map<String, Object> mMap) {
 
 			name = (String) mMap.get("name");
@@ -119,7 +152,7 @@ public class AccountsTable {
 			dateTime_sync = MEntity.getMilltoDateFormat((Long) mMap.get("dateTime_sync"));
 			uuid = (String) mMap.get("uuid");
 		}
-
+		
 		public DbxFields getFields() {
 
 			DbxFields accountsFields = new DbxFields();
@@ -136,6 +169,7 @@ public class AccountsTable {
 		}
 
 	}
+	
 
 	public void updateState(String uuid, int state) throws DbxException {//更改状态
 		
@@ -158,11 +192,15 @@ public class AccountsTable {
 		return accounts;
 	}
 
-	public AccountsTable(DbxDatastore datastore) throws DbxException {
+	public AccountsTable(DbxDatastore datastore, Context context) throws DbxException {
 
 		mDatastore = datastore;
 		mTable = datastore.getTable("db_account_table");
-		
+		this.context = context;
+	}
+	
+	public AccountsTable( )  {
+
 	}
 	
 	 public void deleteall(Iterator<DbxRecord> it) throws DbxException{

@@ -8,6 +8,7 @@ import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.passcode.BaseHomeSyncActivity;
 import com.appxy.pocketexpensepro.table.AccountTypeTable;
 import com.appxy.pocketexpensepro.table.AccountTypeTable.AccountType;
 import com.appxy.pocketexpensepro.table.AccountsTable;
@@ -51,7 +52,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SyncActivity extends BaseHomeActivity {
+public class SyncActivity extends BaseHomeSyncActivity {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -76,20 +77,12 @@ public class SyncActivity extends BaseHomeActivity {
         @Override
         public void onDatastoreStatusChange(DbxDatastore ds) {
         	
-//        	Log.v("mtag", "ds.getSyncStatus().hasIncoming"+ds.getSyncStatus().hasIncoming);
-//        	Log.v("mtag", "ds.getSyncStatus().hasOutgoing"+ds.getSyncStatus().hasOutgoing);
-//        	Log.v("mtag", "ds.getSyncStatus().isConnected"+ds.getSyncStatus().isConnected);
-//        	Log.v("mtag", "ds.getSyncStatus().isDownloading"+ds.getSyncStatus().isDownloading);
-//        	Log.v("mtag", "ds.getSyncStatus().isUploading"+ds.getSyncStatus().isUploading);
-        	
-        	
-        	
         	if (!ds.getSyncStatus().isDownloading) {
         		if (isUpload) {
         			justSync(true);
 				}
-				
 			}
+        	
         	
             if (ds.getSyncStatus().hasIncoming) {
                 try {
@@ -185,7 +178,13 @@ public class SyncActivity extends BaseHomeActivity {
 					meditor.putBoolean("isSync", isSync);
 					meditor.commit();
 					if (mDbxAcctMgr != null) {
-						mDbxAcctMgr.unlink();
+						
+						try {
+							mDbxAcctMgr.unlink();
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+						
 					}
 
 				}
@@ -200,12 +199,11 @@ public class SyncActivity extends BaseHomeActivity {
 		
 		List<Map<String, Object>> AccountsList = SyncDao.selectAccount(SyncActivity.this);
 		for (Map<String, Object> iMap:AccountsList) {
-			AccountsTable accountsTable = new AccountsTable(mDatastore);
+			AccountsTable accountsTable = new AccountsTable(mDatastore,this);
 			Accounts accounts = accountsTable.getAccounts();
 			accounts.setAccountsData(iMap);
 			accountsTable.insertRecords(accounts.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> AccountTypeList = SyncDao.selectAccountType(SyncActivity.this);
 		for (Map<String, Object> iMap:AccountTypeList) {
@@ -214,7 +212,6 @@ public class SyncActivity extends BaseHomeActivity {
 			accountType.setAccountTypeData(iMap);
 			accountTypeTable.insertRecords(accountType.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> BudgetItemList = SyncDao.selectBudgetItem(SyncActivity.this);
 		for (Map<String, Object> iMap:BudgetItemList) {
@@ -223,7 +220,6 @@ public class SyncActivity extends BaseHomeActivity {
 			budgetItem.setBudgetItemData(iMap);
 			budgetItemTable.insertRecords(budgetItem.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> BudgetTemplateList = SyncDao.selectBudgetTemplate(SyncActivity.this);
 		for (Map<String, Object> iMap:BudgetTemplateList) {
@@ -232,7 +228,6 @@ public class SyncActivity extends BaseHomeActivity {
 			budgetTemplate.setBudgetTemplateData(iMap);
 			budgetTemplateTable.insertRecords(budgetTemplate.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> BudgetTransferList = SyncDao.selectBudgetTransfer(SyncActivity.this);
 		for (Map<String, Object> iMap:BudgetTransferList) {
@@ -250,7 +245,6 @@ public class SyncActivity extends BaseHomeActivity {
 			category.setCategoryData(iMap);
 			categoryTable.insertRecords(category.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> EP_BillItemList = SyncDao.selectEP_BillItem(SyncActivity.this);
 		for (Map<String, Object> iMap:EP_BillItemList) {
@@ -259,7 +253,6 @@ public class SyncActivity extends BaseHomeActivity {
 			ep_BillItem.setEP_BillItemData(iMap);
 			ep_BillItemTable.insertRecords(ep_BillItem.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> EP_BillRuleList = SyncDao.selectEP_BillRule(SyncActivity.this);
 		for (Map<String, Object> iMap:EP_BillRuleList) {
@@ -268,7 +261,6 @@ public class SyncActivity extends BaseHomeActivity {
 			ep_BillRule.setEP_BillRuleData(iMap);
 			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> PayeeList = SyncDao.selectPayee(SyncActivity.this);
 		for (Map<String, Object> iMap:PayeeList) {
@@ -277,7 +269,6 @@ public class SyncActivity extends BaseHomeActivity {
 			payee.setPayeeData(iMap);
 			payeeTable.insertRecords(payee.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> TransactionList = SyncDao.selectTransaction(SyncActivity.this);
 		for (Map<String, Object> iMap:TransactionList) {

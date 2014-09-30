@@ -1067,7 +1067,9 @@ public class MainActivity extends BaseHomeActivity implements
 			@Override
 			public void syncDateChange() {
 				// TODO Auto-generated method stub
-				
+				Toast.makeText(this, "Dropbox sync successedM",
+						Toast.LENGTH_SHORT).show();
+				Log.v("mtag", "刷新页面M");
 			}
 
 }

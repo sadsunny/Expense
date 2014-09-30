@@ -71,6 +71,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
@@ -1598,6 +1599,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange() {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
+		Log.v("mtag", "刷新页面creat");
 	}
 }

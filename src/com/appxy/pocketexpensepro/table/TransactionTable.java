@@ -6,6 +6,7 @@ import java.util.Map;
 
 import android.content.Context;
 
+import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
@@ -120,7 +121,11 @@ public class TransactionTable {
 			dateTime_sync = MEntity.getMilltoDateFormat((Long) mMap.get("dateTime_sync"));
 			
 			state = (String) mMap.get("state");
-			trans_recurringtype = (String) mMap.get("trans_recurringtype");
+			
+			int transaction_recurring = Integer.parseInt( ((String) mMap.get("trans_recurringtype")) );
+			trans_recurringtype = context.getResources().getStringArray(R.array.transaction_recurring)[transaction_recurring];
+			
+			
 			trans_datetime = MEntity.getMilltoDateFormat((Long) mMap.get("trans_datetime"));
 			trans_isclear = (Integer) mMap.get("trans_isclear");
 			
@@ -137,7 +142,6 @@ public class TransactionTable {
 				trans_billrule = SyncDao.selectBillRuleUUid(context, Integer.parseInt(trans_billruleID) );
 			}
 			
-			
 		}
 
 		public DbxFields getFields() {
@@ -150,7 +154,10 @@ public class TransactionTable {
 				accountsFields.set("trans_incomeaccount", trans_incomeaccount);
 			}
 			accountsFields.set("trans_amount",trans_amount);
-			accountsFields.set("trans_notes",trans_notes);
+			if (trans_notes != null) {
+				accountsFields.set("trans_notes",trans_notes);
+			}
+			
 			
 			accountsFields.set("trans_payee", trans_payee);
 			if (trans_string != null && trans_string.length()  > 0) {
@@ -162,7 +169,10 @@ public class TransactionTable {
 			accountsFields.set("dateTime_sync",dateTime_sync);
 			
 			accountsFields.set("state", state);
-			accountsFields.set("trans_recurringtype",trans_recurringtype);
+			if (trans_recurringtype != null && trans_recurringtype.length() > 0) {
+				accountsFields.set("trans_recurringtype",trans_recurringtype);
+			}
+		
 			accountsFields.set("trans_datetime",trans_datetime);
 			accountsFields.set("trans_isclear",trans_isclear);
 			

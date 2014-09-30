@@ -26,6 +26,19 @@ public class AccountDao {
 		return db;
 	}
 	
+	public static int checkAccountUUid(Context context, String uuid) { 
+		int size =  0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select b._id from Accounts a where a.uuid = "+uuid;
+		Cursor mCursor = db.rawQuery(sql, null);
+		size = mCursor.getCount();
+		mCursor.close();
+		db.close();
+
+		return size;
+	}
+	
+	
 	public static int selectAccountRelate(Context context,
 			int id) { 
 		int size =  0;
@@ -105,8 +118,6 @@ public class AccountDao {
 		return mList;
 	}
 	
-	
-	
 
 	public static long insertAccountType(Context context, int iconName,
 			int isDefault, String typeName) { // AccountType插入
@@ -154,6 +165,33 @@ public class AccountDao {
 		return mList;
 	}
 
+	public static long insertAccountAll(Context context, String accName,
+			String amount, long dateTime, int autoClear, int accountType, String state , String uuid, long dateTime_sync) { // Account插入
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("accName", accName);
+		cv.put("amount", amount + "");
+		cv.put("dateTime", dateTime);
+		cv.put("autoClear", autoClear);
+		cv.put("accountType", accountType);
+		
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		cv.put("dateTime_sync", dateTime_sync);
+		
+		try {
+			long id = db.insert("Accounts", null, cv);
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
+	
 	public static long insertAccount(Context context, String accName,
 			String amount, long dateTime, int autoClear, int accountType) { // Account插入
 		SQLiteDatabase db = getConnection(context);
@@ -178,6 +216,21 @@ public class AccountDao {
 			return 0;
 		}
 
+	}
+	
+	
+	public static long deleteAccountByUUID(Context context, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		long row = 0;
+		try {
+			row = db.delete("Accounts", "uuid = ?", new String[] { uuid });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
 	}
 
 	public static long deleteAccount(Context context, int id) {
