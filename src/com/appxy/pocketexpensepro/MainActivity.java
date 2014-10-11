@@ -217,7 +217,7 @@ public class MainActivity extends BaseHomeActivity implements
 //				@Override
 //				public void run() {
 //					// TODO Auto-generated method stub
-					TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
+						TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
 ////					mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 //				}
 //			}).start();

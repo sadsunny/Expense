@@ -1,5 +1,8 @@
 package com.appxy.pocketexpensepro.db;
 
+import java.util.Map;
+
+import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.R.integer;
@@ -12,7 +15,7 @@ import android.util.Log;
 
 public class ExpenseDBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "ExpenseDatabase";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2; //更新数据库，之前版本为1。本次更新主要添加同步字段数据
 	private SQLiteDatabase db;
 	private static ExpenseDBHelper instance;
 	
@@ -81,72 +84,99 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 	    paramSQLiteDatabase.execSQL(CREAT_Setting_TABLE);
 
 	
-		accountTypeIni(0, 1, "Asset");
-		accountTypeIni(1, 1, "Cash");
-		accountTypeIni(2, 1, "Checking");
-		accountTypeIni(3, 1, "Credit Card");
-		accountTypeIni(4, 1, "Debit Card");
-		accountTypeIni(5, 1, "Investing/Retirement");
-		accountTypeIni(6, 1, "Loan");
-		accountTypeIni(8, 1, "Others");
-		accountTypeIni(7, 1, "Savings");
+		accountTypeIni(0, 1, "Asset", "F2243FC7-6E01-4CD8-8A03-6AE56E7B20E1");
+		accountTypeIni(1, 1, "Cash", "9832B8FA-537C-4963-8CA9-19385E9732E5");
+		accountTypeIni(2, 1, "Checking","9C4251B9-5B57-4472-8B6E-BAF1A4D60650");
+		accountTypeIni(3, 1, "Credit Card", "4C9ACC13-D22D-4A7F-ABB3-7A5A7C94EAA2");
+		accountTypeIni(4, 1, "Debit Card", "A54BB0EF-17DF-4BA5-BB1E-A24AC31DA138");
+		accountTypeIni(5, 1, "Investing/Retirement", "A8D6FFD2-602B-4E23-AA86-44751A2234C6");
+		accountTypeIni(6, 1, "Loan", "B10A95AC-6BA2-401A-9A67-AF667313872F");
+		accountTypeIni(8, 1, "Others", "EB77B173-7BE4-458E-B1DD-0309EBF3A12C");
+		accountTypeIni(7, 1, "Savings", "3E3BEB88-153A-4ACB-AE15-3B2B7935D56E");
 
-		categoryIni("Auto", 0, 0, 15, 0);
-		categoryIni("Auto:Gas", 0, 0, 15, 0);
-		categoryIni("Auto:Registration", 0, 0, 15, 0);
-		categoryIni("Auto:Service", 0, 0, 15, 0);
-		categoryIni("Bank Charge", 0, 0, 8, 0);
-		categoryIni("Bonus", 1, 0, 10, 0);
-		categoryIni("Cash", 0, 0, 16, 0);
-		categoryIni("Charity", 0, 0, 18, 0);
-		categoryIni("Childcare", 0, 0, 19, 0);
-		categoryIni("Clothing", 0, 0, 20, 0);
-		categoryIni("Credit Card Payment", 0, 0, 25, 0);
-		categoryIni("Eating Out", 0, 0, 28, 0);
-		categoryIni("Education", 0, 0, 29, 0);
-		categoryIni("Entertainment", 0, 0, 30, 0);
-		categoryIni("Gifts", 0, 0, 35, 0);
-		categoryIni("Groceries", 0, 0, 36, 0);
-		categoryIni("Health & Fitness", 0, 0, 37, 0);
-		categoryIni("Home Repair", 0, 0, 59, 0);
-		categoryIni("Household", 0, 0, 2, 0);
-		categoryIni("Insurance", 0, 0, 43, 0);
-		categoryIni("Interest Exp", 0, 0, 61, 0);
-		categoryIni("Loan", 0, 0, 45, 0);
-		categoryIni("Medical", 0, 0, 47, 0);
-		categoryIni("Misc", 0, 0, 49, 0);
-		categoryIni("Mortgage Payment", 0, 0, 3, 0);
-		categoryIni("Others", 0, 0, 56, 0);
-		categoryIni("Others", 1, 0, 57, 0);
-		categoryIni("Pets", 0, 0, 52, 0);
-		categoryIni("Rent", 0, 0, 58, 0);
-		categoryIni("Salary", 1, 0, 60, 0);
-		categoryIni("Savings Deposit", 1, 0, 62, 0);
-		categoryIni("Tax", 0, 0, 64, 0);
-		categoryIni("Tax:Fed", 0, 0, 64, 0);
-		categoryIni("Tax:Medicare", 0, 0, 64, 0);
-		categoryIni("Tax:Other", 0, 0, 64, 0);
-		categoryIni("Tax:Property", 0, 0, 64, 0);
-		categoryIni("Tax Refund", 1, 0, 65, 0);
-		categoryIni("Tax:SDI", 0, 0, 64, 0);
-		categoryIni("Tax:Soc Sec", 0, 0, 64, 0);
-		categoryIni("Tax:State", 0, 0, 64, 0);
-		categoryIni("Transport", 0, 0, 12, 0);
-		categoryIni("Travel", 0, 0, 0, 0);
-		categoryIni("Utilities", 0, 0, 42, 0);
-		categoryIni("Utilities:Cable TV", 0, 0, 14, 0);
-		categoryIni("Utilities:Garbage & Recycling", 0, 0, 26, 0);
-		categoryIni("Utilities:Gas& Electric", 0, 0, 70, 0);
-		categoryIni("Utilities:Internet", 0, 0, 44, 0);
-		categoryIni("Utilities:Telephone", 0, 0, 1, 0);
-		categoryIni("Utilities:Water", 0, 0, 73, 0);
+		categoryIni("Auto", 0, 0, 15, 0, "0F6FD33B-E575-448D-9DFC-FBDD46BB244F");
+		categoryIni("Auto:Gas", 0, 0, 15, 0,"33F11CA3-50C8-491D-823A-66F8DA2632D9");
+		categoryIni("Auto:Registration", 0, 0, 15, 0,"5760538F-A7CF-4EEC-873C-03EF9A7D6FE0");
+		categoryIni("Auto:Service", 0, 0, 15, 0, "1D1C1F8D-4CE7-4467-AA1C-8C99DFFE64F8");
+		categoryIni("Bank Charge", 0, 0, 8, 0, "EBBE58EC-32F7-49FB-8C26-5E49572D0355");
+		categoryIni("Bonus", 1, 0, 10, 0, "65E255EE-B01C-498A-8A6D-980787DBB16B");
+		categoryIni("Cash", 0, 0, 16, 0, "CBB79C68-B40A-4FBC-A89D-714EEF0C610C");
+		categoryIni("Charity", 0, 0, 18, 0, "E1A3532A-77E6-4E72-A16F-3E9A7C36E81E");
+		categoryIni("Childcare", 0, 0, 19, 0, "79AA0903-0A7A-4923-A92D-5EA59F71A43C");
+		categoryIni("Clothing", 0, 0, 20, 0, "F6C83821-FCEF-492C-B4EE-940C80457546");
+		
+		categoryIni("Credit Card Payment", 0, 0, 25, 0, "03D897A0-DD0F-4F4D-A72A-03DA70348BFE");
+		categoryIni("Eating Out", 0, 0, 28, 0, "CA6C55B4-2B95-4921-9AE4-74E76A253426");
+		categoryIni("Education", 0, 0, 29, 0, "B7AD59FE-13C4-4476-8DE0-D8CC94F7A20D");
+		categoryIni("Entertainment", 0, 0, 30, 0,"9344BA4C-7B9E-40D5-8A05-9FECD60C63AB");
+		categoryIni("Gifts", 0, 0, 35, 0, "A515223D-318F-420F-B366-CE207EC2D512");
+		categoryIni("Groceries", 0, 0, 36, 0, "41FC8F1F-CBEF-48F9-B5CC-BB47956D79B7");
+		categoryIni("Health & Fitness", 0, 0, 37, 0, "8997A036-74B9-4140-BF62-0ABC349C0E08");
+		categoryIni("Home Repair", 0, 0, 59, 0, "1DF5FB17-EAA2-4890-81CD-15DFCCDEB1A2");
+		categoryIni("Household", 0, 0, 2, 0, "283C5A28-D76A-4EF5-9713-31FB37B6D963");
+		categoryIni("Insurance", 0, 0, 43, 0, "87F4F37D-1373-4404-ADFD-6AB23823853E");
+		
+		categoryIni("Interest Exp", 0, 0, 61, 0, "D4AB78F5-32CE-434F-9A1D-F25FE681E71A");
+		categoryIni("Loan", 0, 0, 45, 0, "1E32DE55-5EA4-4519-A3F2-AB21861F9B03");
+		categoryIni("Medical", 0, 0, 47, 0, "C8A54F8C-F440-4FE8-9526-B650928F02D4");
+		categoryIni("Misc", 0, 0, 49, 0, "7960FFF8-874B-4CD7-B0DF-02A8D7CA7756");
+		categoryIni("Mortgage Payment", 0, 0, 3, 0, "45643F47-6105-4E21-BD54-9C1E74105D71");
+		categoryIni("Others", 0, 0, 56, 0, "E15F57E7-E976-449D-831F-BCD4631C73C5");
+		categoryIni("Others", 1, 0, 57, 0, "6CFF80C6-6080-4263-80D9-E0ED8DC4E606");
+		categoryIni("Pets", 0, 0, 52, 0,"0206FC4C-9291-40F6-9242-16A673588515");
+		
+		categoryIni("Rent", 0, 0, 58, 0, "CD0F4454-38FA-40C3-8651-CAAD7238773E");
+		categoryIni("Salary", 1, 0, 60, 0, "553E1F3C-2121-43FA-B6EF-9673C9C79F1B");
+		categoryIni("Savings Deposit", 1, 0, 62, 0, "3944081E-93F6-4541-965E-F3077FD9695E");
+		categoryIni("Tax", 0, 0, 64, 0, "5C7368FA-1E98-4777-8E0E-9D470283AE8C");
+		categoryIni("Tax:Fed", 0, 0, 64, 0, "0D997AF9-3C18-45A4-AB44-C005D10CC12D");
+		categoryIni("Tax:Medicare", 0, 0, 64, 0, "8DF4ACB4-B4E9-4AD1-8B6E-C670CF0E1B50");
+		categoryIni("Tax:Other", 0, 0, 64, 0, "1E85D7CF-2263-4F01-839B-510CED8D5147");
+		categoryIni("Tax:Property", 0, 0, 64, 0, "E1FB0951-9A62-4801-954C-99B0C87B1BDE");
+		categoryIni("Tax Refund", 1, 0, 65, 0, "38B27F70-2C9F-4705-AF3B-929BD2711D21");
+		categoryIni("Tax:SDI", 0, 0, 64, 0, "88D34AA2-A3F0-4A2B-8C47-B6BB26A043FB");
+		categoryIni("Tax:Soc Sec", 0, 0, 64, 0, "779F4166-A755-4D91-AB87-B3328BC32B9E");
+		
+		categoryIni("Tax:State", 0, 0, 64, 0, "0B171B72-1C7A-4C2F-A7AC-A4FA50B385BB");
+		categoryIni("Transport", 0, 0, 12, 0, "E3EB044D-F2BA-4239-8DA5-4C84D4F87616");
+		categoryIni("Travel", 0, 0, 0, 0, "8002FBE6-DE5A-4C60-937E-4904204FB17C");
+		categoryIni("Utilities", 0, 0, 42, 0, "9482F32A-6EFF-42CF-90B8-1C5F18C9E851");
+		categoryIni("Utilities:Cable TV", 0, 0, 14, 0, "DA648D8C-C1C2-4824-8D06-6CA1D0C534E7");
+		categoryIni("Utilities:Garbage & Recycling", 0, 0, 26, 0, "FA8FD9FE-B71A-40C9-A648-99F002EDC005");
+		categoryIni("Utilities:Gas& Electric", 0, 0, 70, 0, "8AED613B-DC33-4A1D-9284-48EAB43744A5");
+		categoryIni("Utilities:Internet", 0, 0, 44, 0, "04CDA8B1-E0E8-4B39-8143-BE47DC963EE9");
+		categoryIni("Utilities:Telephone", 0, 0, 1, 0, "9810BE73-F5A8-49BC-85DE-5C1E5E8F8333");
+		categoryIni("Utilities:Water", 0, 0, 73, 0, "1FD9D0CA-D3DF-4640-A541-58FA1C5338E1");
 		
 		settingIni(148,"22");
+
+		accountIni( paramSQLiteDatabase , "Default Account", 0+"", System.currentTimeMillis(), 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", System.currentTimeMillis(), 1);
+		
+	}
+	
+	public  long accountIni(SQLiteDatabase db, String accName,
+			String amount, long dateTime, int autoClear, int accountType,
+			String state, String uuid, long dateTime_sync, int orderIndex) { // Account插入
+		ContentValues cv = new ContentValues();
+
+		cv.put("accName", accName);
+		cv.put("amount", amount + "");
+		cv.put("dateTime", dateTime);
+		cv.put("autoClear", autoClear);
+		cv.put("accountType", accountType);
+		cv.put("orderIndex", orderIndex);
+		
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		cv.put("dateTime_sync", dateTime_sync);
+		long id = db.insert("Accounts", null, cv);
+		return id;
+		
 
 	}
 
 	public long categoryIni(String categoryName, int categoryType,
-			int hasBudget, int iconName, int isDefault) {
+			int hasBudget, int iconName, int isDefault, String uuid) {
 
 		ContentValues cv = new ContentValues();
 		cv.put("categoryName", categoryName);
@@ -157,13 +187,13 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		cv.put("isSystemRecord", 1);
 		cv.put("dateTime", System.currentTimeMillis());
 		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
+		cv.put("uuid", uuid);
 		
 		long row = db.insert("Category", null, cv);
 		return row;
 	}
 
-	public long accountTypeIni(int iconName, int isDefault, String typeName) {
+	public long accountTypeIni(int iconName, int isDefault, String typeName, String uuid) {
 
 		ContentValues cv = new ContentValues();
 		cv.put("iconName", iconName);
@@ -171,7 +201,7 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		cv.put("typeName", typeName);
 		cv.put("dateTime", System.currentTimeMillis());
 		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
+		cv.put("uuid", uuid);
 		
 		long row = db.insert("AccountType", null, cv);
 		return row;
@@ -190,20 +220,132 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase paramSQLiteDatabase, int paramInt1,
 			int paramInt2) {
 		// TODO Auto-generated method stub
-		// Drop older table if existed
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS Accounts");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS AccountType");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS Category");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS Payee");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS Transaction");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS EP_BillItem");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS EP_BillRule");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS BudgetItem");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS BudgetTemplate");
-		paramSQLiteDatabase.execSQL("DROP TABLE IF EXISTS BudgetTransfer");
-
-		// create fresh books table
-		this.onCreate(paramSQLiteDatabase);
+		
+		if (paramInt1 == 1) { // 处理老版本的数据，更新同步字段
+			
+			upgradeAccountType(paramSQLiteDatabase);
+			upgradeCategory(paramSQLiteDatabase);
+			upgradePayee(paramSQLiteDatabase);
+			upgradeAccount(paramSQLiteDatabase);
+			upgradeBudgetTemplate(paramSQLiteDatabase);
+			upgradeBudgetItem(paramSQLiteDatabase);
+			upgradeBudgetTransfer(paramSQLiteDatabase);
+			upgradeEP_BillRule(paramSQLiteDatabase);
+			upgradeEP_BillItem(paramSQLiteDatabase);
+			upgradeTransaction(paramSQLiteDatabase);
+			
+			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", System.currentTimeMillis(), 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", System.currentTimeMillis(), 10000);
+			DbDao.updateAccountOrder(paramSQLiteDatabase, (int)accountOrder , (int)accountOrder);
+			Log.v("mtag", "数据库升级");
+		}
+		
 	}
+	
+	public void upgradeAccountType(SQLiteDatabase db){
+		Map<String, Integer> mMap = DbDao.selectAccountType(db);
+		for (int i:mMap.values()) {
+			if (i > 0 && i<10) {
+				DbDao.updateAccountType(db, i, 1+"", DbEntity.accountTypeUUID[i-1], System.currentTimeMillis());
+			} else {
+				DbDao.updateAccountType(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			}
+		}
+		
+	}
+	
+	public void upgradeCategory(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectCategory(db);
+		for (int i:mMap.values()) {
+			if (i > 0 && i< 50) {
+				DbDao.updateCategory(db, i, 1+"", DbEntity.categoryUUID[i-1], System.currentTimeMillis());
+			} else {
+				DbDao.updateCategory(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			}
+		}
+		
+	}
+	
+	public void upgradePayee(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectPayee(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updatePayee(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	public void upgradeAccount(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectAccount(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateAccount(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	public void upgradeBudgetTemplate(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectBudgetTemplate(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateBudgetTemplate(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+
+	
+	public void upgradeBudgetItem(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectBudgetItem(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateBudgetItem(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	public void upgradeBudgetTransfer(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectBudgetTransfer(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateBudgetTransfer(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	public void upgradeEP_BillRule(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectEP_BillRule(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateEP_BillRule(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	
+	public void upgradeEP_BillItem(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectEP_BillItem(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateEP_BillItem(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
+	public void upgradeTransaction(SQLiteDatabase db) {
+		Map<String, Integer> mMap = DbDao.selectTransaction(db);
+		for (int i:mMap.values()) {
+			if (i > 0) {
+				DbDao.updateTransaction(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+			} 
+		}
+		
+	}
+	
 
 }

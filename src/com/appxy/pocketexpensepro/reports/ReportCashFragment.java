@@ -300,15 +300,13 @@ public class ReportCashFragment extends Fragment {
 		renderer.setXAxisMax(7);
 		renderer.setXLabels(0);
 
-		Log.v("mtest", "xLabel.length" + xLable.size());
-
 		for (int i = 0; i < xLable.size(); i++) {
 			// 添加X轴便签
 			renderer.addXTextLabel(i, xLable.get(i));
 		}
 		renderer.setPanLimits(new double[] { 0, xLable.size() + 0.4, 0,
 				xLable.size() }); // 设置左右拉伸的界限
-
+		renderer.setShowCustomTextGrid(true);
 		return renderer;
 	}
 	

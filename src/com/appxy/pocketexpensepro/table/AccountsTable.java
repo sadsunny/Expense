@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.table;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -121,11 +122,8 @@ public class AccountsTable {
 			orderindex = (int) iRecord.getLong("orderindex");
 			dateTime_sync = iRecord.getDate("dateTime_sync");
 			uuid = iRecord.getString("uuid");
+			Log.v("mtag", "iRecord"+iRecord);
 			
-		}
-		
-		public long turnDate2long(Date date) {
-			return date.getTime();
 		}
 		
 		public void insertOrUpdate() { //根据state操作数据库
@@ -134,7 +132,17 @@ public class AccountsTable {
 				AccountDao.deleteAccountByUUID(context, uuid);
 			} else if (state.equals("1")){
 				
-				AccountDao.insertAccountAll(context, name, amount+"", turnDate2long(datetime), autoclear, Integer.parseInt(accountType),state ,uuid, turnDate2long(dateTime_sync));
+				List<Map<String, Object>> mList= AccountDao.checkAccountByUUid(context, uuid);
+				if ( mList.size() > 0) {
+					
+				    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+				    if (localDateTime_sync < dateTime_sync.getTime()) {
+				      AccountDao.updateAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime());
+					}
+					
+				}else {
+				     AccountDao.insertAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime());
+				}
 			}
 			
 		}

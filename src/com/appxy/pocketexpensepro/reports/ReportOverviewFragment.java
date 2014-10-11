@@ -588,7 +588,8 @@ public class ReportOverviewFragment extends Fragment {
 		}
 		renderer.setPanLimits(new double[] { 0, xLable.size() + 0.4, 0,
 				xLable.size() }); // 设置左右拉伸的界限
-
+		renderer.setShowCustomTextGrid(true);
+		
 		return renderer;
 	}
 

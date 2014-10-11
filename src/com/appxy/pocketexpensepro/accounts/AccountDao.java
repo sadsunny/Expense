@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class AccountDao {
 
@@ -25,11 +26,55 @@ public class AccountDao {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		return db;
 	}
-	
-	public static int checkAccountUUid(Context context, String uuid) { 
-		int size =  0;
+
+	public static int getAccountTypeIdByUUID(Context context, String uuid) { // 查询accout的uuid，以及时间
+
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select b._id from Accounts a where a.uuid = "+uuid;
+		String sql = "select a._id from AccountType a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+
+		int theId = 0;
+		while (mCursor.moveToNext()) {
+			theId = mCursor.getInt(0);
+		}
+		
+		if (mCursor.getCount() == 0) {//前期测试
+			theId = 1;
+		}
+		
+		mCursor.close();
+		db.close();
+
+		return theId;
+	}
+
+	public static List<Map<String, Object>> checkAccountByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime_sync from Accounts a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	public static int selectAccountRelate(Context context, int id) {
+		int size = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select b._id from Accounts a,'Transaction' b where (a._id = b.expenseAccount or a._id = b.incomeAccount) and a._id = "
+				+ id;
 		Cursor mCursor = db.rawQuery(sql, null);
 		size = mCursor.getCount();
 		mCursor.close();
@@ -37,22 +82,7 @@ public class AccountDao {
 
 		return size;
 	}
-	
-	
-	public static int selectAccountRelate(Context context,
-			int id) { 
-		int size =  0;
-		SQLiteDatabase db = getConnection(context);
-		String sql = "select b._id from Accounts a,'Transaction' b where (a._id = b.expenseAccount or a._id = b.incomeAccount) and a._id = "+id;
-		Cursor mCursor = db.rawQuery(sql, null);
-		size = mCursor.getCount();
-		mCursor.close();
-		db.close();
 
-		return size;
-	}
-	
-	
 	public static int selectTransactionAllSize(Context context) { // Account查询
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from 'Transaction' a ";
@@ -64,12 +94,14 @@ public class AccountDao {
 
 		return size;
 	}
-	
-	public static List<Map<String, Object>> selectTransactionRecurringOverToday(Context context, long today) { // Account查询
+
+	public static List<Map<String, Object>> selectTransactionRecurringOverToday(
+			Context context, long today) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where a.recurringType > 0 and a.dateTime < "+today+" order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a where a.recurringType > 0 and a.dateTime < "
+				+ today + " order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -92,7 +124,7 @@ public class AccountDao {
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
 			String uuid = mCursor.getString(16);
-			
+
 			mMap.put("uuid", uuid);
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
@@ -109,7 +141,7 @@ public class AccountDao {
 			mMap.put("transactionHasBillItem", transactionHasBillItem);
 			mMap.put("transactionHasBillRule", transactionHasBillRule);
 			mMap.put("notes", notes);
-			
+
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -117,7 +149,6 @@ public class AccountDao {
 
 		return mList;
 	}
-	
 
 	public static long insertAccountType(Context context, int iconName,
 			int isDefault, String typeName) { // AccountType插入
@@ -130,7 +161,7 @@ public class AccountDao {
 		cv.put("dateTime", System.currentTimeMillis());
 		cv.put("state", 1);
 		cv.put("uuid", MEntity.getUUID());
-		
+
 		try {
 			long id = db.insert("AccountType", null, cv);
 			db.close();
@@ -164,22 +195,52 @@ public class AccountDao {
 
 		return mList;
 	}
-
-	public static long insertAccountAll(Context context, String accName,
-			String amount, long dateTime, int autoClear, int accountType, String state , String uuid, long dateTime_sync) { // Account插入
+	
+	public static long updateAccountAll(Context context, String accName,
+			String amount, long dateTime, int autoClear, int accountType,
+			String state, String uuid, long dateTime_sync) { // Account插入
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
-		
+
 		cv.put("accName", accName);
 		cv.put("amount", amount + "");
 		cv.put("dateTime", dateTime);
 		cv.put("autoClear", autoClear);
 		cv.put("accountType", accountType);
-		
+
+		cv.put("state", state);
+		cv.put("dateTime_sync", dateTime_sync);
+
+		try {
+			Log.v("mtag", "更新数据2 "+uuid);
+			long id = db.update("Accounts", cv, "uuid = ?", new String[] { uuid });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
+	
+
+	public static long insertAccountAll(Context context, String accName,
+			String amount, long dateTime, int autoClear, int accountType,
+			String state, String uuid, long dateTime_sync) { // Account插入
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+
+		cv.put("accName", accName);
+		cv.put("amount", amount + "");
+		cv.put("dateTime", dateTime);
+		cv.put("autoClear", autoClear);
+		cv.put("accountType", accountType);
+
 		cv.put("state", state);
 		cv.put("uuid", uuid);
 		cv.put("dateTime_sync", dateTime_sync);
-		
+
 		try {
 			long id = db.insert("Accounts", null, cv);
 			db.close();
@@ -191,12 +252,12 @@ public class AccountDao {
 		}
 
 	}
-	
+
 	public static long insertAccount(Context context, String accName,
 			String amount, long dateTime, int autoClear, int accountType) { // Account插入
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
-		
+
 		cv.put("accName", accName);
 		cv.put("amount", amount + "");
 		cv.put("dateTime", dateTime);
@@ -205,7 +266,7 @@ public class AccountDao {
 		cv.put("state", "1");
 		cv.put("uuid", MEntity.getUUID());
 		cv.put("dateTime_sync", System.currentTimeMillis());
-		
+
 		try {
 			long id = db.insert("Accounts", null, cv);
 			db.close();
@@ -217,8 +278,7 @@ public class AccountDao {
 		}
 
 	}
-	
-	
+
 	public static long deleteAccountByUUID(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
@@ -256,8 +316,7 @@ public class AccountDao {
 		cv.put("dateTime_sync", System.currentTimeMillis());
 		String mId = _id + "";
 		try {
-			long id = db
-					.update("Accounts", cv, "_id = ?", new String[] { mId });
+			long id = db.update("Accounts", cv, "_id = ?", new String[] { mId });
 			db.close();
 			return id;
 		} catch (Exception e) {
@@ -268,7 +327,7 @@ public class AccountDao {
 	}
 
 	public static long updateAccount(Context context, long _id, String accName,
-			String amount, long dateTime, int autoClear, int accountType) { 
+			String amount, long dateTime, int autoClear, int accountType) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("accName", accName);
@@ -331,7 +390,6 @@ public class AccountDao {
 			int iconName = mCursor.getInt(22);
 			String typeName = mCursor.getString(23);
 
-
 			mMap.put("_id", _id);
 			mMap.put("accName", accName);
 			mMap.put("amount", amount);
@@ -369,7 +427,6 @@ public class AccountDao {
 			int iconName = mCursor.getInt(22);
 			String typeName = mCursor.getString(23);
 			int tpye_id = mCursor.getInt(24);
-
 
 			mMap.put("_id", _id);
 			mMap.put("accName", accName);
@@ -440,7 +497,7 @@ public class AccountDao {
 
 		return mList;
 	}
-	
+
 	public static List<Map<String, Object>> selectTransactionAllList(
 			Context context) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -468,7 +525,7 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-			
+
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -491,7 +548,6 @@ public class AccountDao {
 
 		return mList;
 	}
-	
 
 	public static List<Map<String, Object>> selectTransactionByAccount(
 			Context context, int accountId) { // Account查询
@@ -524,7 +580,7 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-			
+
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -547,11 +603,9 @@ public class AccountDao {
 
 		return mList;
 	}
-	
-	
-	
-	
-	public static List<Map<String, Object>> selectTransactionByID(Context context, int id) { // Account查询
+
+	public static List<Map<String, Object>> selectTransactionByID(
+			Context context, int id) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
@@ -601,7 +655,7 @@ public class AccountDao {
 
 		return mList;
 	}
-	
+
 	public static List<Map<String, Object>> selectTransactionAllAndClear(
 			Context context) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -629,7 +683,7 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-			
+
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -652,9 +706,7 @@ public class AccountDao {
 
 		return mList;
 	}
-	
-	
-	
+
 	public static List<Map<String, Object>> selectTransactionByAccountAndClear(
 			Context context, int accountId) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -686,7 +738,7 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-			
+
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -709,12 +761,12 @@ public class AccountDao {
 
 		return mList;
 	}
-	
+
 	public static List<Map<String, Object>> selectCategory(Context context) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		
+
 		String sql = "select c.* from Category c where c.categoryType = 0 order by categoryName ASC";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
@@ -740,40 +792,44 @@ public class AccountDao {
 
 		return mList;
 	}
-	
+
 	public static void deleteTransactionChildById(Context context, int parId) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.* from 'Transaction' a,Category b where a.parTransaction = "+parId +" and a.childTransactions = 1 and b._id = a.category ";
-				
+		String sql = "select a.*, b.* from 'Transaction' a,Category b where a.parTransaction = "
+				+ parId
+				+ " and a.childTransactions = 1 and b._id = a.category ";
+
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
 
 			int _id = mCursor.getInt(0);
-			
+
 			mMap.put("_id", _id);
 			mList.add(mMap);
 		}
 		mCursor.close();
-		
-		for (Map<String, Object> iMap: mList) {
-			int _id  = (Integer) iMap.get("_id");
+
+		for (Map<String, Object> iMap : mList) {
+			int _id = (Integer) iMap.get("_id");
 			deleteTransaction(context, _id);
 		}
-	
+
 		db.close();
 
 	}
-	
-	
-	public static List<Map<String, Object>> selectTransactionChildById(Context context, int parId) { // Account查询
+
+	public static List<Map<String, Object>> selectTransactionChildById(
+			Context context, int parId) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.* from 'Transaction' a,Category b where a.parTransaction = "+parId +" and a.childTransactions = 1 and b._id = a.category ";
-				
+		String sql = "select a.*, b.* from 'Transaction' a,Category b where a.parTransaction = "
+				+ parId
+				+ " and a.childTransactions = 1 and b._id = a.category ";
+
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -793,10 +849,10 @@ public class AccountDao {
 			int incomeAccount = mCursor.getInt(21);
 			int parTransaction = mCursor.getInt(22);
 			int payee = mCursor.getInt(23);
-			
+
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-			
+
 			String categoryName = mCursor.getString(30);
 			int categoryType = mCursor.getInt(32);
 			int hasBudget = mCursor.getInt(35);
@@ -808,7 +864,7 @@ public class AccountDao {
 			mMap.put("hasBudget", hasBudget);
 			mMap.put("iconName", iconName);
 			mMap.put("isDefault", isDefault);
-			
+
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -823,7 +879,7 @@ public class AccountDao {
 			mMap.put("payee", payee);
 			mMap.put("transactionHasBillItem", transactionHasBillItem);
 			mMap.put("transactionHasBillRule", transactionHasBillRule);
-			
+
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -831,10 +887,12 @@ public class AccountDao {
 
 		return mList;
 	}
-	
-	
-	
-	public static long updateTransactionAll(int _id, Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee) { // AccountType插入
+
+	public static long updateTransactionAll(int _id, Context context,
+			String amount, long dateTime, int isClear, String notes,
+			String photoName, int recurringType, int category,
+			String childTransactions, int expenseAccount, int incomeAccount,
+			int parTransaction, int payee) { // AccountType插入
 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
@@ -850,11 +908,11 @@ public class AccountDao {
 		cv.put("incomeAccount", incomeAccount);
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
-		
+
 		String mId = _id + "";
 		try {
-			long id = db
-					.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			long id = db.update("'Transaction'", cv, "_id = ?",
+					new String[] { mId });
 			db.close();
 			return id;
 		} catch (Exception e) {
@@ -864,8 +922,6 @@ public class AccountDao {
 		}
 
 	}
-	
-	
 
 	public static List<Map<String, Object>> selectCategoryById(Context context,
 			int id) { // 查询Category
@@ -937,7 +993,7 @@ public class AccountDao {
 		db.close();
 		return row;
 	}
-	
+
 	public static long deleteBudgetTransfer(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
@@ -952,14 +1008,15 @@ public class AccountDao {
 		db.close();
 		return row;
 	}
-	
+
 	public static long deleteTransactionChild(Context context, int pid) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String p_id = pid + "";
 		long row = 0;
 		try {
-			row = db.delete("'Transaction'", "parTransaction = ?", new String[] { p_id });
+			row = db.delete("'Transaction'", "parTransaction = ?",
+					new String[] { p_id });
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;
@@ -967,16 +1024,16 @@ public class AccountDao {
 		db.close();
 		return row;
 	}
-	
-	
-	public static long updateTransactionClear(Context context, long _id, int clear) { // Account更新排序字段
+
+	public static long updateTransactionClear(Context context, long _id,
+			int clear) { // Account更新排序字段
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("isClear", clear);
 		String mId = _id + "";
 		try {
-			long id = db
-					.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			long id = db.update("'Transaction'", cv, "_id = ?",
+					new String[] { mId });
 			db.close();
 			return id;
 		} catch (Exception e) {
