@@ -765,7 +765,7 @@ public class BillsFragmentMonth extends Fragment implements
 		long row = BillsDao.insertBillItem(mActivity, 1, "1", ep_billItemDueDate,
 				ep_billItemDueDate, ep_billItemDueDate, " ", "",
 				1, 1, ep_billItemDueDate,
-				rowid, 1, 1);
+				rowid, 1, 1, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 		if (row > 0) {
 			 Intent service=new Intent(mActivity, NotificationService.class);  
 			 mActivity.startService(service);  

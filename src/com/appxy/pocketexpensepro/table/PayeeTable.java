@@ -2,12 +2,17 @@ package com.appxy.pocketexpensepro.table;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.category.CategoryDao;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -42,8 +47,8 @@ public class PayeeTable {
 			this.state = state;
 		}
 
-		public void setPayee_category(String payee_category) {
-			this.payee_category = payee_category;
+		public void setPayee_category(int payee_category) {
+			this.payee_category = PayeeDao.selectCategoryUUidById(context, payee_category);
 		}
 
 		public void setPayee_name(String payee_name) {
@@ -57,6 +62,46 @@ public class PayeeTable {
 		public Payee() {
 
 		}
+		
+		public void setIncomingData(DbxRecord iRecord) { 
+			
+			uuid = iRecord.getString("uuid");
+			dateTime = iRecord.getDate("dateTime");
+			state = iRecord.getString("state");
+			
+			if (iRecord.hasField("payee_category")) {
+				payee_category = iRecord.getString("payee_category");
+			} 
+			
+			payee_name = iRecord.getString("payee_name");
+			if (iRecord.hasField("payee_memo")) {
+				payee_memo = iRecord.getString("payee_memo");
+			}
+			
+		}
+		
+		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+				
+				if (state.equals("0")) {
+					PayeeDao.deletePayeeByUUid(context, uuid);
+				} else if (state.equals("1")){
+					
+					List<Map<String, Object>> mList= PayeeDao.checkPayeeByUUid(context, uuid);
+					if ( mList.size() > 0) {
+						
+					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+					    if (localDateTime_sync < dateTime.getTime()) {
+					    PayeeDao.updatePayeeAll(context, payee_name, payee_memo,PayeeDao.selectCategoryIdByUUid(context, payee_category), dateTime.getTime(), state, uuid);
+						}
+						
+					}else {
+						PayeeDao.insertPayeeAll(context, payee_name, payee_memo,PayeeDao.selectCategoryIdByUUid(context, payee_category), dateTime.getTime(), state, uuid);
+					}
+				}
+				
+			}
+		 
+		 
 
 		public void setPayeeData(Map<String, Object> mMap) {
 
@@ -86,8 +131,9 @@ public class PayeeTable {
 
 	}
 
-	public void updateState(String uuid, int state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
+		Log.v("mtag", "uuid"+uuid);
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
@@ -96,8 +142,10 @@ public class PayeeTable {
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
 			mDatastore.sync();
+			return ;
 		}
 
 	}
@@ -114,9 +162,23 @@ public class PayeeTable {
 		this.context = context;
 	}
 
+	public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
+	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields();
+		if (thisFields.hasField("uuid") && thisFields.hasField("payee_category")) {
+			
 		queryParams.set("uuid", thisFields.getString("uuid"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
@@ -136,7 +198,10 @@ public class PayeeTable {
 		} else {
 			mTable.insert(thisFields);
 		}
-
+		
 	}
+
+}
+	
 
 }

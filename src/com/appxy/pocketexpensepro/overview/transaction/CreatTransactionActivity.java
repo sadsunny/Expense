@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
@@ -29,6 +30,7 @@ import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -541,7 +543,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									CreatTransactionActivity.this, payeeString,
-									new String(), categoryId);
+									new String(), categoryId,mDbxAcctMgr, mDatastore);
 							if (row > 0) {
 								payeeId = (int) row;
 							}
@@ -560,7 +562,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 								CreatTransactionActivity.this, amountString,
 								dateLong, isCleared, memoString, picPath, 0,
 								categoryDefault, childTransactionsDefault + "",
-								accountId, incomeAccountDefault, -1, payeeId); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
+								accountId, incomeAccountDefault, -1, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
 
 						String idList = "";
 
@@ -571,7 +573,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 									CreatTransactionActivity.this, amount,
 									dateLong, isCleared, memoString, picPath,
 									0, cId, 1 + "", accountId,
-									incomeAccountDefault, (int) row, payeeId);
+									incomeAccountDefault, (int) row, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							idList = idList + id + ",";
 						}
 						Log.v("mtest", "row" + row);
@@ -595,7 +597,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 												categoryId,
 												childTransactionsDefault + "",
 												accountId, incomeAccountDefault, 0,
-												payeeId);
+												payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							} else {
 								long row = TransactionDao.insertTransactionAll(
 										CreatTransactionActivity.this,
@@ -603,7 +605,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 										memoString, picPath, recurringTpye,
 										categoryId, childTransactionsDefault + "",
 										expenseAccountDefault, accountId, 0,
-										payeeId);
+										payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							}
 							
 						}
@@ -1597,7 +1599,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",
 				Toast.LENGTH_SHORT).show();

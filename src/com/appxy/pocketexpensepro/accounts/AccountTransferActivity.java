@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
@@ -30,6 +31,7 @@ import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -473,7 +475,7 @@ public class AccountTransferActivity extends BaseHomeActivity {
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									AccountTransferActivity.this, payeeString,
-									new String(), 27);//设置默认的category
+									new String(), 27,mDbxAcctMgr, mDatastore);//设置默认的category
 							if (row > 0) {
 								payeeId = (int) row;
 							}
@@ -484,7 +486,7 @@ public class AccountTransferActivity extends BaseHomeActivity {
 
 					// context, amount, dateTime, isClear, notes, photoName, recurringType, category, childTransactions, expenseAccount , incomeAccount, parTransaction, payee)
 					 if(fromId != toId){
-						 long row = TransactionDao.insertTransactionAll( AccountTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, 0, 0+"", fromId ,toId , 0 ,payeeId);
+						 long row = TransactionDao.insertTransactionAll( AccountTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, recurringTpye, 0, 0+"", fromId ,toId , 0 ,payeeId,new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 						    Intent intent = new Intent();
 							intent.putExtra("_id", row);
 							setResult(11, intent);
@@ -965,7 +967,7 @@ public class AccountTransferActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

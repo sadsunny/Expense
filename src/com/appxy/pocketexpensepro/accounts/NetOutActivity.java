@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.json.JSONException;
@@ -27,6 +28,8 @@ import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Purchase;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.anim;
 import android.annotation.SuppressLint;
@@ -420,6 +423,9 @@ public class NetOutActivity extends BaseHomeActivity {
 
 					int _id = (Integer) childrenAllDataList.get(groupPosition)
 							.get(childPosition).get("_id");
+					
+					String uuid = (String) childrenAllDataList.get(groupPosition)
+							.get(childPosition).get("uuid");
 
 					if (arg2 == 0) {
 						Map<String, Object> mMap = childrenAllDataList.get(
@@ -456,7 +462,7 @@ public class NetOutActivity extends BaseHomeActivity {
 								dateTime, isClear, notes, photoName,
 								recurringType, category, childTransactions,
 								expenseAccount, incomeAccount, parTransaction,
-								payee);
+								payee,new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 						alertDialog.dismiss();
 
 
@@ -465,7 +471,7 @@ public class NetOutActivity extends BaseHomeActivity {
 					} else if (arg2 == 1) {
 
 						long row = AccountDao.deleteTransaction(
-								NetOutActivity.this, _id);
+								NetOutActivity.this, _id, uuid, mDbxAcctMgr, mDatastore);
 						alertDialog.dismiss();
 						Intent intent = new Intent();
 						intent.putExtra("row", row);
@@ -1179,12 +1185,11 @@ public class NetOutActivity extends BaseHomeActivity {
         }
        
         else {
-            Log.v("mtest", "参数返回2");
         }
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

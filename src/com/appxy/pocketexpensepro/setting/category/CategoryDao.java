@@ -14,6 +14,10 @@ import android.util.Log;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.table.CategoryTable;
+import com.appxy.pocketexpensepro.table.CategoryTable.Category;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
 public class CategoryDao {
 
@@ -23,17 +27,6 @@ public class CategoryDao {
 		return db;
 	}
 	
-	public static long updateCategoryName(Context context, int id,String newName) {
-		SQLiteDatabase db = getConnection(context);
-		ContentValues cv = new ContentValues();
-		cv.put("categoryName", newName);
-		cv.put("dateTime", System.currentTimeMillis());
-		String _id = id + "";
-		long row =db.update("Category", cv, "_id = ?", new String[] { _id });
-		db.close();
-		return row;
-	}
-
 	
 	public static List<Map<String, Object>> selectCategoryChild(Context context, String parString) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -50,6 +43,7 @@ public class CategoryDao {
 			int hasBudget = mCursor.getInt(8);
 			int iconName = mCursor.getInt(9);
 			int isDefault = mCursor.getInt(10);
+			String uuid = mCursor.getString(15);
 
 			mMap.put("_id", _id);
 			mMap.put("categoryName", categoryName);
@@ -57,6 +51,8 @@ public class CategoryDao {
 			mMap.put("hasBudget", hasBudget);
 			mMap.put("iconName", iconName);
 			mMap.put("isDefault", isDefault);
+			mMap.put("uuid", uuid);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -81,39 +77,294 @@ public class CategoryDao {
 	
 	
 	
-	public static long updateCategory(Context context, int id,String categoryName,
-			int categoryType, int hasBudget, int iconName, int isDefault) {
+
+	public static List<Map<String, Object>> checkCategoryByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from Category a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static long updateCategoryAll(Context context,String categoryName,
+			int categoryType, int iconName, int isSystemRecord,  int isDefault, long dateTime, String state, String uuid) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("categoryName", categoryName);
 		cv.put("categoryType", categoryType);
-		cv.put("hasBudget", hasBudget);
 		cv.put("iconName", iconName);
+		cv.put("isSystemRecord", isSystemRecord);
 		cv.put("isDefault", isDefault);
-		cv.put("dateTime", System.currentTimeMillis());
-		String _id = id + "";
-		long row =db.update("Category", cv, "_id = ?", new String[] { _id });
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		long row =db.update("Category", cv, "uuid = ?", new String[] { uuid });
 		db.close();
 		return row;
 	}
 
 	
-	public static long insertCategory(Context context, String categoryName,
-			int categoryType, int hasBudget, int iconName, int isDefault) {
+	public static long insertCategoryAll(Context context, String categoryName,
+			int categoryType, int iconName,int isSystemRecord, int isDefault ,long dateTime, String state, String uuid) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		
+		cv.put("categoryName", categoryName);
+		cv.put("categoryType", categoryType);
+		cv.put("iconName", iconName);
+		cv.put("isDefault", isDefault);
+		cv.put("isSystemRecord", isSystemRecord);
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		try {
+			long row = db.insert("Category", null, cv);
+			db.close();
+			
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+		
+	}
+	
+	public static long updateCategoryName(Context context, int id,String newName, String uuid,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		long dateTime = System.currentTimeMillis();
+		
+		cv.put("categoryName", newName);
+		cv.put("dateTime", dateTime);
+		
+		String _id = id + "";
+		try {
+			long row =db.update("Category", cv, "_id = ?", new String[] { _id });
+			db.close();
+			if (row > 0 ) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					CategoryTable categoryTable = new CategoryTable(mDatastore, context);
+					Category category = categoryTable.getCategory();
+					
+					category.setCategory_categoryname(newName);
+					category.setUuid(uuid);
+					category.setDatetime( MEntity.getMilltoDateFormat(dateTime) );
+					categoryTable.insertRecords(category.getFieldsName());
+					
+				}
+
+
+			}
+			
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+		
+	}
+	
+	public static long updateCategory(Context context, int id,String categoryName,
+			int categoryType, int hasBudget, int iconName, int isDefault,String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		long dateTime = System.currentTimeMillis();
+		cv.put("categoryName", categoryName);
+		cv.put("categoryType", categoryType);
+		cv.put("hasBudget", hasBudget);
+		cv.put("iconName", iconName);
+		cv.put("isDefault", isDefault);
+		cv.put("dateTime", dateTime);
+		String _id = id + "";
+		try {
+			long row =db.update("Category", cv, "_id = ?", new String[] { _id });
+			db.close();
+			
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					CategoryTable categoryTable = new CategoryTable(mDatastore, context);
+					Category category = categoryTable.getCategory();
+					category.setCategory_categoryname(categoryName);
+					category.setCategory_categorytype(categoryType+"");
+					category.setCategory_iconname(iconName+"");
+					category.setCategory_isdefault(isDefault);
+					category.setCategory_issystemrecord(0);
+					category.setUuid(uuid);
+					category.setDatetime( MEntity.getMilltoDateFormat(dateTime) );
+					categoryTable.insertRecords(category.getFields());
+					mDatastore.sync();
+					
+					
+				}
+			}
+			
+			
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+		
+		
+		
+	}
+	
+	
+	
+	public static long deleteCategoryLike(Context context, String name, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		
+		List<Map<String, Object>> mList = selectCategoryLikeName(context, name);
+				
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		long row = 0;
+		try {
+			row = db.delete("Category", "categoryName like ?", new String[] { name+":"+"%" });
+			
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					for (Map<String, Object> iMap:mList) {
+						String uuid = (String) iMap.get("uuid");
+						CategoryTable categoryTable = new CategoryTable(mDatastore, context);
+						Category category = categoryTable.getCategory();
+						category.setUuid(uuid);
+						categoryTable.updateState(uuid, "0");
+						mDatastore.sync();
+					}
+					
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+
+	public static long deleteCategory(Context context, int id,String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("Category", "_id = ?", new String[] { _id });
+			
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					CategoryTable categoryTable = new CategoryTable(mDatastore, context);
+					Category category = categoryTable.getCategory();
+					category.setUuid(uuid);
+					categoryTable.updateState(uuid, "0");
+					mDatastore.sync();
+				}
+				
+					
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	
+	public static long insertCategory(Context context, String categoryName,
+			int categoryType, int hasBudget, int iconName, int isDefault, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore ,long dateTime, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
 		cv.put("categoryName", categoryName);
 		cv.put("categoryType", categoryType);
 		cv.put("hasBudget", hasBudget);
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
 		cv.put("isSystemRecord", 0);
-		cv.put("dateTime", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
-		long row = db.insert("Category", null, cv);
-		db.close();
-		return row;
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		try {
+			long row = db.insert("Category", null, cv);
+			db.close();
+			
+			if(row > 0){
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					CategoryTable categoryTable = new CategoryTable(mDatastore, context);
+					Category category = categoryTable.getCategory();
+					category.setCategory_categoryname(categoryName);
+					category.setCategory_categorytype(categoryType+"");
+					category.setCategory_iconname(iconName+"");
+					category.setCategory_isdefault(isDefault);
+					category.setCategory_issystemrecord(0);
+					category.setDatetime( MEntity.getMilltoDateFormat(dateTime) );
+					category.setState(state);
+					category.setUuid(uuid);
+					categoryTable.insertRecords(category.getFields());
+					mDatastore.sync();
+				}
+				
+				
+			}
+			
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+		
 	}
 
 	
@@ -145,6 +396,28 @@ public class CategoryDao {
 		db.close();
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectCategoryByName(Context context, String cName) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from Category a where a.categoryName = "+"'"+cName+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+
+			mMap.put("_id", _id);
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	
 	
 	public static List<Map<String, Object>> selectCategoryAll(Context context) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -193,6 +466,7 @@ public class CategoryDao {
 			int hasBudget = mCursor.getInt(8);
 			int iconName = mCursor.getInt(9);
 			int isDefault = mCursor.getInt(10);
+			String uuid = mCursor.getString(15);
 
 			mMap.put("_id", _id);
 			mMap.put("categoryName", categoryName);
@@ -200,6 +474,7 @@ public class CategoryDao {
 			mMap.put("hasBudget", hasBudget);
 			mMap.put("iconName", iconName);
 			mMap.put("isDefault", isDefault);
+			mMap.put("uuid", uuid);
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -208,13 +483,13 @@ public class CategoryDao {
 		return mList;
 	}
 
-	public static long deleteCategory(Context context, int id) {
+	
+	public static long deleteCategoryByUUid(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
-		String _id = id + "";
 		long row = 0;
 		try {
-			row = db.delete("Category", "_id = ?", new String[] { _id });
+			row = db.delete("Category", "uuid = ?", new String[] { uuid });
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;
@@ -223,18 +498,28 @@ public class CategoryDao {
 		return row;
 	}
 	
-	public static long deleteCategoryLike(Context context, String name) {
+	
+	public static List<Map<String, Object>> selectCategoryLikeName(Context context, String name) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		db.execSQL("PRAGMA foreign_keys = ON ");
-		long row = 0;
-		try {
-			row = db.delete("Category", "categoryName like ?", new String[] { name+":"+"%" });
-		} catch (Exception e) {
-			// TODO: handle exception
-			row = 0;
+		String sql = "select * from Category where Category.categoryName like " + "'" +name+":" +"%'" ;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			String uuid = mCursor.getString(15);
+
+			mMap.put("uuid", uuid);
+			mList.add(mMap);
 		}
+		mCursor.close();
 		db.close();
-		return row;
+
+		return mList;
 	}
+
+	
+	
 
 }

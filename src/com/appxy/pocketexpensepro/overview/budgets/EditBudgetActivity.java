@@ -2,11 +2,13 @@ package com.appxy.pocketexpensepro.overview.budgets;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -32,7 +34,7 @@ public class EditBudgetActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private LayoutInflater inflater;
-	
+	private String uuid ;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -152,7 +154,7 @@ public class EditBudgetActivity extends BaseHomeActivity {
 		
 		Intent intent = getIntent();
 		_id = intent.getIntExtra("_id", 0);
-
+		uuid = intent.getStringExtra("uuid");
 		if (_id <= 0) {
 			finish();
 		}
@@ -195,7 +197,7 @@ public class EditBudgetActivity extends BaseHomeActivity {
 					amount = 0.00;
 				}
 				if (amount > 0) {
-					BudgetsDao.updateBudget(EditBudgetActivity.this, _id, amountString);
+					BudgetsDao.updateBudget(EditBudgetActivity.this, _id, amountString,mDbxAcctMgr ,mDatastore);
 				}
 				Intent intent = new Intent();
 				intent.putExtra("done", 1);
@@ -208,9 +210,9 @@ public class EditBudgetActivity extends BaseHomeActivity {
 	};
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 	
 	

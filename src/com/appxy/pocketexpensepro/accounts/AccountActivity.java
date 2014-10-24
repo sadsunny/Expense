@@ -6,6 +6,7 @@ package com.appxy.pocketexpensepro.accounts;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
@@ -15,6 +16,7 @@ import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncActivity;
+import com.dropbox.sync.android.DbxRecord;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -221,9 +223,11 @@ public class AccountActivity extends BaseHomeActivity {
 				long arg3) {
 			// TODO Auto-generated method stub
 			int _id = (Integer) mDataList.get(arg2).get("_id");
+			String uuid = (String)mDataList.get(arg2).get("uuid");
 			String accName = (String)mDataList.get(arg2).get("accName");
 			Intent intent = new Intent();
 			intent.putExtra("_id", _id);
+			intent.putExtra("uuid", uuid);
 			intent.putExtra("accName", accName);
 			intent.setClass(AccountActivity.this, AccountToTransactionActivity.class);
 			startActivityForResult(intent, 12);
@@ -237,6 +241,8 @@ public class AccountActivity extends BaseHomeActivity {
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
 			final int id = (Integer) mDataList.get(arg2).get("_id");
+			final String  uuid = (String) mDataList.get(arg2).get("uuid");
+			
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
 
@@ -256,6 +262,7 @@ public class AccountActivity extends BaseHomeActivity {
 
 						Intent intent = new Intent();
 						intent.putExtra("_id", id);
+						intent.putExtra("uuid", uuid);
 						intent.setClass(AccountActivity.this, EditAccountActivity.class);
 						startActivityForResult(intent, 8);
 						alertDialog.dismiss();
@@ -293,14 +300,14 @@ public class AccountActivity extends BaseHomeActivity {
 												int which) {
 											// TODO Auto-generated
 											// method stub
-											long row = AccountDao.deleteAccount(AccountActivity.this, id);
+											long row = AccountDao.deleteAccount(AccountActivity.this, id, uuid ,mDbxAcctMgr, mDatastore);
 											mHandler.post(mTask);
 											alertDialog.dismiss();
 										}
 									}).show();
 
 						} else {
-							long row = AccountDao.deleteAccount(AccountActivity.this, id);
+							long row = AccountDao.deleteAccount(AccountActivity.this, id, uuid,mDbxAcctMgr, mDatastore);
 							mHandler.post(mTask);
 							alertDialog.dismiss();
 						}
@@ -389,7 +396,8 @@ public class AccountActivity extends BaseHomeActivity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mDataList = AccountDao.selectAccount(AccountActivity.this);
-
+			Log.v("mtag", "account查询"+mDataList);
+			
 			for (Map<String, Object> iMap : mDataList) {
 				int _id = (Integer) iMap.get("_id");
 				String amount = (String) iMap.get("amount");
@@ -488,8 +496,6 @@ public class AccountActivity extends BaseHomeActivity {
 	}
 	
 	
-	
-	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -559,13 +565,11 @@ public class AccountActivity extends BaseHomeActivity {
 
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, "Dropbox sync successed",
-				Toast.LENGTH_SHORT).show();
-		Log.v("mtag", "刷新页面aa");
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
-
+	
 		Intent intent = new Intent();
 		intent.putExtra("done", 1);
 		setResult(14, intent);

@@ -20,6 +20,7 @@ import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
@@ -52,7 +53,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class BillsFragment extends Fragment{
+public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 
 	private FragmentActivity mActivity;
 	private ExpandableListView mExpandableListView;
@@ -582,7 +583,7 @@ public class BillsFragment extends Fragment{
 		long row = BillsDao.insertBillItem(mActivity, 1, "1", ep_billItemDueDate,
 				ep_billItemDueDate, ep_billItemDueDate, " ", "",
 				1, 1, ep_billItemDueDate,
-				rowid, 1, 1);
+				rowid, 1, 1, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 		if (row > 0) {
 			 Intent service=new Intent(mActivity, NotificationService.class);  
 			 mActivity.startService(service);  
@@ -882,6 +883,15 @@ public class BillsFragment extends Fragment{
 
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		Toast.makeText(mActivity, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		mHandler.post(mTask);
 	}
 
 }

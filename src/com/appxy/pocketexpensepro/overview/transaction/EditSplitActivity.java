@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
@@ -12,6 +13,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -314,7 +316,7 @@ public class EditSplitActivity extends BaseHomeActivity {
 	};
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

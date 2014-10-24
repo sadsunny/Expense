@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnRefreshADS;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnTellUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
@@ -46,6 +48,9 @@ import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Inventory;
 import com.appxy.pocketexpensepro.util.Purchase;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -60,6 +65,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -128,6 +134,9 @@ public class MainActivity extends BaseHomeActivity implements
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean iap_is_ok = false;
 	private OnRefreshADS refreshADS;
+	private Fragment attachFragment;
+	public static DbxAccountManager mDbxAcctMgr1;
+	public static DbxDatastore mDatastore1;
 	
    private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -1044,12 +1053,9 @@ public class MainActivity extends BaseHomeActivity implements
 				// TODO Auto-generated method stub
 				if (iap_is_ok && mHelper != null) {
 					
-					Log.v("mads","******第二步mainBUy");
-					
 					 String payload = "";
 					 mHelper.launchPurchaseFlow(MainActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
 				}else{
-//					showMessage("提示", "Google Play初始化失败,当前无法进行支付，请确定您所在地区支持Google Play支付或重启游戏再试！");
 				}
 			}
 			
@@ -1065,11 +1071,32 @@ public class MainActivity extends BaseHomeActivity implements
 			    }
 
 			@Override
-			public void syncDateChange() {
+			public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 				// TODO Auto-generated method stub
-				Toast.makeText(this, "Dropbox sync successedM",
+				Toast.makeText(this, "Dropbox sync successed",
 						Toast.LENGTH_SHORT).show();
-				Log.v("mtag", "刷新页面M");
+				 OnSyncFinishedListener onSyncFinishedListener = (OnSyncFinishedListener)attachFragment;
+				 onSyncFinishedListener.onSyncFinished();
 			}
+			
+			@Override
+			public void onAttachFragment(Fragment fragment) {
+				// TODO Auto-generated method stub
+				super.onAttachFragment(fragment);
+				attachFragment = fragment;
+			   
+			}
+
+			@Override
+			protected void onResume() {
+				// TODO Auto-generated method stub
+				super.onResume();
+				mDbxAcctMgr1 = mDbxAcctMgr;
+				mDatastore1 = mDatastore;
+			}
+			
+			
+			
+
 
 }

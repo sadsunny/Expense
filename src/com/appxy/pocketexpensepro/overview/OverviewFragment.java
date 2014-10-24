@@ -36,6 +36,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBackTimeListener;
 import com.appxy.pocketexpensepro.expinterface.OnChangeStateListener;
 import com.appxy.pocketexpensepro.expinterface.OnRefreshADS;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
@@ -54,6 +55,8 @@ import com.appxy.pocketexpensepro.util.Inventory;
 import com.appxy.pocketexpensepro.util.Purchase;
 import com.appxy.pocketexpensepro.util.SkuDetails;
 import com.appxy.pocketexpensepro.R;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -105,7 +108,7 @@ import android.widget.Toast;
 import android.view.animation.AccelerateInterpolator;
 
 public class OverviewFragment extends Fragment implements
-		OnChangeStateListener, OnUpdateListListener, OnRefreshADS {
+		OnChangeStateListener, OnUpdateListListener, OnRefreshADS, OnSyncFinishedListener {
 
 	private static final int MID_VALUE = 10000;
 	private static final int MAX_VALUE = 20000;
@@ -425,7 +428,7 @@ public class OverviewFragment extends Fragment implements
 	        return true;
 	    }
 	    
-	    void alert(String message) {
+	   public void alert(String message) {
 	        AlertDialog.Builder bld = new AlertDialog.Builder(mActivity);
 	        bld.setMessage(message);
 	        bld.setNeutralButton("OK", null);
@@ -897,6 +900,8 @@ public class OverviewFragment extends Fragment implements
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
 			final int _id = (Integer) mDataList.get(arg2).get("_id");
+			final String uuid = (String) mDataList.get(arg2).get("uuid");
+			
 			final Map<String, Object> mMap = mDataList.get(arg2);
 			final int parTransaction = (Integer) mDataList.get(arg2).get(
 					"parTransaction");
@@ -951,7 +956,7 @@ public class OverviewFragment extends Fragment implements
 								mActivity, amount, dateTime, isClear, notes,
 								photoName, recurringType, category,
 								childTransactions, expenseAccount,
-								incomeAccount, parTransaction, payee);
+								incomeAccount, parTransaction, payee, new String(), 0, 0 , MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						alertDialog.dismiss();
 
 						mHandler.post(mTask);
@@ -960,9 +965,9 @@ public class OverviewFragment extends Fragment implements
 
 					} else if (arg2 == 1) {
 
-						long row = AccountDao.deleteTransaction(mActivity, _id);
+						long row = AccountDao.deleteTransaction(mActivity, _id, uuid, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						if (parTransaction == -1) {
-							AccountDao.deleteTransactionChild(mActivity, _id);
+							AccountDao.deleteTransactionChild(mActivity, _id , MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						}
 						alertDialog.dismiss();
 						mHandler.post(mTask);
@@ -1201,6 +1206,13 @@ public class OverviewFragment extends Fragment implements
 		if (Common.mIsPaid && adsLayout != null) {
 			adsLayout.setVisibility(View.GONE);
 		}
+	}
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		Toast.makeText(mActivity, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		mHandler.post(mTask);
 	}
 
 }

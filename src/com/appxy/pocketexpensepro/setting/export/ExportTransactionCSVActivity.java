@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -27,6 +28,7 @@ import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.app.Activity;
@@ -1369,7 +1371,7 @@ public class ExportTransactionCSVActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

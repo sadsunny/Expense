@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -19,6 +20,7 @@ import com.appxy.pocketexpensepro.overview.transaction.AccountsListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -376,7 +378,7 @@ public class EditBillPayActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

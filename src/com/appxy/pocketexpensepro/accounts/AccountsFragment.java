@@ -7,8 +7,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -40,7 +42,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class AccountsFragment extends Fragment {
+public class AccountsFragment extends Fragment implements OnSyncFinishedListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -69,7 +71,6 @@ public class AccountsFragment extends Fragment {
 	private LinearLayout networthLayout;
 	private LinearLayout outLayout;
 	
-	
 	public AccountsFragment() {
 		
 	}
@@ -78,6 +79,7 @@ public class AccountsFragment extends Fragment {
 	public void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		
 		mAccountsListViewAdapter.notifyDataSetChanged();
 	}
 	
@@ -197,11 +199,13 @@ public class AccountsFragment extends Fragment {
 				startActivityForResult(intent, 21);
 			}
 		});
-
+		
+		
 		if (mThread == null) {
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
+		
 		return view;
 	}
 
@@ -251,6 +255,8 @@ public class AccountsFragment extends Fragment {
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
 			final int id = (Integer) mDataList.get(arg2).get("_id");
+			final String  uuid = (String) mDataList.get(arg2).get("uuid");
+			
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
 
@@ -307,14 +313,14 @@ public class AccountsFragment extends Fragment {
 												int which) {
 											// TODO Auto-generated
 											// method stub
-											long row = AccountDao.deleteAccount(getActivity(), id);
+											long row = AccountDao.deleteAccount(getActivity(), id, uuid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 											mHandler.post(mTask);
 											alertDialog.dismiss();
 										}
 									}).show();
 
 						} else {
-							long row = AccountDao.deleteAccount(getActivity(), id);
+							long row = AccountDao.deleteAccount(getActivity(), id, uuid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 							mHandler.post(mTask);
 							alertDialog.dismiss();
 						}
@@ -558,6 +564,14 @@ public class AccountsFragment extends Fragment {
 
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		Toast.makeText(mActivity, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		mHandler.post(mTask);
+		
 	}
 
 }

@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.overview.budgets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.bills.BillEditActivity;
@@ -11,6 +12,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -306,13 +308,15 @@ public class BudgetListActivity extends BaseHomeActivity {
 							if (amount > 0) {
 								int categoryId = (Integer) mDataList.get(i).get(
 										"category");
+								
+								long dateTime = System.currentTimeMillis();
 								long temId = BudgetsDao.insertBudgetTemplate(
 										BudgetListActivity.this, amountString,
-										categoryId);
+										categoryId, dateTime, mDbxAcctMgr, mDatastore);
 								if (temId > 0) {
 									long itemId = BudgetsDao.insertBudgetItem(
 											BudgetListActivity.this, amountString,
-											(int) temId);
+											(int) temId, dateTime, mDbxAcctMgr, mDatastore);
 								}
 								
 							}
@@ -372,9 +376,9 @@ public class BudgetListActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 	
 

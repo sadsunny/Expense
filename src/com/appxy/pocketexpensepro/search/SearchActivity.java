@@ -3,11 +3,13 @@ package com.appxy.pocketexpensepro.search;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -153,7 +155,7 @@ public class SearchActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

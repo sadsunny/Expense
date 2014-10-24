@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -21,6 +22,9 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,7 +44,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class ReCashListActivity extends Activity {
+public class ReCashListActivity extends BaseHomeActivity {
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private Thread mThread;
@@ -72,7 +76,7 @@ public class ReCashListActivity extends Activity {
 	};
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_recashlist);
@@ -178,7 +182,9 @@ public class ReCashListActivity extends Activity {
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
 
-			final int _id = (Integer) (Integer) mDataList.get(arg2).get("_id");
+			final int _id =  (Integer) mDataList.get(arg2).get("_id");
+			final String  uuid =  (String) mDataList.get(arg2).get("uuid");
+			
 			String childTransactionstring = (String) mDataList.get(arg2).get(
 					"childTransactions");
 			int childTransactions = 0;
@@ -227,7 +233,7 @@ public class ReCashListActivity extends Activity {
 						if (arg2 == 0) {
 
 							long row = AccountDao.deleteTransaction(
-									ReCashListActivity.this, _id);
+									ReCashListActivity.this, _id, uuid,  mDbxAcctMgr,  mDatastore);
 							alertDialog.dismiss();
 							mHandler.post(mTask);
 
@@ -282,6 +288,12 @@ public class ReCashListActivity extends Activity {
 			}
 			break;
 		}
+	}
+
+	@Override
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.support.v4.app.Fragment;
@@ -29,7 +30,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class IncomeFragment extends Fragment {
+public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -43,7 +44,6 @@ public class IncomeFragment extends Fragment {
 	private ListView diaListView;
 	private DialogItemAdapter mDialogItemAdapter;
 	private AlertDialog alertDialog;
-
 	public IncomeFragment() {
 
 	}
@@ -128,12 +128,16 @@ public class IncomeFragment extends Fragment {
 			// TODO Auto-generated method stub
 			int cId = (Integer) childrenAllDataList.get(groupPosition)
 					.get(childPosition).get("_id");
+			String uuid = (String) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("uuid");
+			
 			if (0 <= cId && cId <= 49) {
 				return true;
 			} else {
 
 				Intent intent = new Intent();
 				intent.putExtra("_id", cId);
+				intent.putExtra("uuid", uuid);
 				intent.setClass(getActivity(), EditCategoryActivity.class);
 				startActivityForResult(intent, 11);
 				return true;
@@ -149,12 +153,14 @@ public class IncomeFragment extends Fragment {
 				int groupPosition, long id) {
 			// TODO Auto-generated method stub
 			int cId = (Integer) groupDataList.get(groupPosition).get("_id");
-
+			String uuid =  (String) groupDataList.get(groupPosition).get("uuid");
+			
 			if (0 <= cId && cId <= 49) {
 				return true;
 			} else {
 				Intent intent = new Intent();
 				intent.putExtra("_id", cId);
+				intent.putExtra("uuid", uuid);
 				intent.setClass(getActivity(), EditCategoryActivity.class);
 				startActivityForResult(intent, 11);
 				return true;
@@ -250,13 +256,18 @@ public class IncomeFragment extends Fragment {
 											// method stub
 											
 											int _id = 0;
+											String uuid = "" ;
 											if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 												_id = (Integer) childrenAllDataList
 														.get(groupPosition).get(childPosition)
 														.get("_id");
+												uuid = (String) childrenAllDataList
+														.get(groupPosition).get(childPosition)
+														.get("uuid");
+												
 												if (_id > 0) {
 													long row = CategoryDao.deleteCategory(
-															getActivity(), _id);
+															getActivity(), _id, uuid, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 													if (row > 0) {
 														MainActivity.sqlChange = 1;
 													}
@@ -267,12 +278,14 @@ public class IncomeFragment extends Fragment {
 														.get(groupPosition).get("_id");
 												String cName = (String) groupDataList.get(
 														groupPosition).get("categoryName");
-												Log.v("mtest", "cName" + cName);
+												uuid = (String) groupDataList.get(
+														groupPosition).get("uuid");
+												
 												if (_id > 0) {
 													long row = CategoryDao.deleteCategory(
-															getActivity(), _id);
+															getActivity(), _id, uuid, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 													long row2 = CategoryDao.deleteCategoryLike(
-															getActivity(), cName);
+															getActivity(), cName, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 													if (row > 0) {
 														MainActivity.sqlChange = 1;
 													}
@@ -290,13 +303,17 @@ public class IncomeFragment extends Fragment {
 						} else {
 							
 							int _id = 0;
+							String uuid = "";
 							if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 								_id = (Integer) childrenAllDataList
 										.get(groupPosition).get(childPosition)
 										.get("_id");
+								uuid = (String) childrenAllDataList
+										.get(groupPosition).get(childPosition)
+										.get("uuid");
 								if (_id > 0) {
 									long row = CategoryDao.deleteCategory(
-											getActivity(), _id);
+											getActivity(), _id, uuid, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 									if (row > 0) {
 										MainActivity.sqlChange = 1;
 									}
@@ -307,12 +324,14 @@ public class IncomeFragment extends Fragment {
 										.get(groupPosition).get("_id");
 								String cName = (String) groupDataList.get(
 										groupPosition).get("categoryName");
-								Log.v("mtest", "cName" + cName);
+								uuid = (String) groupDataList.get(
+										groupPosition).get("uuid");
+								
 								if (_id > 0) {
 									long row = CategoryDao.deleteCategory(
-											getActivity(), _id);
+											getActivity(), _id, uuid, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 									long row2 = CategoryDao.deleteCategoryLike(
-											getActivity(), cName);
+											getActivity(), cName, CategoryActivity.mDbxAcctMgr1, CategoryActivity.mDatastore1);
 									if (row > 0) {
 										MainActivity.sqlChange = 1;
 									}
@@ -402,6 +421,12 @@ public class IncomeFragment extends Fragment {
 			}
 			break;
 		}
+	}
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
 	}
 	
 

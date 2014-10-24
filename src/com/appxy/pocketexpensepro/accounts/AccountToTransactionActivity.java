@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.json.JSONException;
@@ -36,6 +37,7 @@ import com.appxy.pocketexpensepro.setting.payee.PayeeActivity;
 import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Purchase;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.anim;
 import android.annotation.SuppressLint;
@@ -443,6 +445,8 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 					int _id = (Integer) childrenAllDataList.get(groupPosition)
 							.get(childPosition).get("_id");
+					String uuid = (String) childrenAllDataList.get(groupPosition)
+							.get(childPosition).get("uuid");
 
 					if (arg2 == 0) {
 						Map<String, Object> mMap = childrenAllDataList.get(
@@ -479,7 +483,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 								dateTime, isClear, notes, photoName,
 								recurringType, category, childTransactions,
 								expenseAccount, incomeAccount, parTransaction,
-								payee);
+								payee, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 						alertDialog.dismiss();
 
 
@@ -488,7 +492,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 					} else if (arg2 == 1) {
 
 						long row = AccountDao.deleteTransaction(
-								AccountToTransactionActivity.this, _id);
+								AccountToTransactionActivity.this, _id, uuid, mDbxAcctMgr, mDatastore);
 						alertDialog.dismiss();
 						Intent intent = new Intent();
 						intent.putExtra("row", row);
@@ -1212,7 +1216,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

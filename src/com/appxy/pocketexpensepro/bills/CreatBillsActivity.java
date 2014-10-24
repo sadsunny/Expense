@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.PrivateCredentialPermission;
 
@@ -22,6 +23,7 @@ import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.service.NotificationService;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -388,7 +390,7 @@ public class CreatBillsActivity extends BaseHomeActivity {
 						lastDate = endDate;
 					}
 					
-					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId);
+					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId, mDbxAcctMgr, mDatastore);
 					
 					Intent intent = new Intent();
 					intent.putExtra("_id", row);
@@ -1230,7 +1232,7 @@ public class CreatBillsActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

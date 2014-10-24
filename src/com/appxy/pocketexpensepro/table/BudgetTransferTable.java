@@ -2,11 +2,15 @@ package com.appxy.pocketexpensepro.table;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import android.R.integer;
 import android.content.Context;
 
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -50,8 +54,8 @@ public class BudgetTransferTable {
 			return budget_frombudget;
 		}
 
-		public void setBudget_frombudget(String budget_frombudget) {
-			this.budget_frombudget = budget_frombudget;
+		public void setBudget_frombudget(int budget_frombudget) {
+			this.budget_frombudget = SyncDao.selectBudgetItemUUid(context, budget_frombudget);;
 		}
 
 		public String getState() {
@@ -82,13 +86,51 @@ public class BudgetTransferTable {
 			return budget_tobudget;
 		}
 
-		public void setBudget_tobudget(String budget_tobudget) {
-			this.budget_tobudget = budget_tobudget;
+		public void setBudget_tobudget(int budget_tobudget) {
+			this.budget_tobudget = SyncDao.selectBudgetItemUUid(context, budget_tobudget);
 		}
 
 		public BudgetTransfer() {
 
 		}
+		
+		public void setIncomingData(DbxRecord iRecord) { 
+			
+			uuid = iRecord.getString("uuid");
+			budgettransfer_datetime = iRecord.getDate("budgettransfer_datetime");
+			budget_frombudget = iRecord.getString("budget_frombudget");
+			state =iRecord.getString("state");
+			dateTime_sync = iRecord.getDate("dateTime_sync");
+			budgettransfer_amount = iRecord.getDouble("budgettransfer_amount");
+			budget_tobudget = iRecord.getString("budget_tobudget");
+		}
+		
+		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+				
+				if (state.equals("0")) {
+					
+					BudgetsDao.deleteBudgetTemByUUId(context, uuid);
+					
+				} else if (state.equals("1")){
+					
+					List<Map<String, Object>> mList= BudgetsDao.checkBudgetTransferByUUid(context, uuid);
+					if ( mList.size() > 0) {
+						
+					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+					    if (localDateTime_sync < dateTime_sync.getTime()) {
+					    	
+					    BudgetsDao.updateBudgetTransferAll(context, budgettransfer_amount+"", budgettransfer_datetime.getTime(), BudgetsDao.selectBudgetItemIdByUUid(context, budget_frombudget), BudgetsDao.selectBudgetItemIdByUUid(context, budget_tobudget), dateTime_sync.getTime(), state, uuid)	;
+
+						}
+						
+					}else {
+						
+						BudgetsDao.insertBudgetTransferAll(context, budgettransfer_amount+"", budgettransfer_datetime.getTime(), BudgetsDao.selectBudgetItemIdByUUid(context, budget_frombudget), BudgetsDao.selectBudgetItemIdByUUid(context, budget_tobudget), dateTime_sync.getTime(), state, uuid)	;
+					}
+				}
+				
+			}
+		 
 
 		public void setBudgetTransferData(Map<String, Object> mMap) {
 
@@ -107,18 +149,25 @@ public class BudgetTransferTable {
 			DbxFields accountsFields = new DbxFields();
 			accountsFields.set("uuid", uuid);
 			accountsFields.set("budgettransfer_datetime", budgettransfer_datetime);
-			accountsFields.set("budget_frombudget", budget_frombudget);
+			
+			if (budget_frombudget != null) {
+				accountsFields.set("budget_frombudget", budget_frombudget);
+			}
+		
 			accountsFields.set("state", state);
 			accountsFields.set("dateTime_sync", dateTime_sync);
 			accountsFields.set("budgettransfer_amount", budgettransfer_amount);
-			accountsFields.set("budget_tobudget", budget_tobudget);
+			
+			if (budget_tobudget != null) {
+				accountsFields.set("budget_tobudget", budget_tobudget);
+			}
 			
 			return accountsFields;
 		}
 
 	}
 
-	public void updateState(String uuid, int state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -128,6 +177,7 @@ public class BudgetTransferTable {
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
 			mDatastore.sync();
 		}
@@ -145,10 +195,24 @@ public class BudgetTransferTable {
 		mTable = datastore.getTable("db_budgettransfer_table");
 		this.context = context;
 	}
+	
+	public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
 
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields();
+		if (thisFields.hasField("budget_tobudget") && thisFields.hasField("budget_frombudget")) {
+			
 		queryParams.set("uuid", thisFields.getString("uuid"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
@@ -168,6 +232,7 @@ public class BudgetTransferTable {
 		} else {
 			mTable.insert(thisFields);
 		}
+	}
 
 	}
 

@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.entity;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import android.R.integer;
@@ -12,6 +13,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.CursorLoader;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.R;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
@@ -21,6 +23,7 @@ public class Common {
 	public static int CURRENCY = 148;
 	// Does the user paid?
 	public static boolean mIsPaid = false;
+	
 
 	public static int getName2Identity(Context context, String name) { // 文件名转化成ID
 		int resId = R.drawable.ic_logo;
@@ -46,16 +49,28 @@ public class Common {
 	}
 	
 	public final static String[] ACCOUNTTYPESYNCNAME = {
-		"asset",
-		"cash",
-		"checking",
-		"credit-card",
-		"Debt",
-		"investing",
-		"loan",
-		"Saving",
-		"icon_other"
+		"asset.png",
+		"cash.png",
+		"checking.png",
+		"credit-card.png",
+		"Debt.png",
+		"investing.png",
+		"loan.png",
+		"Saving.png",
+		"icon_other.png"
 	};
+	
+	public static int positionAccountType(String iconName) {
+		
+		for (int i = 0; i < ACCOUNTTYPESYNCNAME.length; i++) {
+			if ( ACCOUNTTYPESYNCNAME[i].equals(iconName) ) {
+				return i;
+			}
+		}
+		
+		return 0;
+		
+	}
 	
 	
 	public final static Integer[] ACCOUNT_TYPE_ICON = {
@@ -123,93 +138,130 @@ public class Common {
 	}
 
 	public final static String [] CATEGORYSYNCNAME = {
-		"airplane",
-		"icon_apple",
-		"house_hold",
-		"mortgage",
-		"icon_auto_gas",
-		"icon_auto2",
-		"icon_bag",
-		"icon_ball",
-		"bank_charge",
-		"icon_bill",
+		"airplane.png",
+		"icon_apple.png",
+		"house_hold.png",
+		"mortgage.png",
+		"icon_auto_gas.png",
+		"icon_auto2.png",
+		"icon_bag.png",
+		"icon_ball.png",
+		"bank_charge.png",
+		"icon_bill.png",
 		
-		"bonus",
-		"icon_book", 
-		"travel", 
-		"icon_business", 
-		"icon_cable_TV", 
-		"auto",
-		"category_cash", 
-		"icon_ceremony",
-		"charity",
-		"childcare",
+		"bonus.png",
+		"icon_book.png", 
+		"travel.png", 
+		"icon_business.png", 
+		"icon_cable_TV.png", 
+		"auto.png",
+		"category_cash.png", 
+		"icon_ceremony.png",
+		"charity.png",
+		"childcare.png",
 		
-		"clothing",
-		"icon_commonfood",
-		"icon_comp",
-		"icon_cosmetics",
-		"icon_credit_card",
-		"credit_card-payment",
-		"Garbage-&-Recycling",
-		"icon_digital_product",
-		"dinning",
-		"education",
+		"clothing.png",
+		"icon_commonfood.png",
+		"icon_comp.png",
+		"icon_cosmetics.png",
+		"icon_credit_card.png",
+		"credit_card-payment.png",
+		"Garbage-&-Recycling.png",
+		"icon_digital_product.png",
+		"dinning.png",
+		"education.png",
 		
-		"entertainment",
-		"icon_fastfood",
-		"icon_favorite",
-		"icon_furniture",
-		"icon_game",
-		"gifts",
-		"groceries",
-		"health_fitness",
-		"icon_health_fitness",
-		"icon_health_fitness4",
+		"entertainment.png",
+		"icon_fastfood.png",
+		"icon_favorite.png",
+		"icon_furniture.png",
+		"icon_game.png",
+		"gifts.png",
+		"groceries.png",
+		"health_fitness.png",
+		"icon_health_fitness.png",
+		"icon_health_fitness4.png",
 		
-		"icon_heart",
-		"icon_hobby",
-		"utilities",
-		"insurance",
-		"interent",
-		"category_loan",
-		"icon_lunch",
-		"medical", 
-		"icon_mind",
-		"misc",
+		"icon_heart.png",
+		"icon_hobby.png",
+		"utilities.png",
+		"insurance.png",
+		"interent.png",
+		"category_loan.png",
+		"icon_lunch.png",
+		"medical.png", 
+		"icon_mind.png",
+		"misc.png",
 		
-		"icon_movie",
-		"my_kids",
-		"my_pets",
-		"icon_party",
-		"my_pets2",
-		"icon_power",
-		"uncategorized",
-		"uncategorized_income",
-		"rent",
-		"homerepair",
+		"icon_movie.png",
+		"my_kids.png",
+		"my_pets.png",
+		"icon_party.png",
+		"my_pets2.png",
+		"icon_power.png",
+		"uncategorized.png",
+		"uncategorized_income.png",
+		"rent.png",
+		"homerepair.png",
 		
-		"salary",
-		"icon_Salary2",
-		"savings-deposit",
-		"icon_star",
-		"tax-fed",
-		"icon_tax2",
-		"icon_tea",
-		"con_teeth",
-		"icon_traffic_other",
-		"iocn_transfer",
+		"salary.png",
+		"icon_Salary2.png",
+		"savings-deposit.png",
+		"icon_star.png",
+		"tax-fed.png",
+		"icon_tax2.png",
+		"icon_tea.png",
+		"con_teeth.png",
+		"icon_traffic_other.png",
+		"iocn_transfer.png",
 		
-		"utilities_gas",
-		"icon_vegatable",
-		"icon_vocation",
-		"water",
-		"icon_wedding",
-		
-		
-		
-		
+		"utilities_gas.png",
+		"icon_vegatable.png",
+		"icon_vocation.png",
+		"water.png",
+		"icon_wedding.png",
+		"IRA-trib.png"
 	};
+	
+	public static int positionCategory(String cName) {
+		
+		if ( cName.equals("auto_gas.png")|| cName.equals("auto_resiger.png") || cName.equals("auto_service.png")) {
+			return 16-1;
+		}
+		 if (cName.equals("cable-TV.png")) {
+			return 15-1;
+		}
+		 
+		 if (cName.equals("house_hold2.png")) {
+			 return 43-1;
+		}
+		 
+		 if (cName.equals("telephone.png")) {
+			 return 2-1;
+		}
+		 
+		 if (cName.equals("icon_entertainment.png")) {
+			 return 31;
+		}
+		 
+		 if (cName.equals("icon_utilities_gas.png") || cName.equals("utility_gas.png")) {
+			 return 71;
+		 }
+		 
+		 if ( cName.equals("medicare.png") || cName.equals("SDI.png") || cName.equals("soc-sec.png") || cName.equals("tax-other.png") || cName.equals("tax-property.png") || cName.equals("tax-state.png") ) {
+			 return 65-1;
+		}
+		
+		for (int i = 0; i < CATEGORYSYNCNAME.length; i++) {
+			if ( CATEGORYSYNCNAME[i].equals(cName) ) {
+				return i;
+			}
+		}
+		
+		return 0;
+		
+	}
+
 	
 	public final static Integer[] CATEGORY_ICON = {
 		    R.drawable.airplane,
@@ -233,7 +285,6 @@ public class Common {
 			R.drawable.ceremony, 
 			R.drawable.charity,
 			R.drawable.childcare, 
-			
 			
 			R.drawable.clothing, 
 			R.drawable.commonfood,
@@ -263,18 +314,18 @@ public class Common {
 			R.drawable.insurance,
 			R.drawable.interent, 
 			R.drawable.loan,
-			R.drawable.lunch, 
+			R.drawable.lunch,
 			R.drawable.medicare, 
 			R.drawable.mind,
 			R.drawable.misc, 
 			
-			R.drawable.movie,//61
+			R.drawable.movie,
 			R.drawable.my_kids,
 			R.drawable.my_pets,
 			R.drawable.party,
 			R.drawable.pets,
 			R.drawable.power, 
-			R.drawable.question_mark, //67
+			R.drawable.question_mark, //57 
 			R.drawable.question_mark2,
 			R.drawable.rent,
 			R.drawable.repair,
@@ -294,7 +345,8 @@ public class Common {
 			R.drawable.vegatable,
 			R.drawable.vocation,
 			R.drawable.water, 
-			R.drawable.wedding };
+			R.drawable.wedding,
+			R.drawable.ira_trib };
 
 	public final static String[] CURRENCY_SIGN = { "Lek", "Kz", "$", "դր",
 			"Afl.", "$", "AZN", "د.ج", "؋", "B$", "৳", "Bds$", "BYR", "$",

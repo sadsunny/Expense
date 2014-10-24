@@ -5,11 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.ChooseTypeListViewAdapter.ViewHolder;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -84,6 +86,7 @@ public class EditAccountActivity extends BaseHomeActivity {
 	private String seTypeName;
 	private int seTypeId;
 	private int seIsclear;
+	private String uuid;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -94,6 +97,7 @@ public class EditAccountActivity extends BaseHomeActivity {
 		Intent intent = getIntent();
 		if (intent != null) {
 			_id = intent.getIntExtra("_id", 0);
+			uuid = intent.getStringExtra("uuid");
 		}
 
 		if (_id <= 0) {
@@ -346,7 +350,7 @@ public class EditAccountActivity extends BaseHomeActivity {
 						balanceDouble = 0 - balanceDouble;
 					}
 
-					long row = AccountDao.updateAccount(EditAccountActivity.this,_id,accountName,balanceDouble+"", dateLong, clearCheck, typeId);
+					long row = AccountDao.updateAccount(EditAccountActivity.this,_id,accountName,balanceDouble+"", dateLong, clearCheck, typeId, uuid, mDbxAcctMgr, mDatastore);
 
 					Intent intent = new Intent();
 					intent.putExtra("aName", accountName);
@@ -517,7 +521,7 @@ public class EditAccountActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

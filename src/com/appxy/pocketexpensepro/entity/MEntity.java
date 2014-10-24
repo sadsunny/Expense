@@ -25,6 +25,45 @@ public class MEntity {
 		return formatter.format(calendar.getTime());
 	}
 	
+	public static String[]  TransactionRecurring = {
+        "No Recurring",
+        "Daily",
+        "Weekly",
+        "Every 2 Weeks",
+        "Every 3 Weeks",
+        "Every 4 Weeks",
+        "Semimonthly",
+        "Monthly",
+        "Every 2 Months",
+        "Every 3 Months",
+        "Every 4 Months",
+        "Every 5 Months",
+        "Every 6 Months",
+        "Every Year"
+	};
+	
+	public static int positionTransactionRecurring(String transactionRecurring) {
+		int position = 0;
+		for (int i = 0; i < TransactionRecurring.length; i++) {
+			if (TransactionRecurring [i].equals(transactionRecurring) ) {
+				return i;
+			}
+		}
+		return position;
+	}
+	
+	public static String [] reminderTypeStrings = {"None" , "1 day before","2 days before" , "3 days before","1 week before" ,"2 weeks before" ,"on date of event" };
+			
+	public static int positionReminder(String reminder) {
+		int position = 0;
+		for (int i = 0; i < reminderTypeStrings.length; i++) {
+			if (reminderTypeStrings [i].equals(reminder) ) {
+				return i;
+			}
+		}
+		return position;
+	}
+	
 	
 	public static String reminderDate(int remindDate) { // 转换提前提醒
 		String before = "None";
@@ -46,6 +85,27 @@ public class MEntity {
 		return before;
 	}
 
+	public static int positionRecurring(String recurringtype) {
+		int position = 0;
+		for (int i = 0; i < recurringTypeStrings.length; i++) {
+			if (recurringTypeStrings [i].equals(recurringtype) ) {
+				return i;
+			}
+		}
+		return position;
+	}
+	
+	public static String [] recurringTypeStrings = {  
+		"Never",
+		"Weekly",
+		"Every 2 Weeks" , 
+		"Every 4 Weeks",
+		"Semimonthly", 
+		"Monthly", 
+		"Every 2 Months",  
+		"Every 3 Months" ,
+		"Every Year" };
+	
 	public static String turnTorecurring(int remindDate) { // 转换提前提醒
 		String recurring = "Never";
 		if (remindDate == 0) {

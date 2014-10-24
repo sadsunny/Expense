@@ -5,10 +5,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.ChooseTypeListViewAdapter.ViewHolder;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -26,9 +29,11 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -41,6 +46,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * 对CreatAccountTypeActivity发出Result code 1
@@ -57,13 +63,13 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 	private ImageView addButton;
 	private ImageView subButton;
 
-	private int checkedItem = 7; // choosed position
+	private int checkedItem = 2; // choosed position
 	private ChooseTypeListViewAdapter mListViewAdapter;
 	private ListView mListView;
 	private AlertDialog mDialog;
 	private List<Map<String, Object>> mTypeList;
 	private int accountTypeSize = 0;
-	private int typeId = 8; // the type id default 8
+	private int typeId = 3; // The type id default checking
 	private String balenceAmountString = "0.00";
 	private int balenceCheck = 1; // 1 add, 0 sub
 
@@ -74,13 +80,22 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 	private long dateLong;
 	private int clearCheck = 1; // default on 1
 	private double balanceDouble = 0.0;
-
+	private int insertId = 0;
+	private AlertDialog deleteDialog;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_creat_new_account);
-
+		
+		List<Map<String, Object>> mList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
+		for (int i = 0; i < mList.size(); i++) {
+			if ((Integer)mList.get(i).get("_id") == typeId) {
+				checkedItem = i;
+			}
+		}
+		
 		inflater = LayoutInflater.from(CreatNewAccountActivity.this);
 		ActionBar mActionBar = getActionBar();
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
@@ -143,7 +158,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 		});
 
 		mListViewAdapter = new ChooseTypeListViewAdapter(this);
-		typeButton.setText("Others");
+		typeButton.setText("Checking");
 
 		balanceEditText.setText("0.00");
 		balanceEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
@@ -221,6 +236,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
 		updateDisplay();
+		
 
 	}
 
@@ -243,18 +259,13 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 					balanceDouble = 0.00;
 				}
 				
-				Log.v("mtest", "1balenceAmountString"+balenceAmountString);
-				Log.v("mtest", "2balanceDouble"+	balanceDouble);
-				
 				if (accountName == null || accountName.trim().length() == 0
 						|| accountName.trim().equals("")) {
 
 					new AlertDialog.Builder(CreatNewAccountActivity.this)
 							.setTitle("Warning! ")
-							.setMessage(
-									"Please make sure the account name is not empty! ")
-							.setPositiveButton("Retry",
-									new DialogInterface.OnClickListener() {
+							.setMessage("Please make sure the account name is not empty! ")
+							.setPositiveButton("Retry",new DialogInterface.OnClickListener() {
 
 										@Override
 										public void onClick(
@@ -265,31 +276,58 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else {
+					
+				}else if( AccountDao.selectAccountTypeByID(CreatNewAccountActivity.this, typeId).size() <= 0 ){ 
+					
+					new AlertDialog.Builder(CreatNewAccountActivity.this)
+					.setTitle("Failed to add account! ")
+					.setMessage("This account type has been removed by other devices. Please choose another one. ")
+					.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+
+								}
+							}).show();
+					
+					
+				}else {
+					
 
 					if (balenceCheck == 0) {
 						balanceDouble = 0 - balanceDouble;
 					}
+					
+					long dateTime_sync =  System.currentTimeMillis();
+					String uuid  =  MEntity.getUUID();
 
 					long _id = AccountDao.insertAccount(
 							CreatNewAccountActivity.this, accountName,
-							balanceDouble+"", dateLong, clearCheck, typeId);
-					AccountDao.updateAccountIndex(CreatNewAccountActivity.this, _id, _id);
+							balanceDouble+"", dateLong, clearCheck, typeId, 10000, uuid, dateTime_sync, mDbxAcctMgr, mDatastore);
+					AccountDao.updateAccountIndex(CreatNewAccountActivity.this,(int)_id, accountName,
+							balanceDouble+"", dateLong, clearCheck, typeId, (int)_id, uuid, dateTime_sync, mDbxAcctMgr, mDatastore);
+				
+					
+					insertId = (int)_id;
 					
 					Intent intent = new Intent();
 					intent.putExtra("aName", accountName);
 					intent.putExtra("_id", _id);
 					setResult(2, intent);
 					finish();
+					
 				}
 				break;
 
 			case R.id.type_btn:
-
+				
 				View view = inflater.inflate(R.layout.dialog_choose_type, null);
-
-				mTypeList = AccountDao
-						.selectAccountType(CreatNewAccountActivity.this);
+				
+				mTypeList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
 				accountTypeSize = mTypeList.size();
 
 				mListView = (ListView) view.findViewById(R.id.mListView);
@@ -316,7 +354,49 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 						mDialog.dismiss();
 					}
 				});
+				
+				
+				mListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
+					@Override
+					public boolean onItemLongClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						// TODO Auto-generated method stub
+						final int TtypeId = (Integer) mTypeList.get(position).get("_id");
+						final String uuid = (String)mTypeList.get(position).get("uuid");
+						
+						if(TtypeId  > 9){
+							
+							View dialogView = inflater.inflate(R.layout.dialog_item_operation,
+									null);
+
+							String[] data = {"Delete"};
+							ListView diaListView = (ListView) dialogView.findViewById(R.id.dia_listview);
+							DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(CreatNewAccountActivity.this , data);
+							diaListView.setAdapter(mDialogItemAdapter);
+							diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+								@Override
+								public void onItemClick(AdapterView<?> arg0, View arg1,
+										int arg2, long arg3) {
+									 AccountDao.deleteAccountTypeByID(CreatNewAccountActivity.this, TtypeId, mDbxAcctMgr, mDatastore, uuid);
+									 refreshDialog();
+									 deleteDialog.dismiss();
+								}
+							});
+							
+							 AlertDialog.Builder builder = new AlertDialog.Builder(CreatNewAccountActivity.this);
+							 builder.setView(dialogView);
+							 deleteDialog =builder.create();
+							 deleteDialog.show();
+						}
+						
+						 
+						return true;
+					}
+				});
+				
+				
 				AlertDialog.Builder mBuilder = new AlertDialog.Builder(
 						CreatNewAccountActivity.this);
 				mBuilder.setTitle("Choose Account Type");
@@ -418,20 +498,68 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 		case 1:
 
 			if (data != null) {
-				checkedItem = accountTypeSize;
+				
 				typeButton.setText(data.getStringExtra("typeName"));
 				typeId = (Integer) data.getIntExtra("_id", 0);
+				
+				List<Map<String, Object>> mList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
+				for (int i = 0; i < mList.size(); i++) {
+					if ((Integer)mList.get(i).get("_id") == typeId) {
+						checkedItem = i;
+					}
+				}
 			}
+			
 			break;
 
 		}
 
 	}
+	
+	public void refreshDialog() {
+		
+		mTypeList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
+		typeId = 8;
+		typeButton.setText("Others");
+		for (int i = 0; i < mTypeList.size(); i++) {
+			if ((Integer)mTypeList.get(i).get("_id") == typeId) {
+				checkedItem = i;
+				typeButton.setText(mTypeList.get(i).get("typeName")+ "");
+			}
+		}
+		
+		mListView.setSelection((checkedItem - 1) > 0 ? (checkedItem - 1)
+				: 0);
+        mListViewAdapter.setItemChecked(checkedItem);
+		mListViewAdapter.setAdapterDate(mTypeList);
+		mListViewAdapter.notifyDataSetChanged();
+		
+	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		if (mMap.containsKey("db_accounttype_table")) {
+			
+			if (mDialog != null && mDialog.isShowing()) {
+				mTypeList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
+				for (int i = 0; i < mTypeList.size(); i++) {
+					if ((Integer)mTypeList.get(i).get("_id") == typeId) {
+						checkedItem = i;
+					}
+				}
+				
+				mListView.setSelection((checkedItem - 1) > 0 ? (checkedItem - 1)
+						: 0);
+		        mListViewAdapter.setItemChecked(checkedItem);
+				mListViewAdapter.setAdapterDate(mTypeList);
+				mListViewAdapter.notifyDataSetChanged();
+				
+			}
+			
+		}
 	}
 
 }

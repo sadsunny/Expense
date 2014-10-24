@@ -1,8 +1,16 @@
 package com.appxy.pocketexpensepro.accounts;
 
+import java.util.Map;
+import java.util.Set;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.table.AccountsTable;
+import com.appxy.pocketexpensepro.table.AccountsTable.Accounts;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxException;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -22,6 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class CreatAccountTypeActivity extends BaseHomeActivity {
 	private LayoutInflater inflater;
@@ -108,10 +117,8 @@ public class CreatAccountTypeActivity extends BaseHomeActivity {
 
 				} else {
 
-					long id = AccountDao.insertAccountType(
-							CreatAccountTypeActivity.this, mPosition, 0,
-							typeName);
-					
+					long id = AccountDao.insertAccountType(CreatAccountTypeActivity.this, mPosition, 0,typeName, mDbxAcctMgr, mDatastore);
+				
 					if (id > 0) {
 						Intent intent = new Intent();
 						intent.putExtra("_id", (int)id);
@@ -128,9 +135,9 @@ public class CreatAccountTypeActivity extends BaseHomeActivity {
 		}
 	};
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.PrivateCredentialPermission;
 
@@ -26,6 +27,7 @@ import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.service.NotificationService;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -538,7 +540,7 @@ public class BillEditActivity extends BaseHomeActivity {
 							}
 							
 							long row = BillsDao.insertBillItem(BillEditActivity.this, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
-									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId);
+									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId, mDbxAcctMgr, mDatastore);
 							
 						} else if (edit_status == 2) {
 							Log.v("mtest","lastDate"+MEntity.turnToDateString(lastDate));
@@ -565,14 +567,14 @@ public class BillEditActivity extends BaseHomeActivity {
 							}
 							
 							long row = BillsDao.insertBillItem(BillEditActivity.this, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
-									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId);
+									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId, mDbxAcctMgr, mDatastore);
 							
 						} else if (edit_status == 2) {
 							long row = BillsDao.insertBillRule(
 									BillEditActivity.this, ep_billAmount,
 									dateLong, lastDate, ep_billName, ep_note,
 									recurringType, remindDateSelectPosition,
-									remindTime, categoryId, payeeId);
+									remindTime, categoryId, payeeId, mDbxAcctMgr, mDatastore);
 							
 							BillsDao.updateBillDateRule(BillEditActivity.this, _id, getPreDate(ep_recurringType, dateLong));
 						}
@@ -596,7 +598,7 @@ public class BillEditActivity extends BaseHomeActivity {
 									BillEditActivity.this, ep_billAmount,
 									dateLong, lastDate, ep_billName, ep_note,
 									recurringType, remindDateSelectPosition,
-									remindTime, categoryId, payeeId);
+									remindTime, categoryId, payeeId, mDbxAcctMgr, mDatastore);
                             int p_id = (Integer)mMap.get("billItemHasBillRule");
 							BillsDao.updateBillDateRule(BillEditActivity.this, p_id, getPreDate(ep_recurringType, dateLong));
 							BillsDao.deleteBillObjectByAfterDate(BillEditActivity.this, dateLong);
@@ -1815,7 +1817,7 @@ public class BillEditActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

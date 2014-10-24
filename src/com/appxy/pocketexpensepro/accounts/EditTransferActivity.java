@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
@@ -30,6 +31,7 @@ import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -542,7 +544,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									EditTransferActivity.this, payeeString,
-									new String(), categoryId);
+									new String(), categoryId, mDbxAcctMgr, mDatastore);
 							if (row > 0) {
 								payeeId = (int) row;
 							}
@@ -1052,7 +1054,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

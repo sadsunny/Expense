@@ -5,11 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
 
+import com.appxy.pocketexpensepro.bills.BillsDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -60,16 +64,16 @@ public class EP_BillRuleTable {
 			return billrulehascategory;
 		}
 
-		public void setBillrulehascategory(String billrulehascategory) {
-			this.billrulehascategory = billrulehascategory;
+		public void setBillrulehascategory(int billrulehascategory) {
+			this.billrulehascategory = PayeeDao.selectCategoryUUidById(context, billrulehascategory);
 		}
 
 		public String getBillrulehaspayee() {
 			return billrulehaspayee;
 		}
 
-		public void setBillrulehaspayee(String billrulehaspayee) {
-			this.billrulehaspayee = billrulehaspayee;
+		public void setBillrulehaspayee(int billrulehaspayee) {
+			this.billrulehaspayee = SyncDao.selectPayeeUUid(context, billrulehaspayee);
 		}
 
 		public Date getDateTime() {
@@ -92,16 +96,16 @@ public class EP_BillRuleTable {
 			return billrule_ep_recurringtype;
 		}
 
-		public void setBillrule_ep_recurringtype(String billrule_ep_recurringtype) {
-			this.billrule_ep_recurringtype = billrule_ep_recurringtype;
+		public void setBillrule_ep_recurringtype(int billrule_ep_recurringtype) {
+			this.billrule_ep_recurringtype =MEntity.turnTorecurring( (billrule_ep_recurringtype) );
 		}
 
 		public String getBillrule_ep_reminderdate() {
 			return billrule_ep_reminderdate;
 		}
 
-		public void setBillrule_ep_reminderdate(String billrule_ep_reminderdate) {
-			this.billrule_ep_reminderdate = billrule_ep_reminderdate;
+		public void setBillrule_ep_reminderdate(int billrule_ep_reminderdate) {
+			this.billrule_ep_reminderdate = MEntity.reminderDate(billrule_ep_reminderdate);;
 		}
 
 		public String getBillrule_ep_billname() {
@@ -140,13 +144,99 @@ public class EP_BillRuleTable {
 			return billrule_ep_remindertime;
 		}
 
-		public void setBillrule_ep_remindertime(Date billrule_ep_remindertime) {
-			this.billrule_ep_remindertime = billrule_ep_remindertime;
+		public void setBillrule_ep_remindertime(long billrule_ep_remindertime) {
+			this.billrule_ep_remindertime = MEntity.getMilltoDateFormat( getMillis2Int(this.billrule_ep_billduedate.getTime())+  billrule_ep_remindertime);
 		}
 
 		public EP_BillRule() {
 
 		}
+		
+		public void setIncomingData(DbxRecord iRecord) { 
+			
+			if (iRecord.hasField("uuid")) {
+				uuid = iRecord.getString("uuid");
+			}
+			
+			billrule_ep_billamount = iRecord.getDouble("billrule_ep_billamount");
+			
+			if (iRecord.hasField("billrulehascategory")) {
+				billrulehascategory = iRecord.getString("billrulehascategory");
+			}
+			
+			if (iRecord.hasField("billrulehaspayee")) {
+				billrulehaspayee = iRecord.getString("billrulehaspayee");
+			}
+			
+			dateTime = iRecord.getDate("dateTime");
+			state = iRecord.getString("state");
+			
+			if (iRecord.hasField("billrule_ep_recurringtype") ) {
+				billrule_ep_recurringtype = iRecord.getString("billrule_ep_recurringtype");
+			}
+			if (iRecord.hasField("billrule_ep_reminderdate") ) {
+				billrule_ep_reminderdate= iRecord.getString("billrule_ep_reminderdate");
+			}
+			billrule_ep_billname = iRecord.getString("billrule_ep_billname");
+			
+			if (iRecord.hasField("billrule_ep_billduedate")) {
+				billrule_ep_billduedate = iRecord.getDate("billrule_ep_billduedate");
+			}
+			
+			if (iRecord.hasField("billrule_ep_note")) {
+				billrule_ep_note= iRecord.getString("billrule_ep_note");
+			}
+			if (iRecord.hasField("billrule_ep_remindertime")) {
+				billrule_ep_remindertime = iRecord.getDate("billrule_ep_remindertime");
+			}
+			
+			if (iRecord.hasField("billrule_ep_billenddate")) { // 需要判断
+				billrule_ep_billenddate = iRecord.getDate("billrule_ep_billenddate");
+			}
+			
+		}
+		
+		
+		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+				
+				if (state.equals("0")) {
+					
+					BillsDao.deleteBillRuleByUUId(context, uuid);
+					
+				} else if (state.equals("1")){
+					
+					List<Map<String, Object>> mList= BillsDao.checkBillRuleByUUid(context, uuid);
+					if ( mList.size() > 0) {
+						
+					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+					    if (localDateTime_sync < dateTime.getTime()) {
+					    	
+						}
+						
+					}else {
+						
+						int mRecurringType = MEntity.positionRecurring(billrule_ep_recurringtype);
+						long mEndDate = -1;
+						if (mRecurringType > 0 && billrule_ep_billenddate != null) {
+							mEndDate = billrule_ep_billenddate.getTime();
+						}else {
+							mEndDate = -1;
+						}
+						int mReminderDate = MEntity.positionReminder(billrule_ep_reminderdate);
+						long mReminderTime = 0;
+						if (mReminderDate > 0) {
+							 mReminderTime = billrule_ep_remindertime.getTime() - billrule_ep_billduedate.getTime();
+						}
+						
+						
+						BillsDao.insertBillRuleAll(context, billrule_ep_billamount, billrule_ep_billduedate.getTime(), mEndDate, billrule_ep_billname, billrule_ep_note,
+								mRecurringType, mReminderDate, mReminderTime, PayeeDao.selectCategoryIdByUUid(context, billrulehascategory), PayeeDao.selectPayeeIdByUUid(context, billrulehaspayee), dateTime.getTime(), state, uuid);
+					}
+			}
+				
+		}
+		 
+		
 		
 		public long getMillis2Int(long mills) { // 除去时分秒的时间
 			Date date1 = new Date();
@@ -179,7 +269,7 @@ public class EP_BillRuleTable {
 			billrule_ep_billname = (String) mMap.get("billrule_ep_billname");
 			billrule_ep_billduedate = MEntity.getMilltoDateFormat(theDuedate);
 			billrule_ep_note = (String) mMap.get("billrule_ep_note");;
-			billrule_ep_remindertime = MEntity.getMilltoDateFormat(getMillis2Int(theDuedate)+  (Long) mMap.get("billrule_ep_remindertime")) ;
+			billrule_ep_remindertime = MEntity.getMilltoDateFormat( getMillis2Int(theDuedate)+  (Long) mMap.get("billrule_ep_remindertime")) ;
 			
 			long theEnddate = (Long) mMap.get("billrule_ep_billenddate");
 			if (theEnddate == -1) {
@@ -196,7 +286,11 @@ public class EP_BillRuleTable {
 			DbxFields accountsFields = new DbxFields();
 			accountsFields.set("uuid", uuid);
 			accountsFields.set("billrule_ep_billamount",billrule_ep_billamount);
-			accountsFields.set("billrulehascategory",billrulehascategory);
+			
+			if (billrulehascategory != null) {
+				accountsFields.set("billrulehascategory",billrulehascategory);
+			}
+			
 			if (billrulehaspayee != null && billrulehaspayee.length() > 0) {
 				accountsFields.set("billrulehaspayee", billrulehaspayee);
 			}
@@ -222,7 +316,7 @@ public class EP_BillRuleTable {
 
 	}
 
-	public void updateState(String uuid, int state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -232,6 +326,7 @@ public class EP_BillRuleTable {
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
 			mDatastore.sync();
 		}
@@ -250,6 +345,19 @@ public class EP_BillRuleTable {
 		this.context = context;
 	}
 
+	public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
+	
+	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields();

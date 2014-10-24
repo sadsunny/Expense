@@ -79,8 +79,8 @@ public class AccountsTable {
 			return accountType;
 		}
 
-		public void setAccountType(String accountType) {
-			this.accountType = accountType;
+		public void setAccountType(int accountType) {
+			this.accountType = AccountDao.selectAccountTypeUUidById(context, accountType);
 		}
 
 		public int getOrderindex() {
@@ -111,7 +111,7 @@ public class AccountsTable {
 
 		}
 		
-		public void setAccountsDownData(DbxRecord iRecord) {
+		public void setIncomingData(DbxRecord iRecord) { //incoming数据初始化
 
 			name = iRecord.getString("name");
 			state = iRecord.getString("state");;
@@ -122,7 +122,6 @@ public class AccountsTable {
 			orderindex = (int) iRecord.getLong("orderindex");
 			dateTime_sync = iRecord.getDate("dateTime_sync");
 			uuid = iRecord.getString("uuid");
-			Log.v("mtag", "iRecord"+iRecord);
 			
 		}
 		
@@ -169,17 +168,24 @@ public class AccountsTable {
 			accountsFields.set("datetime", datetime);
 			accountsFields.set("autoclear", autoclear);
 			accountsFields.set("amount", amount);
-			accountsFields.set("accountType", accountType);
-			accountsFields.set("orderindex", orderindex);
+			if (accountType != null) {
+				accountsFields.set("accountType", accountType);
+			}
+			if (orderindex >0) {
+				accountsFields.set("orderindex", orderindex);
+			}
 			accountsFields.set("dateTime_sync", dateTime_sync);
-			accountsFields.set("uuid", uuid);
+			if (uuid != null) {
+				accountsFields.set("uuid", uuid);
+			}
+			
 			return accountsFields;
 		}
 
 	}
 	
 
-	public void updateState(String uuid, int state) throws DbxException {//更改状态
+	public void updateState(String uuid, String state) throws DbxException {//更改状态
 		
 		DbxFields queryParams = new DbxFields().set("uuid",uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -189,6 +195,7 @@ public class AccountsTable {
 			DbxRecord record = it.next();
             DbxFields mUpdateFields = new DbxFields();
             mUpdateFields.set("state", state);
+            mUpdateFields.set("dateTime_sync", MEntity.getMilltoDateFormat( System.currentTimeMillis() ));
             record.setAll(mUpdateFields);
 			mDatastore.sync();
 		} 
@@ -211,8 +218,9 @@ public class AccountsTable {
 
 	}
 	
-	 public void deleteall(Iterator<DbxRecord> it) throws DbxException{
-	    	
+	 public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
 	    	while(it.hasNext())
 	    		
 	    	{
@@ -225,9 +233,14 @@ public class AccountsTable {
 	
 	public void insertRecords(DbxFields accountsFields) throws DbxException {
 
+		Log.v("mtag", "accountsFields"+accountsFields);
+		
 		DbxFields queryParams = new DbxFields();
+		if (accountsFields.hasField("uuid") && accountsFields.hasField("accountType")) {
+			Log.v("mtag", "insertRecords");
+			
 		queryParams.set("uuid",accountsFields.getString("uuid"));
-		DbxTable.QueryResult results = mTable.query(queryParams);;
+		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
 		
 		if (it.hasNext()) {
@@ -236,14 +249,18 @@ public class AccountsTable {
 				
 				 firstResult.setAll(accountsFields);
 				 while(it.hasNext())
-	    			{	DbxRecord  r=it.next();
+	    			{	
+					DbxRecord  r=it.next();
 	    			r.deleteRecord();
 	    			}
 			}
 
 		} else {
+			
 			mTable.insert(accountsFields);
+			
 		}
+	}
 
 	}
 

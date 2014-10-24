@@ -184,7 +184,7 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from Category a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(15);
 		}
@@ -222,6 +222,24 @@ public class SyncDao {
 		db.close();
 
 		return mList;
+	}
+	
+	
+	public static String selectBudgetTransferUUidById(Context context, int id) { // BudgetTransfer查询
+		
+		String uuid = null;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.uuid from BudgetTransfer a where a._id = "+id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+
+			uuid = mCursor.getString(0);
+
+		}
+		mCursor.close();
+		db.close();
+
+		return uuid;
 	}
 
 	public static String selectBudgetItemUUid(Context context, int id) {
@@ -362,7 +380,7 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from Payee a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(12);
 		}

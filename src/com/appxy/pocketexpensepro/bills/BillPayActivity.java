@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -20,6 +21,7 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountA
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -224,7 +226,7 @@ public class BillPayActivity extends BaseHomeActivity {
 					if (!check) {
 						long row = PayeeDao.insertPayee(
 								BillPayActivity.this, billName,
-								new String(), categoryId);
+								new String(), categoryId, mDbxAcctMgr,mDatastore);
 						if (row > 0) {
 							payeeId = (int) row;
 						}
@@ -305,7 +307,7 @@ public class BillPayActivity extends BaseHomeActivity {
 							ep_billItemName, ep_billItemNote,
 							ep_billItemRecurringType, ep_billItemReminderDate,
 							ep_billItemReminderTime, billItemHasBillRule,
-							billItemHasCategory, billItemHasPayee);
+							billItemHasCategory, billItemHasPayee, mDbxAcctMgr, mDatastore);
 					mMap.put("_id", (int) row);
 					mMap.put("ep_billisDelete", 0);
 					mMap.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
@@ -464,7 +466,7 @@ public class BillPayActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -12,6 +12,7 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
@@ -31,7 +32,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener{
+public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener, OnSyncFinishedListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -256,11 +257,19 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	public void OnUpdateWeekSelect(long selectedDate) {
 		// TODO Auto-generated method stub
 		this.selectedDate = selectedDate;
-	mHandler.post(mTask);
-	weekCallBack.OnWeekSelected(selectedDate);
+	    mHandler.post(mTask);
+	    weekCallBack.OnWeekSelected(selectedDate);
 	
 		mAdapter.setChoosedTime(selectedDate);
 		mAdapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
+		weekCallBack.OnWeekSelected(selectedDate);
+		// 重新刷新 通知上一级fragment
 	}
 
 }

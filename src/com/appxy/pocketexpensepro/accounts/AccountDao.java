@@ -11,6 +11,14 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R.id;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.table.AccountTypeTable;
+import com.appxy.pocketexpensepro.table.TransactionTable;
+import com.appxy.pocketexpensepro.table.AccountTypeTable.AccountType;
+import com.appxy.pocketexpensepro.table.AccountsTable;
+import com.appxy.pocketexpensepro.table.AccountsTable.Accounts;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxException;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -26,8 +34,23 @@ public class AccountDao {
 		SQLiteDatabase db = helper.getReadableDatabase();
 		return db;
 	}
+	
+	public static String selectAccountTypeUUidById(Context context,int id) {
+		
+		String mUUid = null ;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.uuid from AccountType a where a._id = "+ id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mUUid = mCursor.getString(0);
+		}
+		mCursor.close();
+		db.close();
 
-	public static int getAccountTypeIdByUUID(Context context, String uuid) { // 查询accout的uuid，以及时间
+		return mUUid;
+	}
+
+	public static int getAccountTypeIdByUUID(Context context, String uuid) {
 
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a._id from AccountType a where a.uuid = " + "'"+uuid+"'";
@@ -38,15 +61,34 @@ public class AccountDao {
 			theId = mCursor.getInt(0);
 		}
 		
-		if (mCursor.getCount() == 0) {//前期测试
-			theId = 1;
-		}
-		
 		mCursor.close();
 		db.close();
 
 		return theId;
 	}
+	
+	public static List<Map<String, Object>> checkAccountTypeByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from AccountType a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 
 	public static List<Map<String, Object>> checkAccountByUUid(Context context,
 			String uuid) { // 检查accout的uuid，以及时间
@@ -149,21 +191,97 @@ public class AccountDao {
 
 		return mList;
 	}
-
-	public static long insertAccountType(Context context, int iconName,
-			int isDefault, String typeName) { // AccountType插入
-
+	
+	
+	public static long updateAccountTypeAll(Context context, int iconName,int isDefault, String typeName, long dateTime, String state, String uuid) { 
+		
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("iconName", iconName);
 		cv.put("isDefault", isDefault);
 		cv.put("typeName", typeName);
-		cv.put("dateTime", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+
+		try {
+			long id = db.update("AccountType", cv, "uuid = ?", new String[] { uuid });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
+	
+	
+	public static long insertAccountTypeAll(Context context, int iconName,int isDefault, String typeName, long dateTime, String state, String uuid) { // AccountType插入
+
+		
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("iconName", iconName);
+		cv.put("isDefault", isDefault);
+		cv.put("typeName", typeName);
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
 
 		try {
 			long id = db.insert("AccountType", null, cv);
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
+
+	
+
+	public static long insertAccountType(Context context, int iconName,int isDefault, String typeName, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
+
+		long  dateTime = System.currentTimeMillis();
+		String state  = "1";
+		String uuid = MEntity.getUUID();
+		
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("iconName", iconName);
+		cv.put("isDefault", isDefault);
+		cv.put("typeName", typeName);
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+
+		try {
+			long id = db.insert("AccountType", null, cv);
+			if (id > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, context);
+					AccountType accountType = accountTypeTable.getAccountType();
+					accountType.setAccounttype_iconname(iconName);
+					accountType.setAccounttype_isdefault(isDefault);
+					accountType.setAccounttype_typename(typeName);
+					accountType.setDatetime(dateTime);
+					accountType.setState(state);
+					accountType.setUuid(uuid);
+					accountTypeTable.insertRecords(accountType.getFields());
+					mDatastore.sync();
+				}
+				
+				
+			}
 			db.close();
 			return id;
 		} catch (Exception e) {
@@ -178,16 +296,20 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select * from AccountType";
+		String sql = "select * from AccountType order by AccountType.typeName ASC";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
 			int _id = mCursor.getInt(0);
 			int iconName = mCursor.getInt(2);
 			String typeName = mCursor.getString(7);
+			String uuid = mCursor.getString(8);
+			
 			mMap.put("_id", _id);
 			mMap.put("iconName", iconName);
 			mMap.put("typeName", typeName);
+			mMap.put("uuid", uuid);
+			
 			mList.add(mMap);
 		}
 		mCursor.close();
@@ -212,7 +334,6 @@ public class AccountDao {
 		cv.put("dateTime_sync", dateTime_sync);
 
 		try {
-			Log.v("mtag", "更新数据2 "+uuid);
 			long id = db.update("Accounts", cv, "uuid = ?", new String[] { uuid });
 			db.close();
 			return id;
@@ -252,23 +373,75 @@ public class AccountDao {
 		}
 
 	}
-
-	public static long insertAccount(Context context, String accName,
-			String amount, long dateTime, int autoClear, int accountType) { // Account插入
+	
+	public static long deleteAccount(Context context, int id, String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		String _id = id + "";
+		long row = 0;
+		try {
+			row = db.delete("Accounts", "_id = ?", new String[] { _id });
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					AccountsTable  accountsTable  = new AccountsTable(mDatastore, context);
+					accountsTable.updateState(uuid, "0");
+					mDatastore.sync();
+				}
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	public static long updateAccount(Context context, long _id, String accName,
+			String amount, long dateTime, int autoClear, int accountType, String uuid,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
-
+		
+		long dateTime_sync = System.currentTimeMillis();
 		cv.put("accName", accName);
 		cv.put("amount", amount + "");
 		cv.put("dateTime", dateTime);
 		cv.put("autoClear", autoClear);
 		cv.put("accountType", accountType);
-		cv.put("state", "1");
-		cv.put("uuid", MEntity.getUUID());
-		cv.put("dateTime_sync", System.currentTimeMillis());
-
+		cv.put("dateTime_sync", dateTime_sync);
+		
+		String mId = _id + "";
 		try {
-			long id = db.insert("Accounts", null, cv);
+			long id = db.update("Accounts", cv, "_id = ?", new String[] { mId });
+			
+			if (id > 0) {
+				
+				if (mDatastore == null) {
+					mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+				}
+				AccountsTable  accountsTable  = new AccountsTable(mDatastore, context);
+				Accounts accounts = accountsTable.getAccounts();
+				
+				accounts.setAccountType(accountType);
+				accounts.setAmount(Double.parseDouble(amount));
+				accounts.setAutoclear(autoClear);
+				accounts.setDatetime(MEntity.getMilltoDateFormat(dateTime));
+				accounts.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+				accounts.setName(accName);
+				accounts.setState("1");
+				accounts.setUuid(uuid);
+				
+				accountsTable.insertRecords(accounts.getFields());
+				mDatastore.sync();
+				
+				
+			}
+			
 			db.close();
 			return id;
 		} catch (Exception e) {
@@ -278,6 +451,131 @@ public class AccountDao {
 		}
 
 	}
+
+	
+	
+	public static long updateAccountIndex(Context context, int tId, String accName,
+			String amount, long dateTime, int autoClear, int accountType,int orderIndex,String uuid, long  dateTime_sync, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // Account更新排序字段
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("orderIndex", orderIndex);
+		cv.put("dateTime_sync", System.currentTimeMillis());
+		
+		String mId = tId+"";
+		try {
+			long id = db.update("Accounts", cv, "_id = ?", new String[] { mId });
+			
+			if ( id > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					AccountsTable  accountsTable  = new AccountsTable(mDatastore, context);
+					Accounts accounts = accountsTable.getAccounts();
+					
+					accounts.setAccountType(accountType);
+					accounts.setAmount(Double.parseDouble(amount));
+					accounts.setAutoclear(autoClear);
+					accounts.setDatetime(MEntity.getMilltoDateFormat(dateTime));
+					accounts.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+					accounts.setName(accName);
+					accounts.setOrderindex(orderIndex);
+					accounts.setState("1");
+					accounts.setUuid(uuid);
+					
+					accountsTable.insertRecords(accounts.getFields());
+					mDatastore.sync();
+					
+				}
+				
+			}
+			
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+	}
+
+	public static long insertAccount(Context context, String accName,
+			String amount, long dateTime, int autoClear, int accountType,int orderIndex, String uuid, long  dateTime_sync, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // Account插入
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+
+		String state = "1";
+		
+		cv.put("accName", accName);
+		cv.put("amount", amount + "");
+		cv.put("dateTime", dateTime);
+		cv.put("autoClear", autoClear);
+		cv.put("accountType", accountType);
+		cv.put("orderIndex", 10000);
+		
+		cv.put("state", state);
+		cv.put("uuid",  uuid);
+		cv.put("dateTime_sync", dateTime_sync);
+
+		try {
+			long id = db.insert("Accounts", null, cv);
+			
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
+	
+	public static long deleteAccountTypeByUUID(Context context, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		long row = 0;
+		try {
+			row = db.delete("AccountType", "uuid = ?", new String[] { uuid });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	public static long deleteAccountTypeByID(Context context, int id, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");
+		long row = 0;
+		try {
+			row = db.delete("AccountType", "_id = ?", new String[] { id+""});
+			
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, context);
+					AccountType accountType = accountTypeTable.getAccountType();
+					accountType.setUuid(uuid);
+					accountTypeTable.updateState(uuid, "0");
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
 
 	public static long deleteAccountByUUID(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
@@ -293,68 +591,14 @@ public class AccountDao {
 		return row;
 	}
 
-	public static long deleteAccount(Context context, int id) {
-		SQLiteDatabase db = getConnection(context);
-		db.execSQL("PRAGMA foreign_keys = ON ");
-		String _id = id + "";
-		long row = 0;
-		try {
-			row = db.delete("Accounts", "_id = ?", new String[] { _id });
-		} catch (Exception e) {
-			// TODO: handle exception
-			row = 0;
-		}
-		db.close();
-		return row;
-	}
 
-	public static long updateAccountIndex(Context context, long _id,
-			long orderIndex) { // Account更新排序字段
-		SQLiteDatabase db = getConnection(context);
-		ContentValues cv = new ContentValues();
-		cv.put("orderIndex", orderIndex);
-		cv.put("dateTime_sync", System.currentTimeMillis());
-		String mId = _id + "";
-		try {
-			long id = db.update("Accounts", cv, "_id = ?", new String[] { mId });
-			db.close();
-			return id;
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-			return 0;
-		}
-	}
-
-	public static long updateAccount(Context context, long _id, String accName,
-			String amount, long dateTime, int autoClear, int accountType) {
-		SQLiteDatabase db = getConnection(context);
-		ContentValues cv = new ContentValues();
-		cv.put("accName", accName);
-		cv.put("amount", amount + "");
-		cv.put("dateTime", dateTime);
-		cv.put("autoClear", autoClear);
-		cv.put("accountType", accountType);
-		String mId = _id + "";
-		try {
-			long id = db
-					.update("Accounts", cv, "_id = ?", new String[] { mId });
-			db.close();
-			return id;
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-			return 0;
-		}
-
-	}
-
+	
 	public static List<Map<String, Object>> selectAccountTypeByID(
 			Context context, int id) { // AccountType根据id查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select * from AccountType ";
+		String sql = "select * from AccountType a where a._id = "+id;
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -389,6 +633,7 @@ public class AccountDao {
 			int accountType = mCursor.getInt(16);
 			int iconName = mCursor.getInt(22);
 			String typeName = mCursor.getString(23);
+			String uuid  = mCursor.getString(15);
 
 			mMap.put("_id", _id);
 			mMap.put("accName", accName);
@@ -398,6 +643,7 @@ public class AccountDao {
 			mMap.put("accountType", accountType);
 			mMap.put("iconName", iconName);
 			mMap.put("typeName", typeName);
+			mMap.put("uuid", uuid);
 
 			mList.add(mMap);
 		}
@@ -515,7 +761,8 @@ public class AccountDao {
 
 			String notes = mCursor.getString(6);
 			String photoName = mCursor.getString(9);
-
+			String uuid = mCursor.getString(16);
+			
 			int recurringType = mCursor.getInt(10);
 			int category = mCursor.getInt(18);
 			String childTransactions = mCursor.getString(19);
@@ -526,6 +773,7 @@ public class AccountDao {
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
 
+			mMap.put("uuid", uuid);
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -793,7 +1041,7 @@ public class AccountDao {
 		return mList;
 	}
 
-	public static void deleteTransactionChildById(Context context, int parId) { // Account查询
+	public static void deleteTransactionChildById(Context context, int parId,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
@@ -806,15 +1054,19 @@ public class AccountDao {
 			mMap = new HashMap<String, Object>();
 
 			int _id = mCursor.getInt(0);
-
+			String uuid = mCursor.getString(16);
+			
 			mMap.put("_id", _id);
+			mMap.put("uuid", uuid);
 			mList.add(mMap);
 		}
 		mCursor.close();
 
 		for (Map<String, Object> iMap : mList) {
 			int _id = (Integer) iMap.get("_id");
-			deleteTransaction(context, _id);
+			String uuid = (String) iMap.get("uuid");
+			
+			deleteTransaction(context, _id, uuid, mDbxAcctMgr ,mDatastore);
 		}
 
 		db.close();
@@ -979,13 +1231,25 @@ public class AccountDao {
 		return mList;
 	}
 
-	public static long deleteTransaction(Context context, int id) {
+	public static long deleteTransaction(Context context, int id,String uuid , DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
 		long row = 0;
 		try {
 			row = db.delete("'Transaction'", "_id = ?", new String[] { _id });
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
+					transactionTable.updateState(uuid, "0");
+				}
+					
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;
@@ -1009,7 +1273,7 @@ public class AccountDao {
 		return row;
 	}
 
-	public static long deleteTransactionChild(Context context, int pid) {
+	public static long deleteTransactionChild(Context context, int pid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String p_id = pid + "";
@@ -1017,6 +1281,9 @@ public class AccountDao {
 		try {
 			row = db.delete("'Transaction'", "parTransaction = ?",
 					new String[] { p_id });
+			if (row > 0) {
+				
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;

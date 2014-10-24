@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.db;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,6 +192,11 @@ public class DbDao {
 		cv.put("state", state);
 		cv.put("dateTime", dateTime_sync);
 
+		cv.put("isRollover", 0);
+		cv.put("isNew", 1);
+		cv.put("startDate", dateTime_sync);
+		cv.put("cycleType", "No Cycle");
+		
 		try {
 			long id = db.update("BudgetTemplate", cv, "_id = ?", new String[] { _id
 					+ "" });
@@ -225,9 +231,16 @@ public class DbDao {
 		cv.put("state", state);
 		cv.put("dateTime", dateTime_sync);
 
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 2113);
+		
+		cv.put("startDate", dateTime_sync);
+		cv.put("isRollover", 0);
+		cv.put("endDate", calendar.getTimeInMillis() );
+		cv.put("rolloverAmount", 0);
+		
 		try {
-			long id = db.update("BudgetItem", cv, "_id = ?", new String[] { _id
-					+ "" });
+			long id = db.update("BudgetItem", cv, "_id = ?", new String[] { _id+ "" });
 			return id;
 		} catch (Exception e) {
 			// TODO: handle exception

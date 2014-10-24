@@ -1,8 +1,12 @@
 package com.appxy.pocketexpensepro.setting.export;
 
+import java.util.Map;
+import java.util.Set;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -78,7 +82,7 @@ public class ExportAllActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

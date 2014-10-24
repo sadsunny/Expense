@@ -1,28 +1,42 @@
 package com.appxy.pocketexpensepro.setting.category;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class CategoryActivity extends BaseHomeActivity {
 	private ViewPager mViewPager;
 	private ViewPagerAdapter mViewPagerAdapter;
 	private ExpenseFragment expenseFragment = new ExpenseFragment();
 	private IncomeFragment incomeFragment = new IncomeFragment();
-
+	public static DbxAccountManager mDbxAcctMgr1;
+	public static DbxDatastore mDatastore1;
+	private Fragment attachFragment;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -61,11 +75,19 @@ public class CategoryActivity extends BaseHomeActivity {
 		mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 		mViewPager.setAdapter(mViewPagerAdapter);
 		
+		attachFragment = expenseFragment;
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {
 						final ActionBar actionBar = getActionBar();
 						actionBar.setSelectedNavigationItem(position);
+						
+						if (position == 0) {
+							attachFragment = expenseFragment;
+						}else if (position == 1) {
+							attachFragment = incomeFragment;
+						} 
+						
 					}
 
 					@Override
@@ -100,6 +122,7 @@ public class CategoryActivity extends BaseHomeActivity {
 		public android.support.v4.app.Fragment getItem(int arg0) {
 			// TODO Auto-generated method stub
 			switch (arg0) {
+		
 			case 0:
 				return expenseFragment;
 			case 1:
@@ -135,10 +158,26 @@ public class CategoryActivity extends BaseHomeActivity {
 		
 		return super.onOptionsItemSelected(item);
 	}
+	
+	
 
 	@Override
-	public void syncDateChange() {
+	protected void onResume() {
 		// TODO Auto-generated method stub
+		super.onResume();
+		this.mDbxAcctMgr1 = mDbxAcctMgr;
+		this.mDatastore1 = mDatastore;
+	}
+	
+
+	@Override
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		if (mMap.containsKey("db_category_table")) {
+			OnSyncFinishedListener onSyncFinishedListener = (OnSyncFinishedListener)attachFragment;
+			onSyncFinishedListener.onSyncFinished();
+		}
 		
 	}
 	

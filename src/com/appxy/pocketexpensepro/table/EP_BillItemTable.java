@@ -5,12 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
 
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.bills.BillsDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -50,8 +53,8 @@ public class EP_BillItemTable {
 			return billitemhasbillrule;
 		}
 
-		public void setBillitemhasbillrule(String billitemhasbillrule) {
-			this.billitemhasbillrule = billitemhasbillrule;
+		public void setBillitemhasbillrule(int billitemhasbillrule) {
+			this.billitemhasbillrule = SyncDao.selectBillRuleUUid(context,billitemhasbillrule);
 		}
 
 		public String getBillitem_ep_billitemstring1() {
@@ -75,8 +78,8 @@ public class EP_BillItemTable {
 			return billitemhascategory;
 		}
 
-		public void setBillitemhascategory(String billitemhascategory) {
-			this.billitemhascategory = billitemhascategory;
+		public void setBillitemhascategory(int billitemhascategory) {
+			this.billitemhascategory = SyncDao.selectCategoryUUid(context, billitemhascategory);
 		}
 
 		public Date getBillitem_ep_billitemduedate() {
@@ -109,8 +112,8 @@ public class EP_BillItemTable {
 			return billitemhaspayee;
 		}
 
-		public void setBillitemhaspayee(String billitemhaspayee) {
-			this.billitemhaspayee = billitemhaspayee;
+		public void setBillitemhaspayee(int billitemhaspayee) {
+			this.billitemhaspayee = SyncDao.selectPayeeUUid(context, billitemhaspayee);;
 		}
 
 		public Date getDateTime() {
@@ -143,8 +146,8 @@ public class EP_BillItemTable {
 		}
 
 		public void setBillitem_ep_billitemreminderdate(
-				String billitem_ep_billitemreminderdate) {
-			this.billitem_ep_billitemreminderdate = billitem_ep_billitemreminderdate;
+				int billitem_ep_billitemreminderdate) {
+			this.billitem_ep_billitemreminderdate = MEntity.reminderDate(billitem_ep_billitemreminderdate );
 		}
 
 		public Date getBillitem_ep_billitemremindertime() {
@@ -152,8 +155,8 @@ public class EP_BillItemTable {
 		}
 
 		public void setBillitem_ep_billitemremindertime(
-				Date billitem_ep_billitemremindertime) {
-			this.billitem_ep_billitemremindertime = billitem_ep_billitemremindertime;
+				long billitem_ep_billitemremindertime) {
+			this.billitem_ep_billitemremindertime = MEntity.getMilltoDateFormat( getMillis2Int(this.billitem_ep_billitemduedate.getTime())+ billitem_ep_billitemremindertime );
 		}
 
 		public String getBillitem_ep_billitemrecurring() {
@@ -161,8 +164,8 @@ public class EP_BillItemTable {
 		}
 
 		public void setBillitem_ep_billitemrecurring(
-				String billitem_ep_billitemrecurring) {
-			this.billitem_ep_billitemrecurring = billitem_ep_billitemrecurring;
+				int billitem_ep_billitemrecurring) {
+			this.billitem_ep_billitemrecurring = MEntity.turnTorecurring(billitem_ep_billitemrecurring);;
 		}
 
 		public Date getBillitem_ep_billitemduedatenew() {
@@ -178,8 +181,13 @@ public class EP_BillItemTable {
 			return billitem_ep_billisdelete;
 		}
 
-		public void setBillitem_ep_billisdelete(String billitem_ep_billisdelete) {
-			this.billitem_ep_billisdelete = billitem_ep_billisdelete;
+		public void setBillitem_ep_billisdelete(int billitem_ep_billisdelete) {
+			
+			if (billitem_ep_billisdelete == 0 || billitem_ep_billisdelete == 2) {
+				this.billitem_ep_billisdelete = "1";
+			} else {
+				this.billitem_ep_billisdelete = "0";
+			}
 		}
 
 		public String getBillitem_ep_billitemnote() {
@@ -192,6 +200,109 @@ public class EP_BillItemTable {
 
 		public EP_BillItem() {
 
+		}
+		
+		public void setIncomingData(DbxRecord iRecord) { 
+			
+			if (iRecord.hasField("billitemhasbillrule")) {
+				billitemhasbillrule = iRecord.getString("billitemhasbillrule");
+			}
+			if (iRecord.hasField("billitem_ep_billitemstring1")) {
+				billitem_ep_billitemstring1 = iRecord.getString("billitem_ep_billitemstring1");
+			}
+			uuid = iRecord.getString("uuid");
+
+			if (iRecord.hasField("billitemhascategory")) {
+				billitemhascategory = iRecord.getString("billitemhascategory");
+			}
+			billitem_ep_billitemduedate = iRecord.getDate("billitem_ep_billitemduedate");
+			
+			billitem_ep_billitemamount = iRecord.getDouble("billitem_ep_billitemamount");
+			
+			if (iRecord.hasField("billitem_ep_billitemname")) {
+				billitem_ep_billitemname = iRecord.getString("billitem_ep_billitemname");
+			}
+
+			if (iRecord.hasField("billitemhaspayee")) {
+				billitemhaspayee = iRecord.getString("billitemhaspayee");
+			}
+			dateTime = iRecord.getDate("dateTime");
+			
+			if (iRecord.hasField("billitem_ep_billitemenddate")) {
+				billitem_ep_billitemenddate = iRecord.getDate("billitem_ep_billitemenddate");
+			}
+			state = iRecord.getString("state");
+
+			if (iRecord.hasField("billitem_ep_billitemreminderdate")) {
+				billitem_ep_billitemreminderdate = iRecord.getString("billitem_ep_billitemreminderdate");
+			}
+			if (iRecord.hasField("billitem_ep_billitemremindertime")) {
+				billitem_ep_billitemremindertime = iRecord.getDate("billitem_ep_billitemremindertime");
+			}
+			if (iRecord.hasField("billitem_ep_billitemrecurring")) {
+				billitem_ep_billitemrecurring = iRecord.getString("billitem_ep_billitemrecurring");
+			}
+			if (iRecord.hasField("billitem_ep_billitemduedatenew")) {
+				billitem_ep_billitemduedatenew = iRecord.getDate("billitem_ep_billitemduedatenew");
+			}
+
+			billitem_ep_billisdelete = iRecord.getString("billitem_ep_billisdelete");
+
+			if (iRecord.hasField(billitem_ep_billitemnote)) {
+				billitem_ep_billitemnote = iRecord.getString("billitem_ep_billitemnote");
+			}
+			
+		}
+		
+		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+				
+				if (state.equals("0")) {
+					
+					BillsDao.deleteBillItemByUUId(context, uuid);
+					
+				} else if (state.equals("1")){
+					
+					List<Map<String, Object>> mList= BillsDao.checkBillItemByUUid(context, uuid);
+					
+					if ( mList.size() > 0) {
+						
+					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+					    if (localDateTime_sync < dateTime.getTime()) {
+					    	
+
+						}
+						
+					}else {
+						
+						int mRecurringType = MEntity.positionRecurring(billitem_ep_billitemrecurring);
+						long mEndDate = -1;
+						if (mRecurringType > 0) {
+							mEndDate = billitem_ep_billitemenddate.getTime();
+						}else {
+							mEndDate = -1;
+						}
+						int mReminderDate = MEntity.positionReminder(billitem_ep_billitemreminderdate);
+						long mReminderTime = 0;
+						if (mReminderDate > 0) {
+							 mReminderTime = billitem_ep_billitemremindertime.getTime() - billitem_ep_billitemduedate.getTime();
+						}
+						
+						
+						int isdelete = Integer.parseInt( billitem_ep_billisdelete );
+						
+						if (isdelete == 1) {
+							isdelete = 0;
+						} else {
+							isdelete = 1;
+						}
+						
+						BillsDao.insertBillItemAll(context, isdelete, billitem_ep_billitemamount+"", billitem_ep_billitemduedate.getTime(), billitem_ep_billitemduedatenew.getTime(), mEndDate, billitem_ep_billitemname, 
+								billitem_ep_billitemnote, mRecurringType, mReminderDate, mReminderTime, BillsDao.selectBillRuleIdByUUid(context, billitemhasbillrule), PayeeDao.selectCategoryIdByUUid(context, billitemhascategory), PayeeDao.selectPayeeIdByUUid(context, billitemhaspayee),
+								state, dateTime.getTime(), uuid, billitem_ep_billitemstring1);
+						
+					}
+			}
+				
 		}
 
 		public long getMillis2Int(long mills) { // 除去时分秒的时间
@@ -274,8 +385,12 @@ public class EP_BillItemTable {
 
 			DbxFields accountsFields = new DbxFields();
 			accountsFields.set("billitemhasbillrule", billitemhasbillrule);
-			accountsFields.set("billitem_ep_billitemstring1",
-					billitem_ep_billitemstring1);
+			
+			if (billitem_ep_billitemstring1 != null) {
+				accountsFields.set("billitem_ep_billitemstring1",
+						billitem_ep_billitemstring1);
+			}
+			
 			accountsFields.set("uuid", uuid);
 			
 			if (billitemhascategory != null && billitemhascategory.length() > 0) {
@@ -301,8 +416,12 @@ public class EP_BillItemTable {
 					billitem_ep_billitemremindertime);
 			accountsFields.set("billitem_ep_billitemrecurring",
 					billitem_ep_billitemrecurring);
-			accountsFields.set("billitem_ep_billitemduedatenew",
-					billitem_ep_billitemduedatenew);
+			
+			if (billitem_ep_billitemduedatenew != null) {
+				accountsFields.set("billitem_ep_billitemduedatenew",
+						billitem_ep_billitemduedatenew);
+			}
+			
 			accountsFields.set("billitem_ep_billisdelete",
 					billitem_ep_billisdelete);
 			if (billitem_ep_billitemnote != null) {
@@ -315,7 +434,7 @@ public class EP_BillItemTable {
 
 	}
 
-	public void updateState(String uuid, int state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -343,6 +462,19 @@ public class EP_BillItemTable {
 		this.context = context;
 	}
 
+	public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
+	
+	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields().set("uuid",

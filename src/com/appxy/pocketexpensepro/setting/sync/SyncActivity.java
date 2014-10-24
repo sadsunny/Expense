@@ -194,6 +194,41 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 	}
 	
+	public void deleteAllRecod() throws DbxException {
+		AccountsTable accountsTable = new AccountsTable(mDatastore,this);
+		accountsTable.deleteAll();
+		
+		AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, this);
+		accountTypeTable.deleteAll();
+		
+		BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
+		budgetItemTable.deleteAll();
+		
+		BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, this);
+		budgetTemplateTable.deleteAll();
+		
+		BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore,this);
+		budgetTransferTable.deleteAll();
+		
+		CategoryTable categoryTable = new CategoryTable(mDatastore, this);
+		categoryTable.deleteAll();
+		
+		EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
+		ep_BillItemTable.deleteAll();
+		
+		EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,this);
+		ep_BillRuleTable.deleteAll();
+		
+		PayeeTable payeeTable = new PayeeTable(mDatastore, this);
+		payeeTable.deleteAll();
+		
+		TransactionTable transactionTable = new TransactionTable(mDatastore,this);
+		transactionTable.deleteAll();
+		
+		mDatastore.sync();
+		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+	}
+	
 	public void upLoadAllDate() throws DbxException { //上传所有数据
 		
 		
@@ -216,7 +251,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		List<Map<String, Object>> BudgetItemList = SyncDao.selectBudgetItem(SyncActivity.this);
 		for (Map<String, Object> iMap:BudgetItemList) {
 			BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
-			BudgetItem budgetItem = budgetItemTable.getBudgetItemType();
+			BudgetItem budgetItem = budgetItemTable.getBudgetItem();
 			budgetItem.setBudgetItemData(iMap);
 			budgetItemTable.insertRecords(budgetItem.getFields());
 		}
@@ -342,7 +377,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 								public void run() {
 									// TODO Auto-generated method stub
 									try {
-										upLoadAllDate();
+//										upLoadAllDate();
+										deleteAllRecod();
 									} catch (DbxException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -438,7 +474,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	@Override
 	public void syncDateChange() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

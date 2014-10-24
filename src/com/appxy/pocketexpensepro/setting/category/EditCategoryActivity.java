@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.setting.category;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -10,6 +11,10 @@ import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxException;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,6 +34,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class EditCategoryActivity extends BaseHomeActivity {
@@ -50,6 +56,7 @@ public class EditCategoryActivity extends BaseHomeActivity {
 	private int selectWhether = -1;
 	private int _id;
     private String categoryName = "";
+    private String uuid ;
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +66,9 @@ public class EditCategoryActivity extends BaseHomeActivity {
 		setContentView(R.layout.activity_creat_category);
 		Intent intent = getIntent();
 		_id = intent.getIntExtra("_id", 0);
-		if (_id == 0) {
+		uuid = intent.getStringExtra("uuid");
+		
+		if (_id == 0 || uuid == null) {
 			finish();
 		}
 		
@@ -156,7 +165,7 @@ public class EditCategoryActivity extends BaseHomeActivity {
 										}
 									}).show();
 
-				} else if (!comparisonName(mCategoryString,CategoryDao.selectCategoryAll(EditCategoryActivity.this)) && !allNameSrting.equals(categoryName)) {
+				} else if ( !comparisonName(mCategoryString,CategoryDao.selectCategoryAll(EditCategoryActivity.this)) && !allNameSrting.equals(categoryName) ) {
 
 					new AlertDialog.Builder(EditCategoryActivity.this)
 							.setTitle("Warning! ")
@@ -174,25 +183,46 @@ public class EditCategoryActivity extends BaseHomeActivity {
 										}
 									}).show();
 
-				} else {
+				} else if( parentNameString != null && parentNameString.length() > 0 && CategoryDao.selectCategoryByName(EditCategoryActivity.this, parentNameString).size() <= 0 ){
+					
+					new AlertDialog.Builder(EditCategoryActivity.this)
+					.setTitle("Failed to add category! ")
+					.setMessage("This parent category has been removed by other devices. Please choose another one. ")
+					.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+
+								}
+							}).show();
+					
+				}else if( CategoryDao.selectCategoryById(EditCategoryActivity.this,  _id).size() <= 0 ){
+					
+					Toast.makeText(EditCategoryActivity.this, "This category has been removed by other devices",Toast.LENGTH_SHORT).show();
+					finish();
+					
+				}else{
 
 						String parentString = mButton.getText().toString();
 						if (parentString != null && parentString.length() > 0) {
 							long id = CategoryDao.updateCategory(
 									EditCategoryActivity.this,_id, parentString
 											+ ":" + mCategoryString, mcheck, 0,
-									iconPosition, 0);
+									iconPosition, 0,  uuid, mDbxAcctMgr,  mDatastore);
 							if (id > 0) {
 								Intent intent = new Intent();
 								intent.putExtra("_id", id);
 								setResult(11, intent);
-								finish();
 							}
 						}else {
 							
 							long id = CategoryDao.updateCategory(
 									EditCategoryActivity.this,_id, mCategoryString,
-									mcheck, 0, iconPosition, 0);
+									mcheck, 0, iconPosition, 0,uuid, mDbxAcctMgr, mDatastore);
 							  if(!categoryName.contains(":")){
 								  updateCategoryChild(categoryName, mCategoryString);
 							}
@@ -200,11 +230,10 @@ public class EditCategoryActivity extends BaseHomeActivity {
 								Intent intent = new Intent();
 								intent.putExtra("_id", id);
 								setResult(11, intent);
-								finish();
 							}
 						}
 
-
+						finish();
 
 				}
 
@@ -341,15 +370,23 @@ public class EditCategoryActivity extends BaseHomeActivity {
 				String temp[] = categoryNameString.split(":");
 				String newString = newParString+":"+temp[1];
 				int id = (Integer) iMap.get("_id");
-				CategoryDao.updateCategoryName(EditCategoryActivity.this, id, newString);
+				String uuid = (String)iMap.get("uuid");
+				
+				CategoryDao.updateCategoryName(EditCategoryActivity.this, id, newString, uuid, mDbxAcctMgr, mDatastore);
+				try {
+					mDatastore.sync();
+				} catch (DbxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 	
 

@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview.budgets;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,15 @@ import android.view.LayoutInflater;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
+import com.appxy.pocketexpensepro.table.BudgetItemTable;
+import com.appxy.pocketexpensepro.table.BudgetItemTable.BudgetItem;
+import com.appxy.pocketexpensepro.table.BudgetTemplateTable;
+import com.appxy.pocketexpensepro.table.BudgetTemplateTable.BudgetTemplate;
+import com.appxy.pocketexpensepro.table.BudgetTransferTable;
+import com.appxy.pocketexpensepro.table.BudgetTransferTable.BudgetTransfer;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
 public class BudgetsDao {
 
@@ -27,86 +37,41 @@ public class BudgetsDao {
 		return db;
 	}
 	
-	public static void updateBudgetTransfer(Context context, int id ,String amount,long dateTime ,int fromBudget, int toBudget) {
+	
+	
+	public static long deleteBudgetTemByUUId(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
-
-		ContentValues cv = new ContentValues();
-		cv.put("amount", amount);
-		cv.put("dateTime", dateTime);
-		cv.put("fromBudget", fromBudget);
-		cv.put("toBudget", toBudget);
-		cv.put("dateTime_sync", System.currentTimeMillis());
-		String mId = id + "";
-		try {
-			long tid = db.update("BudgetTransfer", cv, "_id = ?",
-					new String[] { mId });
-			db.close();
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-		}
-	}
-
-	public static long updateBudget(Context context, int _id, String amount) {
-		SQLiteDatabase db = getConnection(context);
-
-		List<Map<String, Object>> itemList = selectItemById(context, _id);
-		int tem_id = (Integer) itemList.get(0).get("budgetTemplate");
-
-		ContentValues cv = new ContentValues();
-		cv.put("amount", amount);
-
-		String mId = _id + "";
-		try {
-			long id = db.update("BudgetItem", cv, "_id = ?",
-					new String[] { mId });
-			db.close();
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-		}
-
-		String tem_idString = tem_id + "";
-		try {
-			long mid = db.update("BudgetTemplate", cv, "_id = ?",
-					new String[] { tem_idString });
-			db.close();
-		} catch (Exception e) {
-			// TODO: handle exception
-			db.close();
-
-		}
-
-		return 1;
-	}
-
-	public static long deleteBudget(Context context, int id) {
-		SQLiteDatabase db = getConnection(context);
-
-		List<Map<String, Object>> itemList = selectItemById(context, id);
-		int tem_id = (Integer) itemList.get(0).get("budgetTemplate");
-
-		String _id = id + "";
+		db.execSQL("PRAGMA foreign_keys = ON ");  //级联删除item，以及关联的transfer
+		
 		long row = 0;
 		try {
-			row = db.delete("BudgetItem", "_id = ?", new String[] { _id });
+			row = db.delete("BudgetTemplate", "uuid = ?",
+					new String[] { uuid });
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;
 		}
-
-		String tem_idString = tem_id + "";
-		long trow = 0;
+		db.close();
+		return row;
+		
+	}
+	
+	public static long deleteBudgetItemByUUId(Context context, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");  //级联删除item，以及关联的transfer
+		
+		long row = 0;
 		try {
-			trow = db.delete("BudgetTemplate", "_id = ?",
-					new String[] { tem_idString });
+			row = db.delete("BudgetTemplate", "uuid = ?",
+					new String[] { uuid });
 		} catch (Exception e) {
 			// TODO: handle exception
-			trow = 0;
+			row = 0;
 		}
 		db.close();
 		return row;
 	}
+	
 	
 	
 	
@@ -157,60 +122,635 @@ public class BudgetsDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectTempCategoryId(Context context,
+			int id) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.category from BudgetTemplate a where a._id = " + id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
 
-	public static long insertBudgetTemplate(Context context, String amount,
-			int category) {
+			int category = mCursor.getInt(0);
+			mMap.put("category", category);
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static long updateBudgetTemplateAll(Context context, String amount,int category, int isRollover, int isNew, long startDate, String cycleType, long dateTime, String uuid, String state) {
+		SQLiteDatabase db = getConnection(context);
+
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("category", category);
+		
+		cv.put("isRollover", isRollover);
+		cv.put("isNew", isNew);
+		cv.put("startDate", startDate);
+		cv.put("cycleType", cycleType);
+		
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		
+		try {
+			long mid = db.update("BudgetTemplate", cv, "uuid = ?",
+					new String[] { uuid });
+			db.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+
+		}
+
+		return 1;
+	}
+	
+	
+	
+	public static long insertBudgetTemplateAll(Context context, String amount,int category, int isRollover, int isNew, long startDate, String cycleType, long dateTime, String uuid, String state) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		
-		cv.put("uuid", MEntity.getUUID());
-		cv.put("category", category);
-		cv.put("isRollover", 0);
-		cv.put("isNew", 1);
-		
-		cv.put("dateTime", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("startDate", System.currentTimeMillis());
 		cv.put("amount", amount);
-		cv.put("cycleType", "No Cycle");
+		cv.put("category", category);
+		
+		cv.put("isRollover", isRollover);
+		cv.put("isNew", isNew);
+		cv.put("startDate", startDate);
+		cv.put("cycleType", cycleType);
+		
+		cv.put("uuid",uuid);
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		
+		Log.v("mtag", "ContentValues"+cv);
+		try {
+			long row = db.insert("BudgetTemplate", null, cv);
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
 		
 		
-		long row = db.insert("BudgetTemplate", null, cv);
-		return row;
 	}
-
-	public static long insertBudgetTransfer(Context context, String amount,long dateTime ,int fromBudget, int toBudget) {
+	
+	
+	public static void updateBudgetTransfer(Context context, int id ,String amount,long dateTime ,int fromBudget, int toBudget, String uuid,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
+
+		long dateTime_sync = System.currentTimeMillis();
+		
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("fromBudget", fromBudget);
 		cv.put("toBudget", toBudget);
-		cv.put("dateTime_sync", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
-		long row = db.insert("BudgetTransfer", null, cv);
+		cv.put("dateTime_sync", dateTime_sync);
+		String mId = id + "";
+		try {
+			long tid = db.update("BudgetTransfer", cv, "_id = ?",
+					new String[] { mId });
+			
+			if (tid > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, context);
+					BudgetTransfer budgetTransfer = budgetTransferTable.getBudgetTransfer();
+					
+					budgetTransfer.setBudget_frombudget(fromBudget);
+					budgetTransfer.setBudget_tobudget(toBudget);
+					budgetTransfer.setBudgettransfer_amount(Double.valueOf(amount));
+					budgetTransfer.setBudgettransfer_datetime(MEntity.getMilltoDateFormat(dateTime));
+					budgetTransfer.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+					budgetTransfer.setState("1");
+					budgetTransfer.setUuid(uuid);
+					budgetTransferTable.insertRecords(budgetTransfer.getFields());
+					mDatastore.sync();
+				}
+					
+			}
+			
+			
+			db.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+		}
+		
+	}
+	
+	
+	public static long updateBudget(Context context, int _id, String amount,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+
+		List<Map<String, Object>> itemList = selectItemById(context, _id);
+		int tem_id = (Integer) itemList.get(0).get("budgetTemplate");
+
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+
+		String mId = _id + "";
+				
+		try {
+			long id = db.update("BudgetItem", cv, "_id = ?",
+					new String[] { mId });
+			
+			if (id > 0 ) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, context);
+					BudgetItem budgetItem = budgetItemTable.getBudgetItem();
+					
+					budgetItem.setBudgetitem_amount(Double.valueOf(amount));
+					budgetItem.setBudgetitem_budgettemplate(tem_id);
+					budgetItem.setDateTime(MEntity.getMilltoDateFormat(System.currentTimeMillis()));
+					
+					budgetItemTable.insertRecords(budgetItem.getFields());
+					mDatastore.sync();
+				}
+
+			}
+			
+			db.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+		}
+
+		List<Map<String, Object>> tmList  = selectTempCategoryId(context, tem_id);
+		int categortId =  (Integer)tmList.get(0).get("category");
+		
+		String tem_idString = tem_id + "";
+		try {
+			long mid = db.update("BudgetTemplate", cv, "_id = ?",
+					new String[] { tem_idString });
+			
+			if (mid > 0 ) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, context);
+					BudgetTemplate budgetTemplate = budgetTemplateTable.getBudgetTemplate();
+					
+					budgetTemplate.setBudgettemplate_category(categortId);
+					budgetTemplate.setDatetime(MEntity.getMilltoDateFormat(System.currentTimeMillis()));
+					budgetTemplate.setBudgettemplate_amount(Double.valueOf(amount));
+					
+					budgetTemplateTable.insertRecords(budgetTemplate.getFields());
+					mDatastore.sync();
+				}
+			}
+			
+			db.close();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+
+		}
+		
+
+		return 1;
+	}
+
+	
+	
+	
+	public static long deleteBudget(Context context, int id,String itemUUId,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON "); // 级联删除几颗解决问题   
+		
+		List<Map<String, Object>> itemList = selectItemById(context, id);
+		int tem_id = (Integer) itemList.get(0).get("budgetTemplate");
+
+		String _id = id + "";
+		long row = 0;
+		try {
+			
+			row = db.delete("BudgetItem", "_id = ?", new String[] { _id });
+			
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, context);
+					budgetItemTable.updateState(itemUUId, "0");
+				}
+			}
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+
+		String tem_idString = tem_id + "";
+		String tempUUidString = SyncDao.selectBudgetTemplateUUid(context, tem_id);
+		
+		long trow = 0;
+		try {
+			trow = db.delete("BudgetTemplate", "_id = ?",
+					new String[] { tem_idString });
+			if (trow > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, context);
+					budgetTemplateTable.updateState(tempUUidString, "0");
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			trow = 0;
+			
+		}
+		db.close();
 		return row;
 	}
 
-	public static long insertBudgetItem(Context context, String amount,
-			int budgetTemplate) {
+	public static long insertBudgetTemplate(Context context, String amount,
+			int category, long dateTime, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		
-		cv.put("uuid", MEntity.getUUID());
-		cv.put("startDate", System.currentTimeMillis());
+		String cycleType = "No Cycle";
+		String uuid = MEntity.getUUID();
+		
 		cv.put("amount", amount);
-		cv.put("endDate", System.currentTimeMillis());
+		cv.put("category", category);
+		
+		cv.put("isRollover", 0);
+		cv.put("isNew", 1);
+		cv.put("startDate", dateTime);
+		cv.put("cycleType", cycleType);
+		
+		cv.put("uuid", uuid);
+		cv.put("dateTime", dateTime);
+		cv.put("state", 1);
+		
+		try {
+			long row = db.insert("BudgetTemplate", null, cv);
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, context);
+					BudgetTemplate budgetTemplate = budgetTemplateTable.getBudgetTemplate();
+					budgetTemplate.setBudgettemplate_amount(Double.valueOf(amount));
+					budgetTemplate.setBudgettemplate_category(category);
+					budgetTemplate.setBudgettemplate_cycletype(cycleType);
+					budgetTemplate.setBudgettemplate_isnew(1);
+					budgetTemplate.setBudgettemplate_isrollover(0);
+					budgetTemplate.setBudgettemplate_startdate(MEntity.getMilltoDateFormat(dateTime));
+					budgetTemplate.setDatetime(MEntity.getMilltoDateFormat(dateTime));
+					budgetTemplate.setState("1");
+					budgetTemplate.setUuid(uuid);
+					budgetTemplateTable.insertRecords(budgetTemplate.getFields());
+					mDatastore.sync();
+				}
+			}
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+		
+	}
+
+	
+	public static List<Map<String, Object>> checkBudgetTemplateByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from BudgetTemplate a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static int selectBudgetTemplateIdByUUid(Context context,String uuid) {
+		
+    	int id  = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from BudgetTemplate a where a.uuid = "+"'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			id = mCursor.getInt(0);
+		}
+		mCursor.close();
+		db.close();
+		Log.v("mtag", "父ID"+id);
+		return id;
+	}
+	
+	public static int selectBudgetItemIdByUUid(Context context,String uuid) {
+		
+    	int id  = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from BudgetItem a where a.uuid = "+"'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			id = mCursor.getInt(0);
+		}
+		mCursor.close();
+		db.close();
+
+		return id;
+	}
+
+	
+	public static List<Map<String, Object>> checkBudgetTransferByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime_sync from BudgetTransfer a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static List<Map<String, Object>> checkBudgetItemByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from BudgetItem a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static long updateBudgetItemAll(Context context, String amount,int budgetTemplate, long startDate, int isRollover,long endDate,double rolloverAmount, long dateTime, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+
+		ContentValues cv = new ContentValues();
+		cv.put("amount", amount);
+		cv.put("budgetTemplate", budgetTemplate);
+		
+		cv.put("startDate", dateTime);
+		cv.put("isRollover",isRollover);
+		cv.put("endDate", endDate);
+		cv.put("rolloverAmount", rolloverAmount);
+		
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		try {
+			long mid = db.update("BudgetItem", cv, "uuid = ?", new String[] { uuid });
+			db.close();
+			return mid;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+		
+	}
+	
+	public static long updateBudgetTransferAll(Context context, String amount,long dateTime ,int fromBudget, int toBudget, long dateTime_sync, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("fromBudget", fromBudget);
+		cv.put("toBudget", toBudget);
+		
+		cv.put("dateTime_sync", dateTime_sync);
+		cv.put("state", state);
+		
+		try {
+			long row = db.update("BudgetTransfer", cv, "uuid = ?", new String[] { uuid });
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+	
+	
+	public static long insertBudgetTransferAll(Context context, String amount,long dateTime ,int fromBudget, int toBudget, long dateTime_sync, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("fromBudget", fromBudget);
+		cv.put("toBudget", toBudget);
+		
+		cv.put("dateTime_sync", dateTime_sync);
+		cv.put("state", state);
+		cv.put("uuid",uuid);
+		
+		try {
+			long row = db.insert("BudgetTransfer", null, cv);
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+	
+	
+
+	public static long insertBudgetItemAll(Context context, String amount,int budgetTemplate, long startDate, int isRollover,long endDate,double rolloverAmount, long dateTime, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("amount", amount);
+		cv.put("budgetTemplate", budgetTemplate);
+		
+		cv.put("startDate", dateTime);
+		cv.put("isRollover",isRollover);
+		cv.put("endDate", endDate);
+		cv.put("rolloverAmount", rolloverAmount);
+		
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		try {
+			long row = db.insert("BudgetItem", null, cv);
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+
+	public static long insertBudgetTransfer(Context context, String amount,long dateTime ,int fromBudget, int toBudget,DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		long dateTime_sync =  System.currentTimeMillis();
+		String uuid = MEntity.getUUID();
+		
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("fromBudget", fromBudget);
+		cv.put("toBudget", toBudget);
+		
+		cv.put("dateTime_sync", dateTime_sync);
+		cv.put("state", 1);
+		cv.put("uuid", uuid);
+		try {
+			long row = db.insert("BudgetTransfer", null, cv);
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, context);
+					BudgetTransfer budgetTransfer = budgetTransferTable.getBudgetTransfer();
+					
+					budgetTransfer.setBudget_frombudget(fromBudget);
+					budgetTransfer.setBudget_tobudget(toBudget);
+					budgetTransfer.setBudgettransfer_amount(Double.valueOf(amount));
+					budgetTransfer.setBudgettransfer_datetime(MEntity.getMilltoDateFormat(dateTime));
+					budgetTransfer.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+					budgetTransfer.setState("1");
+					budgetTransfer.setUuid(uuid);
+					
+					budgetTransferTable.insertRecords(budgetTransfer.getFields());
+					mDatastore.sync();
+					
+				}
+			}
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+	
+	
+	
+	public static long insertBudgetItem(Context context, String amount,
+			int budgetTemplate, long dateTime,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.YEAR, 2113);
+		
+		String uuid =  MEntity.getUUID();
+		cv.put("amount", amount);
+		cv.put("budgetTemplate", budgetTemplate);
+		
+		cv.put("startDate", dateTime);
+		cv.put("isRollover", 0);
+		cv.put("endDate", calendar.getTimeInMillis());
 		cv.put("rolloverAmount", 0);
 		
-		cv.put("dateTime", System.currentTimeMillis());
+		cv.put("dateTime", dateTime);
 		cv.put("state", 1);
-		cv.put("budgetTemplate", budgetTemplate);
-		cv.put("isRollover", 0);
+		cv.put("uuid",uuid);
+		try {
+			long row = db.insert("BudgetItem", null, cv);
+			if (row > 0) {
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, context);
+					BudgetItem budgetItem = budgetItemTable.getBudgetItem();
+					
+					budgetItem.setBudgetitem_amount(Double.valueOf(amount));
+					budgetItem.setBudgetitem_budgettemplate(budgetTemplate);
+					budgetItem.setBudgetitem_enddate(MEntity.getMilltoDateFormat(calendar.getTimeInMillis()));
+					budgetItem.setBudgetitem_isrollover(0);
+					budgetItem.setBudgetitem_rolloveramou(0);
+					budgetItem.setBudgetitem_startdate(MEntity.getMilltoDateFormat(calendar.getTimeInMillis()));
+					budgetItem.setDateTime(MEntity.getMilltoDateFormat(calendar.getTimeInMillis()));
+					budgetItem.setState("1");
+					budgetItem.setUuid(uuid);
+					budgetItemTable.insertRecords(budgetItem.getFields());
+					mDatastore.sync();
+					
+				}
+			}
+			
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
 		
-		long row = db.insert("BudgetItem", null, cv);
-		return row;
 	}
 
 	public static List<Map<String, Object>> selectTem(Context context) { // 查询Category

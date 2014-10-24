@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.setting.payee;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
@@ -10,6 +11,7 @@ import com.appxy.pocketexpensepro.R.id;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.DialogItemAdapter;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -99,10 +101,12 @@ public class PayeeActivity extends BaseHomeActivity {
 				long arg3) {
 			// TODO Auto-generated method stub
 			int _id = (Integer) mDataList.get(arg2).get("_id");
-
+			String  uuid = (String) mDataList.get(arg2).get("uuid");
+			
 			Intent intent = new Intent();
 			intent.setClass(PayeeActivity.this, EditPayeeActivity.class);
 			intent.putExtra("_id", _id);
+			intent.putExtra("uuid", uuid);
 			startActivityForResult(intent, 5);
 
 		}
@@ -116,6 +120,7 @@ public class PayeeActivity extends BaseHomeActivity {
 			// TODO Auto-generated method stub
 
 			final int _id = (Integer) mDataList.get(arg2).get("_id");
+			final String uuid = (String) mDataList.get(arg2).get("uuid");
 
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
@@ -168,7 +173,7 @@ public class PayeeActivity extends BaseHomeActivity {
 													long id = PayeeDao
 															.deletePayee(
 																	PayeeActivity.this,
-																	_id);
+																	_id, uuid, mDbxAcctMgr, mDatastore);
 													mHandler.post(mTask);
 													dialog.dismiss();
 													alertDialog.dismiss();
@@ -182,7 +187,7 @@ public class PayeeActivity extends BaseHomeActivity {
 						} else {
 
 							long id = PayeeDao.deletePayee(PayeeActivity.this,
-									_id);
+									_id, uuid, mDbxAcctMgr, mDatastore);
 							mHandler.post(mTask);
 							alertDialog.dismiss();
 							
@@ -255,8 +260,13 @@ public class PayeeActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
+		
+		if (mMap.containsKey("db_payee_table") || mMap.containsKey("db_category_table") ) {
+			mHandler.post(mTask);
+		}
 		
 	}
 }

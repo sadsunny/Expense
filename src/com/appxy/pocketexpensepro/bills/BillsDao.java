@@ -9,6 +9,12 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.table.EP_BillItemTable;
+import com.appxy.pocketexpensepro.table.EP_BillItemTable.EP_BillItem;
+import com.appxy.pocketexpensepro.table.EP_BillRuleTable;
+import com.appxy.pocketexpensepro.table.EP_BillRuleTable.EP_BillRule;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -26,6 +32,87 @@ public class BillsDao {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		return db;
 	}
+	
+	public static List<Map<String, Object>> checkBillRuleByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from EP_BillRule a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static List<Map<String, Object>> checkBillItemByUUid(Context context,
+			String uuid) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime from EP_BillItem a where a.uuid = " + "'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static long deleteBillRuleByUUId(Context context, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");  
+		
+		long row = 0;
+		try {
+			row = db.delete("EP_BillRule", "uuid = ?",
+					new String[] { uuid });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+		
+	}
+	
+	public static long deleteBillItemByUUId(Context context, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");  
+		
+		long row = 0;
+		try {
+			row = db.delete("EP_BillItem", "uuid = ?",
+					new String[] { uuid });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+		
+	}
+	
+	
 	
 	public static long deleteBillPayById(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
@@ -222,14 +309,29 @@ public class BillsDao {
 		return row;
 	}
 	
+	public static int selectBillRuleIdByUUid(Context context,String uuid) {
+		
+    	int id  = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from EP_BillRule a where a.uuid = "+"'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			id = mCursor.getInt(0);
+		}
+		mCursor.close();
+		db.close();
+
+		return id;
+	}
 	
 	
-	public static long insertBillItem(Context context, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
+	public static long insertBillItemAll(Context context, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
 			long ep_billItemDueDateNew, long ep_billItemEndDate, String ep_billItemName,String ep_billItemNote, int ep_billItemRecurringType, 
-			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee) {
+			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee, String state, long dateTime, String uuid, String ep_billItemString1) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		long hmMills = MEntity.getHMSMill();
+		
 		cv.put("ep_billItemAmount", ep_billItemAmount);
 		cv.put("ep_billisDelete", ep_billisDelete);
 		cv.put("ep_billItemDueDate", ep_billItemDueDate+hmMills);
@@ -244,15 +346,18 @@ public class BillsDao {
 		cv.put("billItemHasCategory", billItemHasCategory);
 		cv.put("billItemHasPayee", billItemHasPayee);
 		
-		cv.put("dateTime", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
-		cv.put("ep_billItemString1", billItemHasBillRule+" "+turnMilltoDate(System.currentTimeMillis()));
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		cv.put("ep_billItemString1", ep_billItemString1);
 		
 		long row = db.insert("EP_BillItem", null, cv);
 		db.close();
 		return row;
 	}
+	
+	
+	
 	
 	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
 		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
@@ -260,11 +365,120 @@ public class BillsDao {
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
 	}
-
-	public static long insertBillRule(Context context, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee) {
+	
+	public static long insertBillRuleAll(Context context, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee ,long dateTime, String state, String uuid) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("ep_billAmount", ep_billAmount);
+		cv.put("ep_billDueDate", ep_billDueDate);
+		cv.put("ep_billEndDate", ep_billEndDate);
+		cv.put("ep_billName", ep_billName);
+		cv.put("ep_note", ep_note);
+		cv.put("ep_recurringType", ep_recurringType);
+		cv.put("ep_reminderDate", ep_reminderDate);
+		cv.put("ep_reminderTime", ep_reminderTime);
+		cv.put("billRuleHasCategory", billRuleHasCategory);
+		cv.put("billRuleHasPayee", billRuleHasPayee);
+		
+		cv.put("dateTime",dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		
+		try {
+			long row = db.insert("EP_BillRule", null, cv);
+			
+			db.close();
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+	
+	public static long insertBillItem(Context context, int ep_billisDelete ,String ep_billItemAmount, long ep_billItemDueDate,
+			long ep_billItemDueDateNew, long ep_billItemEndDate, String ep_billItemName,String ep_billItemNote, int ep_billItemRecurringType, 
+			int ep_billItemReminderDate, long ep_billItemReminderTime, int billItemHasBillRule, int billItemHasCategory, int billItemHasPayee, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		long hmMills = MEntity.getHMSMill();
+		long dateTime = System.currentTimeMillis();
+		String state = "1";
+		String uuid = MEntity.getUUID();
+		cv.put("ep_billItemAmount", ep_billItemAmount);
+		cv.put("ep_billisDelete", ep_billisDelete);
+		cv.put("ep_billItemDueDate", ep_billItemDueDate+hmMills);
+		cv.put("ep_billItemDueDateNew", ep_billItemDueDateNew+hmMills);
+		cv.put("ep_billItemEndDate", ep_billItemEndDate);
+		cv.put("ep_billItemName", ep_billItemName);
+		cv.put("ep_billItemNote", ep_billItemNote);
+		cv.put("ep_billItemRecurringType", ep_billItemRecurringType);
+		cv.put("ep_billItemReminderDate", ep_billItemReminderDate);
+		cv.put("ep_billItemReminderTime", ep_billItemReminderTime);
+		cv.put("billItemHasBillRule", billItemHasBillRule);
+		cv.put("billItemHasCategory", billItemHasCategory);
+		cv.put("billItemHasPayee", billItemHasPayee);
+		
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+		String ep_billItemString1 =  billItemHasBillRule+" "+turnMilltoDate(System.currentTimeMillis());
+		cv.put("ep_billItemString1", ep_billItemString1 );
+		
+		try {
+			long row = db.insert("EP_BillItem", null, cv);
+			
+			if ( row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, context);
+					EP_BillItem eP_BillItem = ep_BillItemTable.getEP_BillItem();
+					
+					eP_BillItem.setBillitem_ep_billisdelete(ep_billisDelete);
+					eP_BillItem.setBillitem_ep_billitemamount(Double.valueOf(ep_billItemAmount));
+					eP_BillItem.setBillitem_ep_billitemduedate(MEntity.getMilltoDateFormat(ep_billItemDueDate+hmMills));
+					eP_BillItem.setBillitem_ep_billitemduedatenew(MEntity.getMilltoDateFormat(ep_billItemDueDateNew+hmMills));
+					eP_BillItem.setBillitem_ep_billitemenddate(MEntity.getMilltoDateFormat(ep_billItemEndDate));
+					eP_BillItem.setBillitem_ep_billitemname(ep_billItemName);
+					eP_BillItem.setBillitem_ep_billitemnote(ep_billItemNote);
+					eP_BillItem.setBillitem_ep_billitemrecurring(ep_billItemRecurringType);
+					eP_BillItem.setBillitem_ep_billitemreminderdate(ep_billItemReminderDate);
+					eP_BillItem.setBillitem_ep_billitemremindertime(ep_billItemReminderTime);
+					eP_BillItem.setBillitem_ep_billitemstring1(ep_billItemString1);
+					eP_BillItem.setBillitemhasbillrule(billItemHasBillRule);
+					eP_BillItem.setBillitemhascategory(billItemHasCategory);
+					eP_BillItem.setBillitemhaspayee(billItemHasPayee);
+					eP_BillItem.setDateTime(MEntity.getMilltoDateFormat(dateTime));
+					eP_BillItem.setState(state);
+					eP_BillItem.setUuid(uuid);
+					
+					ep_BillItemTable.insertRecords(eP_BillItem.getFields());
+					
+				}
+				
+			}
+			db.close();
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
+		
+	}
+
+	public static long insertBillRule(Context context, double ep_billAmount, long ep_billDueDate,long ep_billEndDate, String ep_billName,String ep_note, int ep_recurringType, int ep_reminderDate, long ep_reminderTime, int billRuleHasCategory, int billRuleHasPayee, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		long hmMills = MEntity.getHMSMill();
+		
+		long dateTime =  System.currentTimeMillis();
+		String state = "1";
+		String uuid =  MEntity.getUUID();
 		
 		cv.put("ep_billAmount", ep_billAmount);
 		cv.put("ep_billDueDate", ep_billDueDate+hmMills);
@@ -276,15 +490,51 @@ public class BillsDao {
 		cv.put("ep_reminderTime", ep_reminderTime);
 		cv.put("billRuleHasCategory", billRuleHasCategory);
 		cv.put("billRuleHasPayee", billRuleHasPayee);
-		cv.put("dateTime", System.currentTimeMillis());
-		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
 		
-		long row = db.insert("EP_BillRule", null, cv);
+		cv.put("dateTime", dateTime);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
 		
-		
-		db.close();
-		return row;
+		try {
+			long row = db.insert("EP_BillRule", null, cv);
+			
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+					EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore, context);
+					EP_BillRule	eP_BillRule = ep_BillRuleTable.getEP_BillRule();
+					
+					eP_BillRule.setBillrule_ep_billamount(ep_billAmount);
+					eP_BillRule.setBillrule_ep_billduedate(MEntity.getMilltoDateFormat(ep_billDueDate+hmMills));
+					eP_BillRule.setBillrule_ep_billenddate(MEntity.getMilltoDateFormat(ep_billEndDate));
+					eP_BillRule.setBillrule_ep_billname(ep_billName);
+					eP_BillRule.setBillrule_ep_note(ep_note);
+					eP_BillRule.setBillrule_ep_recurringtype(ep_recurringType);
+					eP_BillRule.setBillrule_ep_reminderdate(ep_reminderDate);
+					eP_BillRule.setBillrule_ep_remindertime(ep_reminderTime);
+					eP_BillRule.setBillrulehascategory(billRuleHasCategory);
+					eP_BillRule.setBillrulehaspayee(billRuleHasPayee);
+					eP_BillRule.setDateTime(MEntity.getMilltoDateFormat(dateTime));
+					eP_BillRule.setState(state);
+					eP_BillRule.setUuid(uuid);
+					
+					ep_BillRuleTable.insertRecords(eP_BillRule.getFields());
+					mDatastore.sync();
+					
+				}
+				
+			}
+			db.close();
+			return row;
+		} catch (Exception e) {
+			// TODO: handle exception
+			return 0;
+		}
 	}
 	
 	public static List<Map<String, Object>> selectBillRuleById(Context context, int id) {

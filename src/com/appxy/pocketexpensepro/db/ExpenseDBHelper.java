@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.db;
 
+import java.util.Calendar;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -223,125 +224,128 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		
 		if (paramInt1 == 1) { // 处理老版本的数据，更新同步字段
 			
-			upgradeAccountType(paramSQLiteDatabase);
-			upgradeCategory(paramSQLiteDatabase);
-			upgradePayee(paramSQLiteDatabase);
-			upgradeAccount(paramSQLiteDatabase);
-			upgradeBudgetTemplate(paramSQLiteDatabase);
-			upgradeBudgetItem(paramSQLiteDatabase);
-			upgradeBudgetTransfer(paramSQLiteDatabase);
-			upgradeEP_BillRule(paramSQLiteDatabase);
-			upgradeEP_BillItem(paramSQLiteDatabase);
-			upgradeTransaction(paramSQLiteDatabase);
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
+			long syncTime = calendar.getTimeInMillis();
 			
-			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", System.currentTimeMillis(), 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", System.currentTimeMillis(), 10000);
+			upgradeAccountType(paramSQLiteDatabase, syncTime);
+			upgradeCategory(paramSQLiteDatabase, syncTime);
+			upgradePayee(paramSQLiteDatabase, syncTime);
+			upgradeAccount(paramSQLiteDatabase, syncTime);
+			upgradeBudgetTemplate(paramSQLiteDatabase, syncTime);
+			upgradeBudgetItem(paramSQLiteDatabase, syncTime);
+			upgradeBudgetTransfer(paramSQLiteDatabase, syncTime);
+			upgradeEP_BillRule(paramSQLiteDatabase, syncTime);
+			upgradeEP_BillItem(paramSQLiteDatabase, syncTime);
+			upgradeTransaction(paramSQLiteDatabase, syncTime);
+			
+			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", syncTime, 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", syncTime, 10000);
 			DbDao.updateAccountOrder(paramSQLiteDatabase, (int)accountOrder , (int)accountOrder);
-			Log.v("mtag", "数据库升级");
 		}
 		
 	}
 	
-	public void upgradeAccountType(SQLiteDatabase db){
+	public void upgradeAccountType(SQLiteDatabase db, long syncTime){
 		Map<String, Integer> mMap = DbDao.selectAccountType(db);
 		for (int i:mMap.values()) {
 			if (i > 0 && i<10) {
-				DbDao.updateAccountType(db, i, 1+"", DbEntity.accountTypeUUID[i-1], System.currentTimeMillis());
+				DbDao.updateAccountType(db, i, 1+"", DbEntity.accountTypeUUID[i-1], syncTime);
 			} else {
-				DbDao.updateAccountType(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateAccountType(db, i, 1+"", MEntity.getUUID(), syncTime);
 			}
 		}
 		
 	}
 	
-	public void upgradeCategory(SQLiteDatabase db) {
+	public void upgradeCategory(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectCategory(db);
 		for (int i:mMap.values()) {
 			if (i > 0 && i< 50) {
-				DbDao.updateCategory(db, i, 1+"", DbEntity.categoryUUID[i-1], System.currentTimeMillis());
+				DbDao.updateCategory(db, i, 1+"", DbEntity.categoryUUID[i-1], syncTime);
 			} else {
-				DbDao.updateCategory(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateCategory(db, i, 1+"", MEntity.getUUID(), syncTime);
 			}
 		}
 		
 	}
 	
-	public void upgradePayee(SQLiteDatabase db) {
+	public void upgradePayee(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectPayee(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updatePayee(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updatePayee(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
-	public void upgradeAccount(SQLiteDatabase db) {
+	public void upgradeAccount(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectAccount(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateAccount(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateAccount(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
-	public void upgradeBudgetTemplate(SQLiteDatabase db) {
+	public void upgradeBudgetTemplate(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectBudgetTemplate(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateBudgetTemplate(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateBudgetTemplate(db, i, 1+"", MEntity.getUUID(),syncTime);
 			} 
 		}
 		
 	}
 
 	
-	public void upgradeBudgetItem(SQLiteDatabase db) {
+	public void upgradeBudgetItem(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectBudgetItem(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateBudgetItem(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateBudgetItem(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
-	public void upgradeBudgetTransfer(SQLiteDatabase db) {
+	public void upgradeBudgetTransfer(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectBudgetTransfer(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateBudgetTransfer(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateBudgetTransfer(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
-	public void upgradeEP_BillRule(SQLiteDatabase db) {
+	public void upgradeEP_BillRule(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectEP_BillRule(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateEP_BillRule(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateEP_BillRule(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
 	
-	public void upgradeEP_BillItem(SQLiteDatabase db) {
+	public void upgradeEP_BillItem(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectEP_BillItem(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateEP_BillItem(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateEP_BillItem(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		
 	}
 	
-	public void upgradeTransaction(SQLiteDatabase db) {
+	public void upgradeTransaction(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectTransaction(db);
 		for (int i:mMap.values()) {
 			if (i > 0) {
-				DbDao.updateTransaction(db, i, 1+"", MEntity.getUUID(), System.currentTimeMillis());
+				DbDao.updateTransaction(db, i, 1+"", MEntity.getUUID(), syncTime);
 			} 
 		}
 		

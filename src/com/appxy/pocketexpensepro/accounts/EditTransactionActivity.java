@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.PrivateCredentialPermission;
 
@@ -33,6 +34,8 @@ import com.appxy.pocketexpensepro.overview.transaction.SplitCategoryActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.app.ActionBar;
@@ -689,7 +692,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									EditTransactionActivity.this, payeeString,
-									new String(), categoryId);
+									new String(), categoryId, mDbxAcctMgr, mDatastore);
 							if (row > 0) {
 								payeeId = (int) row;
 							}
@@ -713,7 +716,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 						String idList = "";
 						AccountDao.deleteTransactionChildById(
-								EditTransactionActivity.this, _id);
+								EditTransactionActivity.this, _id,  mDbxAcctMgr, mDatastore);
 						for (Map<String, Object> iMap : mReturnList) {
 							String amount = (String) iMap.get("amount");
 							int cId = (Integer) iMap.get("categoryId");
@@ -721,7 +724,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									EditTransactionActivity.this, amount,
 									dateLong, isCleared, memoString, picPath,
 									0, cId, 1 + "", accountId,
-									incomeAccountDefault, _id, payeeId);
+									incomeAccountDefault, _id, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							idList = idList + id + ",";
 						}
 						Log.v("mtest", "row" + row);
@@ -1829,7 +1832,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

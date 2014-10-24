@@ -4,6 +4,7 @@ package com.appxy.pocketexpensepro.setting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Purchase;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.R.color;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -600,7 +602,7 @@ public class SettingActivity extends BaseHomeActivity {
 	    };
 
 		@Override
-		public void syncDateChange() {
+		public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 			// TODO Auto-generated method stub
 			
 		}

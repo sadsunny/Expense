@@ -3,10 +3,14 @@ package com.appxy.pocketexpensepro.setting.payee;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.category.CreatExpenseActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -36,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 
@@ -164,11 +169,27 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 								}
 							}).show();
 					
-				}else{
+				}else if( PayeeDao.selectCategoryUUidById(CreatPayeeActivity.this,categoryId) == null  ){
+					
+					new AlertDialog.Builder(CreatPayeeActivity.this)
+					.setTitle("Failed to add payee! ")
+					.setMessage("This category has been removed by other devices. Please choose another one. ")
+					.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+
+								}
+							}).show();
+				}{
 					
 					if(categoryId > 0){
-						long id = PayeeDao.insertPayee(CreatPayeeActivity.this, mPayeeName, mMemo, categoryId);
-						Log.v("mtest","id"+id);
+						long id = PayeeDao.insertPayee(CreatPayeeActivity.this, mPayeeName, mMemo, categoryId, mDbxAcctMgr, mDatastore);
+						
 						if (id > 0) {
 							Intent intent = new Intent();
 							intent.putExtra("_id", id);
@@ -583,8 +604,9 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		
 	}
 	

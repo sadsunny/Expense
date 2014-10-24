@@ -3,13 +3,16 @@ package com.appxy.pocketexpensepro.setting.category;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -29,6 +32,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class CreatExpenseActivity extends BaseHomeActivity {
@@ -106,7 +110,13 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 			case R.id.action_done:
 				String mCategoryString = mEditText.getText().toString();
 				mCategoryString = mCategoryString.replace(":", "");
-
+				
+				String parentString1 = null;
+				if (selectWhether != -1) {
+					   parentString1 = mButton.getText().toString();
+				}
+				
+				
 				if (mCategoryString == null
 						|| mCategoryString.trim().length() == 0
 						|| mCategoryString.trim().equals("")) {
@@ -147,7 +157,24 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 										}
 									}).show();
 
-				} else {
+				}else if( parentString1 != null && parentString1.length() > 0 && CategoryDao.selectCategoryByName(CreatExpenseActivity.this, parentString1).size() <= 0 ){
+					
+					new AlertDialog.Builder(CreatExpenseActivity.this)
+					.setTitle("Failed to add category! ")
+					.setMessage("This parent category has been removed by other devices. Please choose another one. ")
+					.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(
+										DialogInterface dialog,
+										int which) {
+									// TODO Auto-generated method stub
+									dialog.dismiss();
+
+								}
+							}).show();
+					
+				}else {
 
 					if (selectWhether != -1) {
 						String parentString = mButton.getText().toString();
@@ -155,7 +182,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 							long id = CategoryDao.insertCategory(
 									CreatExpenseActivity.this, parentString
 											+ ":" + mCategoryString, mcheck, 0,
-									iconPosition, 0);
+									iconPosition, 0, mDbxAcctMgr, mDatastore, System.currentTimeMillis(), "1", MEntity.getUUID());
 							if (id > 0) {
 								Intent intent = new Intent();
 								intent.putExtra("_id", id);
@@ -168,7 +195,7 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 
 						long id = CategoryDao.insertCategory(
 								CreatExpenseActivity.this, mCategoryString,
-								mcheck, 0, iconPosition, 0);
+								mcheck, 0, iconPosition, 0, mDbxAcctMgr, mDatastore, System.currentTimeMillis(), "1", MEntity.getUUID());
 						if (id > 0) {
 							Intent intent = new Intent();
 							intent.putExtra("_id", id);
@@ -305,9 +332,9 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 
 }

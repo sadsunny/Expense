@@ -3,9 +3,11 @@ package com.appxy.pocketexpensepro.setting.payee;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
 import android.annotation.SuppressLint;
@@ -35,6 +37,7 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 
@@ -71,7 +74,8 @@ public class EditPayeeActivity extends BaseHomeActivity {
     private int categoryTypeE;
     private String payeeMemoE;
     private String categoryNameE;
-     
+    private String uuid ; 
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -80,6 +84,8 @@ public class EditPayeeActivity extends BaseHomeActivity {
 
 		Intent intent = getIntent();
 		payeeId = intent.getIntExtra("_id", 0);
+		uuid = intent.getStringExtra("uuid");
+		
 		payeeDataList = PayeeDao.selectPayeeById(this, payeeId);
 		
 		payeeNameE = (String) payeeDataList.get(0).get("name");
@@ -167,7 +173,7 @@ public class EditPayeeActivity extends BaseHomeActivity {
 				} else {
 
 					if (categoryId > 0) {
-						long id = PayeeDao.updatePayee(EditPayeeActivity.this,payeeId,mPayeeName, mMemo, categoryId);
+						long id = PayeeDao.updatePayee(EditPayeeActivity.this,payeeId,mPayeeName, mMemo, categoryId, uuid, mDbxAcctMgr, mDatastore);
 						if (id > 0) {
 							Intent intent = new Intent();
 							intent.putExtra("_id", id);
@@ -607,9 +613,9 @@ public class EditPayeeActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 
 }

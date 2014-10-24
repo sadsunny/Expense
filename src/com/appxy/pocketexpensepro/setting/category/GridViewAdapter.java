@@ -30,7 +30,7 @@ public class GridViewAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return Common.CATEGORY_ICON.length;
+		return Common.CATEGORY_ICON.length-1 ; //最后一张IRA图片不显示
 	}
 
 	@Override

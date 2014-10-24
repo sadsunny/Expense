@@ -14,6 +14,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import com.appxy.pocketexpensepro.MainActivity;
@@ -28,6 +29,7 @@ import com.appxy.pocketexpensepro.overview.budgets.EditBudgetTransferActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -297,13 +299,16 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 									int _id = (Integer) childrenAllDataList
 											.get(groupPosition)
 											.get(childPosition).get("_id");
+									String uuid = (String)childrenAllDataList
+											.get(groupPosition)
+											.get(childPosition).get("uuid");
 
 								   if (arg2 == 0) {
 
 										long row = AccountDao
 												.deleteTransaction(
 														BudgetToTransactionActivity.this,
-														_id);
+														_id, uuid, mDbxAcctMgr,mDatastore);
 										alertDialog.dismiss();
 										Intent intent = new Intent();
 										intent.putExtra("row", row);
@@ -855,7 +860,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	}
 
 	@Override
-	public void syncDateChange() {
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -2,11 +2,17 @@ package com.appxy.pocketexpensepro.table;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
+import android.R.integer;
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
+import com.appxy.pocketexpensepro.setting.category.CategoryDao;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -26,11 +32,11 @@ public class BudgetItemTable {
 		private Date budgetitem_startdate;
 		private double budgetitem_amount;
 		private Date budgetitem_enddate;
-		private double budgetitem_rolloveramount;
+		private double budgetitem_rolloveramount = 0;
 		private Date dateTime;
 		private String state;
 		private String budgetitem_budgettemplate;
-		private int budgetitem_isrollover;
+		private int budgetitem_isrollover = 0;
 
 		public BudgetItem() {
 
@@ -96,8 +102,8 @@ public class BudgetItemTable {
 			return budgetitem_budgettemplate;
 		}
 
-		public void setBudgetitem_budgettemplate(String budgetitem_budgettemplate) {
-			this.budgetitem_budgettemplate = SyncDao.selectBudgetTemplateUUid(context, Integer.parseInt(budgetitem_budgettemplate) );
+		public void setBudgetitem_budgettemplate(int budgetitem_budgettemplate) {
+			this.budgetitem_budgettemplate = SyncDao.selectBudgetTemplateUUid(context, budgetitem_budgettemplate );
 		}
 
 		public int getBudgetitem_isrollover() {
@@ -106,6 +112,71 @@ public class BudgetItemTable {
 
 		public void setBudgetitem_isrollover(int budgetitem_isrollover) {
 			this.budgetitem_isrollover = budgetitem_isrollover;
+		}
+		
+		public void setIncomingData(DbxRecord iRecord) { 
+			
+			Log.v("mtag", "iRecordItm "+iRecord);
+			
+			if (iRecord.hasField("uuid")) {
+				uuid =  iRecord.getString("uuid");
+			}
+		
+			if (iRecord.hasField("budgetitem_startdate") ) {
+				budgetitem_startdate = iRecord.getDate("budgetitem_startdate");
+			}
+			
+			budgetitem_amount = iRecord.getDouble("budgetitem_amount");
+			
+			if ( iRecord.hasField("budgetitem_enddate")) {
+			budgetitem_enddate = iRecord.getDate("budgetitem_enddate");
+			}
+			
+			budgetitem_rolloveramount = iRecord.getDouble("budgetitem_rolloveramount");
+			dateTime = iRecord.getDate("dateTime");
+			state = iRecord.getString("state");
+			
+			if (iRecord.hasField("budgetitem_budgettemplate")) {
+				budgetitem_budgettemplate = iRecord.getString("budgetitem_budgettemplate");
+			}
+			
+			budgetitem_isrollover = (int)iRecord.getLong("budgetitem_isrollover");
+			
+		}
+		
+		public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+			
+			if (state.equals("0")) {
+				
+				BudgetsDao.deleteBudgetTemByUUId(context, uuid);
+				
+			} else if (state.equals("1")){
+				
+				List<Map<String, Object>> mList= BudgetsDao.checkBudgetItemByUUid(context, uuid);
+				if ( mList.size() > 0) {
+					
+				    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
+				    if (localDateTime_sync < dateTime.getTime()) {
+				    	
+				     BudgetsDao.updateBudgetItemAll(context, budgetitem_amount+"", BudgetsDao.selectBudgetTemplateIdByUUid(context, budgetitem_budgettemplate), budgetitem_startdate.getTime(), budgetitem_isrollover, budgetitem_enddate.getTime(), budgetitem_rolloveramount, dateTime.getTime(), state, uuid);
+					}
+					
+				}else {
+					Log.v("mtag", "budgetitem_amount "+budgetitem_amount);
+					Log.v("mtag", "budgetitem_startdate "+budgetitem_startdate);
+					Log.v("mtag", "budgetitem_isrollover "+budgetitem_isrollover);
+					Log.v("mtag", "budgetitem_enddate "+budgetitem_enddate);
+					
+					Log.v("mtag", "budgetitem_rolloveramount "+budgetitem_rolloveramount);
+					Log.v("mtag", "dateTime "+dateTime);
+					Log.v("mtag", "state "+state);
+					Log.v("mtag", "uuid "+uuid);
+					
+					
+					BudgetsDao.insertBudgetItemAll(context, budgetitem_amount+"", BudgetsDao.selectBudgetTemplateIdByUUid(context, budgetitem_budgettemplate), budgetitem_startdate.getTime(), budgetitem_isrollover, budgetitem_enddate.getTime(), budgetitem_rolloveramount, dateTime.getTime(), state, uuid);
+				}
+			}
+			
 		}
 
 		public void setBudgetItemData(Map<String, Object> mMap) {
@@ -125,22 +196,43 @@ public class BudgetItemTable {
 		public DbxFields getFields() {
 
 			DbxFields accountsFields = new DbxFields();
-			accountsFields.set("uuid", uuid);
-			accountsFields.set("budgetitem_startdate", budgetitem_startdate);
-			accountsFields.set("budgetitem_amount", budgetitem_amount);
-			accountsFields.set("budgetitem_enddate", budgetitem_enddate);
+			if (uuid != null) {
+				accountsFields.set("uuid", uuid);
+			}
+			
+			if (budgetitem_startdate != null) {
+				accountsFields.set("budgetitem_startdate", budgetitem_startdate);
+			}
+			
+			if (budgetitem_amount > 0 ) {
+				accountsFields.set("budgetitem_amount", budgetitem_amount);
+			}
+			
+			if (budgetitem_enddate != null) {
+				accountsFields.set("budgetitem_enddate", budgetitem_enddate);
+			}
+			
 			accountsFields.set("budgetitem_rolloveramount", budgetitem_rolloveramount);
 			
-			accountsFields.set("dateTime", dateTime);
-			accountsFields.set("state", state);
-			accountsFields.set("budgetitem_budgettemplate", budgetitem_budgettemplate);
+			if (dateTime != null) {
+				accountsFields.set("dateTime", dateTime);
+			}
+			
+			if (state != null) {
+				accountsFields.set("state", state);
+			}
+		
+			if (budgetitem_budgettemplate != null) {
+				accountsFields.set("budgetitem_budgettemplate", budgetitem_budgettemplate);
+			}
+			
 			accountsFields.set("budgetitem_isrollover", budgetitem_isrollover);
 			return accountsFields;
 		}
 
 	}
 
-	public void updateState(String uuid, int state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -150,13 +242,14 @@ public class BudgetItemTable {
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
 			mDatastore.sync();
 		}
 
 	}
 
-	public BudgetItem getBudgetItemType() {
+	public BudgetItem getBudgetItem() {
 		BudgetItem accounts = new BudgetItem();
 		return accounts;
 	}
@@ -168,10 +261,25 @@ public class BudgetItemTable {
 		this.context = context;
 	}
 
+	public void deleteAll() throws DbxException{
+		 DbxTable.QueryResult results = mTable.query();
+		 Iterator<DbxRecord> it = results.iterator();
+	    	while(it.hasNext())
+	    		
+	    	{
+	    		DbxRecord firstResult= it.next();
+	    		firstResult.deleteRecord(); 
+	    		mDatastore.sync();
+	    	}
+	    }
+	
+	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields();
-		queryParams.set("uuid", thisFields.getString("uuid"));
+		if (thisFields.hasField("budgetitem_budgettemplate")) {
+			
+		queryParams.set("budgetitem_budgettemplate", thisFields.getString("budgetitem_budgettemplate"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
 
@@ -190,7 +298,8 @@ public class BudgetItemTable {
 		} else {
 			mTable.insert(thisFields);
 		}
-
 	}
+
+}
 
 }
