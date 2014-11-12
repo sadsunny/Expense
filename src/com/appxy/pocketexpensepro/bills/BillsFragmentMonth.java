@@ -566,8 +566,8 @@ public class BillsFragmentMonth extends Fragment implements
 	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
 
 		if(mFlag == 1){
-			long row = BillsDao.deleteBill(mActivity, theId);
-			BillsDao.deleteBillObjectByParId(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
+			BillsDao.deleteBillObjectByParId(mActivity, theId, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -677,7 +677,7 @@ public class BillsFragmentMonth extends Fragment implements
 
 		long preDuedate = calendar.getTimeInMillis();
 
-		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
 		if (row > 0) {
 			 Intent service=new Intent(mActivity, NotificationService.class);  
@@ -741,7 +741,7 @@ public class BillsFragmentMonth extends Fragment implements
 	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
 
 		if (mFlag == 0) {
-			long row = BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -751,7 +751,7 @@ public class BillsFragmentMonth extends Fragment implements
 		}else if(mFlag == 2){
 			billVirtualThisDelete(theId,mMap);
 		}else if (mFlag == 3) {
-			long row = BillsDao.deleteBillObject(mActivity, theId);
+			long row = BillsDao.deleteBillObject(mActivity, theId, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -863,7 +863,7 @@ public class BillsFragmentMonth extends Fragment implements
 		
 		if (nextDuedate > bk_billEndDate) { 
 
-			row =BillsDao.deleteBill(mActivity, rowid);
+			row =BillsDao.deleteBill(mActivity, rowid,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -871,8 +871,8 @@ public class BillsFragmentMonth extends Fragment implements
 
 		} else {
 
-			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
-			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
+			BillsDao.deleteBillPayTransaction(mActivity, rowid,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (rowUp > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  

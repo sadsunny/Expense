@@ -1,10 +1,13 @@
 package com.appxy.pocketexpensepro.db;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 
 import android.R.integer;
 import android.content.ContentValues;
@@ -228,8 +231,8 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 			calendar.add(Calendar.DAY_OF_MONTH, -1);
 			long syncTime = calendar.getTimeInMillis();
 			
-			upgradeAccountType(paramSQLiteDatabase, syncTime);
 			upgradeCategory(paramSQLiteDatabase, syncTime);
+			upgradeAccountType(paramSQLiteDatabase, syncTime);
 			upgradePayee(paramSQLiteDatabase, syncTime);
 			upgradeAccount(paramSQLiteDatabase, syncTime);
 			upgradeBudgetTemplate(paramSQLiteDatabase, syncTime);
@@ -241,6 +244,18 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 			
 			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", syncTime, 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", syncTime, 10000);
 			DbDao.updateAccountOrder(paramSQLiteDatabase, (int)accountOrder , (int)accountOrder);
+		}
+		
+	}
+	
+	public void upgradeCategory(SQLiteDatabase db, long syncTime) {
+		Map<String, Integer> mMap = DbDao.selectCategory(db);
+		for (int i:mMap.values()) {
+			if (i > 0 && i< 50) {
+				DbDao.updateCategory(db, i, 1+"", DbEntity.categoryUUID[i-1], syncTime);
+			} else {
+				DbDao.updateCategory(db, i, 1+"", MEntity.getUUID(), syncTime);
+			}
 		}
 		
 	}
@@ -257,17 +272,6 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		
 	}
 	
-	public void upgradeCategory(SQLiteDatabase db, long syncTime) {
-		Map<String, Integer> mMap = DbDao.selectCategory(db);
-		for (int i:mMap.values()) {
-			if (i > 0 && i< 50) {
-				DbDao.updateCategory(db, i, 1+"", DbEntity.categoryUUID[i-1], syncTime);
-			} else {
-				DbDao.updateCategory(db, i, 1+"", MEntity.getUUID(), syncTime);
-			}
-		}
-		
-	}
 	
 	public void upgradePayee(SQLiteDatabase db, long syncTime) {
 		Map<String, Integer> mMap = DbDao.selectPayee(db);
@@ -331,12 +335,33 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 	}
 	
 	
+	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的月日年
+		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(milliSeconds);
+		return formatter.format(calendar.getTime());
+	}
+	
 	public void upgradeEP_BillItem(SQLiteDatabase db, long syncTime) {
-		Map<String, Integer> mMap = DbDao.selectEP_BillItem(db);
-		for (int i:mMap.values()) {
-			if (i > 0) {
-				DbDao.updateEP_BillItem(db, i, 1+"", MEntity.getUUID(), syncTime);
+		 List<Map<String, Object>> mList = DbDao.selectBillItemBy(db);
+		
+		for (Map<String, Object> iMap:mList) {
+			
+			int _id = (Integer)iMap.get("_id");
+			long ep_billDueDate = (Long)iMap.get("ep_billDueDate");
+			int billItemHasBillRule = (Integer)iMap.get("billItemHasBillRule");
+			
+			String ruleUUId = DbDao.selectBillRuleUUid(db, billItemHasBillRule);
+			String ep_billItemString1 = null ;
+			if (ruleUUId != null) {
+				  ep_billItemString1 = DbDao.selectBillRuleUUid(db, billItemHasBillRule)+" "+turnMilltoDate(ep_billDueDate) ;
+			}
+					 
+			if (_id > 0) {
+				DbDao.updateEP_BillItem(db, _id, 1+"", MEntity.getUUID(), syncTime, ep_billItemString1);
 			} 
+			
+			
 		}
 		
 	}

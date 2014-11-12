@@ -318,6 +318,39 @@ public class DbDao {
 	}
 	
 	
+	public static List<Map<String, Object>> selectBillItemBy(SQLiteDatabase db) { // Bill特例事件查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		
+		String sql = "select a.*, from EP_BillItem a";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			Map<String, Object> mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			int ep_billisDelete = mCursor.getInt(2);
+			long ep_billDueDate = mCursor.getLong(8);
+			long ep_billItemDueDateNew = mCursor.getLong(9);
+			int billItemHasBillRule = mCursor.getInt(20);
+			
+			long positTime = ep_billDueDate;
+			
+			if (ep_billisDelete == 2) {
+				positTime = ep_billItemDueDateNew;
+			}
+			
+			mMap.put("_id", _id);
+			mMap.put("ep_billDueDate", positTime);
+			mMap.put("billItemHasBillRule", billItemHasBillRule);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		return mList;
+	}
+	
+	
 	public static Map<String, Integer> selectEP_BillItem(SQLiteDatabase db) {
 
 		Map<String, Integer> mMap = new HashMap<String, Integer>();
@@ -332,14 +365,15 @@ public class DbDao {
 	}
 	
 	public static long updateEP_BillItem(SQLiteDatabase db, int _id, String state,
-			String uuid, long dateTime_sync) {
+			String uuid, long dateTime_sync, String ep_billItemString1) {
 
 		ContentValues cv = new ContentValues();
 
 		cv.put("uuid", uuid);
 		cv.put("state", state);
 		cv.put("dateTime", dateTime_sync);
-
+		cv.put("ep_billItemString1", ep_billItemString1 );
+		
 		try {
 			long id = db.update("EP_BillItem", cv, "_id = ?", new String[] { _id
 					+ "" });
@@ -349,6 +383,16 @@ public class DbDao {
 			return 0;
 		}
 
+	}
+	
+	public static String selectBillRuleUUid(SQLiteDatabase db, int id) {
+		String sql = "select a.* from EP_BillRule a where a._id = " + id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		String uuid = null;
+		while (mCursor.moveToNext()) {
+			uuid = mCursor.getString(17);
+		}
+		return uuid;
 	}
 	
 	

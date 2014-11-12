@@ -17,10 +17,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.view.LayoutInflater;
 
+import com.appxy.pocketexpensepro.db.CascadeDeleteDao;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.appxy.pocketexpensepro.table.BudgetItemTable;
+import com.appxy.pocketexpensepro.table.TransactionTable;
 import com.appxy.pocketexpensepro.table.BudgetItemTable.BudgetItem;
 import com.appxy.pocketexpensepro.table.BudgetTemplateTable;
 import com.appxy.pocketexpensepro.table.BudgetTemplateTable.BudgetTemplate;
@@ -344,9 +346,12 @@ public class BudgetsDao {
 		List<Map<String, Object>> itemList = selectItemById(context, id);
 		int tem_id = (Integer) itemList.get(0).get("budgetTemplate");
 
+		
 		String _id = id + "";
 		long row = 0;
 		try {
+			
+			List<Map<String, Object>> transferList = CascadeDeleteDao.selecBudgetTransferByItem(context, id);
 			
 			row = db.delete("BudgetItem", "_id = ?", new String[] { _id });
 			
@@ -356,6 +361,14 @@ public class BudgetsDao {
 					if (mDatastore == null) {
 						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
 					}
+					
+					   for (Map<String, Object> tMap : transferList) { // 先删除transfer
+
+					    	int s_id = (Integer) tMap.get("_id");
+							String sUuid = (String)tMap.get("uuid");
+							BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, context);
+							budgetTransferTable.updateState(sUuid, "0");
+					  }
 					
 					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, context);
 					budgetItemTable.updateState(itemUUId, "0");
@@ -383,6 +396,7 @@ public class BudgetsDao {
 					
 					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, context);
 					budgetTemplateTable.updateState(tempUUidString, "0");
+					mDatastore.sync();
 				}
 			}
 		} catch (Exception e) {
@@ -390,6 +404,8 @@ public class BudgetsDao {
 			trow = 0;
 			
 		}
+		
+		
 		db.close();
 		return row;
 	}

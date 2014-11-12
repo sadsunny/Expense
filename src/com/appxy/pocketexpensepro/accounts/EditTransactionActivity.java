@@ -26,6 +26,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
@@ -77,6 +78,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -161,7 +163,8 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private List<Map<String, Object>> mDataList1;
 	private int transactionHasBillItem  ;
 	private int transactionHasBillRule  ;
-	
+	private String uuid ;
+	 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -192,7 +195,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		if (_id <= 0) {
 			finish();
 		}
-
+		uuid = SyncDao.selecTransactionUUid(this, _id);
+		Log.v("mtag", "编辑uuid"+uuid);
+		
 		List<Map<String, Object>> mInitializeDataList = AccountDao
 				.selectTransactionByID(this, _id);
 		Log.v("mtest", "mInitializeDataList"+mInitializeDataList);
@@ -712,7 +717,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 								EditTransactionActivity.this, amountString,
 								dateLong, isCleared, memoString, picPath, 0,
 								categoryDefault, childTransactionsDefault + "",
-								accountId, incomeAccountDefault, -1, payeeId); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
+								accountId, incomeAccountDefault, -1, payeeId, uuid, mDbxAcctMgr,mDatastore); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
 
 						String idList = "";
 						AccountDao.deleteTransactionChildById(
@@ -745,7 +750,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									dateLong, isCleared, memoString, picPath,
 									recurringTpye, categoryId,
 									childTransactionsDefault + "", accountId,
-									incomeAccountDefault, 0, payeeId);
+									incomeAccountDefault, 0, payeeId, uuid, mDbxAcctMgr,mDatastore);
 						} else {
 							long row = AccountDao.updateTransactionAll(_id,
 									EditTransactionActivity.this, amountString,
@@ -753,7 +758,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									recurringTpye, categoryId,
 									childTransactionsDefault + "",
 									expenseAccountDefault, accountId, 0,
-									payeeId);
+									payeeId, uuid, mDbxAcctMgr,mDatastore);
 						}
 					}
 					    Intent resultintent = new Intent();
@@ -1834,6 +1839,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 }

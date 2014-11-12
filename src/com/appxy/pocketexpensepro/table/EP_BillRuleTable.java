@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.bills.BillsDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
@@ -205,29 +206,31 @@ public class EP_BillRuleTable {
 					
 				} else if (state.equals("1")){
 					
+					int mRecurringType = MEntity.positionRecurring(billrule_ep_recurringtype);
+					long mEndDate = -1;
+					if (mRecurringType > 0 && billrule_ep_billenddate != null) {
+						mEndDate = billrule_ep_billenddate.getTime();
+					}else {
+						mEndDate = -1;
+					}
+					int mReminderDate = MEntity.positionReminder(billrule_ep_reminderdate);
+					long mReminderTime = 0;
+					
+					if (mReminderDate > 0) {
+						 mReminderTime = billrule_ep_remindertime.getTime() - billrule_ep_billduedate.getTime();
+					}
+					
+					
 					List<Map<String, Object>> mList= BillsDao.checkBillRuleByUUid(context, uuid);
 					if ( mList.size() > 0) {
 						
 					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
 					    if (localDateTime_sync < dateTime.getTime()) {
 					    	
-						}
+					    BillsDao.updateBillRuleAll(context, billrule_ep_billamount, billrule_ep_billduedate.getTime(), mEndDate, billrule_ep_billname, billrule_ep_note,
+									mRecurringType, mReminderDate, mReminderTime, PayeeDao.selectCategoryIdByUUid(context, billrulehascategory), PayeeDao.selectPayeeIdByUUid(context, billrulehaspayee), dateTime.getTime(), state, uuid);						}
 						
 					}else {
-						
-						int mRecurringType = MEntity.positionRecurring(billrule_ep_recurringtype);
-						long mEndDate = -1;
-						if (mRecurringType > 0 && billrule_ep_billenddate != null) {
-							mEndDate = billrule_ep_billenddate.getTime();
-						}else {
-							mEndDate = -1;
-						}
-						int mReminderDate = MEntity.positionReminder(billrule_ep_reminderdate);
-						long mReminderTime = 0;
-						if (mReminderDate > 0) {
-							 mReminderTime = billrule_ep_remindertime.getTime() - billrule_ep_billduedate.getTime();
-						}
-						
 						
 						BillsDao.insertBillRuleAll(context, billrule_ep_billamount, billrule_ep_billduedate.getTime(), mEndDate, billrule_ep_billname, billrule_ep_note,
 								mRecurringType, mReminderDate, mReminderTime, PayeeDao.selectCategoryIdByUUid(context, billrulehascategory), PayeeDao.selectPayeeIdByUUid(context, billrulehaspayee), dateTime.getTime(), state, uuid);
@@ -235,10 +238,8 @@ public class EP_BillRuleTable {
 			}
 				
 		}
-		 
 		
-		
-		public long getMillis2Int(long mills) { // 除去时分秒的时间
+		public long getMillis2Int(long mills) {
 			Date date1 = new Date();
 			date1.setTime(mills);
 			SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
@@ -281,10 +282,34 @@ public class EP_BillRuleTable {
 			
 		}
 
+		public DbxFields getFieldsApart() {
+
+			DbxFields accountsFields = new DbxFields();
+			
+			if (uuid != null) {
+				accountsFields.set("uuid", uuid);
+			}
+		
+			if (dateTime != null) {
+				accountsFields.set("dateTime", dateTime);
+			}
+			
+			if (billrule_ep_billenddate !=null) {
+				accountsFields.set("billrule_ep_billenddate",billrule_ep_billenddate);
+			}
+			
+			return accountsFields;
+		}
+
+		
 		public DbxFields getFields() {
 
 			DbxFields accountsFields = new DbxFields();
-			accountsFields.set("uuid", uuid);
+			
+			if (uuid != null) {
+				accountsFields.set("uuid", uuid);
+			}
+		
 			accountsFields.set("billrule_ep_billamount",billrule_ep_billamount);
 			
 			if (billrulehascategory != null) {
@@ -294,12 +319,25 @@ public class EP_BillRuleTable {
 			if (billrulehaspayee != null && billrulehaspayee.length() > 0) {
 				accountsFields.set("billrulehaspayee", billrulehaspayee);
 			}
-			accountsFields.set("dateTime", dateTime);
-			accountsFields.set("state", state);
-			accountsFields.set("billrule_ep_recurringtype",billrule_ep_recurringtype);
-			accountsFields.set("billrule_ep_reminderdate", billrule_ep_reminderdate);
-			accountsFields.set("billrule_ep_billname",billrule_ep_billname);
-			accountsFields.set("billrule_ep_billduedate",billrule_ep_billduedate);
+			if (dateTime != null) {
+				accountsFields.set("dateTime", dateTime);
+			}
+			if (state != null) {
+				accountsFields.set("state", state);
+			}
+			if (billrule_ep_recurringtype != null) {
+				accountsFields.set("billrule_ep_recurringtype",billrule_ep_recurringtype);
+			}
+			if (billrule_ep_reminderdate != null) {
+				accountsFields.set("billrule_ep_reminderdate", billrule_ep_reminderdate);
+			}
+			if (billrule_ep_billname != null) {
+				accountsFields.set("billrule_ep_billname",billrule_ep_billname);
+			}
+			if (billrule_ep_billduedate != null) {
+				accountsFields.set("billrule_ep_billduedate",billrule_ep_billduedate);
+			}
+			
 			if (billrule_ep_note != null && billrule_ep_note.length() >0) {
 				accountsFields.set("billrule_ep_note",billrule_ep_note);
 			}
@@ -360,7 +398,11 @@ public class EP_BillRuleTable {
 	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
+		Log.v("mtag", "insertRecords"+thisFields);
+		
 		DbxFields queryParams = new DbxFields();
+		if (thisFields.hasField("uuid")) {
+			
 		queryParams.set("uuid", thisFields.getString("uuid"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
@@ -380,7 +422,8 @@ public class EP_BillRuleTable {
 		} else {
 			mTable.insert(thisFields);
 		}
-
 	}
+
+}
 
 }

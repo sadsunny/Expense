@@ -163,7 +163,7 @@ public class PayeeDao {
 	
 	public static long deletePayee(Context context, int id, String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
-		db.execSQL("PRAGMA foreign_keys = ON ");
+//		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
 		long row = 0;
 		try {

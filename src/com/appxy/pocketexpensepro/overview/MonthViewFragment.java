@@ -19,6 +19,7 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
@@ -46,7 +47,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class MonthViewFragment extends Fragment implements
-		OnUpdateListListener, OnUpdateMonthListener {
+		OnUpdateListListener, OnUpdateMonthListener , OnSyncFinishedListener{
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private static final int MID_VALUE = 10000;
@@ -262,6 +263,7 @@ public class MonthViewFragment extends Fragment implements
 
 		if (isVisibleToUser) {
 
+			MainActivity.attachFragment = this;
 			// weekCallBack.OnWeekSelected(selectedDate);
 			//
 			if (mThread == null) {
@@ -523,6 +525,12 @@ public class MonthViewFragment extends Fragment implements
 
 	@Override
 	public void OnUpdateMonth() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
+	}
+
+	@Override
+	public void onSyncFinished() {
 		// TODO Auto-generated method stub
 		mHandler.post(mTask);
 	}

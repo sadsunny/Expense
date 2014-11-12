@@ -273,7 +273,8 @@ public class Activity_ChangePass extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 	
 

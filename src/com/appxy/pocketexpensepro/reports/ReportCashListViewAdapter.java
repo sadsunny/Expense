@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.Common;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -71,7 +72,7 @@ public class ReportCashListViewAdapter extends BaseAdapter {
 
 
 		viewholder.dateTextView.setText(mData.get(position).get("date")+"");
-		viewholder.currencyTextView.setText("$");
+		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		
 		double preDouble = (Double) mData.get((position-1)>0?(position-1):0).get("amount");
 		double thisDouble = (Double) mData.get(position).get("amount");

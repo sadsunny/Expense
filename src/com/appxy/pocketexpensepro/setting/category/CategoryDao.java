@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.appxy.pocketexpensepro.db.CascadeDeleteDao;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.table.CategoryTable;
@@ -285,6 +286,9 @@ public class CategoryDao {
 		String _id = id + "";
 		long row = 0;
 		try {
+			
+			CascadeDeleteDao.CascadedeleteCategoryById(context, id, mDbxAcctMgr, mDatastore);
+			
 			row = db.delete("Category", "_id = ?", new String[] { _id });
 			
 			if (row > 0) {

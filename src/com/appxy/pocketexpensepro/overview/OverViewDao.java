@@ -48,7 +48,8 @@ public class OverViewDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-
+			String uuid =  mCursor.getString(16);
+			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
@@ -64,6 +65,7 @@ public class OverViewDao {
 			mMap.put("payee", payee);
 			mMap.put("transactionHasBillItem", transactionHasBillItem);
 			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("uuid", uuid);
 
 			mList.add(mMap);
 		}

@@ -13,6 +13,7 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnBillToActivityListener;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
 
@@ -32,7 +33,7 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 @SuppressLint("ValidFragment")
-public class MonthFragment extends Fragment {
+public class MonthFragment extends Fragment implements OnSyncFinishedListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -89,6 +90,8 @@ public class MonthFragment extends Fragment {
 
 		if (isVisibleToUser) {
 
+			MainActivity.attachFragment = this;
+			
 			if (mThread == null) {
 				mThread = new Thread(mTask);
 				mThread.start();
@@ -284,6 +287,18 @@ public class MonthFragment extends Fragment {
 
 		}
 
+	}
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		onBillToActivityListener.OnBillToActivity();
+		if (mThread == null) {
+			mThread = new Thread(mTask);
+			mThread.start();
+		}else {
+			mHandler.post(mTask);
+		}
 	}
 
 }

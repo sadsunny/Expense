@@ -597,7 +597,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 												categoryId,
 												childTransactionsDefault + "",
 												accountId, incomeAccountDefault, 0,
-												payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+												payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
 							} else {
 								long row = TransactionDao.insertTransactionAll(
 										CreatTransactionActivity.this,
@@ -605,7 +605,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 										memoString, picPath, recurringTpye,
 										categoryId, childTransactionsDefault + "",
 										expenseAccountDefault, accountId, 0,
-										payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+										payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
 							}
 							
 						}
@@ -1603,6 +1603,5 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",
 				Toast.LENGTH_SHORT).show();
-		Log.v("mtag", "刷新页面creat");
 	}
 }

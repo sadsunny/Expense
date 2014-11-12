@@ -9,8 +9,10 @@ import java.util.Map;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
+import com.appxy.pocketexpensepro.expinterface.ReturnFragmentListenter;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.DragSortController;
 
@@ -55,7 +57,10 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 
 	private TextView netTextView;
 	private TextView outTextView;
-
+	private TextView currency_txt1;
+	private TextView currency_txt2;
+	
+	
 	public static SectionController c;
 	private LayoutInflater mInflater;
 	public static int sortCheck = 0; // 是否正在排序
@@ -80,6 +85,8 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		// TODO Auto-generated method stub
 		super.onResume();
 		
+		currency_txt1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currency_txt2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		mAccountsListViewAdapter.notifyDataSetChanged();
 	}
 	
@@ -141,6 +148,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = activity;
+		MainActivity.attachFragment = this;
 	}
 
 	@Override
@@ -155,6 +163,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		this.mInflater = inflater;
+		
 		View view = inflater.inflate(R.layout.fragment_account, container,
 				false);
 		
@@ -168,6 +177,8 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		netTextView = (TextView) view.findViewById(R.id.net_worth_txt);
 		outTextView = (TextView) view.findViewById(R.id.outstanding_txt);
 		notiTextView= (TextView)view.findViewById(R.id.notice_txt);
+		currency_txt1 = (TextView)view.findViewById(R.id.currency_txt1);
+		currency_txt2  = (TextView)view.findViewById(R.id.currency_txt2);
 		
 		mListView = (DragSortListView) view.findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(mActivity);
@@ -573,5 +584,6 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		mHandler.post(mTask);
 		
 	}
+
 
 }

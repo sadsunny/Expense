@@ -45,6 +45,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class BillPayActivity extends BaseHomeActivity {
@@ -271,8 +272,12 @@ public class BillPayActivity extends BaseHomeActivity {
 				}else{
 
 				if (indexflag == 0 || indexflag == 1) {
-					long row = BillsDao.insertTransactionRule(BillPayActivity.this,
-							amountString, (dateLong+MEntity.getHMSMill()), accountId, _id,categoryId,payeeId,1,0);
+					
+					
+					long row = TransactionDao.insertTransactionAll(BillPayActivity.this, amountString, (dateLong+MEntity.getHMSMill()), 1, null, null, 0, categoryId, "0",
+							accountId, 0, 0, payeeId, null, 0, _id, mDbxAcctMgr, mDatastore);
+
+					
 					if(row > 0){
 						Intent intent = new Intent();
 						intent.putExtra("_id", row);
@@ -308,15 +313,16 @@ public class BillPayActivity extends BaseHomeActivity {
 							ep_billItemRecurringType, ep_billItemReminderDate,
 							ep_billItemReminderTime, billItemHasBillRule,
 							billItemHasCategory, billItemHasPayee, mDbxAcctMgr, mDatastore);
+					
 					mMap.put("_id", (int) row);
 					mMap.put("ep_billisDelete", 0);
 					mMap.put("ep_billItemDueDateNew", ep_billItemDueDateNew);
 					mMap.put("billItemHasBillRule", _id);
 					mMap.put("indexflag", 3);
 
-					long row1 = BillsDao.insertTransactionItem(
-							BillPayActivity.this, amountString, (dateLong+MEntity.getHMSMill()),
-							accountId, (int) row, categoryId,payeeId,1,0);
+					long row1 = TransactionDao.insertTransactionAll(BillPayActivity.this, amountString,  (dateLong+MEntity.getHMSMill()), 1, new String(),  new String(), 0, categoryId, "0",
+							accountId, 0, 0, payeeId,  new String(), (int) row, 0, mDbxAcctMgr, mDatastore);
+					
 					if(row1 > 0){
 						Intent intent = new Intent();
 						intent.putExtra("_id", row);
@@ -329,8 +335,9 @@ public class BillPayActivity extends BaseHomeActivity {
 
 				} else if (indexflag == 3) {
 
-					long row = BillsDao.insertTransactionItem(BillPayActivity.this,
-							amountString, (dateLong+MEntity.getHMSMill()), accountId, _id,categoryId,payeeId,1,0);
+					long row = TransactionDao.insertTransactionAll(BillPayActivity.this, amountString,  (dateLong+MEntity.getHMSMill()), 1, null, null, 0, categoryId, "0",
+							accountId, 0, 0, payeeId, null, _id, 0, mDbxAcctMgr, mDatastore);
+					
 					if(row >0){
 						Intent intent = new Intent();
 						intent.putExtra("_id", row);
@@ -468,6 +475,8 @@ public class BillPayActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 		
 	}
 

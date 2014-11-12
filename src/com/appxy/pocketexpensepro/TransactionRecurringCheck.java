@@ -10,6 +10,10 @@ import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
+import com.appxy.pocketexpensepro.table.TransactionTable;
+import com.appxy.pocketexpensepro.table.TransactionTable.Transaction;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
 import android.accounts.Account;
 import android.content.ContentValues;
@@ -20,7 +24,7 @@ import android.util.Log;
 public class TransactionRecurringCheck {
 	
 	
-	public static void recurringCheck(Context context, long today) {
+	public static void recurringCheck(Context context, long today, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		List<Map<String, Object>> mList = AccountDao.selectTransactionRecurringOverToday(context, today);
 		
 		ExpenseDBHelper helper = new ExpenseDBHelper(context);
@@ -77,7 +81,7 @@ public class TransactionRecurringCheck {
 			if (calendar.getTimeInMillis() <= MEntity.getNowMillis()) {
 				
 				String transactionstring1 = uuid+MEntity.turnMilltoDate(dateTime);
-				updateTransactionRecurring(db, context, id, transactionstring1);
+				updateTransactionRecurring(db, context, id,uuid, transactionstring1, mDbxAcctMgr, mDatastore);
 			
 //			db.beginTransaction();  //手动设置开始事务
 			
@@ -86,10 +90,11 @@ public class TransactionRecurringCheck {
 	        	while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
 	        		
 	        		String transactionstring = uuid+MEntity.turnMilltoDate(calendar.getTimeInMillis());
+	        		
 						 TransactionDao.insertTransactionOne(db,context,amount, calendar.getTimeInMillis(), isClear,
 								 notes, photoName, 0,
 								 category,
-								 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,transactionstring);
+								 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,transactionstring, mDbxAcctMgr, mDatastore);
 	        		
 					if (recurringTpye == 1) {
 						calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -123,7 +128,7 @@ public class TransactionRecurringCheck {
 	        	 TransactionDao.insertTransactionOne(db,context,amount, calendar.getTimeInMillis(), isClear,
 						 notes, photoName, recurringTpye,
 						 category,
-						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,"");
+						 childTransactions + "",expenseAccount, incomeAccount, parTransaction, payee,null, mDbxAcctMgr, mDatastore);
 	        	 
 //	            db.setTransactionSuccessful(); //设置事务处理成功，不设置会自动回滚不提交
 	           
@@ -140,16 +145,41 @@ public class TransactionRecurringCheck {
 		}
 	}
 	
-	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id, String transactionstring) { // AccountType插入
+	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id,String uuid, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
 
+		long syncTime = System.currentTimeMillis();
+		
 		ContentValues cv = new ContentValues();
 		cv.put("recurringType", 0);
 		cv.put("transactionstring",transactionstring);
+		cv.put("dateTime_sync", syncTime);
+		
 		
 		String mId = _id + "";
 		try {
-			long id = db
-					.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			long id = db.update("'Transaction'", cv, "_id = ?", new String[] { mId });
+			
+			if (id > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
+					Transaction transaction = transactionTable.getTransaction();
+					
+					transaction.setUuid(uuid);
+					transaction.setDateTime_sync(MEntity.getMilltoDateFormat(syncTime));
+					transaction.setTrans_recurringtype(0);
+					transaction.setTrans_string(transactionstring);
+					transactionTable.insertRecords(transaction.getFields());
+					mDatastore.sync();
+					
+				}
+					
+			}
+			
 			return id;
 		} catch (Exception e) {
 			// TODO: handle exception

@@ -44,6 +44,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * 对CreatAccountTypeActivity发出Result code 1
@@ -523,7 +524,8 @@ public class EditAccountActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import android.R.integer;
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -179,6 +180,13 @@ public class TransactionTable {
 					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
 					    if (localDateTime_sync < dateTime_sync.getTime()) {
 					    	
+					    	 TransactionDao.updateTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
+										trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
+										new String(), TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
+										TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
+										PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
+										dateTime_sync.getTime(), state, uuid);
+										
 
 						}
 						
@@ -232,10 +240,54 @@ public class TransactionTable {
 			}
 			
 		}
+		
+		public DbxFields getFieldsApart() {
+
+			DbxFields accountsFields = new DbxFields();
+			
+			if (trans_expenseaccount != null && trans_expenseaccount.length() > 0) {
+				accountsFields.set("trans_expenseaccount", trans_expenseaccount);
+			}
+			accountsFields.set("trans_amount",trans_amount);
+			
+			accountsFields.set("dateTime_sync",dateTime_sync);
+		
+			accountsFields.set("trans_datetime",trans_datetime);
+			
+			if (uuid != null) {
+				accountsFields.set("uuid",uuid);
+			}
+			return accountsFields;
+		}
+
+		
+		public DbxFields getFieldsApart1() {
+			
+			DbxFields accountsFields = new DbxFields();
+			
+			accountsFields.set("dateTime_sync",dateTime_sync);
+			
+			if (trans_recurringtype != null && trans_recurringtype.length() > 0) {
+				accountsFields.set("trans_recurringtype",trans_recurringtype);
+			}
+			
+			if (trans_string != null && trans_string.length()  > 0) {
+				accountsFields.set("trans_string", trans_string);
+			}
+			
+			if (uuid != null) {
+				accountsFields.set("uuid",uuid);
+			}
+			
+			return accountsFields;
+			
+		}
 
 		public DbxFields getFields() {
 
 			DbxFields accountsFields = new DbxFields();
+			
+			
 			if (trans_expenseaccount != null && trans_expenseaccount.length() > 0) {
 				accountsFields.set("trans_expenseaccount", trans_expenseaccount);
 			}
@@ -247,25 +299,40 @@ public class TransactionTable {
 				accountsFields.set("trans_notes",trans_notes);
 			}
 			
+			if (trans_payee != null) {
+				accountsFields.set("trans_payee", trans_payee);
+			}
 			
-			accountsFields.set("trans_payee", trans_payee);
 			if (trans_string != null && trans_string.length()  > 0) {
 				accountsFields.set("trans_string", trans_string);
 			}
+			
 			if (trans_category != null && trans_category.length() > 0) {
 				accountsFields.set("trans_category", trans_category);
 			}
-			accountsFields.set("dateTime_sync",dateTime_sync);
 			
-			accountsFields.set("state", state);
+			if (dateTime_sync != null) {
+				accountsFields.set("dateTime_sync",dateTime_sync);
+			}
+			
+			if (state !=  null) {
+				accountsFields.set("state", state);
+			}
+			
 			if (trans_recurringtype != null && trans_recurringtype.length() > 0) {
 				accountsFields.set("trans_recurringtype",trans_recurringtype);
 			}
 		
-			accountsFields.set("trans_datetime",trans_datetime);
+			if (trans_datetime != null) {
+				accountsFields.set("trans_datetime",trans_datetime);
+			}
+			
 			accountsFields.set("trans_isclear",trans_isclear);
 			
-			accountsFields.set("uuid",uuid);
+			if (uuid != null) {
+				accountsFields.set("uuid",uuid);
+			}
+			
 			if (trans_partransaction != null && trans_partransaction.length()  > 0) {
 				accountsFields.set("trans_partransaction",trans_partransaction);
 			}
@@ -276,28 +343,48 @@ public class TransactionTable {
 				accountsFields.set("trans_billrule",trans_billrule);
 			}
 			
-			
 			return accountsFields;
 		}
 
 	}
 
-	public void updateState(String uuid, String state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String trans_string, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
 
 		if (it.hasNext()) {
+			
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
-			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
+			mUpdateFields.set("dateTime_sync", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
-			mDatastore.sync();
-		}
+			
+		}else{
+			
+			if (trans_string != null) {
+				
+			DbxFields queryParams1 = new DbxFields().set("trans_string", trans_string);
+			DbxTable.QueryResult results1 = mTable.query(queryParams1);
+			Iterator<DbxRecord> it1 = results1.iterator();
 
+			if (it1.hasNext()) {
+				
+				DbxRecord record = it1.next();
+				DbxFields mUpdateFields = new DbxFields();
+				mUpdateFields.set("state", state);
+				mUpdateFields.set("dateTime_sync", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
+				record.setAll(mUpdateFields);
+				
+			}
+			
+		 }
+			
+		}
 	}
+	
 
 	public Transaction getTransaction() {
 		Transaction accounts = new Transaction();
@@ -326,14 +413,18 @@ public class TransactionTable {
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
 		DbxFields queryParams = new DbxFields();
+		
+		if (thisFields.hasField("uuid")) {
+			
 		queryParams.set("uuid", thisFields.getString("uuid"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
-
+		
 		if (it.hasNext()) {
+			
 			DbxRecord firstResult = it.next();
 			if (firstResult.getDate("dateTime_sync").getTime() <= thisFields.getDate(
-					"dateTime_sync").getTime()) { // 比对同步时间
+					"dateTime_sync").getTime()) { 
 
 				firstResult.setAll(thisFields);
 				while (it.hasNext()) {
@@ -343,9 +434,34 @@ public class TransactionTable {
 			}
 
 		} else {
-			mTable.insert(thisFields);
-		}
+			
+			DbxFields queryParams1 = new DbxFields();
+			queryParams.set("trans_string", thisFields.getString("trans_string"));
+			DbxTable.QueryResult results1 = mTable.query(queryParams1);
+			Iterator<DbxRecord> it1 = results1.iterator();
+			
+			if (it1.hasNext()) {
+				
+				DbxRecord firstResult = it1.next();
+				if (firstResult.getDate("dateTime_sync").getTime() <= thisFields.getDate(
+						"dateTime_sync").getTime()) { 
 
+					firstResult.setAll(thisFields);
+					while (it.hasNext()) {
+						DbxRecord r = it.next();
+						r.deleteRecord();
+					}
+				}
+
+			} else {
+				
+				mTable.insert(thisFields);
+			}
+			
+		}
+		
 	}
+		
+}
 
 }

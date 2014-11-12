@@ -65,6 +65,7 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 				for (int i = 0; i < groupCount; i++) {
 					mExpandableListView.expandGroup(i);
 				}
+				
 				// mExpandableListView
 				// .setOnGroupClickListener(new OnGroupClickListener() {
 				//
@@ -177,10 +178,8 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
 			// TODO Auto-generated method stub
-			final int groupPosition = mExpandableListView
-					.getPackedPositionGroup(arg3);
-			final int childPosition = mExpandableListView
-					.getPackedPositionChild(arg3);
+			final int groupPosition = mExpandableListView.getPackedPositionGroup(arg3);
+			final int childPosition = mExpandableListView.getPackedPositionChild(arg3);
 
 			final int mPositionType = ExpandableListView
 					.getPackedPositionType(arg3);

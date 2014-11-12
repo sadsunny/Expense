@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
@@ -62,7 +63,9 @@ public class AccountActivity extends BaseHomeActivity {
 
 	private TextView netTextView;
 	private TextView outTextView;
-
+	private TextView currency_txt1;
+	private TextView currency_txt2;
+	
 	public static SectionController c;
 	private LayoutInflater mInflater;
 	public static int sortCheck = 0; // 是否正在排序
@@ -131,6 +134,16 @@ public class AccountActivity extends BaseHomeActivity {
 		}
 
 	};
+  
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		currency_txt1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currency_txt2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+	}
+
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -148,7 +161,9 @@ public class AccountActivity extends BaseHomeActivity {
 		tranfer_linearLayout.setOnClickListener(mClickListener);
 		netTextView = (TextView)findViewById(R.id.net_worth_txt);
 		outTextView = (TextView)findViewById(R.id.outstanding_txt);
-		notiTextView= (TextView)findViewById(R.id.notice_txt);
+		notiTextView = (TextView)findViewById(R.id.notice_txt);
+		currency_txt1 = (TextView)findViewById(R.id.currency_txt1);
+		currency_txt2  = (TextView)findViewById(R.id.currency_txt2);
 		
 		mListView = (DragSortListView)findViewById(R.id.mListview);
 		mAccountsListViewAdapter = new AccountsListViewAdapter(this);

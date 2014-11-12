@@ -122,8 +122,8 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
+		MainActivity.attachFragment = this;
 	}
-	
 	
 	
 	@Override
@@ -136,8 +136,6 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 			MainActivity.sqlChange = 0;
 		}
 	}
-
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -153,6 +151,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		
 		View view = inflater.inflate(R.layout.fragment_bill_list, container,
 				false);
 		mInflater = inflater;
@@ -313,7 +312,6 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 					deleteThisBill(mFlag,mId,mMap);
 					mHandler.post(mTask);
 				}
-
 			}
 
 		}else if(mFlag == 3){
@@ -381,8 +379,8 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 	public void deleteAllFuture(int mFlag ,int theId ,Map<String, Object> mMap) {
 
 		if(mFlag == 1){
-			long row = BillsDao.deleteBill(mActivity, theId);
-			BillsDao.deleteBillObjectByParId(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
+			BillsDao.deleteBillObjectByParId(mActivity, theId, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
@@ -493,7 +491,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 
 		long preDuedate = calendar.getTimeInMillis();
 
-		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate);
+		row = BillsDao.updateBillDateRule(mActivity, rowid, preDuedate,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 		BillsDao.deleteBillObjectByAfterDate(mActivity, bk_billDuedate);
 		
 		if (row > 0) {
@@ -559,7 +557,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 	public void deleteThisBill(int mFlag ,int theId, Map<String, Object> mMap) {
 
 		if (mFlag == 0) {
-			long row = BillsDao.deleteBill(mActivity, theId);
+			long row = BillsDao.deleteBill(mActivity, theId ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -569,7 +567,8 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 		}else if(mFlag == 2){
 			billVirtualThisDelete(theId,mMap);
 		}else if (mFlag == 3) {
-			long row = BillsDao.deleteBillObject(mActivity, theId);
+			
+			long row = BillsDao.deleteBillVirtualObject(mActivity, theId, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
 				 mActivity.startService(service);  
@@ -579,6 +578,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 	}
 	
 	public long billVirtualThisDelete(int rowid, Map<String, Object> mMap){
+		
 		long ep_billItemDueDate = (Long)mMap.get("ep_billDueDate");
 		long row = BillsDao.insertBillItem(mActivity, 1, "1", ep_billItemDueDate,
 				ep_billItemDueDate, ep_billItemDueDate, " ", "",
@@ -682,7 +682,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 		
 		if (nextDuedate > bk_billEndDate) { 
 
-			row =BillsDao.deleteBill(mActivity, rowid);
+			row =BillsDao.deleteBill(mActivity, rowid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			
 			if (row > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  
@@ -690,8 +690,8 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 			}
 		} else {
 
-			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate);
-			BillsDao.deleteBillPayTransaction(mActivity, rowid);
+			long rowUp = BillsDao.updateBillDateRule(mActivity, rowid, nextDuedate ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
+			BillsDao.deleteBillPayTransaction(mActivity, rowid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 			
 			if (rowUp > 0) {
 				 Intent service=new Intent(mActivity, NotificationService.class);  

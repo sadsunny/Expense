@@ -139,6 +139,8 @@ public class SyncDao {
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(10);
 		}
+		mCursor.close();
+		db.close();
 		return uuid;
 	}
 
@@ -188,6 +190,8 @@ public class SyncDao {
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(15);
 		}
+		mCursor.close();
+		db.close();
 		return uuid;
 	}
 
@@ -250,6 +254,8 @@ public class SyncDao {
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(10);
 		}
+		mCursor.close();
+		db.close();
 		return uuid;
 	}
 
@@ -358,10 +364,12 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from EP_BillRule a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(17);
 		}
+		mCursor.close();
+		db.close();
 		return uuid;
 	}
 	
@@ -369,10 +377,12 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from EP_BillItem a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(19);
 		}
+		mCursor.close();
+		db.close();
 		return uuid;
 	}
 
@@ -384,6 +394,9 @@ public class SyncDao {
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(12);
 		}
+		mCursor.close();
+		db.close();
+		
 		return uuid;
 	}
 
@@ -529,10 +542,13 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from Accounts a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(15);
 		}
+		mCursor.close();
+		db.close();
+		
 		return uuid;
 	}
 
@@ -540,10 +556,27 @@ public class SyncDao {
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from 'Transaction' a where a._id = " + id;
 		Cursor mCursor = db.rawQuery(sql, null);
-		String uuid = "";
+		String uuid = null;
 		while (mCursor.moveToNext()) {
 			uuid = mCursor.getString(16);
 		}
+		mCursor.close();
+		db.close();
+		
 		return uuid;
+	}
+	
+	public static String selecTransactionString(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.transactionstring from 'Transaction' a where a._id = " + id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		String transactionstring = null;
+		while (mCursor.moveToNext()) {
+			transactionstring = mCursor.getString(16);
+		}
+		mCursor.close();
+		db.close();
+		
+		return transactionstring;
 	}
 }

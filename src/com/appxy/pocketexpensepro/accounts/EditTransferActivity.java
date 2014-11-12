@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
@@ -30,6 +31,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.dropbox.sync.android.DbxRecord;
 
@@ -71,6 +73,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -151,6 +154,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 	private int fromId;
 	private int toId;
 	private int _id;
+	private String uuid; 
 	
 	private AutoListAdapter autoListAdapter;
 	private Cursor mCursor;
@@ -187,7 +191,8 @@ public class EditTransferActivity extends BaseHomeActivity {
 		if (_id <= 0) {
 			finish();
 		}
-
+		uuid = SyncDao.selecTransactionUUid(this, _id);
+		
 		List<Map<String, Object>> mInitializeDataList = AccountDao
 				.selectTransactionByID(this, _id);
 		Map<String, Object> mMap = mInitializeDataList.get(0);
@@ -555,7 +560,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 
 					// context, amount, dateTime, isClear, notes, photoName, recurringType, category, childTransactions, expenseAccount , incomeAccount, parTransaction, payee)
 					 if(fromId != toId){
-						 long row = AccountDao.updateTransactionAll(_id, EditTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, 0, 0, 0+"", fromId ,toId , 0 ,payeeId);
+						 long row = AccountDao.updateTransactionAll(_id, EditTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, 0, 0, 0+"", fromId ,toId , 0 ,payeeId, uuid, mDbxAcctMgr, mDatastore);
 					 }
 					    Intent resultintent = new Intent();
 						resultintent.putExtra("row", 1);
@@ -1056,6 +1061,7 @@ public class EditTransferActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 }

@@ -146,6 +146,10 @@ public class MEntity {
 	}
 	
 	public static Date getMilltoDateFormat(long milliSeconds) {// 将毫秒转化成Date
+		
+		if ( milliSeconds == -1 ) {
+			return null;
+		}
 		Date date = new Date();
 		date.setTime(milliSeconds);
 		return date;

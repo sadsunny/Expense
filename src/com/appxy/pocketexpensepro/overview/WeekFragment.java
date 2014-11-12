@@ -100,6 +100,8 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 
 		if (isVisibleToUser) {
 
+			MainActivity.attachFragment = this;
+			
 			weekCallBack.OnWeekSelected(MainActivity.selectedDate);
 			
 			if (mThread == null) {
@@ -108,6 +110,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			}else {
 				mHandler.post(mTask);
 			}
+			
 		}
 	}
 
@@ -180,6 +183,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 			
 			mDataList.clear();
 			for (int i = 0; i < 7; i++) {
+				
 				Map<String, Object> mMap = new HashMap<String, Object>();
 				mMap.put("weekTime", firstDayDate);
 
@@ -199,6 +203,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 						b2 = b2.add(b3);
 					}
 				}
+				
 				double expense = b1.doubleValue();
 				double income = b2.doubleValue();
 				mMap.put("expense", expense);
@@ -267,9 +272,16 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	@Override
 	public void onSyncFinished() {
 		// TODO Auto-generated method stub
-		mHandler.post(mTask);
-		weekCallBack.OnWeekSelected(selectedDate);
-		// 重新刷新 通知上一级fragment
+		
+		weekCallBack.OnWeekSelected(MainActivity.selectedDate);
+		if (mThread == null) {
+			mThread = new Thread(mTask);
+			mThread.start();
+		}else {
+			mHandler.post(mTask);
+		}
+		
 	}
+	
 
 }

@@ -20,6 +20,8 @@ import com.appxy.pocketexpensepro.overview.transaction.AccountsListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxRecord;
 
 import android.R.integer;
@@ -45,6 +47,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class EditBillPayActivity extends BaseHomeActivity {
@@ -264,7 +267,7 @@ public class EditBillPayActivity extends BaseHomeActivity {
 							}).show();
 				}else{
 
-					long row = BillsDao.updateBillPay(EditBillPayActivity.this, payId, amountString, dateLong ,accountId);
+					long row = BillsDao.updateBillPay(EditBillPayActivity.this, payId, amountString, dateLong ,accountId,  mDbxAcctMgr,  mDatastore);
 					Intent intent = new Intent();
 					intent.putExtra("_id", row);
 					setResult(17, intent);
@@ -380,7 +383,8 @@ public class EditBillPayActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 
 

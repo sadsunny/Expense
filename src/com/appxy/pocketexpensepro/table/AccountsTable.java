@@ -197,7 +197,6 @@ public class AccountsTable {
             mUpdateFields.set("state", state);
             mUpdateFields.set("dateTime_sync", MEntity.getMilltoDateFormat( System.currentTimeMillis() ));
             record.setAll(mUpdateFields);
-			mDatastore.sync();
 		} 
 
 	}

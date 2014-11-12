@@ -23,6 +23,7 @@ import org.achartengine.renderer.XYSeriesRenderer.FillOutsideLine;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 
 import android.app.Activity;
@@ -56,7 +57,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class ReportCashFragment extends Fragment {
+public class ReportCashFragment extends Fragment implements OnSyncFinishedListener{
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
 	private FragmentActivity mActivity;
@@ -140,11 +141,13 @@ public class ReportCashFragment extends Fragment {
 
 	}
 	
+	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
+		MainActivity.attachFragment = this;
 	}
 	
 	@Override
@@ -833,6 +836,13 @@ public class ReportCashFragment extends Fragment {
 			break;
 		}
 		Log.v("mtest", "onActivityResult");
+	}
+
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
 	}
 	
 	

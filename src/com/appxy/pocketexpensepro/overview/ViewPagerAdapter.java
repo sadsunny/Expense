@@ -28,6 +28,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 	@Override
 	public android.support.v4.app.Fragment getItem(int arg0) {
 		// TODO Auto-generated method stub
+		
 			WeekFragment weekFragment = new WeekFragment();
 			if (arg0 >= 0 && arg0 < 20000) {
 

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.appxy.pocketexpensepro.entity.MEntity;
+
 import android.R.integer;
 import android.content.Context;
 import android.database.Cursor;
@@ -34,7 +36,6 @@ public class RecurringEventBE {
 
 			long startDate = 0; // 进一步精确判断日记起止点，保证了该段时间断获取的数据不未空，减少不必要的处理
 			long endDate = 0;
-
 			
 			if (bk_billEndDate == -1) { // 永远重复事件的处理
 
@@ -283,13 +284,15 @@ public class RecurringEventBE {
 		 * 开始处理重复特例事件特例事件，并且来时合并
 		 */
 		List<Map<String, Object>>oDataList = BillsDao.selectBillItemByBE(context, start, end);
-		Log.v("mtest", "特例结果大小" + oDataList);
+		Log.v("mtest", "特例结果大小" +oDataList );
+		
 
 		List<Map<String, Object>> delectDataListf = new ArrayList<Map<String, Object>>(); // finalDataList要删除的结果
 		List<Map<String, Object>> delectDataListO = new ArrayList<Map<String, Object>>(); // oDataList要删除的结果
 
+		
 		for (Map<String, Object> fMap : finalDataList) { // 遍历虚拟事件
-
+			
 			int pbill_id = (Integer) fMap.get("_id");
 			long pdue_date = (Long) fMap.get("ep_billDueDate");
 

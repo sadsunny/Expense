@@ -135,56 +135,56 @@ public class PayeeActivity extends BaseHomeActivity {
 					// TODO Auto-generated method stub
 					if (arg2 == 0) {
 
-						List<Map<String, Object>> mList = PayeeDao
-								.selectPayeeRelate(PayeeActivity.this, _id);
-						if (mList.size() > 0) {
-
-							new AlertDialog.Builder(PayeeActivity.this)
-									.setTitle("Delete This Payee? ")
-									.setMessage(
-											" There have already been transactions " +
-											"related to this payee. Deleting a payee will" +
-											" also cause to delete all related transactions. Are you sure you want to delete it? ")
-									.setNegativeButton(
-											"No",
-											new DialogInterface.OnClickListener() {
-
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which) {
-													// TODO Auto-generated
-													// method stub
-													dialog.dismiss();
-													alertDialog.dismiss();
-												}
-
-											})
-									.setPositiveButton(
-											"Yes",
-											new DialogInterface.OnClickListener() {
-
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which) {
-													// TODO Auto-generated
-													// method stub
-													long id = PayeeDao
-															.deletePayee(
-																	PayeeActivity.this,
-																	_id, uuid, mDbxAcctMgr, mDatastore);
-													mHandler.post(mTask);
-													dialog.dismiss();
-													alertDialog.dismiss();
-													Log.v("mtest", ""+id);
-													if (id >0 && MainActivity.mItemPosition == 0) {
-														MainActivity.sqlChange = 1;
-													} 
-												}
-											}).show();
-
-						} else {
+//						List<Map<String, Object>> mList = PayeeDao
+//								.selectPayeeRelate(PayeeActivity.this, _id);
+//						if (mList.size() > 0) {
+//
+//							new AlertDialog.Builder(PayeeActivity.this)
+//									.setTitle("Delete This Payee? ")
+//									.setMessage(
+//											" There have already been transactions " +
+//											"related to this payee. Deleting a payee will" +
+//											" also cause to delete all related transactions. Are you sure you want to delete it? ")
+//									.setNegativeButton(
+//											"No",
+//											new DialogInterface.OnClickListener() {
+//
+//												@Override
+//												public void onClick(
+//														DialogInterface dialog,
+//														int which) {
+//													// TODO Auto-generated
+//													// method stub
+//													dialog.dismiss();
+//													alertDialog.dismiss();
+//												}
+//
+//											})
+//									.setPositiveButton(
+//											"Yes",
+//											new DialogInterface.OnClickListener() {
+//
+//												@Override
+//												public void onClick(
+//														DialogInterface dialog,
+//														int which) {
+//													// TODO Auto-generated
+//													// method stub
+//													long id = PayeeDao
+//															.deletePayee(
+//																	PayeeActivity.this,
+//																	_id, uuid, mDbxAcctMgr, mDatastore);
+//													mHandler.post(mTask);
+//													dialog.dismiss();
+//													alertDialog.dismiss();
+//													Log.v("mtest", ""+id);
+//													if (id >0 && MainActivity.mItemPosition == 0) {
+//														MainActivity.sqlChange = 1;
+//													} 
+//												}
+//											}).show();
+//
+//						} else {
 
 							long id = PayeeDao.deletePayee(PayeeActivity.this,
 									_id, uuid, mDbxAcctMgr, mDatastore);
@@ -193,7 +193,7 @@ public class PayeeActivity extends BaseHomeActivity {
 							
 							if (id >0 && MainActivity.mItemPosition == 0) {
 								MainActivity.sqlChange = 1;
-							} 
+//							} 
 
 						}
 					}

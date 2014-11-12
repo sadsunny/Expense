@@ -9,13 +9,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R.id;
+import com.appxy.pocketexpensepro.db.CascadeDeleteDao;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.appxy.pocketexpensepro.table.AccountTypeTable;
+import com.appxy.pocketexpensepro.table.BudgetTransferTable;
 import com.appxy.pocketexpensepro.table.TransactionTable;
 import com.appxy.pocketexpensepro.table.AccountTypeTable.AccountType;
 import com.appxy.pocketexpensepro.table.AccountsTable;
 import com.appxy.pocketexpensepro.table.AccountsTable.Accounts;
+import com.appxy.pocketexpensepro.table.TransactionTable.Transaction;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
@@ -380,6 +384,9 @@ public class AccountDao {
 		String _id = id + "";
 		long row = 0;
 		try {
+			
+			CascadeDeleteDao.CascadedeleteAccountTypeByID(context, id, mDbxAcctMgr, mDatastore);
+			
 			row = db.delete("Accounts", "_id = ?", new String[] { _id });
 			if (row > 0) {
 				
@@ -552,6 +559,9 @@ public class AccountDao {
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		long row = 0;
 		try {
+			
+			CascadeDeleteDao.CascadedeleteAccountTypeByID(context, id, mDbxAcctMgr, mDatastore);
+			
 			row = db.delete("AccountType", "_id = ?", new String[] { id+""});
 			
 			if (row > 0) {
@@ -1140,14 +1150,16 @@ public class AccountDao {
 		return mList;
 	}
 
+	
 	public static long updateTransactionAll(int _id, Context context,
 			String amount, long dateTime, int isClear, String notes,
 			String photoName, int recurringType, int category,
 			String childTransactions, int expenseAccount, int incomeAccount,
-			int parTransaction, int payee) { // AccountType插入
+			int parTransaction, int payee ,String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore ) { 
 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
 		cv.put("isClear", isClear);
@@ -1160,11 +1172,47 @@ public class AccountDao {
 		cv.put("incomeAccount", incomeAccount);
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
+		
+		long dateTime_sync =  System.currentTimeMillis();
+		cv.put("dateTime_sync", dateTime_sync);
 
 		String mId = _id + "";
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?",
 					new String[] { mId });
+			
+			if (id > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) {
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
+					Transaction transaction = transactionTable.getTransaction();
+					
+					transaction.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+					transaction.setTrans_amount(Double.valueOf(amount));
+					transaction.setTrans_category(category);
+					transaction.setTrans_datetime(MEntity.getMilltoDateFormat(dateTime));
+					transaction.setTrans_expenseaccount(expenseAccount);
+					transaction.setTrans_incomeaccount(incomeAccount);
+					transaction.setTrans_isclear(isClear);
+					transaction.setTrans_notes(notes);
+					transaction.setTrans_partransaction(parTransaction);
+					transaction.setTrans_payee(payee);
+					transaction.setTrans_recurringtype(recurringType);
+					transaction.setUuid(uuid);
+					transaction.setState("1");
+					
+					transactionTable.insertRecords(transaction.getFields());
+					
+					mDatastore.sync();
+					
+				}
+				
+			}
+
 			db.close();
 			return id;
 		} catch (Exception e) {
@@ -1236,6 +1284,7 @@ public class AccountDao {
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
 		long row = 0;
+		String trans_string = SyncDao.selecTransactionString(context, id);
 		try {
 			row = db.delete("'Transaction'", "_id = ?", new String[] { _id });
 			if (row > 0) {
@@ -1246,7 +1295,8 @@ public class AccountDao {
 						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
 					}
 					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
-					transactionTable.updateState(uuid, "0");
+					transactionTable.updateState(uuid, trans_string,"0");
+					mDatastore.sync();
 				}
 					
 			}
@@ -1258,13 +1308,28 @@ public class AccountDao {
 		return row;
 	}
 
-	public static long deleteBudgetTransfer(Context context, int id) {
+	public static long deleteBudgetTransfer(Context context, int id, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
+		String uuid = SyncDao.selectBudgetTransferUUidById(context, id);
+		
 		long row = 0;
 		try {
 			row = db.delete("'BudgetTransfer'", "_id = ?", new String[] { _id });
+			
+			if (row > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					
+				   BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, context);
+				   budgetTransferTable.updateState(uuid, "0");
+				}
+			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			row = 0;

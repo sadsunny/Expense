@@ -41,6 +41,7 @@ import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.expinterface.ReturnFragmentListenter;
 import com.appxy.pocketexpensepro.expinterface.TellMainBuyPro;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
@@ -118,7 +119,7 @@ public class OverviewFragment extends Fragment implements
 	private ViewPager mViewPager;
 
 	private FragmentActivity mActivity;
-	public ViewPagerAdapter mViewPagerAdapter;
+	public  ViewPagerAdapter mViewPagerAdapter;
 	private WeekFragment weekFragment;
 	private ListView mListView;
 	private List<Map<String, Object>> mDataList;
@@ -282,7 +283,7 @@ public class OverviewFragment extends Fragment implements
 		}
 
 		TransactionRecurringCheck.recurringCheck(mActivity,
-				MEntity.getNowMillis());
+				MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 		mListViewAdapter.notifyDataSetChanged();
 
 		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
@@ -320,6 +321,9 @@ public class OverviewFragment extends Fragment implements
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
 		onBackTimeListener = (OnBackTimeListener) mActivity;
+		
+		mViewPagerAdapter = new ViewPagerAdapter(
+				mActivity.getSupportFragmentManager());
 	}
 
 	@Override
@@ -685,8 +689,7 @@ public class OverviewFragment extends Fragment implements
 		});
 
 		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
-		mViewPagerAdapter = new ViewPagerAdapter(
-				mActivity.getSupportFragmentManager());
+		
 
 		mViewPager.setAdapter(mViewPagerAdapter);
 		mViewPager.setCurrentItem(currentPosition);
@@ -956,7 +959,7 @@ public class OverviewFragment extends Fragment implements
 								mActivity, amount, dateTime, isClear, notes,
 								photoName, recurringType, category,
 								childTransactions, expenseAccount,
-								incomeAccount, parTransaction, payee, new String(), 0, 0 , MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
+								incomeAccount, parTransaction, payee, null, 0, 0 , MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						alertDialog.dismiss();
 
 						mHandler.post(mTask);

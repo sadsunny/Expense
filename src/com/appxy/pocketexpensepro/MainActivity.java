@@ -30,6 +30,7 @@ import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.expinterface.ReturnFragmentListenter;
 import com.appxy.pocketexpensepro.expinterface.TellMainBuyPro;
 import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
@@ -126,6 +127,9 @@ public class MainActivity extends BaseHomeActivity implements
 	public static int sqlChange2 = 2;
 	public static int sqlChange3 = 3;
 	
+	public static int overViewpage = 3;
+	
+	
 	 // The helper object
 	static final int RC_REQUEST = 10001;
 	private IabHelper mHelper;
@@ -134,7 +138,7 @@ public class MainActivity extends BaseHomeActivity implements
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean iap_is_ok = false;
 	private OnRefreshADS refreshADS;
-	private Fragment attachFragment;
+	public static Fragment attachFragment;
 	public static DbxAccountManager mDbxAcctMgr1;
 	public static DbxDatastore mDatastore1;
 	
@@ -226,7 +230,7 @@ public class MainActivity extends BaseHomeActivity implements
 //				@Override
 //				public void run() {
 //					// TODO Auto-generated method stub
-						TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis());
+		TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis(), mDbxAcctMgr, mDatastore);
 ////					mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 //				}
 //			}).start();
@@ -974,40 +978,32 @@ public class MainActivity extends BaseHomeActivity implements
 		            if (mHelper == null) return;
 		   			
 		            mHelper.queryInventoryAsync(mGotInventoryListener);
-		            Log.v("mads","******第三步mHelper通过");
 					
 		            if (!result.isSuccess()) {
 //		            	Log.v("mtest", "result11"+result);
 //		                complain("Error purchasing: " + result);
 		                return;
 		            }
-		            Log.v("mads","******第四步！isFailure通过");
 					
 		            if (!verifyDeveloperPayload(purchase)) {
 //		                complain("Error purchasing. Authenticity verification failed.");
 		                return;
 		            }
-		            Log.v("mads","******第五步verifyDeveloperPayload通过");
 
 		            if (purchase.getSku().equals(Paid_Id_VF)) {
 		                // bought the premium upgrade!
-		                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
 		                alert("Thank you for upgrading to pro!");
 		                
-		                Log.v("mads","******第六步关键一步purchase");
-						
 		             Common.mIsPaid =true;
 		   		     SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);   //已经设置密码 
 		   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
 		   			 meditor.putBoolean("isPaid",true );  
 		   			 meditor.commit();
 		   			 
-		   			 Log.v("mads","******overviewFragment"+overviewFragment);
 						
 						
 		   			 if (overviewFragment != null) {
 		   				 
-		   				 Log.v("mads","******第七步第返回刷新fragment");
 		   				   refreshADS = (OnRefreshADS) overviewFragment;
 		   				   refreshADS.refreshADS();
 						
@@ -1075,18 +1071,14 @@ public class MainActivity extends BaseHomeActivity implements
 				// TODO Auto-generated method stub
 				Toast.makeText(this, "Dropbox sync successed",
 						Toast.LENGTH_SHORT).show();
-				 OnSyncFinishedListener onSyncFinishedListener = (OnSyncFinishedListener)attachFragment;
-				 onSyncFinishedListener.onSyncFinished();
+				if (attachFragment != null ) {
+					 OnSyncFinishedListener onSyncFinishedListener = (OnSyncFinishedListener)attachFragment;
+					 onSyncFinishedListener.onSyncFinished();
+					 
+				}
+				
 			}
 			
-			@Override
-			public void onAttachFragment(Fragment fragment) {
-				// TODO Auto-generated method stub
-				super.onAttachFragment(fragment);
-				attachFragment = fragment;
-			   
-			}
-
 			@Override
 			protected void onResume() {
 				// TODO Auto-generated method stub

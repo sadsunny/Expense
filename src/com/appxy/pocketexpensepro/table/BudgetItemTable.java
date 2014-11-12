@@ -244,7 +244,6 @@ public class BudgetItemTable {
 			mUpdateFields.set("state", state);
 			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
-			mDatastore.sync();
 		}
 
 	}

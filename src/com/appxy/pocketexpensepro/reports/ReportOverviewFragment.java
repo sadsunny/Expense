@@ -32,6 +32,7 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.bills.CreatBillsActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
@@ -78,7 +79,7 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
-public class ReportOverviewFragment extends Fragment {
+public class ReportOverviewFragment extends Fragment implements OnSyncFinishedListener{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -166,12 +167,14 @@ public class ReportOverviewFragment extends Fragment {
 	public ReportOverviewFragment() {
 
 	}
-
+	
+	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
+		MainActivity.attachFragment = this;
 	}
 	
 	@Override
@@ -197,6 +200,7 @@ public class ReportOverviewFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		
 		mInflater = inflater;
 		View view = inflater.inflate(R.layout.fragment_report_overview,
 				container, false);
@@ -280,7 +284,7 @@ public class ReportOverviewFragment extends Fragment {
 			titleStrings[k] = title;
 			k++;
 		}
-		}
+	}
 		total = b0.doubleValue();
 		values.add(valueDoubles);
 		titles.add(titleStrings);
@@ -952,6 +956,13 @@ public class ReportOverviewFragment extends Fragment {
 		mPopupWindow.setBackgroundDrawable(this.getResources().getDrawable(
 				R.drawable.view_dropshadow));// 设置背景图片，不能在布局中设置，要通过代码来设置
 		mPopupWindow.setOutsideTouchable(true);// 触摸popupwindow外部，popupwindow消失。这个要求你的popupwindow要有背景图片才可以成功，如上
+	}
+
+
+	@Override
+	public void onSyncFinished() {
+		// TODO Auto-generated method stub
+		mHandler.post(mTask);
 	}
 
 }

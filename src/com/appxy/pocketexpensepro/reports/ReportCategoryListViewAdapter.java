@@ -98,7 +98,7 @@ public class ReportCategoryListViewAdapter extends BaseAdapter {
 		}
 		
 		viewholder.categoryTextView.setText(mData.get(position).get("categoryName")+"");
-		viewholder.currencyTextView.setText("$");
+		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		double sum =  (Double) mData.get(position).get("sum");
 		viewholder.amoutTextView.setText(MEntity.doublepoint2str(sum+""));
 		

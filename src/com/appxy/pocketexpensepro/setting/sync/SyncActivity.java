@@ -231,7 +231,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	
 	public void upLoadAllDate() throws DbxException { //上传所有数据
 		
-		
 		List<Map<String, Object>> AccountsList = SyncDao.selectAccount(SyncActivity.this);
 		for (Map<String, Object> iMap:AccountsList) {
 			AccountsTable accountsTable = new AccountsTable(mDatastore,this);
@@ -271,7 +270,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetTransfer.setBudgetTransferData(iMap);
 			budgetTransferTable.insertRecords(budgetTransfer.getFields());
 		}
-		mDatastore.sync();
 		
 		List<Map<String, Object>> CategoryList = SyncDao.selectCategory(SyncActivity.this);
 		for (Map<String, Object> iMap:CategoryList) {
@@ -283,6 +281,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		
 		List<Map<String, Object>> EP_BillItemList = SyncDao.selectEP_BillItem(SyncActivity.this);
 		for (Map<String, Object> iMap:EP_BillItemList) {
+			
 			EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
 			EP_BillItem ep_BillItem = ep_BillItemTable.getEP_BillItem();
 			ep_BillItem.setEP_BillItemData(iMap);
@@ -377,8 +376,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 								public void run() {
 									// TODO Auto-generated method stub
 									try {
-//										upLoadAllDate();
-										deleteAllRecod();
+										upLoadAllDate();
+//										deleteAllRecod();
 									} catch (DbxException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();

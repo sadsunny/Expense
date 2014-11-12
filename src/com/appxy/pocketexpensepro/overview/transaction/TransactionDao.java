@@ -159,6 +159,42 @@ public class TransactionDao {
 
 		return id;
 	}
+	
+	public static long updateTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee,String transactionstring,  long dateTime_sync, String state, String uuid) { // AccountType插入
+
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("isClear", isClear);
+		cv.put("notes", notes);
+		cv.put("recurringType", recurringType);
+		cv.put("category", category);
+		cv.put("childTransactions", childTransactions);
+		cv.put("expenseAccount", expenseAccount);
+		cv.put("incomeAccount", incomeAccount);
+		cv.put("parTransaction", parTransaction);
+		cv.put("payee", payee);
+		
+		cv.put("transactionstring", transactionstring);
+		
+		cv.put("dateTime_sync", dateTime_sync);
+		cv.put("state", state);
+		cv.put("uuid", uuid);
+
+		try {
+			long id = db.update("'Transaction'", cv, "uuid = ?",
+					new String[] { uuid });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+
+	}
 
 	public static long insertTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee,String transactionstring,  long dateTime_sync, String state, String uuid) { // AccountType插入
 
@@ -213,6 +249,8 @@ public class TransactionDao {
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
 		cv.put("transactionstring", transactionstring);
+		cv.put("transactionHasBillItem", trans_billitem);
+		cv.put("transactionHasBillRule", trans_billrule);
 		
 		long dateTime_sync =  System.currentTimeMillis();
 		String state = "1";
@@ -252,7 +290,7 @@ public class TransactionDao {
 					transaction.setTrans_string(transactionstring);
 					transaction.setUuid(uuid);
 					transactionTable.insertRecords(transaction.getFields());
-					
+					mDatastore.sync();
 				}
 				
 			}
@@ -267,7 +305,7 @@ public class TransactionDao {
 
 	}
 	
-	public static void insertTransactionOne(SQLiteDatabase db ,Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, String transactionstring) { // AccountType插入
+	public static void insertTransactionOne(SQLiteDatabase db ,Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
 
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
@@ -284,12 +322,47 @@ public class TransactionDao {
 		cv.put("payee", payee);
 		cv.put("transactionstring", transactionstring);
 		
-		cv.put("dateTime_sync", System.currentTimeMillis());
+		long dateTime_sync =  System.currentTimeMillis();
+		String uuid  = MEntity.getUUID();
+		
+		cv.put("dateTime_sync", dateTime_sync);
 		cv.put("state", 1);
-		cv.put("uuid", MEntity.getUUID());
+		cv.put("uuid", uuid);
 		
 		try {
 			long id = db.insert("'Transaction'", null, cv);
+					
+			if (id > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
+					Transaction transaction = transactionTable.getTransaction();
+					
+					transaction.setDateTime_sync( MEntity.getMilltoDateFormat(dateTime_sync) );
+					transaction.setState("1");
+					transaction.setTrans_amount(Double.valueOf(amount));
+					transaction.setTrans_category(category);
+					transaction.setTrans_datetime(MEntity.getMilltoDateFormat(dateTime));
+					transaction.setTrans_expenseaccount(expenseAccount);
+					transaction.setTrans_incomeaccount(incomeAccount);
+					transaction.setTrans_isclear(isClear);
+					transaction.setTrans_notes(notes);
+					transaction.setTrans_partransaction(parTransaction);
+					transaction.setTrans_payee(payee);
+					transaction.setTrans_recurringtype(recurringType);
+					transaction.setTrans_string(transactionstring);
+					transaction.setUuid(uuid);
+					transactionTable.insertRecords(transaction.getFields());
+					mDatastore.sync();
+					
+				}
+
+			}
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

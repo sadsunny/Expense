@@ -72,6 +72,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.SimpleCursorAdapter.CursorToStringConverter;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemClickListener;
@@ -599,7 +600,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 												categoryId,
 												childTransactionsDefault + "",
 												accountId, incomeAccountDefault, 0,
-												payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+												payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
 							} else {
 								long row = TransactionDao.insertTransactionAll(
 										CreatTransactonByAccountActivity.this,
@@ -607,7 +608,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 										memoString, picPath, recurringTpye,
 										categoryId, childTransactionsDefault + "",
 										expenseAccountDefault, accountId, 0,
-										payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+										payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
 							}
 							
 						}
@@ -1455,7 +1456,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-
+		
 		switch (requestCode) {
 		case 6:
 			File file = new File(picPath);
@@ -1585,6 +1586,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 		
 	}
 }

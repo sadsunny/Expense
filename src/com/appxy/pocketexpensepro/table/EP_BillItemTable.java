@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.bills.BillsDao;
@@ -184,9 +185,9 @@ public class EP_BillItemTable {
 		public void setBillitem_ep_billisdelete(int billitem_ep_billisdelete) {
 			
 			if (billitem_ep_billisdelete == 0 || billitem_ep_billisdelete == 2) {
-				this.billitem_ep_billisdelete = "1";
-			} else {
 				this.billitem_ep_billisdelete = "0";
+			} else {
+				this.billitem_ep_billisdelete = "1";
 			}
 		}
 
@@ -215,7 +216,11 @@ public class EP_BillItemTable {
 			if (iRecord.hasField("billitemhascategory")) {
 				billitemhascategory = iRecord.getString("billitemhascategory");
 			}
-			billitem_ep_billitemduedate = iRecord.getDate("billitem_ep_billitemduedate");
+			
+			if (iRecord.hasField("billitem_ep_billitemduedate")) {
+				billitem_ep_billitemduedate = iRecord.getDate("billitem_ep_billitemduedate");
+				Log.v("mtag", "billitem_ep_billitemduedate "+billitem_ep_billitemduedate);
+			}
 			
 			billitem_ep_billitemamount = iRecord.getDouble("billitem_ep_billitemamount");
 			
@@ -248,7 +253,7 @@ public class EP_BillItemTable {
 
 			billitem_ep_billisdelete = iRecord.getString("billitem_ep_billisdelete");
 
-			if (iRecord.hasField(billitem_ep_billitemnote)) {
+			if (iRecord.hasField("billitem_ep_billitemnote")) {
 				billitem_ep_billitemnote = iRecord.getString("billitem_ep_billitemnote");
 			}
 			
@@ -262,6 +267,26 @@ public class EP_BillItemTable {
 					
 				} else if (state.equals("1")){
 					
+					int mRecurringType = MEntity.positionRecurring(billitem_ep_billitemrecurring);
+					long mEndDate = -1;
+					if (mRecurringType > 1) {
+						
+						if (billitem_ep_billitemenddate != null) {
+							mEndDate = billitem_ep_billitemenddate.getTime();
+						}
+						
+					}else {
+						mEndDate = -1;
+					}
+					int mReminderDate = MEntity.positionReminder(billitem_ep_billitemreminderdate);
+					long mReminderTime = 0;
+					if (mReminderDate > 0) {
+						 mReminderTime = billitem_ep_billitemremindertime.getTime() - billitem_ep_billitemduedate.getTime();
+					}
+					
+					
+					int isdelete = Integer.parseInt( billitem_ep_billisdelete );
+					
 					List<Map<String, Object>> mList= BillsDao.checkBillItemByUUid(context, uuid);
 					
 					if ( mList.size() > 0) {
@@ -269,32 +294,13 @@ public class EP_BillItemTable {
 					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
 					    if (localDateTime_sync < dateTime.getTime()) {
 					    	
-
+					    	BillsDao.updateBillItemAll(context, isdelete, billitem_ep_billitemamount+"", billitem_ep_billitemduedate.getTime(), billitem_ep_billitemduedatenew.getTime(), mEndDate, billitem_ep_billitemname, 
+									billitem_ep_billitemnote, mRecurringType, mReminderDate, mReminderTime, BillsDao.selectBillRuleIdByUUid(context, billitemhasbillrule), PayeeDao.selectCategoryIdByUUid(context, billitemhascategory), PayeeDao.selectPayeeIdByUUid(context, billitemhaspayee),
+									state, dateTime.getTime(), uuid, billitem_ep_billitemstring1);
 						}
 						
 					}else {
 						
-						int mRecurringType = MEntity.positionRecurring(billitem_ep_billitemrecurring);
-						long mEndDate = -1;
-						if (mRecurringType > 0) {
-							mEndDate = billitem_ep_billitemenddate.getTime();
-						}else {
-							mEndDate = -1;
-						}
-						int mReminderDate = MEntity.positionReminder(billitem_ep_billitemreminderdate);
-						long mReminderTime = 0;
-						if (mReminderDate > 0) {
-							 mReminderTime = billitem_ep_billitemremindertime.getTime() - billitem_ep_billitemduedate.getTime();
-						}
-						
-						
-						int isdelete = Integer.parseInt( billitem_ep_billisdelete );
-						
-						if (isdelete == 1) {
-							isdelete = 0;
-						} else {
-							isdelete = 1;
-						}
 						
 						BillsDao.insertBillItemAll(context, isdelete, billitem_ep_billitemamount+"", billitem_ep_billitemduedate.getTime(), billitem_ep_billitemduedatenew.getTime(), mEndDate, billitem_ep_billitemname, 
 								billitem_ep_billitemnote, mRecurringType, mReminderDate, mReminderTime, BillsDao.selectBillRuleIdByUUid(context, billitemhasbillrule), PayeeDao.selectCategoryIdByUUid(context, billitemhascategory), PayeeDao.selectPayeeIdByUUid(context, billitemhaspayee),
@@ -322,7 +328,6 @@ public class EP_BillItemTable {
 			return nowMillis;
 		}
 
-		
 
 		public void setEP_BillItemData(Map<String, Object> mMap) {
 
@@ -352,6 +357,8 @@ public class EP_BillItemTable {
 			billitem_ep_billitemenddate = MEntity
 					.getMilltoDateFormat((Long) mMap
 							.get("billitem_ep_billitemenddate"));
+			Log.v("mtag", "billitem_ep_billitemenddate "+billitem_ep_billitemenddate);
+			
 			state = (String) mMap.get("state");
 
 			billitem_ep_billitemreminderdate = MEntity.reminderDate(Integer
@@ -380,6 +387,21 @@ public class EP_BillItemTable {
 					.get("billitem_ep_billitemnote");
 
 		}
+		
+		public DbxFields getFieldsApart() {
+
+			DbxFields accountsFields = new DbxFields();
+			if (billitem_ep_billitemstring1 != null) {
+				accountsFields.set("billitem_ep_billitemstring1",
+						billitem_ep_billitemstring1);
+			}
+			
+			accountsFields.set("billitem_ep_billisdelete",
+					billitem_ep_billisdelete);
+			accountsFields.set("dateTime", dateTime);
+			
+			return accountsFields;
+		}
 
 		public DbxFields getFields() {
 
@@ -406,9 +428,12 @@ public class EP_BillItemTable {
 			if (billitemhaspayee != null && billitemhaspayee.length() > 0) {
 				accountsFields.set("billitemhaspayee", billitemhaspayee);
 			}
-			accountsFields.set("datetime", dateTime);
-			accountsFields.set("billitem_ep_billitemenddate",
-					billitem_ep_billitemenddate);
+			accountsFields.set("dateTime", dateTime);
+			if (billitem_ep_billitemenddate != null) {
+				
+				accountsFields.set("billitem_ep_billitemenddate",
+						billitem_ep_billitemenddate);
+			}
 			accountsFields.set("state", state);
 			accountsFields.set("billitem_ep_billitemreminderdate",
 					billitem_ep_billitemreminderdate);
@@ -434,6 +459,23 @@ public class EP_BillItemTable {
 
 	}
 
+	public void updateStateByRule(String uuid, String state) throws DbxException {// 更改状态
+
+		DbxFields queryParams = new DbxFields().set("billitemhasbillrule", uuid);
+		DbxTable.QueryResult results = mTable.query(queryParams);
+		Iterator<DbxRecord> it = results.iterator();
+
+		if (it.hasNext()) {
+			DbxRecord record = it.next();
+			DbxFields mUpdateFields = new DbxFields();
+			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
+			record.setAll(mUpdateFields);
+		}
+
+	}
+
+	
 	public void updateState(String uuid, String state) throws DbxException {// 更改状态
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
@@ -444,11 +486,14 @@ public class EP_BillItemTable {
 			DbxRecord record = it.next();
 			DbxFields mUpdateFields = new DbxFields();
 			mUpdateFields.set("state", state);
+			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
-			mDatastore.sync();
 		}
+		mDatastore.sync();
 
 	}
+	
+	
 
 	public EP_BillItem getEP_BillItem() {
 		EP_BillItem accounts = new EP_BillItem();
@@ -477,15 +522,17 @@ public class EP_BillItemTable {
 	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
-		DbxFields queryParams = new DbxFields().set("uuid",
-				thisFields.getString("uuid"));
+	if (thisFields.hasField("billitem_ep_billitemstring1")) {
+			
+		DbxFields queryParams = new DbxFields().set("billitem_ep_billitemstring1",
+				thisFields.getString("billitem_ep_billitemstring1"));
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
 
 		if (it.hasNext()) {
 			DbxRecord firstResult = it.next();
-			if (firstResult.getDate("datetime").getTime() < thisFields.getDate(
-					"datetime").getTime()) { // 比对同步时间
+			if (firstResult.getDate("dateTime").getTime() < thisFields.getDate(
+					"dateTime").getTime()) {
 
 				firstResult.setAll(thisFields);
 				while (it.hasNext()) {
@@ -496,8 +543,10 @@ public class EP_BillItemTable {
 
 		} else {
 			mTable.insert(thisFields);
+			
 		}
-
+		
 	}
+}
 
 }

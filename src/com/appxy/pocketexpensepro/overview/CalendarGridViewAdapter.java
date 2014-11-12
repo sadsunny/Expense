@@ -56,7 +56,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	public CalendarGridViewAdapter(Context c, Calendar monthCalendar) {
 
 		this.dayString = new ArrayList<String>();
-		Locale.setDefault(Locale.ENGLISH);
+//		Locale.setDefault(Locale.ENGLISH);
 		month = monthCalendar;
 		mContext = c;
 		month.set(Calendar.DAY_OF_MONTH, 1);
@@ -251,7 +251,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 	public void refreshDays() {
 		// clear items
 		dayString.clear();
-		Locale.setDefault(Locale.ENGLISH);
+//		Locale.setDefault(Locale.ENGLISH);
 		pmonth = (Calendar) month.clone();
 		// Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
 		// month start day. ie; sun, mon, etc

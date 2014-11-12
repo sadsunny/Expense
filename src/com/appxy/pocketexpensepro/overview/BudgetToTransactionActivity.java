@@ -231,7 +231,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 									long row = AccountDao.deleteBudgetTransfer(
 													BudgetToTransactionActivity.this,
-													_id);
+													_id, mDbxAcctMgr, mDatastore);
 									alertDialog.dismiss();
 									Intent intent = new Intent();
 									intent.putExtra("row", row);
@@ -862,7 +862,9 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
+		mHandler.post(mTask);
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.security.auth.PrivateCredentialPermission;
 
+import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
@@ -62,6 +63,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ExpandableListView.OnChildClickListener;
@@ -157,6 +159,8 @@ public class BillEditActivity extends BaseHomeActivity {
 	private AutoListAdapter autoListAdapter;
 	private Cursor mCursor;
 	private CharSequence sKey;
+	
+	private long hmMills = 0 ;  //时间后缀  
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -310,9 +314,14 @@ public class BillEditActivity extends BaseHomeActivity {
 		if (billRuleHasPayee > 0) {
 			List<Map<String, Object>> mPayeeDataList = AccountDao
 					.selectPayeeById(this, billRuleHasPayee);
-			String pNameString = (String) mPayeeDataList.get(0).get("name");
+			
+			String pNameString = "";
+			if (mPayeeDataList.size() > 0) {
+			   pNameString = (String) mPayeeDataList.get(0).get("name");
+			   payeeId = billRuleHasPayee;
+			}
 			payeeEditText.setText(pNameString);
-			payeeId = billRuleHasPayee;
+			
 			List<Map<String, Object>> mPList = TransactionDao
 					.selectPayee(BillEditActivity.this);
 //			payeeCheckItem = locationIdPosition(mPList, payeeId);
@@ -442,6 +451,19 @@ public class BillEditActivity extends BaseHomeActivity {
 		mYear = c.get(Calendar.YEAR);
 		mMonth = c.get(Calendar.MONTH);
 		mDay = c.get(Calendar.DAY_OF_MONTH);
+		
+		dateString = (new StringBuilder().append(mMonth + 1).append("-")
+				.append(mDay).append("-").append(mYear)).toString();
+
+		Calendar cc = Calendar.getInstance();
+		try {
+			cc.setTime(new SimpleDateFormat("MM-dd-yyyy").parse(dateString));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		hmMills = ep_billDueDate -  cc.getTimeInMillis();
+		
 		updateDisplay();
 
 		judgementDialog(indexflag, _id);
@@ -518,12 +540,15 @@ public class BillEditActivity extends BaseHomeActivity {
 					}
 					// int edit_status = 0; 编辑状态，1表示change this ，2表示this and
 					// future
+					dateLong = dateLong +hmMills;  //添加时分秒
+					
 					if (indexflag == 0) {
+						
 						long row = BillsDao.updateBillRule(
 								BillEditActivity.this, _id, ep_billAmount,
 								dateLong, lastDate, ep_billName, ep_note,
 								recurringType, remindDateSelectPosition,
-								remindTime, categoryId, payeeId);
+								remindTime, categoryId, payeeId,mDbxAcctMgr, mDatastore);
 						
 					} else if (indexflag == 1) {
 						
@@ -531,7 +556,7 @@ public class BillEditActivity extends BaseHomeActivity {
 							int ep_billisDelete =0;
 							long ep_billItemDueDateNew  = 1;
 							
-							if(dateLong == ep_billDueDate){
+							if( (dateLong) == ep_billDueDate){
 								ep_billisDelete =0;
 								ep_billItemDueDateNew = dateLong;
 							}else{
@@ -549,11 +574,13 @@ public class BillEditActivity extends BaseHomeActivity {
 									BillEditActivity.this, _id, ep_billAmount,
 									dateLong, lastDate, ep_billName, ep_note,
 									recurringType, remindDateSelectPosition,
-									remindTime, categoryId, payeeId);
-							BillsDao.deleteBillObjectByParId(BillEditActivity.this, _id) ;
+									remindTime, categoryId, payeeId,mDbxAcctMgr, mDatastore);
+							BillsDao.deleteBillObjectByParId(BillEditActivity.this, _id,mDbxAcctMgr, mDatastore) ;
 							
 						}
 					} else if (indexflag == 2) {
+						
+						
 						if (edit_status == 1) {
 							
 							int ep_billisDelete =0;
@@ -565,19 +592,20 @@ public class BillEditActivity extends BaseHomeActivity {
 								ep_billisDelete =2;
 								ep_billItemDueDateNew = ep_billDueDate;
 							}
-							
 							long row = BillsDao.insertBillItem(BillEditActivity.this, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
 									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, _id, categoryId, payeeId, mDbxAcctMgr, mDatastore);
 							
 						} else if (edit_status == 2) {
+							
 							long row = BillsDao.insertBillRule(
 									BillEditActivity.this, ep_billAmount,
 									dateLong, lastDate, ep_billName, ep_note,
 									recurringType, remindDateSelectPosition,
 									remindTime, categoryId, payeeId, mDbxAcctMgr, mDatastore);
 							
-							BillsDao.updateBillDateRule(BillEditActivity.this, _id, getPreDate(ep_recurringType, dateLong));
+							BillsDao.updateBillDateRule(BillEditActivity.this, _id, getPreDate(ep_recurringType, dateLong),MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						}
+						
 					} else if (indexflag == 3) {
 						
 						if (edit_status == 1) {
@@ -594,19 +622,20 @@ public class BillEditActivity extends BaseHomeActivity {
 							long row = BillsDao.updateBillItem(BillEditActivity.this, _id, ep_billisDelete, amountString, dateLong, ep_billItemDueDateNew, 
 									lastDate, ep_billName, ep_note, recurringType, remindDateSelectPosition, remindTime, p_id, categoryId, payeeId) ;
 						} else if (edit_status == 2) {
+							
 							long row = BillsDao.insertBillRule(
 									BillEditActivity.this, ep_billAmount,
 									dateLong, lastDate, ep_billName, ep_note,
 									recurringType, remindDateSelectPosition,
 									remindTime, categoryId, payeeId, mDbxAcctMgr, mDatastore);
                             int p_id = (Integer)mMap.get("billItemHasBillRule");
-							BillsDao.updateBillDateRule(BillEditActivity.this, p_id, getPreDate(ep_recurringType, dateLong));
+							BillsDao.updateBillDateRule(BillEditActivity.this, p_id, getPreDate(ep_recurringType, dateLong),MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 							BillsDao.deleteBillObjectByAfterDate(BillEditActivity.this, dateLong);
 							
 							List<Map<String, Object>> mList = BillsDao.selectBillRuleById(BillEditActivity.this, p_id);
 							long parentDuedate = (Long)mList.get(0).get("ep_billDueDate");
 							if(dateLong == parentDuedate){
-								BillsDao.deleteBill(BillEditActivity.this, p_id);
+								BillsDao.deleteBill(BillEditActivity.this, p_id,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 							}
 						}
 					}
@@ -1353,7 +1382,7 @@ public class BillEditActivity extends BaseHomeActivity {
 			e.printStackTrace();
 		}
 		dateLong = c.getTimeInMillis();
-
+		
 		Date date = new Date(dateLong);
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy");
 		dueDateButton.setText(sdf.format(date));
@@ -1819,7 +1848,8 @@ public class BillEditActivity extends BaseHomeActivity {
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub
-		
+		Toast.makeText(this, "Dropbox sync successed",
+				Toast.LENGTH_SHORT).show();
 	}
 
 }
