@@ -572,7 +572,7 @@ public class SyncDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		String transactionstring = null;
 		while (mCursor.moveToNext()) {
-			transactionstring = mCursor.getString(16);
+			transactionstring = mCursor.getString(0);
 		}
 		mCursor.close();
 		db.close();

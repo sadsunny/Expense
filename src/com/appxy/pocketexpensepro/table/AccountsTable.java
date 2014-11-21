@@ -119,7 +119,13 @@ public class AccountsTable {
 			autoclear = (int) iRecord.getLong("autoclear");
 			amount = iRecord.getDouble("amount");
 			accountType = iRecord.getString("accountType");
-			orderindex = (int) iRecord.getLong("orderindex");
+			
+			if (iRecord.hasField("orderindex")) {
+			  orderindex = (int) iRecord.getLong("orderindex");
+			}else {
+			 orderindex = 100;
+			}
+			
 			dateTime_sync = iRecord.getDate("dateTime_sync");
 			uuid = iRecord.getString("uuid");
 			

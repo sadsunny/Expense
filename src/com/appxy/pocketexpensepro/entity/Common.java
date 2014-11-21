@@ -24,7 +24,49 @@ public class Common {
 	// Does the user paid?
 	public static boolean mIsPaid = false;
 	
+	private static char[] c = new char[]{'k', 'm', 'b', 't'};
 
+	/**
+	 * Recursive implementation, invokes itself for each factor of a thousand, increasing the class on each invokation.
+	 * @param n the number to format
+	 * @param iteration in fact this is the class from the array c
+	 * @return a String representing the number n formatted in a cool looking way.
+	 */
+	private static String coolFormat(double n, int iteration) {
+	    double d = ((long) n / 100) / 10.0;
+	    boolean isRound = (d * 10) %10 == 0;//true if the decimal part is equal to 0 (then it's trimmed anyway)
+	    return (d < 1000? //this determines the class, i.e. 'k', 'm' etc
+	        ((d > 99.9 || isRound || (!isRound && d > 9.99)? //this decides whether to trim the decimals
+	         (int) d * 10 / 10 : d + "" // (int) d * 10 / 10 drops the decimal
+	         ) + "" + c[iteration]) 
+	        : coolFormat(d, iteration+1));
+
+	}
+	
+	public static String doublepoint2str(String num) {
+		
+		double turnNum = Double.parseDouble(num);
+		
+		if (turnNum < 0) {
+			turnNum = 0 - turnNum;
+		}
+		
+		if (turnNum > 99999) {
+			
+			return coolFormat(turnNum, 0);
+			
+		}else {
+			
+			BigDecimal bg = new BigDecimal(num);
+			double f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			DecimalFormat df = new DecimalFormat("###,##0.00");
+			return df.format(f1);
+		}
+		
+		
+	}
+	
+	
 	public static int getName2Identity(Context context, String name) { // 文件名转化成ID
 		int resId = R.drawable.ic_logo;
 		try {

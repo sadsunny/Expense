@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 
 import java.text.DateFormat;
@@ -211,7 +212,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			}
 			
 			if (expense != 0) {
-				viewholder.expenseTextView.setText(MEntity.doublepoint2str(expense
+				viewholder.expenseTextView.setText(Common.doublepoint2str(expense
 						+ ""));
 				viewholder.expenseTextView.setTextColor(Color.rgb(208, 47, 58));
 			} else {
@@ -219,7 +220,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			}
 			
 			if (income != 0) {
-				viewholder.incomeTextView.setText(MEntity.doublepoint2str(income
+				viewholder.incomeTextView.setText(Common.doublepoint2str(income
 						+ ""));
 				viewholder.incomeTextView.setTextColor(Color.rgb(83, 150, 39));
 			} else {

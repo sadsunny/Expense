@@ -74,5 +74,12 @@
 	<color name="ads_solid">#51a3ec</color>
      <color name="ads_stroke">#2c7ec7</color>
      
+     <color name="pur_color">#35cd76</color>
+     <color name="pur_color_sel">#30b167</color>
+     <color name="resotre_color">#39a7fc</color>
+       <color name="resotre_color_sel">#338fd6</color>
+       <color name="point_gray">#c2c4c7</color>
+       <color name="point_black">#343d44</color>
+     
      
 </resources>

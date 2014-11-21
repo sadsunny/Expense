@@ -614,12 +614,6 @@ public class ExportFlowPDFActivity extends BaseHomeActivity {
 			theStartDate = theStartDate +DAYMILLIS;
 		}
 		
-		Log.v("mtag", "eachTableEDataList" + eachTableEDataList);
-		Log.v("mtag", "mDateRanteList" + mDateRanteList);
-		Log.v("mtag", "Atg" + Atg);
-		
-		
-		
 		List<String> allTotalList = new ArrayList<String>();
 		for (int cId:groupCategoryList) { //所有行的总和
 			
@@ -643,7 +637,6 @@ public class ExportFlowPDFActivity extends BaseHomeActivity {
 				bAll = bAll.add(b1);
 		}
 		allTotalList.add(mCurrencyString+bAll.doubleValue());
-		Log.v("mtag", "allTotalList"+allTotalList);
 		
 		/*
 		 * 开始写入到PDF
@@ -653,12 +646,10 @@ public class ExportFlowPDFActivity extends BaseHomeActivity {
 		if (mDateRanteList.size()%5 > 0) {
 			tableSum = tableSum +1;
 		}
-		Log.v("mtag", "tableSum"+tableSum);
 		
 		for (int j = 0; j < tableSum; j++) {
 			
 			int leftCol = (mDateRanteList.size()-(j+1)*5);
-			Log.v("mtag", "leftCol"+leftCol);
 			if ( leftCol >= 0) {
 				getDateTitle(5+1, 0, j, mDateRanteList);
 				getContentRow(5+1, 0, j, eachTableEDataList, groupCategoryList, allTotalList);

@@ -122,14 +122,14 @@ public class GridViewAdapter extends BaseAdapter {
 		double income = (Double) mList.get(position).get("income");
 
 		if (expense != 0) {
-			viewHolder.expenseTextView.setText(MEntity.doublepoint2str(expense
+			viewHolder.expenseTextView.setText(Common.doublepoint2str(expense
 					+ ""));
 		} else {
 			viewHolder.expenseTextView.setText("");
 		}
 
 		if (income != 0) {
-			viewHolder.incomeTextView.setText(MEntity.doublepoint2str(income
+			viewHolder.incomeTextView.setText(Common.doublepoint2str(income
 					+ ""));
 		} else {
 			viewHolder.incomeTextView.setText("");

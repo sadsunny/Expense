@@ -321,7 +321,7 @@ public class DbDao {
 	public static List<Map<String, Object>> selectBillItemBy(SQLiteDatabase db) { // Bill特例事件查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		
-		String sql = "select a.*, from EP_BillItem a";
+		String sql = "select a.* from EP_BillItem a";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -346,7 +346,6 @@ public class DbDao {
 			mList.add(mMap);
 		}
 		mCursor.close();
-		db.close();
 		return mList;
 	}
 	

@@ -328,13 +328,10 @@
         android:focusable="true"
         android:orientation="vertical"
         android:paddingLeft="12dp"
-        android:visibility="gone"
         android:paddingRight="12dp" >
 
         <TextView
-            android:id="@+id/repeat_label3
-            
-            "
+            android:id="@+id/repeat_label3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dip"

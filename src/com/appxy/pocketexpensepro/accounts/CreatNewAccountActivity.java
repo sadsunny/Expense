@@ -308,6 +308,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 					long _id = AccountDao.insertAccount(
 							CreatNewAccountActivity.this, accountName,
 							balanceDouble+"", dateLong, clearCheck, typeId, 10000, uuid, dateTime_sync, mDbxAcctMgr, mDatastore);
+					
 					AccountDao.updateAccountIndex(CreatNewAccountActivity.this,(int)_id, accountName,
 							balanceDouble+"", dateLong, clearCheck, typeId, (int)_id, uuid, dateTime_sync, mDbxAcctMgr, mDatastore);
 				

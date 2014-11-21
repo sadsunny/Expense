@@ -382,7 +382,7 @@ public class TransactionTable {
 			
 		 }
 			
-		}
+	  }
 	}
 	
 
@@ -436,7 +436,9 @@ public class TransactionTable {
 		} else {
 			
 			DbxFields queryParams1 = new DbxFields();
-			queryParams.set("trans_string", thisFields.getString("trans_string"));
+			if (thisFields.hasField("trans_string")) {
+				
+			queryParams1.set("trans_string", thisFields.getString("trans_string"));
 			DbxTable.QueryResult results1 = mTable.query(queryParams1);
 			Iterator<DbxRecord> it1 = results1.iterator();
 			
@@ -444,7 +446,7 @@ public class TransactionTable {
 				
 				DbxRecord firstResult = it1.next();
 				if (firstResult.getDate("dateTime_sync").getTime() <= thisFields.getDate(
-						"dateTime_sync").getTime()) { 
+						"dateTime_sync").getTime()) {
 
 					firstResult.setAll(thisFields);
 					while (it.hasNext()) {
@@ -458,7 +460,12 @@ public class TransactionTable {
 				mTable.insert(thisFields);
 			}
 			
+		}else {
+			
+			mTable.insert(thisFields);
 		}
+			
+	}
 		
 	}
 		

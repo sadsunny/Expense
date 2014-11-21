@@ -193,9 +193,9 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 
 			}
 
-			if (0 <= cId && cId <= 49) {
-				return true;
-			} else {
+//			if (0 <= cId && cId <= 49) {
+//				return true;
+//			} else {
 			
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
@@ -352,7 +352,7 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 			alertDialog.show();
 
 			return true;
-			}
+//			}
 		}
 
 	};

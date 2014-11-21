@@ -250,7 +250,7 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 			Set<DbxRecord> incomeDate = mMap.get("db_account_table");
 			for (DbxRecord iRecord:incomeDate) {
 				if(!iRecord.isDeleted()){
-					
+					Log.v("matg", "Account iRecord"+iRecord);
 					AccountsTable accountsTable = new AccountsTable(mDatastore, BaseHomeActivity.this);
 					Accounts accounts =accountsTable.getAccounts();
 					accounts.setIncomingData(iRecord);

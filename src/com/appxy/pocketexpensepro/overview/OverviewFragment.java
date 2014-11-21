@@ -681,6 +681,7 @@ public class OverviewFragment extends Fragment implements
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
+				
 				Intent intent = new Intent();
 				intent.setClass(getActivity(), BudgetActivity.class);
 				startActivityForResult(intent, 14);
@@ -690,10 +691,8 @@ public class OverviewFragment extends Fragment implements
 
 		mViewPager = (ViewPager) view.findViewById(R.id.mPager);
 		
-
 		mViewPager.setAdapter(mViewPagerAdapter);
 		mViewPager.setCurrentItem(currentPosition);
-
 		viewPagerPosition = currentPosition;
 
 		final OnUpdateNavigationListener onUpdateNavigationListener;
@@ -1099,8 +1098,6 @@ public class OverviewFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		
-		Log.v("mtest", "requestCode"+requestCode);
-		
 		switch (resultCode) {
 		
 		case 6:
@@ -1108,7 +1105,7 @@ public class OverviewFragment extends Fragment implements
 			if (data != null) {
 
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
-						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+						viewPagerPosition);
 			}
 			break;
 		case 14:
@@ -1116,7 +1113,7 @@ public class OverviewFragment extends Fragment implements
 			if (data != null) {
 //				mHandler.post(mTask);
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
-						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+						viewPagerPosition);
 			}
 			break;
 

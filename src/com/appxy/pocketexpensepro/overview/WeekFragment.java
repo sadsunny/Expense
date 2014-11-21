@@ -61,7 +61,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 					mAdapter.setChoosedTime(MainActivity.selectedDate);
 					mAdapter.notifyDataSetChanged();
 				}
-
+				
 				break;
 
 			case MSG_FAILURE:

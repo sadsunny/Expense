@@ -128,9 +128,9 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Others", 0, 0, 56, 0, "E15F57E7-E976-449D-831F-BCD4631C73C5");
 		categoryIni("Others", 1, 0, 57, 0, "6CFF80C6-6080-4263-80D9-E0ED8DC4E606");
 		categoryIni("Pets", 0, 0, 52, 0,"0206FC4C-9291-40F6-9242-16A673588515");
-		
 		categoryIni("Rent", 0, 0, 58, 0, "CD0F4454-38FA-40C3-8651-CAAD7238773E");
 		categoryIni("Salary", 1, 0, 60, 0, "553E1F3C-2121-43FA-B6EF-9673C9C79F1B");
+		
 		categoryIni("Savings Deposit", 1, 0, 62, 0, "3944081E-93F6-4541-965E-F3077FD9695E");
 		categoryIni("Tax", 0, 0, 64, 0, "5C7368FA-1E98-4777-8E0E-9D470283AE8C");
 		categoryIni("Tax:Fed", 0, 0, 64, 0, "0D997AF9-3C18-45A4-AB44-C005D10CC12D");
@@ -140,8 +140,8 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		categoryIni("Tax Refund", 1, 0, 65, 0, "38B27F70-2C9F-4705-AF3B-929BD2711D21");
 		categoryIni("Tax:SDI", 0, 0, 64, 0, "88D34AA2-A3F0-4A2B-8C47-B6BB26A043FB");
 		categoryIni("Tax:Soc Sec", 0, 0, 64, 0, "779F4166-A755-4D91-AB87-B3328BC32B9E");
-		
 		categoryIni("Tax:State", 0, 0, 64, 0, "0B171B72-1C7A-4C2F-A7AC-A4FA50B385BB");
+		
 		categoryIni("Transport", 0, 0, 12, 0, "E3EB044D-F2BA-4239-8DA5-4C84D4F87616");
 		categoryIni("Travel", 0, 0, 0, 0, "8002FBE6-DE5A-4C60-937E-4904204FB17C");
 		categoryIni("Utilities", 0, 0, 42, 0, "9482F32A-6EFF-42CF-90B8-1C5F18C9E851");
@@ -242,8 +242,8 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 			upgradeEP_BillItem(paramSQLiteDatabase, syncTime);
 			upgradeTransaction(paramSQLiteDatabase, syncTime);
 			
-			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", syncTime, 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", syncTime, 10000);
-			DbDao.updateAccountOrder(paramSQLiteDatabase, (int)accountOrder , (int)accountOrder);
+//			long accountOrder = accountIni(paramSQLiteDatabase, "Default Account", 0+"", syncTime, 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", syncTime, 10000);
+//			DbDao.updateAccountOrder(paramSQLiteDatabase, (int)accountOrder , (int)accountOrder);
 		}
 		
 	}

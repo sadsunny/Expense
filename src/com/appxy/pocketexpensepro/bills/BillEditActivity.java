@@ -26,6 +26,7 @@ import com.appxy.pocketexpensepro.overview.transaction.PayeeListViewAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.service.NotificationService;
+import com.appxy.pocketexpensepro.setting.category.CategoryDao;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.dropbox.sync.android.DbxRecord;
@@ -89,11 +90,6 @@ public class BillEditActivity extends BaseHomeActivity {
 	private int checkedItem;
 	private int gCheckedItem;// 选择位置
 	private int cCheckedItem;
-	private RelativeLayout expenseButton;
-	private RelativeLayout incomeButton;
-	private View chooseView1;
-	private View chooseView2;
-	private int mCategoryType = 0; // 0 expense 1 income
 	private int mCheckCategoryType = 0; // 0 expense 1 income
 	private int categoryId; // 初次others的位置
 	private AlertDialog mCategoryDialog;
@@ -231,6 +227,11 @@ public class BillEditActivity extends BaseHomeActivity {
 
 		categoryId = billRuleHasCategory;
 
+		List<Map<String, Object>> mCategoryDataList = CategoryDao.selectCategoryById(this, categoryId);
+		if (mCategoryDataList == null) {
+			categoryId = 26 ; //设置为other
+		}
+		
 		List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
 				BillEditActivity.this, 0);
 		filterData(mDataList);
@@ -655,223 +656,10 @@ public class BillEditActivity extends BaseHomeActivity {
 
 			case R.id.category_btn:
 
-				View view = inflater.inflate(R.layout.dialog_choose_category,
+				View view = inflater.inflate(R.layout.dialog_choose_ex_category,
 						null);
-				expenseButton = (RelativeLayout) view
-						.findViewById(R.id.expense_btn);
-				incomeButton = (RelativeLayout) view.findViewById(R.id.income_btn);
-				chooseView1  = (View) view.findViewById(R.id.view1);
-				chooseView2  = (View) view.findViewById(R.id.view2);
-				
-				if(mCategoryType == 0){
-					chooseView1.setVisibility(View.VISIBLE);
-					chooseView2.setVisibility(View.INVISIBLE);
-				}else{
-					chooseView1.setVisibility(View.INVISIBLE);
-					chooseView2.setVisibility(View.VISIBLE);
-				}
 
-				expenseButton.setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View paramView) {
-						// TODO Auto-generated method stub
-						List<Map<String, Object>> mDataList = PayeeDao
-								.selectCategory(BillEditActivity.this, 0);
-						filterData(mDataList);
-
-						chooseView1.setVisibility(View.VISIBLE);
-						chooseView2.setVisibility(View.INVISIBLE);
-						
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
-
-						mExpandableListView
-								.setOnChildClickListener(new OnChildClickListener() {
-
-									@Override
-									public boolean onChildClick(
-											ExpandableListView parent, View v,
-											int groupPosition,
-											int childPosition, long id) {
-										// TODO Auto-generated method stub
-										mCategoryType = 0;
-
-										checkedItem = mExpandableListView
-												.getFlatListPosition(ExpandableListView
-														.getPackedPositionForChild(
-																groupPosition,
-																childPosition));
-
-										gCheckedItem = groupPosition;
-										cCheckedItem = childPosition;
-
-										mDialogExpandableListViewAdapter
-												.setSelectedPosition(
-														gCheckedItem,
-														cCheckedItem);
-										mDialogExpandableListViewAdapter
-												.notifyDataSetChanged();
-
-										categoryId = (Integer) childrenAllDataList
-												.get(groupPosition)
-												.get(childPosition).get("_id");
-										String cName = (String) childrenAllDataList
-												.get(groupPosition)
-												.get(childPosition)
-												.get("categoryName");
-										categoryButton.setText(cName);
-										mCategoryDialog.dismiss();
-
-										return true;
-									}
-								});
-
-						mExpandableListView
-								.setOnGroupClickListener(new OnGroupClickListener() {
-
-									@Override
-									public boolean onGroupClick(
-											ExpandableListView parent, View v,
-											int groupPosition, long id) {
-										// TODO Auto-generated method stub
-										mCategoryType = 0;
-										checkedItem = mExpandableListView
-												.getFlatListPosition(ExpandableListView
-														.getPackedPositionForChild(
-																groupPosition,
-																0));
-
-										gCheckedItem = groupPosition;
-										cCheckedItem = -1;
-
-										mDialogExpandableListViewAdapter
-												.setSelectedPosition(
-														gCheckedItem,
-														cCheckedItem);
-										mDialogExpandableListViewAdapter
-												.notifyDataSetChanged();
-										mCategoryDialog.dismiss();
-
-										categoryId = (Integer) groupDataList
-												.get(groupPosition).get("_id");
-										String cName = (String) groupDataList
-												.get(groupPosition).get(
-														"categoryName");
-										categoryButton.setText(cName);
-										return true;
-									}
-								});
-
-						int groupCount = groupDataList.size();
-
-						for (int i = 0; i < groupCount; i++) {
-							mExpandableListView.expandGroup(i);
-						}
-						mExpandableListView.setCacheColorHint(0);
-
-					}
-				});
-
-				incomeButton.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View paramView) {
-						// TODO Auto-generated method stub
-						chooseView1.setVisibility(View.INVISIBLE);
-						chooseView2.setVisibility(View.VISIBLE);
-						
-						List<Map<String, Object>> mDataList = PayeeDao
-								.selectCategory(BillEditActivity.this, 1);
-						filterData(mDataList);
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
-
-						mExpandableListView
-								.setOnChildClickListener(new OnChildClickListener() {
-
-									@Override
-									public boolean onChildClick(
-											ExpandableListView parent, View v,
-											int groupPosition,
-											int childPosition, long id) {
-										// TODO Auto-generated method stub
-										mCategoryType = 1;
-										checkedItem = mExpandableListView
-												.getFlatListPosition(ExpandableListView
-														.getPackedPositionForChild(
-																groupPosition,
-																childPosition));
-
-										gCheckedItem = groupPosition;
-										cCheckedItem = childPosition;
-
-										mDialogExpandableListViewAdapter
-												.setSelectedPosition(
-														gCheckedItem,
-														cCheckedItem);
-										mDialogExpandableListViewAdapter
-												.notifyDataSetChanged();
-
-										categoryId = (Integer) childrenAllDataList
-												.get(groupPosition)
-												.get(childPosition).get("_id");
-										String cName = (String) childrenAllDataList
-												.get(groupPosition)
-												.get(childPosition)
-												.get("categoryName");
-										categoryButton.setText(cName);
-
-										mCategoryDialog.dismiss();
-
-										return true;
-									}
-								});
-
-						mExpandableListView
-								.setOnGroupClickListener(new OnGroupClickListener() {
-
-									@Override
-									public boolean onGroupClick(
-											ExpandableListView parent, View v,
-											int groupPosition, long id) {
-										// TODO Auto-generated method stub
-										mCategoryType = 1;
-										checkedItem = mExpandableListView
-												.getFlatListPosition(ExpandableListView
-														.getPackedPositionForChild(
-																groupPosition,
-																0));
-
-										gCheckedItem = groupPosition;
-										cCheckedItem = -1;
-
-										mDialogExpandableListViewAdapter
-												.setSelectedPosition(
-														gCheckedItem,
-														cCheckedItem);
-										mDialogExpandableListViewAdapter
-												.notifyDataSetChanged();
-										mCategoryDialog.dismiss();
-
-										categoryId = (Integer) groupDataList
-												.get(groupPosition).get("_id");
-										String cName = (String) groupDataList
-												.get(groupPosition).get(
-														"categoryName");
-										categoryButton.setText(cName);
-
-										return true;
-									}
-								});
-
-						int groupCount = groupDataList.size();
-
-						for (int i = 0; i < groupCount; i++) {
-							mExpandableListView.expandGroup(i);
-						}
-						mExpandableListView.setCacheColorHint(0);
-
-					}
-				});
 
 				mExpandableListView = (ExpandableListView) view
 						.findViewById(R.id.mExpandableListView);
@@ -888,7 +676,6 @@ public class BillEditActivity extends BaseHomeActivity {
 						.getFlatListPosition(ExpandableListView
 								.getPackedPositionForChild(gCheckedItem, 0)); // 根据group和child找到绝对位置
 
-				if (mCategoryType == 0) {
 					List<Map<String, Object>> mDataList = PayeeDao
 							.selectCategory(BillEditActivity.this, 0);
 					filterData(mDataList);
@@ -899,18 +686,6 @@ public class BillEditActivity extends BaseHomeActivity {
 					mDialogExpandableListViewAdapter.setSelectedPosition(
 							gCheckedItem, cCheckedItem);
 
-				} else if (mCategoryType == 1) {
-					List<Map<String, Object>> mDataList = PayeeDao
-							.selectCategory(BillEditActivity.this, 1);
-					filterData(mDataList);
-
-					mExpandableListView
-							.setSelection((checkedItem - 1) > 0 ? (checkedItem - 1)
-									: 0);
-					mDialogExpandableListViewAdapter.setSelectedPosition(
-							gCheckedItem, cCheckedItem);
-
-				}
 
 				mDialogExpandableListViewAdapter.setAdapterData(groupDataList,
 						childrenAllDataList);

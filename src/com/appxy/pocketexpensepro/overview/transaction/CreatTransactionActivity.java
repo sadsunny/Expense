@@ -213,7 +213,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				autoListAdapter = new AutoListAdapter(
 						CreatTransactionActivity.this, mCursor, true);
 				payeeEditText.setAdapter(autoListAdapter);
-				Log.v("mtest", "mCursor11" + mCursor);
 
 			}
 
@@ -259,8 +258,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				String categoryName = cursor.getString(cursor
 						.getColumnIndexOrThrow("categoryName"));
 				categoryButton.setText(categoryName);
-				Log.v("mtest", "categoryName"+categoryName);
-				Log.v("mtest", "categoryId"+categoryId);
 				
 				mCategoryType = cType ; // 1 income
 				
@@ -557,7 +554,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 					if (mReturnList != null && mReturnList.size() > 1) { //category splite情况
 
-						Log.v("mtest", "mReturnList" + mReturnList);
 						long row = TransactionDao.insertTransactionAll(
 								CreatTransactionActivity.this, amountString,
 								dateLong, isCleared, memoString, picPath, 0,
@@ -576,12 +572,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 									incomeAccountDefault, (int) row, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							idList = idList + id + ",";
 						}
-						Log.v("mtest", "row" + row);
-						Log.v("mtest", "idList" + idList);
 
 						long rid = TransactionDao.updateParTransactionChild(
 								CreatTransactionActivity.this, row, idList);
-						Log.v("mtest", "rid" + rid);
 
 					} else {
 						
@@ -947,8 +940,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
 						
-					Log.v("mtag","gCheckedItem"+gCheckedItem);
-					Log.v("mtag","cCheckedItem"+cCheckedItem);
 						mExpandableListView.setSelectedChild(gCheckedItem,
 								cCheckedItem, true);
 						
@@ -1465,7 +1456,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 			File file = new File(picPath);
 			if (file.exists()) {
 				camorabitmap = BitmapFactory.decodeFile(picPath);
-				Log.v("mtest", "camorabitmap" + camorabitmap);
 				mImageView.setImageBitmap(camorabitmap);
 			}
 
@@ -1516,7 +1506,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							b1 = b1.add(b2);
 						}
 						amountString = b1.doubleValue() + "";
-						Log.v("mtest", "amountString" + amountString);
 						amountEditText.setText(MEntity.doubl2str(amountString));
 					}
 				} else {
@@ -1572,7 +1561,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							b1 = b1.add(b2);
 						}
 						amountString = b1.doubleValue() + "";
-						Log.v("mtest", "amountString" + amountString);
 						amountEditText.setText(MEntity.doubl2str(amountString));
 					}
 

@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.setting.sync;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
@@ -34,6 +35,7 @@ import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxDatastoreManager;
 import com.dropbox.sync.android.DbxException;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.R.bool;
 import android.app.Activity;
@@ -77,24 +79,33 @@ public class SyncActivity extends BaseHomeSyncActivity {
         @Override
         public void onDatastoreStatusChange(DbxDatastore ds) {
         	
-        	if (!ds.getSyncStatus().isDownloading) {
-        		if (isUpload) {
-        			justSync(true);
+        	if (ds.getSyncStatus().hasIncoming) {
+        		Log.v("mtag", "hasIncoming");
+				try {
+
+					Map<String, Set<DbxRecord>> mMap = mDatastore.sync();
+
+					dataHasIncoming(mMap);
+					
+					if (isUpload) {
+	        			justSync(true);
+					}
+					
+					mDatastore.sync();
+
+				} catch (DbxException e) {
+					handleException(e);
 				}
 			}
         	
+//        	if (!ds.getSyncStatus().isDownloading) {
+//        		if (isUpload) {
+//        			justSync(true);
+//				}
+//			}
         	
-            if (ds.getSyncStatus().hasIncoming) {
-                try {
-                	
-                    mDatastore.sync();
-                   
-                } catch (DbxException e) {
-                    handleException(e);
-                }
-            }
-            
-            
+        
+        	
         }
     };
     
@@ -231,12 +242,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	
 	public void upLoadAllDate() throws DbxException { //上传所有数据
 		
-		List<Map<String, Object>> AccountsList = SyncDao.selectAccount(SyncActivity.this);
-		for (Map<String, Object> iMap:AccountsList) {
-			AccountsTable accountsTable = new AccountsTable(mDatastore,this);
-			Accounts accounts = accountsTable.getAccounts();
-			accounts.setAccountsData(iMap);
-			accountsTable.insertRecords(accounts.getFields());
+		List<Map<String, Object>> CategoryList = SyncDao.selectCategory(SyncActivity.this);
+		for (Map<String, Object> iMap:CategoryList) {
+			CategoryTable categoryTable = new CategoryTable(mDatastore, this);
+			Category category = categoryTable.getCategory();
+			category.setCategoryData(iMap);
+			categoryTable.insertRecords(category.getFields());
 		}
 		
 		List<Map<String, Object>> AccountTypeList = SyncDao.selectAccountType(SyncActivity.this);
@@ -247,12 +258,20 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			accountTypeTable.insertRecords(accountType.getFields());
 		}
 		
-		List<Map<String, Object>> BudgetItemList = SyncDao.selectBudgetItem(SyncActivity.this);
-		for (Map<String, Object> iMap:BudgetItemList) {
-			BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
-			BudgetItem budgetItem = budgetItemTable.getBudgetItem();
-			budgetItem.setBudgetItemData(iMap);
-			budgetItemTable.insertRecords(budgetItem.getFields());
+		List<Map<String, Object>> AccountsList = SyncDao.selectAccount(SyncActivity.this);
+		for (Map<String, Object> iMap:AccountsList) {
+			AccountsTable accountsTable = new AccountsTable(mDatastore,this);
+			Accounts accounts = accountsTable.getAccounts();
+			accounts.setAccountsData(iMap);
+			accountsTable.insertRecords(accounts.getFields());
+		}
+		
+		List<Map<String, Object>> PayeeList = SyncDao.selectPayee(SyncActivity.this);
+		for (Map<String, Object> iMap:PayeeList) {
+			PayeeTable payeeTable = new PayeeTable(mDatastore, this);
+			Payee payee = payeeTable.getPayee();
+			payee.setPayeeData(iMap);
+			payeeTable.insertRecords(payee.getFields());
 		}
 		
 		List<Map<String, Object>> BudgetTemplateList = SyncDao.selectBudgetTemplate(SyncActivity.this);
@@ -263,6 +282,15 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetTemplateTable.insertRecords(budgetTemplate.getFields());
 		}
 		
+		List<Map<String, Object>> BudgetItemList = SyncDao.selectBudgetItem(SyncActivity.this);
+		for (Map<String, Object> iMap:BudgetItemList) {
+			BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
+			BudgetItem budgetItem = budgetItemTable.getBudgetItem();
+			budgetItem.setBudgetItemData(iMap);
+			budgetItemTable.insertRecords(budgetItem.getFields());
+		}
+		
+	
 		List<Map<String, Object>> BudgetTransferList = SyncDao.selectBudgetTransfer(SyncActivity.this);
 		for (Map<String, Object> iMap:BudgetTransferList) {
 			BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore,this);
@@ -271,12 +299,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetTransferTable.insertRecords(budgetTransfer.getFields());
 		}
 		
-		List<Map<String, Object>> CategoryList = SyncDao.selectCategory(SyncActivity.this);
-		for (Map<String, Object> iMap:CategoryList) {
-			CategoryTable categoryTable = new CategoryTable(mDatastore, this);
-			Category category = categoryTable.getCategory();
-			category.setCategoryData(iMap);
-			categoryTable.insertRecords(category.getFields());
+		List<Map<String, Object>> EP_BillRuleList = SyncDao.selectEP_BillRule(SyncActivity.this);
+		for (Map<String, Object> iMap:EP_BillRuleList) {
+			EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,this);
+			EP_BillRule ep_BillRule = ep_BillRuleTable.getEP_BillRule();
+			ep_BillRule.setEP_BillRuleData(iMap);
+			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
 		}
 		
 		List<Map<String, Object>> EP_BillItemList = SyncDao.selectEP_BillItem(SyncActivity.this);
@@ -288,21 +316,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			ep_BillItemTable.insertRecords(ep_BillItem.getFields());
 		}
 		
-		List<Map<String, Object>> EP_BillRuleList = SyncDao.selectEP_BillRule(SyncActivity.this);
-		for (Map<String, Object> iMap:EP_BillRuleList) {
-			EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,this);
-			EP_BillRule ep_BillRule = ep_BillRuleTable.getEP_BillRule();
-			ep_BillRule.setEP_BillRuleData(iMap);
-			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
-		}
-		
-		List<Map<String, Object>> PayeeList = SyncDao.selectPayee(SyncActivity.this);
-		for (Map<String, Object> iMap:PayeeList) {
-			PayeeTable payeeTable = new PayeeTable(mDatastore, this);
-			Payee payee = payeeTable.getPayee();
-			payee.setPayeeData(iMap);
-			payeeTable.insertRecords(payee.getFields());
-		}
 		
 		List<Map<String, Object>> TransactionList = SyncDao.selectTransaction(SyncActivity.this);
 		for (Map<String, Object> iMap:TransactionList) {
@@ -423,7 +436,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			mDbxAcct = null;
 	    }
 
-
 	}
 
 	@Override
@@ -474,5 +486,175 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	public void syncDateChange() {
 		// TODO Auto-generated method stub
 	}
+	
+	
+private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap) throws DbxException{//处理同步数据incoming
+		
+		if (mMap.containsKey("db_category_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_category_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					CategoryTable categoryTable = new CategoryTable(mDatastore, this);
+					Category category =  categoryTable.getCategory();
+					category.setIncomingData(iRecord);
+					category.insertOrUpdate();
+					
+				}
+			}
+		}
+		
+		
+		
+		if (mMap.containsKey("db_accounttype_table")) {
+			Set<DbxRecord> incomeDate = mMap.get("db_accounttype_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, this);
+					AccountType accountType = accountTypeTable.getAccountType();
+					accountType.setIncomingData(iRecord);
+					accountType.insertOrUpdate(); 
+					
+				}
+			}
+		}
+		
+		if (mMap.containsKey("db_payee_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_payee_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					PayeeTable payeeTable = new PayeeTable(mDatastore, this);
+					Payee payee = payeeTable.getPayee();
+					payee.setIncomingData(iRecord);
+					payee.insertOrUpdate();
+					
+				}
+			}
+		}
+		
+		
+		
+		if (mMap.containsKey("db_account_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_account_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					AccountsTable accountsTable = new AccountsTable(mDatastore, this);
+					Accounts accounts =accountsTable.getAccounts();
+					accounts.setIncomingData(iRecord);
+					accounts.insertOrUpdate();
+				}
+			}
+			
+		}
+		
+		
+		if (mMap.containsKey("db_budgettemplate_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_budgettemplate_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, this);
+					BudgetTemplate budgetTemplate = budgetTemplateTable.getBudgetTemplate();
+					budgetTemplate.setIncomingData(iRecord);
+					budgetTemplate.insertOrUpdate();
+				}
+			}
+			
+		}
+
+		
+		if (mMap.containsKey("db_budgetitem_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_budgetitem_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
+					BudgetItem budgetItem = budgetItemTable.getBudgetItem();
+					budgetItem.setIncomingData(iRecord);
+					budgetItem.insertOrUpdate();
+					
+				}
+			}
+			
+		}
+
+		
+		if (mMap.containsKey("db_budgettransfer_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_budgettransfer_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, this);
+					BudgetTransfer budgetTransfer = budgetTransferTable.getBudgetTransfer();
+					budgetTransfer.setIncomingData(iRecord);
+					budgetTransfer.insertOrUpdate();
+					
+				}
+			}
+			
+		}
+		
+		if (mMap.containsKey("db_ep_billrule_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_ep_billrule_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore, this);
+					EP_BillRule eP_BillRule = ep_BillRuleTable.getEP_BillRule();
+					eP_BillRule.setIncomingData(iRecord);
+					eP_BillRule.insertOrUpdate();
+					
+				}
+			}
+			
+		}
+		
+		if (mMap.containsKey("db_ep_billitem_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_ep_billitem_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
+					EP_BillItem eP_BillItem = ep_BillItemTable.getEP_BillItem();
+					eP_BillItem.setIncomingData(iRecord);
+					eP_BillItem.insertOrUpdate();
+					
+				}
+			}
+			
+		}
+		
+		if (mMap.containsKey("db_transaction_table")) {
+			
+			Set<DbxRecord> incomeDate = mMap.get("db_transaction_table");
+			for (DbxRecord iRecord:incomeDate) {
+				if(!iRecord.isDeleted()){
+					
+					TransactionTable transactionTable = new TransactionTable(mDatastore, this);
+					Transaction transaction = transactionTable.getTransaction();
+					transaction.setIncomingData(iRecord);
+					transaction.insertOrUpdate();
+					
+				}
+			}
+			
+		}
+		
+		
+
+		
+	}
+	
 
 }

@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.setting;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +12,9 @@ import org.json.JSONObject;
 
 
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
+import com.appxy.pocketexpensepro.bills.CreatBillsActivity;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.Activity_ChangePass;
 import com.appxy.pocketexpensepro.passcode.Activity_SetPass;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
@@ -30,6 +33,7 @@ import com.dropbox.sync.android.DbxRecord;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +44,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -93,7 +98,9 @@ public class SettingActivity extends BaseHomeActivity {
 	static final String TAG = "Expense";
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean iap_is_ok = false;
-	 
+	private AlertDialog mPurDialog;
+	private FragmentDialog fragmentDialog;
+	
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -131,9 +138,18 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(SettingActivity.this, SyncActivity.class);
-				startActivity(intent);
+				if (!Common.mIsPaid) {
+					
+					Intent intent = new Intent();
+					intent.setClass(SettingActivity.this, SyncActivity.class);
+					startActivity(intent);
+					
+				} else {
+					
+					showPurdialog();
+
+				}
+				
 			}
 		});
 		
@@ -379,6 +395,7 @@ public class SettingActivity extends BaseHomeActivity {
 
 				View view = inflater
 						.inflate(R.layout.dialog_set_currency, null);
+				
 				currencyListView = (ListView) view.findViewById(R.id.mListView);
 				DialogCurrencyAdapter dcAdapter = new DialogCurrencyAdapter(
 						SettingActivity.this);
@@ -424,6 +441,12 @@ public class SettingActivity extends BaseHomeActivity {
 			}
 		}
 	};
+	
+	private void showPurdialog(){
+		
+		fragmentDialog = new FragmentDialog();
+		fragmentDialog.show(getSupportFragmentManager(), "");
+  }
 
 	public void fillinfo() {
 		info = "";
@@ -475,6 +498,10 @@ public class SettingActivity extends BaseHomeActivity {
 	        
 		if (Common.mIsPaid && update_layout_visi != null) {
 			update_layout_visi.setVisibility(View.INVISIBLE);
+		}
+	      
+	      if (Common.mIsPaid && fragmentDialog != null && fragmentDialog.isVisible()) {
+	    	  fragmentDialog.dismiss();
 		}
 		
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);

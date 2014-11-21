@@ -355,7 +355,6 @@ public class MainActivity extends BaseHomeActivity implements
 				mItemPosition = 0;
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setDisplayShowTitleEnabled(false);
-				Log.v("mtest", "mtest");
 
 			} else if (itemPosition == 1) {
 
@@ -737,7 +736,6 @@ public class MainActivity extends BaseHomeActivity implements
 			Intent intent = new Intent();
 			intent.setClass(MainActivity.this, SettingActivity.class);
 			startActivity(intent);
-			Log.v("mtest", "2222");
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -846,7 +844,6 @@ public class MainActivity extends BaseHomeActivity implements
 	@Override
 	public void OnBillToActivity() {
 		// TODO Auto-generated method stub
-		Log.v("mtest", "main");
 		overViewNavigationListAdapter
 				.setSubTitle(turnToDate(this.selectedMonth));
 		overViewNavigationListAdapter.notifyDataSetChanged();
@@ -924,10 +921,8 @@ public class MainActivity extends BaseHomeActivity implements
 			protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "onActivityResult(" + requestCode + "," + resultCode + "," + data);
-				Log.v("mtest", "main result调用");
 				if (mHelper == null) return;
 				if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-					Log.v("mtest", "main result edn");
 					super.onActivityResult(requestCode, resultCode, data);
 					 if (requestCode == RC_REQUEST) {     
 					      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
@@ -946,7 +941,6 @@ public class MainActivity extends BaseHomeActivity implements
 								 meditor.commit();
 								 
 					            if (overviewFragment != null) {
-					   				 Log.v("mads","******第七步第返回刷新fragment");
 					   				   refreshADS = (OnRefreshADS) overviewFragment;
 					   				   refreshADS.refreshADS();
 									
@@ -963,7 +957,6 @@ public class MainActivity extends BaseHomeActivity implements
 		       
 		        else {
 		            Log.d(TAG, "onActivityResult handled by IABUtil.");
-		            Log.v("mtest", "参数返回2");
 		        }
 			}
 		 
@@ -980,7 +973,6 @@ public class MainActivity extends BaseHomeActivity implements
 		            mHelper.queryInventoryAsync(mGotInventoryListener);
 					
 		            if (!result.isSuccess()) {
-//		            	Log.v("mtest", "result11"+result);
 //		                complain("Error purchasing: " + result);
 		                return;
 		            }
@@ -1035,7 +1027,6 @@ public class MainActivity extends BaseHomeActivity implements
 					 
 		   			 if (overviewFragment != null) {
 		   				 
-		   				 Log.v("mads","******第七步第返回刷新fragment");
 		   				   refreshADS = (OnRefreshADS) overviewFragment;
 		   				   refreshADS.refreshADS();
 						

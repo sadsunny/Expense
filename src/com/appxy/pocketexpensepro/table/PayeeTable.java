@@ -120,7 +120,11 @@ public class PayeeTable {
 			accountsFields.set("uuid", uuid);
 			accountsFields.set("dateTime",dateTime);
 			accountsFields.set("state", state);
-			accountsFields.set("payee_category", payee_category);
+			
+			if (payee_category !=null) {
+				accountsFields.set("payee_category", payee_category);
+			}
+			
 			accountsFields.set("payee_name",payee_name);
 			if (payee_memo != null && payee_memo.length() > 0) {
 				accountsFields.set("payee_memo",payee_memo);

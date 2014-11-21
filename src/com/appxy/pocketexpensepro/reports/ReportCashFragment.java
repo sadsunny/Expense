@@ -33,6 +33,7 @@ import android.app.ActionBar.LayoutParams;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint.Align;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -263,13 +264,15 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 		renderer.setXLabelsColor(Color.parseColor("#acadb2"));
 		renderer.setYLabelsColor(0,Color.parseColor("#acadb2"));
 		renderer.setMargins(new int[] { MEntity.dip2px(mActivity, 10),
-				MEntity.dip2px(mActivity, 25), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
+				MEntity.dip2px(mActivity,40), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
 		renderer.setApplyBackgroundColor(true);
 		renderer.setBackgroundColor(Color.WHITE);
 		renderer.setMarginsColor(Color.WHITE);
 		renderer.setZoomEnabled(false, false); // 设置是否可缩放XY
 		renderer.setShowGrid(true);
 		renderer.setPanEnabled(true, false);// 设置XY轴的滑动
+		renderer.setYLabelsAlign(Align.RIGHT);
+		
 		
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		FillOutsideLine fill = new FillOutsideLine(

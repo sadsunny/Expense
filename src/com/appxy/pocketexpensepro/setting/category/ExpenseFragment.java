@@ -194,9 +194,9 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 
 			}
 
-			if (0 <= cId && cId <= 49) {
+			if (cId == 26) {
 				return true;
-			} else {
+			}
 				View dialogView = mInflater.inflate(
 						R.layout.dialog_item_operation, null);
 				diaListView = (ListView) dialogView
@@ -368,7 +368,7 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 				alertDialog.show();
 
 				return true;
-			}
+//			}
 
 		}
 

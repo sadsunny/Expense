@@ -406,7 +406,11 @@ public class EP_BillItemTable {
 		public DbxFields getFields() {
 
 			DbxFields accountsFields = new DbxFields();
-			accountsFields.set("billitemhasbillrule", billitemhasbillrule);
+			
+			
+			if (billitemhasbillrule != null ) {
+				accountsFields.set("billitemhasbillrule", billitemhasbillrule);
+			}
 			
 			if (billitem_ep_billitemstring1 != null) {
 				accountsFields.set("billitem_ep_billitemstring1",
