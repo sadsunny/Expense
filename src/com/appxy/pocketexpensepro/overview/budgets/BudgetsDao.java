@@ -40,6 +40,23 @@ public class BudgetsDao {
 	}
 	
 	
+	public static long deleteBudgetTemByCategory(Context context, String budgettemplate_category) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");  //级联删除item，以及关联的transfer
+		
+		long row = 0;
+		try {
+			row = db.delete("BudgetTemplate", "category = ?",
+					new String[] { budgettemplate_category });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+		
+	}
+	
 	
 	public static long deleteBudgetTemByUUId(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
@@ -58,13 +75,31 @@ public class BudgetsDao {
 		
 	}
 	
+	public static long deleteBudgetItemByTemp(Context context, String temId) {
+		SQLiteDatabase db = getConnection(context);
+		db.execSQL("PRAGMA foreign_keys = ON ");  //级联删除item，以及关联的transfer
+		
+		long row = 0;
+		try {
+			row = db.delete("BudgetItem", "budgetTemplate = ?",
+					new String[] { temId });
+		} catch (Exception e) {
+			// TODO: handle exception
+			row = 0;
+		}
+		db.close();
+		return row;
+	}
+	
+	
+	
 	public static long deleteBudgetItemByUUId(Context context, String uuid) {
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");  //级联删除item，以及关联的transfer
 		
 		long row = 0;
 		try {
-			row = db.delete("BudgetTemplate", "uuid = ?",
+			row = db.delete("BudgetItem", "uuid = ?",
 					new String[] { uuid });
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -337,6 +372,30 @@ public class BudgetsDao {
 	}
 
 	
+	public static List<Map<String, Object>> selectItemByTemId(Context context,
+			int temId) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, a.uuid from BudgetItem a where a.budgetTemplate = " + temId;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String uuid = mCursor.getString(1);
+			
+			mMap.put("_id", _id);
+			mMap.put("uuid", uuid);
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
 	
 	
 	public static long deleteBudget(Context context, int id,String itemUUId,  DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
@@ -461,6 +520,34 @@ public class BudgetsDao {
 		
 		
 	}
+	
+	
+	public static List<Map<String, Object>> checkBudgetTemplateByCategory(Context context,
+			int budgettemplate_category) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime, a._id from BudgetTemplate a where a.category = " +budgettemplate_category;
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			int _id = mCursor.getInt(1);
+			
+			mMap.put("dateTime_sync", dateTime_sync);
+			mMap.put("_id", _id);
+			
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 
 	
 	public static List<Map<String, Object>> checkBudgetTemplateByUUid(Context context,
@@ -486,6 +573,32 @@ public class BudgetsDao {
 	}
 	
 	
+   public static List<Map<String, Object>> selectBudgetTemplateAll(Context context) {
+	   
+	   List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+	   Map<String, Object> mMap;
+	   
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id, a.uuid, a.category from BudgetTemplate a ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			mMap = new HashMap<String, Object>();
+			int _id = mCursor.getInt(0);
+			String uuid = mCursor.getString(1);
+			int category = mCursor.getInt(2);
+			
+			mMap.put("_id", _id);
+			mMap.put("uuid", uuid);
+			mMap.put("category", category);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+		return mList;
+	}
+
 	public static int selectBudgetTemplateIdByUUid(Context context,String uuid) {
 		
     	int id  = 0;
@@ -497,7 +610,6 @@ public class BudgetsDao {
 		}
 		mCursor.close();
 		db.close();
-		Log.v("mtag", "父ID"+id);
 		return id;
 	}
 	
@@ -538,6 +650,31 @@ public class BudgetsDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> checkBudgetItemByTemp(Context context,
+			int tempId) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime, a._id from BudgetItem a where a.budgetTemplate = " + tempId;
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			int _id = mCursor.getInt(1);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mMap.put("_id", _id); 
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	
 	public static List<Map<String, Object>> checkBudgetItemByUUid(Context context,
 			String uuid) { // 检查accout的uuid，以及时间

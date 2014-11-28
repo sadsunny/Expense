@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
@@ -118,7 +119,10 @@ public class AccountsTable {
 			datetime = iRecord.getDate("datetime");
 			autoclear = (int) iRecord.getLong("autoclear");
 			amount = iRecord.getDouble("amount");
-			accountType = iRecord.getString("accountType");
+			
+			if (iRecord.hasField("accountType")) {
+				accountType = iRecord.getString("accountType");
+			}
 			
 			if (iRecord.hasField("orderindex")) {
 			  orderindex = (int) iRecord.getLong("orderindex");
@@ -134,7 +138,7 @@ public class AccountsTable {
 		public void insertOrUpdate() { //根据state操作数据库
 			
 			if (state.equals("0")) {
-				AccountDao.deleteAccountByUUID(context, uuid);
+				long row = AccountDao.deleteAccountByUUID(context, uuid);
 			} else if (state.equals("1")){
 				
 				List<Map<String, Object>> mList= AccountDao.checkAccountByUUid(context, uuid);
@@ -142,11 +146,11 @@ public class AccountsTable {
 					
 				    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
 				    if (localDateTime_sync < dateTime_sync.getTime()) {
-				      AccountDao.updateAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime());
-					}
+				      long row = AccountDao.updateAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime(), orderindex);
+				    }
 					
 				}else {
-				     AccountDao.insertAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime());
+					 long row = AccountDao.insertAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime(), orderindex);
 				}
 			}
 			
@@ -160,7 +164,7 @@ public class AccountsTable {
 			datetime = MEntity.getMilltoDateFormat((Long) mMap.get("datetime"));
 			autoclear = (Integer) mMap.get("autoclear");
 			amount = (Double) mMap.get("amount");
-			accountType = (String) mMap.get("accountType");
+			accountType = SyncDao.selecAccountTypeUUid(context, Integer.parseInt((String) mMap.get("accountType")) );
 			orderindex = (Integer) mMap.get("orderindex");
 			dateTime_sync = MEntity.getMilltoDateFormat((Long) mMap.get("dateTime_sync"));
 			uuid = (String) mMap.get("uuid");
@@ -191,7 +195,7 @@ public class AccountsTable {
 	}
 	
 
-	public void updateState(String uuid, String state) throws DbxException {//更改状态
+	public void updateState(String uuid, String state) throws DbxException {
 		
 		DbxFields queryParams = new DbxFields().set("uuid",uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -238,11 +242,9 @@ public class AccountsTable {
 	
 	public void insertRecords(DbxFields accountsFields) throws DbxException {
 
-		Log.v("mtag", "accountsFields"+accountsFields);
 		
 		DbxFields queryParams = new DbxFields();
 		if (accountsFields.hasField("uuid") && accountsFields.hasField("accountType")) {
-			Log.v("mtag", "insertRecords");
 			
 		queryParams.set("uuid",accountsFields.getString("uuid"));
 		DbxTable.QueryResult results = mTable.query(queryParams);

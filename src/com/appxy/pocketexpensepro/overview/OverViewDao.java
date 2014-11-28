@@ -269,7 +269,83 @@ public class OverViewDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectBudgetCategoryNameByItem(Context context , int itemId) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.categoryName from Category a,BudgetTemplate b, BudgetItem c where a._id = b.category and b._id = c.budgetTemplate and c._id = "+itemId;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			mMap = new HashMap<String, Object>();
+			
+			String categoryName = mCursor.getString(0);
+			mMap.put("categoryName", categoryName);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
 
+		return mList;
+	}
+
+
+	public static List<Map<String, Object>> selectBudgetTransferByTimeItem(Context context , long beginTime , long endTime, int item_id) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select * from BudgetTransfer a where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and (a.fromBudget = "+item_id+" or a.toBudget  =  " + item_id +")";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			
+			mMap = new HashMap<String, Object>();
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int fromBudget = mCursor.getInt(6);
+			int toBudget = mCursor.getInt(7);
+
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("fromBudget", fromBudget);
+			mMap.put("toBudget", toBudget);
+		
+			mMap.put("index", 1);
+			
+			String sql1 = "select a.categoryName from Category a,BudgetTemplate b, BudgetItem c where a._id = b.category and b._id = c.budgetTemplate and c._id = "+fromBudget;
+			Cursor mCursor1 = db.rawQuery(sql1, null);
+			String fromNameString = "";
+			while (mCursor1.moveToNext()) {
+				
+			  fromNameString = mCursor1.getString(0);
+				
+			}
+			
+			String sql2 = "select a.categoryName from Category a,BudgetTemplate b, BudgetItem c where a._id = b.category and b._id = c.budgetTemplate and c._id = "+toBudget;
+			Cursor mCursor2 = db.rawQuery(sql2, null);
+			String toNameString = "";
+			while (mCursor2.moveToNext()) {
+				
+				toNameString = mCursor2.getString(0);
+				
+			}
+			
+			mMap.put("payeeName", fromNameString +" > "+toNameString);
+			mList.add(mMap);
+			
+		}
+		
+		
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
 	public static List<Map<String, Object>> selectBudgetTransfer(Context context , long beginTime , long endTime) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;

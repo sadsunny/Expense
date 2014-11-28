@@ -398,7 +398,6 @@ public class EP_BillRuleTable {
 	
 	public void insertRecords(DbxFields thisFields) throws DbxException {
 
-		Log.v("mtag", "insertRecords"+thisFields);
 		
 		DbxFields queryParams = new DbxFields();
 		if (thisFields.hasField("uuid")) {

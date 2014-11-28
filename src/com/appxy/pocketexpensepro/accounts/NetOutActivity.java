@@ -854,11 +854,11 @@ public class NetOutActivity extends BaseHomeActivity {
 					if (cleard == 1) {
 						// childList.get(groupPosition).get(childPosition).put("isClear",
 						// 0);
-						AccountDao.updateTransactionClear(context, _id, 0);
+						AccountDao.updateTransactionClear(context, _id, 0, mDbxAcctMgr, mDatastore);
 					} else {
 						// childList.get(groupPosition).get(childPosition).put("isClear",
 						// 1);
-						AccountDao.updateTransactionClear(context, _id, 1);
+						AccountDao.updateTransactionClear(context, _id, 1, mDbxAcctMgr, mDatastore);
 					}
 
 					mHandler.post(mTask);

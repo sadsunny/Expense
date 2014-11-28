@@ -26,7 +26,7 @@ public class MEntity {
 	}
 	
 	public static String[]  TransactionRecurring = {
-        "No Recurring",
+        "Never",
         "Daily",
         "Weekly",
         "Every 2 Weeks",

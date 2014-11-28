@@ -101,7 +101,7 @@ public class MainActivity extends BaseHomeActivity implements
 	private View choose_view2;
 	private View choose_view3;
 	private View choose_view4;
-	 
+	
 	private android.support.v4.app.FragmentManager fragmentManager;
 	private OnUpdateListListener onUpdateListListener;
 	private OnChangeStateListener onChangeStateListener;
@@ -129,6 +129,7 @@ public class MainActivity extends BaseHomeActivity implements
 	
 	public static int overViewpage = 3;
 	
+	public static boolean isFirstSync = false ;
 	
 	 // The helper object
 	static final int RC_REQUEST = 10001;

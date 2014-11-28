@@ -50,6 +50,7 @@ import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
 import com.appxy.pocketexpensepro.search.SearchActivity;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
+import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.util.IabHelper;
 import com.appxy.pocketexpensepro.util.IabResult;
 import com.appxy.pocketexpensepro.util.Inventory;
@@ -185,6 +186,7 @@ public class OverviewFragment extends Fragment implements
 
 	}
 
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
@@ -228,7 +230,6 @@ public class OverviewFragment extends Fragment implements
 						.valueOf(netWorth)));
 
 				if ((mBudgetList == null) || mBudgetList.size() == 0) {
-					Log.v("mdb", mBudgetList.size() + "daxiao");
 					mProgressBar.setProgress(0);
 					mProgressBar.setMax((int) 1);
 					mProgressBar.setSecondaryProgress((int) 100);
@@ -307,12 +308,21 @@ public class OverviewFragment extends Fragment implements
 		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 
-		if (MainActivity.sqlChange == 1) {
-			MainActivity.sqlChange = 0;
+		if (MainActivity.sqlChange == 1 || MainActivity.isFirstSync) {
+			
 			onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 					viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			
+			if(MainActivity.sqlChange == 1){
+				MainActivity.sqlChange = 0;
+			}
+			
+			if (MainActivity.isFirstSync) {
+				MainActivity.isFirstSync = false;
+			}
+			
 		}
+		
 	}
 
 	@Override
@@ -600,42 +610,6 @@ public class OverviewFragment extends Fragment implements
 			@Override
 			public void onClick(View paramView) {
 				// TODO Auto-generated method stub
-				   int tranactionSize = AccountDao.selectTransactionAllSize(mActivity);
-				   if ( !Common.mIsPaid && tranactionSize >= 70) {
-						
-				    	 new AlertDialog.Builder(mActivity)
-							.setTitle("Upgrade to Pro? ")
-							.setMessage(
-									"You've reached the max number of transactions allowed in the free version. Would you like to upgrade to pro to remove ads and transaction limitation? ")
-							.setPositiveButton("Upgrade to Pro",
-									new DialogInterface.OnClickListener() {
-
-										@Override
-										public void onClick(
-												DialogInterface dialog,
-												int which) {
-											// TODO Auto-generated method stub
-											if (iap_is_ok && mHelper != null) {
-												 mHelper.flagEndAsync();
-												 mHelper.launchPurchaseFlow(mActivity, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
-											}
-											dialog.dismiss();
-
-										}
-									})
-									.setNegativeButton("No", new DialogInterface.OnClickListener(){
-
-										@Override
-										public void onClick(DialogInterface dialog,
-												int which) {
-											// TODO Auto-generated method stub
-											dialog.dismiss();
-										}
-										
-									})
-									.show();
-				    	 
-					} else {
 						
 				List<Map<String, Object>> mAccountList1 = AccountDao
 						.selectAccount(mActivity);
@@ -671,7 +645,6 @@ public class OverviewFragment extends Fragment implements
 					startActivityForResult(intent, 6);
 
 				}
-					}
 
 			}
 		});
@@ -764,6 +737,7 @@ public class OverviewFragment extends Fragment implements
 
 			mDataList = OverViewDao.selectTransactionByTime(mActivity,
 					selectedDate);
+			
 			reFillData(mDataList);
 
 			mBudgetList = OverViewDao.selectBudget(mActivity);

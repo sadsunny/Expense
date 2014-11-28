@@ -289,7 +289,7 @@ public class AccountActivity extends BaseHomeActivity {
 							new AlertDialog.Builder(AccountActivity.this)
 							.setTitle("Delete This Account? ")
 							.setMessage(
-									" Deleting an account will cause to remove all its transactions. Are you sure you want to delete it? ")
+									"Deleting an account will cause to remove all its transactions. Are you sure you want to delete it? ")
 							.setNegativeButton(
 									"No",
 									new DialogInterface.OnClickListener() {
@@ -411,7 +411,6 @@ public class AccountActivity extends BaseHomeActivity {
 		public void run() {
 			// TODO Auto-generated method stub
 			mDataList = AccountDao.selectAccount(AccountActivity.this);
-			Log.v("mtag", "account查询"+mDataList);
 			
 			for (Map<String, Object> iMap : mDataList) {
 				int _id = (Integer) iMap.get("_id");

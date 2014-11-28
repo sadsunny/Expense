@@ -116,8 +116,6 @@ public class BudgetItemTable {
 		
 		public void setIncomingData(DbxRecord iRecord) { 
 			
-			Log.v("mtag", "iRecordItm "+iRecord);
-			
 			if (iRecord.hasField("uuid")) {
 				uuid =  iRecord.getString("uuid");
 			}
@@ -140,19 +138,34 @@ public class BudgetItemTable {
 				budgetitem_budgettemplate = iRecord.getString("budgetitem_budgettemplate");
 			}
 			
-			budgetitem_isrollover = (int)iRecord.getLong("budgetitem_isrollover");
+			if (iRecord.hasField("budgetitem_isrollover")) {
+				budgetitem_isrollover = (int)iRecord.getLong("budgetitem_isrollover");
+			}
+			
 			
 		}
 		
 		public void insertOrUpdate() { //根据state操作数据库，下载后的处理
 			
+			int budgetTemId = BudgetsDao.selectBudgetTemplateIdByUUid(context, budgetitem_budgettemplate);
+			
 			if (state.equals("0")) {
 				
-				BudgetsDao.deleteBudgetTemByUUId(context, uuid);
+				if (budgetTemId == 0) {
+					BudgetsDao.deleteBudgetItemByUUId(context, uuid);
+				}else {
+					BudgetsDao.deleteBudgetItemByTemp(context, budgetTemId+"");
+				}
 				
 			} else if (state.equals("1")){
 				
-				List<Map<String, Object>> mList= BudgetsDao.checkBudgetItemByUUid(context, uuid);
+				List<Map<String, Object>> mList ;
+				if (budgetTemId == 0) {
+					mList= BudgetsDao.checkBudgetItemByUUid(context, uuid);
+				}else {
+					mList= BudgetsDao.checkBudgetItemByTemp(context, budgetTemId);
+				}
+				
 				if ( mList.size() > 0) {
 					
 				    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
@@ -244,6 +257,12 @@ public class BudgetItemTable {
 			mUpdateFields.set("state", state);
 			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
+			
+			while (it.hasNext()) {
+				DbxRecord r = it.next();
+				r.deleteRecord();
+			}
+			
 		}
 
 	}

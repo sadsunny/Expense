@@ -30,7 +30,7 @@
         <item>Until a date</item>
     </string-array>
     <string-array name="transaction_recurring">
-        <item>No Recurring</item>
+        <item>Never</item>
         <item>Daily</item>
         <item>Weekly</item>
         <item>Every 2 Weeks</item>

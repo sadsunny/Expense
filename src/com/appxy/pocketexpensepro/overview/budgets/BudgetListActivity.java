@@ -12,6 +12,7 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.dropbox.sync.android.DbxRecord;
 
 import android.app.ActionBar;
@@ -25,6 +26,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -249,7 +251,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 				break;
 
 			case R.id.action_done:
-				BudgetsDao.deleteBudgetAll(BudgetListActivity.this);
+//				BudgetsDao.deleteBudgetAll(BudgetListActivity.this);
 				Intent intent = new Intent();
 				intent.putExtra("done", 1);
 				setResult(4, intent);
@@ -257,6 +259,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 				int checkDo = 1;
 				if (mViewList != null && mViewList.size() > 0) {
 					for (int i = 0; i < mViewList.size(); i++) {
+						
 						EditText mEditText = (EditText) mViewList.get(i)
 								.findViewById(R.id.amount_edit);
 						String amountString = mEditText.getText().toString();
@@ -291,8 +294,9 @@ public class BudgetListActivity extends BaseHomeActivity {
 						}
 					}
 				}
-					
+				    List<Integer> hasDoLsit = new ArrayList<Integer>();
 					if(checkDo == 1){
+						
 						for (int i = 0; i < mViewList.size(); i++) {
 							EditText mEditText = (EditText) mViewList.get(i)
 									.findViewById(R.id.amount_edit);
@@ -304,23 +308,76 @@ public class BudgetListActivity extends BaseHomeActivity {
 							} catch (NumberFormatException e) {
 								amount = 0.00;
 							}
-
+							
 							if (amount > 0) {
+								
 								int categoryId = (Integer) mDataList.get(i).get(
 										"category");
+								hasDoLsit.add(categoryId);
 								
+								String categoryUUid = SyncDao.selectCategoryUUid(BudgetListActivity.this, categoryId);
 								long dateTime = System.currentTimeMillis();
-								long temId = BudgetsDao.insertBudgetTemplate(
-										BudgetListActivity.this, amountString,
-										categoryId, dateTime, mDbxAcctMgr, mDatastore);
-								if (temId > 0) {
-									long itemId = BudgetsDao.insertBudgetItem(
+								
+								List<Map<String, Object>> mTempList = BudgetsDao.checkBudgetTemplateByCategory(BudgetListActivity.this, categoryId);
+								List<Map<String, Object>> mItemList = new ArrayList<Map<String, Object>>();
+								int tempId = 0;
+								
+								if(mTempList.size() > 0){
+									tempId = (Integer)mTempList.get(0).get("_id");
+									mItemList = BudgetsDao.checkBudgetItemByTemp(BudgetListActivity.this, tempId);
+								}
+								
+								if(mItemList.size() > 0){
+									int itemId = (Integer)mItemList.get(0).get("_id");
+									BudgetsDao.updateBudget(BudgetListActivity.this, itemId, amountString,mDbxAcctMgr ,mDatastore);
+									
+								}else{
+									
+									long temId = BudgetsDao.insertBudgetTemplate(
 											BudgetListActivity.this, amountString,
-											(int) temId, dateTime, mDbxAcctMgr, mDatastore);
+											categoryId, dateTime, mDbxAcctMgr, mDatastore);
+									if (temId > 0) {
+										long itemId = BudgetsDao.insertBudgetItem(
+												BudgetListActivity.this, amountString,
+												(int) temId, dateTime, mDbxAcctMgr, mDatastore);
+									}
+									
 								}
 								
 							}
 						}
+					
+							
+							List<Map<String, Object>> mBudAllList =  BudgetsDao.selectBudgetTemplateAll(BudgetListActivity.this);
+							
+							for( Map<String, Object> mMap:mBudAllList){
+								
+								int t_id = (Integer)mMap.get("_id");
+								int c_id = (Integer)mMap.get("category");
+								boolean tag = true; //标志位
+								
+								for(int cId:hasDoLsit){
+									if ( c_id == cId ){
+										tag = false;
+									}
+								}
+								
+								if (tag) {
+									List<Map<String, Object>> mBudItemList = BudgetsDao.selectItemByTemId(BudgetListActivity.this, t_id);
+									if( mBudItemList.size() > 0){
+										int temId = (Integer)mBudItemList.get(0).get("_id");
+										String uuid = (String)mBudItemList.get(0).get("uuid");
+										if(temId > 0){
+											long row = BudgetsDao.deleteBudget(BudgetListActivity.this,
+													temId, uuid, mDbxAcctMgr, mDatastore);
+										}
+										
+									}
+								}
+								
+							}
+							
+						
 						finish();
 					}
 					
@@ -335,6 +392,7 @@ public class BudgetListActivity extends BaseHomeActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
 		return super.onCreateOptionsMenu(menu);
+		
 	}
 
 	@Override
@@ -347,22 +405,33 @@ public class BudgetListActivity extends BaseHomeActivity {
 			if (data != null) {
 				List<Map<String, Object>> mReturnDataList = (List<Map<String, Object>>) data.getSerializableExtra("mReturnDataList");
 				List<Map<String, Object>> removeDataList = new ArrayList<Map<String,Object>>();
+				List<Map<String, Object>> removeThisList = new ArrayList<Map<String,Object>>();
 				
 				if (mReturnDataList!=null) {
 					if (mReturnDataList.size() > 0) {
 						
 						for (Map<String, Object> iMap:mDataList) {
 							int categoryId = (Integer) iMap.get("category");
+							boolean tag = true;
+							
 							for (Map<String, Object> jMap :mReturnDataList) {
 								int categoryId2 = (Integer) jMap.get("category");
 								if (categoryId == categoryId2) {
 									removeDataList.add(jMap);
+									tag = false;
 								}
 							}
+							if (tag) {
+								removeThisList.add(iMap);
+							}
+							
 						}
+						
 						mReturnDataList.removeAll(removeDataList);
+						mDataList.removeAll(removeThisList);
 						mDataList.addAll(mReturnDataList);
 						mHandler.post(mTask);
+						
 					} else {
 						mDataList.clear();
 						mViewList.clear();

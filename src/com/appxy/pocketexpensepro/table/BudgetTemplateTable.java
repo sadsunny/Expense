@@ -130,15 +130,27 @@ public class BudgetTemplateTable {
 			
 		}
 		
-		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理 根据category的唯一性操作
 				
+			    int categoryId = PayeeDao.selectCategoryIdByUUid(context, budgettemplate_category);
+			 
 				if (state.equals("0")) {
 					
-					BudgetsDao.deleteBudgetTemByUUId(context, uuid);
+					if (categoryId == 0) {
+						BudgetsDao.deleteBudgetTemByUUId(context, uuid);
+					}else {
+						BudgetsDao.deleteBudgetTemByCategory(context, categoryId+"");
+					}
 					
 				} else if (state.equals("1")){
 					
-					List<Map<String, Object>> mList= BudgetsDao.checkBudgetTemplateByUUid(context, uuid);
+					List<Map<String, Object>> mList ;
+					if (categoryId  == 0) {
+						mList= BudgetsDao.checkBudgetTemplateByUUid(context, uuid);
+					}else {
+						mList= BudgetsDao.checkBudgetTemplateByCategory(context, categoryId);
+					}
+					
 					if ( mList.size() > 0) {
 						
 					    long localDateTime_sync = (Long) mList.get(0).get("dateTime_sync");
@@ -230,6 +242,11 @@ public class BudgetTemplateTable {
 			mUpdateFields.set("state", state);
 			mUpdateFields.set("dateTime", MEntity.getMilltoDateFormat(System.currentTimeMillis()));
 			record.setAll(mUpdateFields);
+			
+			while (it.hasNext()) {
+				DbxRecord r = it.next();
+				r.deleteRecord();
+			}
 		}
 
 	}

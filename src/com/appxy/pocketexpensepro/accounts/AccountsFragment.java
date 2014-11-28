@@ -88,6 +88,13 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		currency_txt1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_txt2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		mAccountsListViewAdapter.notifyDataSetChanged();
+		
+		if(MainActivity.isFirstSync){
+			mHandler.post(mTask);
+			MainActivity.isFirstSync = false ;
+		}
+		
+	
 	}
 	
 	private Handler mHandler = new Handler() {

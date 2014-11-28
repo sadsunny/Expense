@@ -89,6 +89,7 @@ public class PayeeActivity extends BaseHomeActivity {
 			// TODO Auto-generated method stub
 			mDataList.clear();
 			mDataList = PayeeDao.selectPayee(PayeeActivity.this);
+			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 		//

@@ -54,10 +54,6 @@ public class CircleView extends View {
         int center = getWidth()/2;  
         int innerCircle = dip2px(context, dp); //设置内圆半径  
         //绘制内圆  
-        Log.v("mtest", "圆心"+center);
-        Log.v("mtest", "dp径"+dp);
-        Log.v("mtest", "半径"+innerCircle);
-        
         this.paint.setStrokeWidth(1);  
         canvas.drawCircle(center,center, center, this.paint);  
           

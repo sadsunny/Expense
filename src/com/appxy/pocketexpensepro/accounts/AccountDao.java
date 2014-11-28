@@ -324,7 +324,7 @@ public class AccountDao {
 	
 	public static long updateAccountAll(Context context, String accName,
 			String amount, long dateTime, int autoClear, int accountType,
-			String state, String uuid, long dateTime_sync) { // Account插入
+			String state, String uuid, long dateTime_sync, int orderIndex) { // Account插入
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 
@@ -333,7 +333,7 @@ public class AccountDao {
 		cv.put("dateTime", dateTime);
 		cv.put("autoClear", autoClear);
 		cv.put("accountType", accountType);
-
+		cv.put("orderIndex", orderIndex);
 		cv.put("state", state);
 		cv.put("dateTime_sync", dateTime_sync);
 
@@ -352,7 +352,7 @@ public class AccountDao {
 
 	public static long insertAccountAll(Context context, String accName,
 			String amount, long dateTime, int autoClear, int accountType,
-			String state, String uuid, long dateTime_sync) { // Account插入
+			String state, String uuid, long dateTime_sync, int orderIndex) { // Account插入
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 
@@ -361,7 +361,8 @@ public class AccountDao {
 		cv.put("dateTime", dateTime);
 		cv.put("autoClear", autoClear);
 		cv.put("accountType", accountType);
-
+		cv.put("orderIndex", orderIndex);
+		
 		cv.put("state", state);
 		cv.put("uuid", uuid);
 		cv.put("dateTime_sync", dateTime_sync);
@@ -385,7 +386,7 @@ public class AccountDao {
 		long row = 0;
 		try {
 			
-			CascadeDeleteDao.CascadedeleteAccountTypeByID(context, id, mDbxAcctMgr, mDatastore);
+			CascadeDeleteDao.CascadedeleteTransByAccount(context, id, mDbxAcctMgr, mDatastore);
 			
 			row = db.delete("Accounts", "_id = ?", new String[] { _id });
 			if (row > 0) {
@@ -1357,15 +1358,39 @@ public class AccountDao {
 		return row;
 	}
 
-	public static long updateTransactionClear(Context context, long _id,
-			int clear) { // Account更新排序字段
+	public static long updateTransactionClear( Context context, long _id, int clear, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore ) { // Account更新排序字段
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
+		long dateTime_sync = System.currentTimeMillis() ;
+		
 		cv.put("isClear", clear);
+		cv.put("dateTime_sync", dateTime_sync);
+		
 		String mId = _id + "";
+		String uuid = SyncDao.selecTransactionUUid(context, (int)_id);
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?",
 					new String[] { mId });
+			if (id > 0) {
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) {
+					
+					if (mDatastore == null) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+					}
+					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
+					Transaction transaction = transactionTable.getTransaction();
+					
+					transaction.setDateTime_sync(MEntity.getMilltoDateFormat(dateTime_sync));
+					transaction.setTrans_isclear(clear);
+					transaction.setUuid(uuid);
+					
+					transactionTable.insertRecords(transaction.getFieldsClear());
+					
+					mDatastore.sync();
+					
+				}
+			}
 			db.close();
 			return id;
 		} catch (Exception e) {

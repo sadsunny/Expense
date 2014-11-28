@@ -196,11 +196,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			finish();
 		}
 		uuid = SyncDao.selecTransactionUUid(this, _id);
-		Log.v("mtag", "编辑uuid"+uuid);
 		
 		List<Map<String, Object>> mInitializeDataList = AccountDao
 				.selectTransactionByID(this, _id);
-		Log.v("mtest", "mInitializeDataList"+mInitializeDataList);
 		
 		Map<String, Object> mMap = mInitializeDataList.get(0);
 
@@ -216,6 +214,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		int incomeAccount = (Integer) mMap.get("incomeAccount");
 		int parTransaction = (Integer) mMap.get("parTransaction");
 		int payee = (Integer) mMap.get("payee");
+		
 		 transactionHasBillItem = (Integer) mMap.get("transactionHasBillItem");
 		 transactionHasBillRule = (Integer) mMap.get("transactionHasBillRule");
 		
@@ -298,8 +297,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				List<Map<String, Object>> mAccountListById = AccountDao
 						.selectAccountById(EditTransactionActivity.this,
 								expenseAccount);
-				accountButton.setText((String) mAccountListById.get(0).get(
-						"accName"));
+				if (mAccountListById.size() == 0) {
+					finish();
+				}else {
+					accountButton.setText((String) mAccountListById.get(0).get(
+							"accName"));
+				}
+				
 			} else if (incomeAccount > 0) {
 				accountId = incomeAccount;
 				accountCheckItem = locationIdPosition(mAccountList,
@@ -307,8 +311,14 @@ public class EditTransactionActivity extends BaseHomeActivity {
 				List<Map<String, Object>> mAccountListById = AccountDao
 						.selectAccountById(EditTransactionActivity.this,
 								incomeAccount);
-				accountButton.setText((String) mAccountListById.get(0).get(
-						"accName"));
+				
+				if (mAccountListById.size() == 0) {
+					finish();
+				}else{
+					accountButton.setText((String) mAccountListById.get(0).get(
+							"accName"));
+				}
+				
 			}
 
 		}
@@ -343,18 +353,22 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		}
 
 	   mDataList1 = new ArrayList<Map<String, Object>>();
-		if (expenseAccount > 0 && incomeAccount <= 0) {
+	   mCategoryType = PayeeDao.selectCategoryType(this, category);
+	   
+		if (mCategoryType == 0) {
 			mDataList1 = PayeeDao
 					.selectCategory(EditTransactionActivity.this, 0);
-			mCategoryType = 0;
 
-		} else if (incomeAccount > 0 && expenseAccount <= 0) {
+		} else if (mCategoryType == 1) {
 			mDataList1 = PayeeDao
 					.selectCategory(EditTransactionActivity.this, 1);
-			mCategoryType = 1;
 
 		}
 
+		Log.v("mtag", "expenseAccount"+expenseAccount);
+		Log.v("mtag", "incomeAccount"+incomeAccount);
+		Log.v("mtag", "mCategoryType"+mCategoryType);
+		
 		if (mDataList1 != null) {
 			filterData(mDataList1);
 		}
@@ -1076,6 +1090,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									.getPackedPositionForChild(gCheckedItem, 0)); // 根据group和child找到绝对位置
 
 					if (mCategoryType == 0) {
+						
 						List<Map<String, Object>> mDataList = PayeeDao
 								.selectCategory(EditTransactionActivity.this, 0);
 						filterData(mDataList);

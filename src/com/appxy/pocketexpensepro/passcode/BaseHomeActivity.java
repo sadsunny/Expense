@@ -65,7 +65,6 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 				try {
 
 					Map<String, Set<DbxRecord>> mMap = mDatastore.sync();
-
 					dataHasIncoming(mMap);
 					
 					mDatastore.sync();

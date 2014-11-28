@@ -329,6 +329,7 @@ public class CreatNewAccountActivity extends BaseHomeActivity {
 				View view = inflater.inflate(R.layout.dialog_choose_type, null);
 				
 				mTypeList = AccountDao.selectAccountType(CreatNewAccountActivity.this);
+				
 				accountTypeSize = mTypeList.size();
 
 				mListView = (ListView) view.findViewById(R.id.mListView);

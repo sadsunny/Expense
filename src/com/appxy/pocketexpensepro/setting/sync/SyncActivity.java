@@ -80,13 +80,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
         public void onDatastoreStatusChange(DbxDatastore ds) {
         	
         	if (ds.getSyncStatus().hasIncoming) {
-        		Log.v("mtag", "hasIncoming");
 				try {
 
 					Map<String, Set<DbxRecord>> mMap = mDatastore.sync();
 
 					dataHasIncoming(mMap);
-					
+					MainActivity.isFirstSync = true;
 					if (isUpload) {
 	        			justSync(true);
 					}
@@ -504,8 +503,6 @@ private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap) throws DbxExcepti
 				}
 			}
 		}
-		
-		
 		
 		if (mMap.containsKey("db_accounttype_table")) {
 			Set<DbxRecord> incomeDate = mMap.get("db_accounttype_table");

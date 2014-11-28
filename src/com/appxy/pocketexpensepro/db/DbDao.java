@@ -26,7 +26,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put( String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -59,7 +59,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -92,7 +92,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -126,7 +126,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -177,7 +177,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -216,7 +216,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -257,7 +257,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -291,7 +291,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -402,7 +402,7 @@ public class DbDao {
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
-			mMap.put("_id", _id);
+			mMap.put(String.valueOf(_id), _id);
 		}
 		mCursor.close();
 		return mMap;
@@ -415,7 +415,7 @@ public class DbDao {
 
 		cv.put("uuid", uuid);
 		cv.put("state", state);
-		cv.put("dateTime", dateTime_sync);
+		cv.put("dateTime_sync", dateTime_sync);
 
 		try {
 			long id = db.update(" 'Transaction' ", cv, "_id = ?", new String[] { _id

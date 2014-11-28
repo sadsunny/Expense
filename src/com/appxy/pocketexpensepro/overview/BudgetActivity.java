@@ -188,8 +188,12 @@ public class BudgetActivity extends BaseHomeActivity {
 						"category");
 				String categoryName = (String) mBudgetList.get(arg2).get(
 						"categoryName");
+				int item_id = (Integer) mBudgetList.get(arg2).get(
+						"_id");
+				
 				Intent intent = new Intent();
 				intent.putExtra("_id", category_id);
+				intent.putExtra("item_id", item_id);
 				intent.putExtra("categoryName", categoryName);
 				intent.putExtra("date", month.getTimeInMillis());
 				intent.setClass(BudgetActivity.this,
@@ -246,7 +250,7 @@ public class BudgetActivity extends BaseHomeActivity {
 			List<Map<String, Object>> mTransferList = OverViewDao
 					.selectBudgetTransfer(BudgetActivity.this, firstDay,
 							lastDay);
-
+			
 			BigDecimal b0 = new BigDecimal("0");
 			BigDecimal bt0 = new BigDecimal("0");
 			for (Map<String, Object> iMap : mBudgetList) {

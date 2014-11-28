@@ -99,7 +99,6 @@ public class AccountTypeTable {
 					}
 					
 				}else {
-					
 					AccountDao.insertAccountTypeAll(context, Common.positionAccountType(accounttype_iconname), accounttype_isdefault, accounttype_typename, dateTime.getTime(), state, uuid);
 
 				}

@@ -379,12 +379,26 @@ public class CreatBillsActivity extends BaseHomeActivity {
 							}).show();
 					
 				}else{
+					
+					String payeeString = payeeEditText.getText().toString();
+					boolean check = judgMentPayee(payeeString,categoryId );
+					
+					if (!check) {
+						long row = PayeeDao.insertPayee(
+								CreatBillsActivity.this, payeeString,
+								new String(), categoryId,mDbxAcctMgr, mDatastore);
+						if (row > 0) {
+							payeeId = (int) row;
+						}
+					}
+					
 					long lastDate = -1;
 					if(isForever == 1){
 						lastDate = -1;
 					}else{
 						lastDate = endDate;
 					}
+					
 					
 					long row = BillsDao.insertBillRule(CreatBillsActivity.this, ep_billAmount,  dateLong, lastDate,  ep_billName,ep_note, recurringType,  remindDateSelectPosition,  remindTime,  categoryId,  payeeId, mDbxAcctMgr, mDatastore);
 					
@@ -936,6 +950,19 @@ public class CreatBillsActivity extends BaseHomeActivity {
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM-dd-yyyy");
 		untilButton.setText(sdf.format(date));
 	}
+	
+	
+	 public boolean judgMentPayee(String pName,int category){
+			
+			boolean tag = false;
+			List<Map<String, Object>> mList = PayeeDao.checkPayeeByNameAndCaegory(CreatBillsActivity.this, pName, category);
+			if (mList.size() > 0) {
+				tag = true;
+				payeeId = (Integer)mList.get(0).get("_id");
+			}
+			return tag;
+		}
+	 
 
 	public void filterData(List<Map<String, Object>> mData) {// 过滤子类和父类
 

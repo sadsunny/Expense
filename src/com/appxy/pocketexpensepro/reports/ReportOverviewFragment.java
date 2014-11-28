@@ -182,10 +182,20 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 		// TODO Auto-generated method stub
 		super.onResume();
 		mAdapter.notifyDataSetChanged();
-		if (MainActivity.sqlChange3 == 1) {
-			MainActivity.sqlChange3 = 0;
+		
+		if (MainActivity.sqlChange3 == 1 || MainActivity.isFirstSync) {
+			
+			if (MainActivity.sqlChange3 == 1) {
+				MainActivity.sqlChange3 = 0;
+			}
+			
+			if (MainActivity.isFirstSync) {
+				MainActivity.isFirstSync = false;
+			}
+			
 			mHandler.post(mTask);
 		}
+		
 	}
 	
 	@Override

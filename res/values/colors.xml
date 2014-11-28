@@ -80,6 +80,7 @@
        <color name="resotre_color_sel">#338fd6</color>
        <color name="point_gray">#c2c4c7</color>
        <color name="point_black">#343d44</color>
-     
-     
+        <color name="pro_color">#797979</color>
+       <color name="budget_over_color">#f63030</color>
+    
 </resources>

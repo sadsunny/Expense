@@ -131,10 +131,20 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 		// TODO Auto-generated method stub
 		super.onResume();
 		
-		if (MainActivity.sqlChange == 1) {
+		if (MainActivity.sqlChange == 1 || MainActivity.isFirstSync) {
+			
 			mHandler.post(mTask);
-			MainActivity.sqlChange = 0;
+			if (MainActivity.sqlChange == 1) {
+				MainActivity.sqlChange = 0;
+			}
+			
+			if (MainActivity.isFirstSync) {
+				MainActivity.isFirstSync = false;
+			}
+			
 		}
+		
+		
 	}
 
 	@Override

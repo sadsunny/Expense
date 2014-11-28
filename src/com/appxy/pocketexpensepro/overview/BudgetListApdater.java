@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+@SuppressLint("ResourceAsColor")
 public class BudgetListApdater extends BaseAdapter {
 	private Context context;
 	private List<Map<String, Object>> mData;
@@ -111,9 +112,16 @@ public class BudgetListApdater extends BaseAdapter {
 		}
 		viewholder.leftTextView.setText(MEntity.doublepoint2str(left_spent+""));
 		
-		Log.v("mtest", "amount"+amount);
+		
 		viewholder.mProgressBar.setMax((int) Double.parseDouble(amount));
 		viewholder.mProgressBar.setProgress((int) Double.parseDouble(tAmount));
+		
+		if (left_spent < 0) {
+			viewholder.mProgressBar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progressbar_bac_over));
+		}else {
+			viewholder.mProgressBar.setProgressDrawable(context.getResources().getDrawable(R.drawable.progressbar_bac));
+		}
+		
 
 		return convertView;
 	}

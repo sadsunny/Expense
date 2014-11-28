@@ -93,7 +93,7 @@ public class TransactionTable {
 		}
 
 		public void setTrans_recurringtype(int trans_recurringtype) {
-			this.trans_recurringtype = context.getResources().getStringArray(R.array.transaction_recurring)[trans_recurringtype];;
+			this.trans_recurringtype = MEntity.TransactionRecurring[trans_recurringtype];;
 		}
 
 		public void setTrans_datetime(Date trans_datetime) {
@@ -129,9 +129,11 @@ public class TransactionTable {
 			if (iRecord.hasField("trans_notes")) {
 				trans_notes = iRecord.getString("trans_notes");
 			}
+			
 			if (iRecord.hasField("trans_payee")) {
 				trans_payee = iRecord.getString("trans_payee");
 			}
+			
 			if (iRecord.hasField("trans_string")) {
 				trans_string = iRecord.getString("trans_string");
 			}
@@ -185,19 +187,19 @@ public class TransactionTable {
 										new String(), TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
 										TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
 										PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
-										dateTime_sync.getTime(), state, uuid);
+										dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
 										
 
 						}
 						
 					}else {
 						
-					   TransactionDao.insertTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
+					    TransactionDao.insertTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
 						trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
 						new String(), TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
 						TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
 						PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
-						dateTime_sync.getTime(), state, uuid);
+						dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
 						
 					}
 				}
@@ -213,7 +215,7 @@ public class TransactionTable {
 			trans_amount = (Double) mMap.get("trans_amount");
 			trans_notes = (String) mMap.get("trans_notes");
 			
-			trans_payee = (String) mMap.get("trans_payee");
+			trans_payee = SyncDao.selectPayeeUUid(context, Integer.parseInt((String) mMap.get("trans_payee")) );
 			trans_string = (String) mMap.get("trans_string");
 			trans_category =SyncDao.selectCategoryUUid(context, Integer.parseInt( (String) mMap.get("trans_category") ));
 			dateTime_sync = MEntity.getMilltoDateFormat((Long) mMap.get("dateTime_sync"));
@@ -221,7 +223,7 @@ public class TransactionTable {
 			state = (String) mMap.get("state");
 			
 			int transaction_recurring = Integer.parseInt( ((String) mMap.get("trans_recurringtype")) );
-			trans_recurringtype = context.getResources().getStringArray(R.array.transaction_recurring)[transaction_recurring];
+			trans_recurringtype = MEntity.TransactionRecurring[transaction_recurring];
 			
 			trans_datetime = MEntity.getMilltoDateFormat((Long) mMap.get("trans_datetime"));
 			trans_isclear = (Integer) mMap.get("trans_isclear");
@@ -259,6 +261,22 @@ public class TransactionTable {
 			}
 			return accountsFields;
 		}
+
+		public DbxFields getFieldsClear() {
+			
+			DbxFields accountsFields = new DbxFields();
+			
+			accountsFields.set("dateTime_sync",dateTime_sync);
+			accountsFields.set("trans_isclear",trans_isclear);
+			
+			if (uuid != null) {
+				accountsFields.set("uuid",uuid);
+			}
+			
+			return accountsFields;
+			
+		}
+
 
 		
 		public DbxFields getFieldsApart1() {

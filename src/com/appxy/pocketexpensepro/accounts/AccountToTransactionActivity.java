@@ -23,8 +23,6 @@ import org.json.JSONObject;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
-import com.appxy.pocketexpensepro.accounts.ExpandableListViewAdapter.cViewHolder;
-import com.appxy.pocketexpensepro.accounts.ExpandableListViewAdapter.gViewHolder;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
@@ -308,7 +306,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 				mDataList = AccountDao.selectTransactionByAccountAndClear(
 						AccountToTransactionActivity.this, _id);
 			}
-
+			
 			if (mDataList != null ) {
 				reFillData(mDataList);
 				filterData(mDataList);
@@ -877,11 +875,11 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 					if (cleard == 1) {
 						// childList.get(groupPosition).get(childPosition).put("isClear",
 						// 0);
-						AccountDao.updateTransactionClear(context, _id, 0);
+						AccountDao.updateTransactionClear(context, _id, 0, mDbxAcctMgr, mDatastore);
 					} else {
 						// childList.get(groupPosition).get(childPosition).put("isClear",
 						// 1);
-						AccountDao.updateTransactionClear(context, _id, 1);
+						AccountDao.updateTransactionClear(context, _id, 1, mDbxAcctMgr, mDatastore);
 					}
 
 					mHandler.post(mTask);
@@ -1049,53 +1047,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 			finish();
 			return true;
 		case R.id.action_add:
-			  int tranactionSize = AccountDao.selectTransactionAllSize(AccountToTransactionActivity.this);
-			  SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);  
-		      Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
 		        
-			  if ( !Common.mIsPaid && tranactionSize >= 70) {
-					
-			    	 new AlertDialog.Builder(AccountToTransactionActivity.this)
-						.setTitle("Upgrade to Pro? ")
-						.setMessage(
-								"You've reached the max number of transactions allowed in the free version. Would you like to upgrade to pro to remove ads and transaction limitation? ")
-						.setPositiveButton("Upgrade to Pro",
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(
-											DialogInterface dialog,
-											int which) {
-										
-										// TODO Auto-generated method stub
-										
-										if (iap_is_ok && mHelper != null) {
-											 mHelper.flagEndAsync();
-											 mHelper.launchPurchaseFlow(AccountToTransactionActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
-										}
-										dialog.dismiss();
-
-									}
-								})
-								.setNegativeButton("No", new DialogInterface.OnClickListener(){
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// TODO Auto-generated method stub
-										dialog.dismiss();
-									}
-									
-								})
-								.show();
-			    	 
-				} else {
-					
 			Intent intent = new Intent();
 			intent.putExtra("acount_id", _id);
 			intent.setClass(AccountToTransactionActivity.this, CreatTransactonByAccountActivity.class);
 			startActivityForResult(intent, 6);
-				}
+			
 			break;
 		}
 		return super.onOptionsItemSelected(item);

@@ -160,7 +160,39 @@ public class TransactionDao {
 		return id;
 	}
 	
-	public static long updateTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee,String transactionstring,  long dateTime_sync, String state, String uuid) { // AccountType插入
+  public static int selectEP_BillRuleIdByUUid(Context context,String uuid) {
+		
+    	int id  = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from 'EP_BillRule' a where a.uuid = "+"'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			id = mCursor.getInt(0);
+		}
+		mCursor.close();
+		db.close();
+
+		return id;
+	}
+  
+  public static int selectEP_BillItemIdByUUid(Context context,String uuid) {
+		
+  	    int id  = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from 'EP_BillItem' a where a.uuid = "+"'"+uuid+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			id = mCursor.getInt(0);
+		}
+		mCursor.close();
+		db.close();
+
+		return id;
+	}
+	
+	public static long updateTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes, int recurringType,
+			int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee,
+			String transactionstring,  long dateTime_sync, String state, String uuid, int transactionHasBillRule, int transactionHasBillItem) { // AccountType插入
 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
@@ -176,6 +208,9 @@ public class TransactionDao {
 		cv.put("incomeAccount", incomeAccount);
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
+		
+		cv.put("transactionHasBillRule", transactionHasBillRule);
+		cv.put("transactionHasBillItem", transactionHasBillItem);
 		
 		cv.put("transactionstring", transactionstring);
 		
@@ -196,7 +231,9 @@ public class TransactionDao {
 
 	}
 
-	public static long insertTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee,String transactionstring,  long dateTime_sync, String state, String uuid) { // AccountType插入
+	public static long insertTransactionAllData(Context context, String amount,long dateTime, int isClear, String notes,
+			int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction,
+			int payee,String transactionstring,  long dateTime_sync, String state, String uuid, int transactionHasBillRule, int transactionHasBillItem) { // AccountType插入
 
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
@@ -211,6 +248,9 @@ public class TransactionDao {
 		cv.put("incomeAccount", incomeAccount);
 		cv.put("parTransaction", parTransaction);
 		cv.put("payee", payee);
+		
+		cv.put("transactionHasBillRule", transactionHasBillRule);
+		cv.put("transactionHasBillItem", transactionHasBillItem);
 		
 		cv.put("transactionstring", transactionstring);
 		
@@ -231,7 +271,8 @@ public class TransactionDao {
 	}
 	
 	
-	public static long insertTransactionAll(Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, 
+	public static long insertTransactionAll(Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category,
+			String childTransactions, int expenseAccount , int incomeAccount, 
 			int parTransaction, int payee, String transactionstring,int trans_billitem,int trans_billrule, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {  
 
 		SQLiteDatabase db = getConnection(context);

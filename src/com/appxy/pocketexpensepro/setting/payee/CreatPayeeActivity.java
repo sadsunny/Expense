@@ -150,8 +150,9 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 								}
 							}).show();
 					
-				}else if( judgePayee(mPayeeData,mPayeeName)){
+				}else if( judgMentPayee( mPayeeName, categoryId) ){
 					
+					Log.v("mtag","PayeeDao");
 					new AlertDialog.Builder(CreatPayeeActivity.this)
 					.setTitle("Warning! ")
 					.setMessage(
@@ -185,7 +186,8 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 
 								}
 							}).show();
-				}{
+					
+				}else{
 					
 					if(categoryId > 0){
 						long id = PayeeDao.insertPayee(CreatPayeeActivity.this, mPayeeName, mMemo, categoryId, mDbxAcctMgr, mDatastore);
@@ -555,6 +557,18 @@ public class CreatPayeeActivity extends BaseHomeActivity {
 		}
 		return id;
 	}
+	
+	
+	public boolean judgMentPayee(String pName,int category){
+		
+		boolean tag = false;
+		List<Map<String, Object>> mList = PayeeDao.checkPayeeByNameAndCaegory(CreatPayeeActivity.this, pName, category);
+		if (mList.size() > 0) {
+			tag = true;
+		}
+		return tag;
+	}
+	
 	
 	public boolean judgePayee(List<Map<String, Object>> mData ,String pName){
 		boolean check = false;

@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class PayeeDao {
 	
@@ -25,6 +26,23 @@ public class PayeeDao {
 		SQLiteDatabase db = helper.getWritableDatabase();
 		return db;
 	}
+	
+	public static int selectCategoryType(Context context,int id) { // 查询Category的类型
+		int categoryType = 0;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select Category.categoryType from Category where Category._id = " + id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+
+			categoryType = mCursor.getInt(0);
+
+		}
+		mCursor.close();
+		db.close();
+
+		return categoryType;
+	}
+	
 	
 	public static List<Map<String, Object>> selectCategory(Context context,
 			int type) { // 查询Category
@@ -120,7 +138,7 @@ public class PayeeDao {
 		return id;
 	}
 	
-
+	
 	public static long updatePayeeAll( Context context, String name,String memo, int category, long dateTime, String state , String uuid ) {
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
@@ -396,6 +414,33 @@ public class PayeeDao {
 
 		return mList;
 	}
+	
+	
+	public static List<Map<String, Object>>  checkPayeeByNameAndCaegory(Context context,String pName,int category) {
+		
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a._id from Payee a where a.name = "+"'"+pName+"'" + "and a.category = " +category;
+		Cursor mCursor = db.rawQuery(sql, null);
+		
+		while (mCursor.moveToNext()) {
+			
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			mMap.put("_id", _id);
+			
+			mList.add(mMap);
+		}
+		
+		mCursor.close();
+		db.close();
+		
+		return mList;
+	}
+	
 	
 	public static List<Map<String, Object>> selectPayeeRelate(Context context,int id) { // 查询Category
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();

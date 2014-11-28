@@ -71,6 +71,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 	private Thread mThread;
 
 	private int _id;
+	private int item_id;
 	private String accName;
 	private ExpandableListView mExpandableListView;
 
@@ -132,8 +133,11 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
+		
+		item_id = intent.getIntExtra("item_id", 0);
 		_id = intent.getIntExtra("_id", 0);
 		categoryName = intent.getStringExtra("categoryName");
+		
 		actionBar.setTitle(categoryName);
 		if (_id <= 0) {
 			finish();
@@ -178,8 +182,8 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 
 			if (mDataList != null) {
 				reFillData(mDataList);
-				mDataList.addAll(OverViewDao.selectBudgetTransfer(
-						BudgetToTransactionActivity.this, firstDay, lastDay));
+				mDataList.addAll(OverViewDao.selectBudgetTransferByTimeItem(
+						BudgetToTransactionActivity.this, firstDay, lastDay, item_id));
 				filterData(mDataList);
 			}
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();

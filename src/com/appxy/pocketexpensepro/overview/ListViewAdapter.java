@@ -109,7 +109,6 @@ public class ListViewAdapter extends BaseAdapter {
 		}
 		
 		long dateTime = (Long) mData.get(position).get("dateTime");
-		viewholder.mTextView2.setText(turnToDateString(dateTime));
 		
 		int recurringType = (Integer) mData.get(position).get("recurringType");
 		if (recurringType > 0) {
@@ -152,37 +151,64 @@ public class ListViewAdapter extends BaseAdapter {
 		int expenseAccount = (Integer) mData.get(position).get("expenseAccount");
 		int incomeAccount = (Integer) mData.get(position).get("incomeAccount");
 
+		viewholder.mTextView1.setText((String) mData.get(position).get(
+				"payeeName"));
+		
 		if (expenseAccount > 0 && incomeAccount > 0) {
 			List<Map<String, Object>> mList1 = AccountDao.selectAccountById(
 					context, expenseAccount);
 			List<Map<String, Object>> mList2 = AccountDao.selectAccountById(
 					context, incomeAccount);
-			String mFromAccount = (String) mList1.get(0).get("accName");
-			String mInAccount = (String) mList2.get(0).get("accName");
-			viewholder.mTextView1.setText((String) mData.get(position).get(
-					"payeeName")
-					+ "(" + mFromAccount + " > " + mInAccount + ")");
-		} else {
-			viewholder.mTextView1.setText((String) mData.get(position).get(
-					"payeeName"));
-		}
-
-		if (expenseAccount > 0 && incomeAccount <= 0) {
+			
+			String mFromAccount =  "";
+			if (mList1.size() > 0) {
+				 mFromAccount = (String) mList1.get(0).get("accName");
+			}
+			
+			String mInAccount = "";
+			if (mList2.size() > 0) {
+				 mInAccount = (String) mList2.get(0).get("accName");
+			}
+			viewholder.mTextView2.setText( "(" + mFromAccount + " > " + mInAccount + ")");
+			
+			viewholder.currency_textView.setTextColor(Color.rgb(54, 55, 60));
+			viewholder.amount_textView.setTextColor(Color.rgb(54, 55, 60));
+			viewholder.amount_textView.setText(MEntity
+					.doublepoint2str((String) mData.get(position).get("amount")));
+			
+		}else if (expenseAccount > 0 && incomeAccount <= 0) {
 			viewholder.currency_textView.setTextColor(Color.rgb(208, 47, 58));
 			viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
 			double amount = mAmount;
 			viewholder.amount_textView.setText(MEntity.doublepoint2str(amount
 					+ ""));
+			
+			List<Map<String, Object>> mList = AccountDao.selectAccountById(
+					context, expenseAccount);
+			
+			String mAccount =  "";
+			if (mList.size() > 0) {
+				 mAccount = (String) mList.get(0).get("accName");
+			}
+			
+			viewholder.mTextView2.setText(mAccount);
+			
 		} else if (expenseAccount <= 0 && incomeAccount > 0) {
 			viewholder.currency_textView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amount_textView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amount_textView.setText(MEntity
 					.doublepoint2str((String) mData.get(position).get("amount")));
-		}else {
-			viewholder.currency_textView.setTextColor(Color.rgb(54, 55, 60));
-			viewholder.amount_textView.setTextColor(Color.rgb(54, 55, 60));
-			viewholder.amount_textView.setText(MEntity
-					.doublepoint2str((String) mData.get(position).get("amount")));
+			
+			List<Map<String, Object>> mList = AccountDao.selectAccountById(
+					context, incomeAccount);
+			
+			String mAccount =  "";
+			if (mList.size() > 0) {
+				 mAccount = (String) mList.get(0).get("accName");
+			}
+			
+			viewholder.mTextView2.setText(mAccount);
+			
 		}
 
 		return convertView;

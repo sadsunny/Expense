@@ -52,6 +52,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -101,6 +102,9 @@ public class SettingActivity extends BaseHomeActivity {
 	private AlertDialog mPurDialog;
 	private FragmentDialog fragmentDialog;
 	
+	private Button proButton1;
+	private Button proButton2;
+	
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -126,7 +130,8 @@ public class SettingActivity extends BaseHomeActivity {
 		exportLayout = (RelativeLayout) findViewById(R.id.export_layout);
 		export_LinearLayout = (LinearLayout) findViewById(R.id.export_LinearLayout);
 		sync_LinearLayout = (RelativeLayout) findViewById(R.id.sync_layout);
-		
+		proButton1 = (Button) findViewById(R.id.pro_btn1);
+		proButton2 = (Button) findViewById(R.id.pro_btn2);
 		
 		left_LinearLayout = (LinearLayout) findViewById(R.id.left_LinearLayout);
 		left_txt = (TextView) findViewById(R.id.left_txt);
@@ -138,7 +143,7 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (!Common.mIsPaid) {
+				if (Common.mIsPaid) {
 					
 					Intent intent = new Intent();
 					intent.setClass(SettingActivity.this, SyncActivity.class);
@@ -159,17 +164,33 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent();
-				intent.setClass(SettingActivity.this, ExportAllActivity.class);
-				startActivity(intent);
+				if (Common.mIsPaid) {
+					
+					Intent intent = new Intent();
+					intent.setClass(SettingActivity.this, ExportAllActivity.class);
+					startActivity(intent);
+					
+				} else {
+					
+					showPurdialog();
+
+				}
+				
 			}
 		});
 		
 		if (Common.mIsPaid) {
+			proButton1.setVisibility(View.GONE);
+			proButton2.setVisibility(View.GONE);
+		}else{
+			proButton1.setVisibility(View.VISIBLE);
+			proButton2.setVisibility(View.VISIBLE);
+		}
+		
+		
+		if (Common.mIsPaid) {
 			update_layout_visi.setVisibility(View.INVISIBLE);
-			export_LinearLayout.setVisibility(View.VISIBLE);
 		}else {
-			 export_LinearLayout.setVisibility(View.GONE);
 			 update_layout_visi.setVisibility(View.VISIBLE);
 			 try {
 				
@@ -179,16 +200,13 @@ public class SettingActivity extends BaseHomeActivity {
 				@Override
 				public void onIabSetupFinished(IabResult result) {
 					// TODO Auto-generated method stub
-					Log.v("mtest", "Setting1");
 					if (!result.isSuccess()) {
 	                    // Oh noes, there was a problem.
 //	                    complain("Problem setting up in-app billing: " + result);
 	                    return;
 	                }
-					Log.v("mtest", "Setting2");
 					 if (mHelper == null) return;
 					 iap_is_ok = true;
-					 Log.v("mtest", "Setting3");
 				}
 			});
 				} catch (Exception e) {

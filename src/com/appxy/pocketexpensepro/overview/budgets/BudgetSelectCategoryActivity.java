@@ -180,7 +180,5 @@ public class BudgetSelectCategoryActivity extends BaseHomeActivity {
 		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
 	}
-	
-	
 
 }

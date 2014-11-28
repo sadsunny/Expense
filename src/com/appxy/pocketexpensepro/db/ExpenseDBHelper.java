@@ -154,7 +154,7 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		
 		settingIni(148,"22");
 
-		accountIni( paramSQLiteDatabase , "Default Account", 0+"", System.currentTimeMillis(), 1, 8, 1+"", "E0552410-9082-4B31-96D3-7A777F046AB4", System.currentTimeMillis(), 1);
+		accountIni( paramSQLiteDatabase , "Default Account", 0+"", System.currentTimeMillis(), 1, 8, "1", "E0552410-9082-4B31-96D3-7A777F046AB4", System.currentTimeMillis(), 1);
 		
 	}
 	

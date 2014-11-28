@@ -551,6 +551,22 @@ public class SyncDao {
 		
 		return uuid;
 	}
+	
+	
+	public static String selecAccountTypeUUid(Context context, int id) {
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.uuid from AccountType a where a._id = " + id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		String uuid = null;
+		while (mCursor.moveToNext()) {
+			uuid = mCursor.getString(0);
+		}
+		mCursor.close();
+		db.close();
+		
+		return uuid;
+	}
+	
 
 	public static String selecTransactionUUid(Context context, int id) {
 		SQLiteDatabase db = getConnection(context);
