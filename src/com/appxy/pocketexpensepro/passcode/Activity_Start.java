@@ -15,12 +15,14 @@ import org.apache.http.util.EncodingUtils;
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.TransactionRecurringCheck;
+import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.service.NotificationService;
 import com.appxy.pocketexpensepro.service.PastDueService;
 import com.appxy.pocketexpensepro.setting.SettingDao;
+import com.appxy.pocketexpensepro.setting.category.CategoryDao;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -96,6 +98,15 @@ public class Activity_Start extends Activity {
 	  	         pm.setRepeating(AlarmManager.RTC_WAKEUP, getNineTime(), days, pAlarmSender);
 	  		}
 	         
+	         try {
+	        	 List<Map<String, Object>> mCategoryList = CategoryDao.selectCategoryById(Activity_Start.this, 1); // 查询一下初始的category还有account,以便触发升级
+	 	         List<Map<String, Object>> mAccountList = AccountDao.selectAccountById(Activity_Start.this, 1);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+	       
+	         
+	         
 	 		 if (MyApplication.isFirstIn == 0) {
 				
 	         new CountDownTimer(900, 100) {
@@ -164,8 +175,6 @@ public class Activity_Start extends Activity {
 			}
 		 
         
-       
-         
 //         if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
 // 		} else {
 // 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);

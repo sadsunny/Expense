@@ -146,7 +146,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private LinearLayout pickPhotoButton;
 	private LinearLayout deletePhotoButton;
 	private LinearLayout viewPhotoButton;
-	private String picPath = "";
+	private static String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
 	private Spinner clearSpinner;
@@ -234,6 +234,15 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		memoEditText = (EditText) findViewById(R.id.memo_edit); // spinner
 		recurringLinearLayout = (LinearLayout) findViewById(R.id.recurringLinearLayout);
 
+		if (picPath != null && picPath.length() > 0) {
+		       
+			if (camorabitmap != null) {
+				  camorabitmap.recycle();
+			}
+			camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
+			mImageView.setImageBitmap(camorabitmap);
+		}
+		
 		if (payee > 0) {
 			List<Map<String, Object>> mPayeeDataList = AccountDao
 					.selectPayeeById(this, payee);
@@ -365,10 +374,6 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 		}
 
-		Log.v("mtag", "expenseAccount"+expenseAccount);
-		Log.v("mtag", "incomeAccount"+incomeAccount);
-		Log.v("mtag", "mCategoryType"+mCategoryType);
-		
 		if (mDataList1 != null) {
 			filterData(mDataList1);
 		}
@@ -1102,12 +1107,12 @@ public class EditTransactionActivity extends BaseHomeActivity {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-
+						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
 						mExpandableListView.setSelectedChild(gCheckedItem,
 								cCheckedItem, true);
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 
 					} else if (mCategoryType == 1) {
 						List<Map<String, Object>> mDataList = PayeeDao
@@ -1121,12 +1126,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 							mExpandableListView.expandGroup(i);
 						}
 						mExpandableListView.setCacheColorHint(0);
-
+						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
 						mExpandableListView.setSelectedChild(gCheckedItem,
 								cCheckedItem, true);
 						mDialogExpandableListViewAdapter.setSelectedPosition(
 								gCheckedItem, cCheckedItem);
-						mDialogExpandableListViewAdapter.notifyDataSetChanged();
+						
 
 					}
 
@@ -1704,10 +1710,19 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 		switch (requestCode) {
 		case 6:
-			File file = new File(picPath);
-			if (file.exists()) {
-				camorabitmap = BitmapFactory.decodeFile(picPath);
-				mImageView.setImageBitmap(camorabitmap);
+			
+			if (resultCode == RESULT_OK) {
+				
+				File file = new File(picPath);
+				if (file.exists()) {
+					
+					if (camorabitmap != null) {
+						  camorabitmap.recycle();
+					}
+					camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
+					mImageView.setImageBitmap(camorabitmap);
+				}
+				
 			}
 
 			break;
@@ -1716,9 +1731,11 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			// 照片的原始资源地址
 			if (data != null) {
 				Uri originalUri = data.getData();
-				picPath = Common.getRealPathFromURI(originalUri,
-						EditTransactionActivity.this);
-				camorabitmap = BitmapFactory.decodeFile(picPath);
+				picPath = Common.getRealPathFromURI(originalUri,EditTransactionActivity.this);
+				if (camorabitmap != null) {
+					  camorabitmap.recycle();
+				}
+				camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
 				mImageView.setImageBitmap(camorabitmap);
 			}
 			break;

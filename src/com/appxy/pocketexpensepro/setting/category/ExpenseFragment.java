@@ -48,7 +48,9 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 	private ListView diaListView;
 	private DialogItemAdapter mDialogItemAdapter;
 	private AlertDialog alertDialog;
-
+	private final static String [] DialogStrings = {"Delete this category will also delete all its tractions, sub-categories, releated bills and budgets.",
+		"Delete this category will cause to also delete all its transactions, related bills and budgets."}; // 删除提示语，第一个是父，第二是子类
+	
 	public ExpenseFragment() {
 
 	}
@@ -209,16 +211,17 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
 						// TODO Auto-generated method stub
-						
+						int PorC = 0;// 判断是子类还是父类 父类是0 子类是1
 						int d_id = 0;
 						if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
 							d_id = (Integer) childrenAllDataList
 									.get(groupPosition).get(childPosition)
 									.get("_id");
-
+							PorC = 1;
 						} else if (mPositionType == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
 							d_id = (Integer) groupDataList
 									.get(groupPosition).get("_id");
+							PorC = 0;
 						}
 						
 						if (arg2 == 0) {
@@ -227,8 +230,7 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 								
 								new AlertDialog.Builder(getActivity())
 								.setTitle("Delete This Category? ")
-								.setMessage(
-										" Deleting a category will cause to delete all associated transactions, bills and budgets. Are you sure you want to delete it? ")
+								.setMessage(DialogStrings[PorC])
 								.setNegativeButton(
 										"No",
 										new DialogInterface.OnClickListener() {

@@ -97,14 +97,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 				}
 			}
         	
-//        	if (!ds.getSyncStatus().isDownloading) {
-//        		if (isUpload) {
-//        			justSync(true);
-//				}
-//			}
-        	
-        
-        	
         }
     };
     

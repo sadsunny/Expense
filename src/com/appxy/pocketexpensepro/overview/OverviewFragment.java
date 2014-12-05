@@ -185,7 +185,6 @@ public class OverviewFragment extends Fragment implements
 	public OverviewFragment() {
 
 	}
-
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -265,10 +264,16 @@ public class OverviewFragment extends Fragment implements
 	        super.onDestroy();
 	        // very important:
 	        Log.d(TAG, "Destroying helper.");
-	        if (mHelper != null) {
-	            mHelper.dispose();
-	            mHelper = null;
+	        
+	        if (mHelper != null){
+	            try {
+	            	mHelper.dispose();
+	            }catch (IllegalArgumentException ex){
+	                ex.printStackTrace();
+	            }finally{}
 	        }
+	        mHelper = null;
+	        
 	    }
 
 	@Override

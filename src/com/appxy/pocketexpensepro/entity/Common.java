@@ -206,7 +206,7 @@ public class Common {
 		"icon_commonfood.png",
 		"icon_comp.png",
 		"icon_cosmetics.png",
-		"icon_credit_card.png",
+		"icon_credit_card2.png",
 		"credit_card-payment.png",
 		"Garbage-&-Recycling.png",
 		"icon_digital_product.png",
@@ -253,7 +253,7 @@ public class Common {
 		"tax-fed.png",
 		"icon_tax2.png",
 		"icon_tea.png",
-		"con_teeth.png",
+		"icon_teeth.png",
 		"icon_traffic_other.png",
 		"iocn_transfer.png",
 		
@@ -332,7 +332,7 @@ public class Common {
 			R.drawable.commonfood,
 			R.drawable.comp,
 			R.drawable.cosmetics, 
-			R.drawable.credit_card2,
+			R.drawable.credit_card2, // prob
 			R.drawable.credit_card, 
 			R.drawable.delete,
 			R.drawable.digital_product,

@@ -272,7 +272,7 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 		renderer.setShowGrid(true);
 		renderer.setPanEnabled(true, false);// 设置XY轴的滑动
 		renderer.setYLabelsAlign(Align.RIGHT);
-		
+//		renderer.addYTextLabel(1, "label");
 		
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		FillOutsideLine fill = new FillOutsideLine(
@@ -285,7 +285,6 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 			
 			fill.setColor(Color.argb(39, 243, 61, 36));
 			r.addFillOutsideLine(fill);
-			
 			renderer.addSeriesRenderer(r);
 			
 		} else {

@@ -62,18 +62,29 @@ public class CategoryDao {
 	}
 	
 	
-	public static int selectCategoryRelate(Context context, int _id) { // 查询Category
+	public static int selectCategoryRelate(Context context, int _id) { // 查询关联Category
 		
 		int size = 0;
+		int size1 = 0;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a._id from 'Transaction' a, Category b where b._id = a.category and b._id = "+_id;
 		Cursor mCursor = db.rawQuery(sql, null);
 		size = mCursor.getCount();
 		
+		String sql1 = "select a._id from BudgetTemplate a, Category b where b._id = a.category and b._id = "+_id;
+		Cursor mCursor1 = db.rawQuery(sql1, null);
+		size1 = mCursor1.getCount();
+		
+		mCursor1.close();
 		mCursor.close();
 		db.close();
 		
-		return size;
+		int reInt  = 0;
+		if(size > 0 || size1 > 0){
+			reInt = 1;
+		}
+				
+		return reInt;
 	}
 	
 	

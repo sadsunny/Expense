@@ -23,6 +23,7 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.KeyboardUtil;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
@@ -56,8 +57,13 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -143,7 +149,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private LinearLayout pickPhotoButton;
 	private LinearLayout deletePhotoButton;
 	private LinearLayout viewPhotoButton;
-	private String picPath = "";
+	private static String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
 	private Spinner clearSpinner;
@@ -156,13 +162,25 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private AutoListAdapter autoListAdapter;
 	private Cursor mCursor;
 	private CharSequence sKey;
-
+	private static final int CAMERA_REQUEST = 1888; 
+	private Uri imageuri;
+	private KeyboardUtil customKeyBoard;
+	
+	@Override public void onBackPressed() {
+	    if( customKeyBoard.isCustomKeyboardVisible() ){
+	    	customKeyBoard.hideKeyboard();
+	    }else{
+	    	this.finish();
+	    }
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transaction);
 
+		
 		inflater = LayoutInflater.from(CreatTransactionActivity.this);
 		ActionBar mActionBar = getActionBar();
 		
@@ -198,7 +216,17 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		clearSpinner = (Spinner) findViewById(R.id.clear_spin); // spinner
 		memoEditText = (EditText) findViewById(R.id.memo_edit); // spinner
 		recurringLinearLayout = (LinearLayout) findViewById(R.id.recurringLinearLayout);
-
+		
+		
+		if (picPath != null && picPath.length() > 0) {
+	       
+			if (camorabitmap != null) {
+				  camorabitmap.recycle();
+			}
+			camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
+			mImageView.setImageBitmap(camorabitmap);
+		}
+		
 		memoEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
 		
 		payeeEditText.addTextChangedListener(new TextWatcher() {
@@ -232,8 +260,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 		});
 
-		final List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
-				CreatTransactionActivity.this, 0);
+		List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
+				CreatTransactionActivity.this, mCategoryType);
+		
 		if (mDataList != null) {
 			filterData(mDataList);
 		}
@@ -249,8 +278,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 				// Get the state's capital from this row in the database.
 				payeeId = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
-				categoryId = cursor.getInt(cursor
-						.getColumnIndexOrThrow("category"));
+				categoryId = cursor.getInt(cursor.getColumnIndexOrThrow("category"));
 				
 				int cType = cursor.getInt(cursor
 						.getColumnIndexOrThrow("categoryType"));
@@ -259,9 +287,18 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						.getColumnIndexOrThrow("categoryName"));
 				categoryButton.setText(categoryName);
 				
-				mCategoryType = cType ; // 1 income
+				mCategoryType = cType;  // 1 income
+						
+						List<Map<String, Object>> mDataList = PayeeDao.selectCategory(
+								CreatTransactionActivity.this, mCategoryType);
+						
+						if (mDataList != null) {
+							filterData(mDataList);
+						}
+
 				
 				if (categoryName.contains(":")) {
+					
 					String parentString[] = categoryName.split(":");
 					String groupString = parentString[0];
 					gCheckedItem = locationPositionByName(groupDataList,
@@ -362,76 +399,113 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 		});
 
-		amountEditText.setText("0.00");
-		amountEditText.setSelection(4);
-		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
-					private boolean isChanged = false;
-
-					@Override
-					public void onTextChanged(CharSequence s, int start,
-							int before, int count) {
-						// TODO Auto-generated method stub
-
+		amountEditText.setInputType(InputType.TYPE_NULL); 
+		amountEditText.setText("0");
+		
+		if (amountEditText != null) {
+   		 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+   		 imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), 0);
+		}
+		amountEditText.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+		             
+					 customKeyBoard = new KeyboardUtil(CreatTransactionActivity.this, CreatTransactionActivity.this, amountEditText, v);
+					 customKeyBoard.showKeyboard(); 
+				
+			}
+		});
+		amountEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				// TODO Auto-generated method stub
+				if (hasFocus) {
+					
+					if (customKeyBoard != null) {
+						customKeyBoard.showKeyboard(); 
 					}
-
-					@Override
-					public void beforeTextChanged(CharSequence s, int start,
-							int count, int after) {
-						// TODO Auto-generated method stub
+					
+				}else {
+					if (customKeyBoard != null) {
+						customKeyBoard.hideKeyboard();
 					}
-
-					@Override
-					public void afterTextChanged(Editable s) {
-						// TODO Auto-generated method stub
-
-						if (isChanged) {// ----->如果字符未改变则返回
-							return;
-						}
-						String str = s.toString();
-
-						isChanged = true;
-						String cuttedStr = str;
-						/* 删除字符串中的dot */
-						for (int i = str.length() - 1; i >= 0; i--) {
-							char c = str.charAt(i);
-							if ('.' == c) {
-								cuttedStr = str.substring(0, i)
-										+ str.substring(i + 1);
-								break;
-							}
-						}
-						/* 删除前面多余的0 */
-						int NUM = cuttedStr.length();
-						int zeroIndex = -1;
-						for (int i = 0; i < NUM - 2; i++) {
-							char c = cuttedStr.charAt(i);
-							if (c != '0') {
-								zeroIndex = i;
-								break;
-							} else if (i == NUM - 3) {
-								zeroIndex = i;
-								break;
-							}
-						}
-						if (zeroIndex != -1) {
-							cuttedStr = cuttedStr.substring(zeroIndex);
-						}
-						/* 不足3位补0 */
-						if (cuttedStr.length() < 3) {
-							cuttedStr = "0" + cuttedStr;
-						}
-						/* 加上dot，以显示小数点后两位 */
-						cuttedStr = cuttedStr.substring(0,
-								cuttedStr.length() - 2)
-								+ "."
-								+ cuttedStr.substring(cuttedStr.length() - 2);
-
-						amountEditText.setText(cuttedStr);
-						amountString = amountEditText.getText().toString();
-						amountEditText.setSelection(cuttedStr.length());
-						isChanged = false;
-					}
-				});
+					
+				}
+				
+			}
+		});
+		
+//		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
+//					private boolean isChanged = false;
+//
+//					@Override
+//					public void onTextChanged(CharSequence s, int start,
+//							int before, int count) {
+//						// TODO Auto-generated method stub
+//
+//					}
+//
+//					@Override
+//					public void beforeTextChanged(CharSequence s, int start,
+//							int count, int after) {
+//						// TODO Auto-generated method stub
+//					}
+//
+//					@Override
+//					public void afterTextChanged(Editable s) {
+//						// TODO Auto-generated method stub
+//
+//						if (isChanged) {// ----->如果字符未改变则返回
+//							return;
+//						}
+//						String str = s.toString();
+//
+//						isChanged = true;
+//						String cuttedStr = str;
+//						/* 删除字符串中的dot */
+//						for (int i = str.length() - 1; i >= 0; i--) {
+//							char c = str.charAt(i);
+//							if ('.' == c) {
+//								cuttedStr = str.substring(0, i)
+//										+ str.substring(i + 1);
+//								break;
+//							}
+//						}
+//						/* 删除前面多余的0 */
+//						int NUM = cuttedStr.length();
+//						int zeroIndex = -1;
+//						for (int i = 0; i < NUM - 2; i++) {
+//							char c = cuttedStr.charAt(i);
+//							if (c != '0') {
+//								zeroIndex = i;
+//								break;
+//							} else if (i == NUM - 3) {
+//								zeroIndex = i;
+//								break;
+//							}
+//						}
+//						if (zeroIndex != -1) {
+//							cuttedStr = cuttedStr.substring(zeroIndex);
+//						}
+//						/* 不足3位补0 */
+//						if (cuttedStr.length() < 3) {
+//							cuttedStr = "0" + cuttedStr;
+//						}
+//						/* 加上dot，以显示小数点后两位 */
+//						cuttedStr = cuttedStr.substring(0,
+//								cuttedStr.length() - 2)
+//								+ "."
+//								+ cuttedStr.substring(cuttedStr.length() - 2);
+//
+//						amountEditText.setText(cuttedStr);
+//						amountString = amountEditText.getText().toString();
+//						amountEditText.setSelection(cuttedStr.length());
+//						isChanged = false;
+//					}
+//				});
 
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(MainActivity.selectedDate);
@@ -441,6 +515,26 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		updateDisplay();
 
 	}
+	
+	
+	
+	
+	
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onRestoreInstanceState(savedInstanceState);
+		
+		
+		
+		
+	}
+
+
+
+
+
 
 	private final View.OnClickListener mClickListener = new View.OnClickListener() {
 		@Override
@@ -1178,6 +1272,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 							}
 							mImageView.setImageBitmap(null);
 							picPath = "";
+							Log.v("mtag","picpath设置为空");
 							mPhotoSeDialog.dismiss();
 						}
 					});
@@ -1234,27 +1329,25 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 									fileFolder.mkdirs();
 								} catch (Exception e) {
 									// TODO: handle exception
-									System.out.println(e + "Exception");
+									System.out.println(e + "Folder Exception");
 								}
 							}
 
 							String picName = new SimpleDateFormat(
 									"yyyyMMddHHmmss").format(new Date());
 
-							String filepath = Environment
-									.getExternalStorageDirectory()
-									+ "/PocketExpense/Images/"
-									+ picName
-									+ ".jpg";
+							String filepath = Environment.getExternalStorageDirectory()+ "/PocketExpense/Images/"+ picName+ ".jpg";
 							final File file = new File(filepath);
-							final Uri imageuri = Uri.fromFile(file);
+						    imageuri = Uri.fromFile(file);
+							
+							
 							picPath = filepath;
-							Intent intent = new Intent(
-									MediaStore.ACTION_IMAGE_CAPTURE);
+							Log.v("mtag","创建的 picPath"+picPath);
+							Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 							intent.putExtra(
 									android.provider.MediaStore.EXTRA_OUTPUT,
 									imageuri);
-							startActivityForResult(intent, 6);
+							startActivityForResult(intent, CAMERA_REQUEST);
 							mPhotoDialog.dismiss();
 						}
 					});
@@ -1264,8 +1357,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 						@Override
 						public void onClick(View v) {
 							// TODO Auto-generated method stub
-							Intent openAlbumIntent = new Intent(
-									Intent.ACTION_GET_CONTENT);
+							Intent openAlbumIntent = new Intent(Intent.ACTION_PICK,
+									android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 							openAlbumIntent.setType("image/*");
 							startActivityForResult(openAlbumIntent, 7);
 							mPhotoDialog.dismiss();
@@ -1466,23 +1559,36 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case 6:
+		case CAMERA_REQUEST:
+			
+			if (resultCode == RESULT_OK) {
+				
 			File file = new File(picPath);
 			if (file.exists()) {
-				camorabitmap = BitmapFactory.decodeFile(picPath);
+				
+				if (camorabitmap != null) {
+					  camorabitmap.recycle();
+				}
+				camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
 				mImageView.setImageBitmap(camorabitmap);
+			}
+			
 			}
 
 			break;
 		case 7:
 
 			// 照片的原始资源地址
-			if (data != null) {
+			if (data != null && resultCode == RESULT_OK) {
+				
 				Uri originalUri = data.getData();
-				picPath = Common.getRealPathFromURI(originalUri,
-						CreatTransactionActivity.this);
-				camorabitmap = BitmapFactory.decodeFile(picPath);
+				picPath = Common.getRealPathFromURI(originalUri,CreatTransactionActivity.this);
+				if (camorabitmap != null) {
+					  camorabitmap.recycle();
+				}
+				camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 128, 200);
 				mImageView.setImageBitmap(camorabitmap);
+				
 			}
 			break;
 
@@ -1599,6 +1705,15 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 			break;
 		}
 	}
+
+	
+//	@Override
+//	public Object onRetainCustomNonConfigurationInstance() {
+//		// TODO Auto-generated method stub
+//		final String myPath = picPath;
+//		Log.v("mtag", "被强制横屏");
+//		return myPath;
+//	}
 
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {

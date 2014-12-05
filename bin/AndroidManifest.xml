@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.appxy.pocketexpensepro"
-    android:versionCode="7"
+    android:versionCode="8"
     android:versionName="2.0" >
 
     <uses-sdk
@@ -42,6 +42,10 @@
         <screen
             android:screenDensity="480"
             android:screenSize="small" />
+        <screen
+            android:screenDensity="640"
+            android:screenSize="small" />
+        
 
         <!-- normal all screen -->
 
@@ -59,6 +63,9 @@
             android:screenSize="normal" />
         <screen
             android:screenDensity="480"
+            android:screenSize="normal" />
+         <screen
+            android:screenDensity="640"
             android:screenSize="normal" />
 
         <!-- xlarge all screen -->
@@ -78,6 +85,10 @@
         <screen
             android:screenDensity="480"
             android:screenSize="large" />
+        <screen
+            android:screenDensity="640"
+            android:screenSize="large" />
+        
     </compatible-screens>
 
     <application

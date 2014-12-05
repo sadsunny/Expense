@@ -25,9 +25,6 @@ import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
-import com.appxy.pocketexpensepro.util.IabHelper;
-import com.appxy.pocketexpensepro.util.IabResult;
-import com.appxy.pocketexpensepro.util.Purchase;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxRecord;
 
@@ -106,8 +103,6 @@ public class NetOutActivity extends BaseHomeActivity {
 	private boolean iap_is_ok = false;
 	public static final String Paid_Id_VF = "upgrade";
 	static final int RC_REQUEST = 10001;
-	private IabHelper mHelper;
-	private static final String base64EncodedPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi803lugKTJdERpN++BDhRYY5hr0CpTsuj+g3fIZGBLn+LkZ+me0it3lP375tXqMlL0NLNlasu9vWli3QkCFBbERf+KysqUCsrqqcoq3hUini6LSiKkyuISM2Y4gWUqSVT+vkLP4psshnwJTbF6ii2jZfXFxLVoT5P30+y4rgCwncgRsX14x2bCpJlEdxrNfoxL4EqlHAt9/9vsc0PoW8QH/ChKJFkTDOsB9/42aur4zF9ua568ny1K6vlE/lnkffBP6DvsHFrIdpctRyUdrBVnUyMl+1k2ufUHJudfeGpKuExLcNOxuryCTolIFj44dB2TugNFzQwOE4xoRyCfJ7bQIDAQAB";
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
 	
@@ -232,7 +227,6 @@ public class NetOutActivity extends BaseHomeActivity {
 		
 		mNavigationListAdapter = new NavigationListAdapter(this, accName);
 		
-		Log.v("mmes", "type "+type);
 		content = new ArrayList<String>();
 		content.add(item1);
 		if (type == 0) {
@@ -245,7 +239,8 @@ public class NetOutActivity extends BaseHomeActivity {
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 
-		currencyTextView1 = (TextView) findViewById(R.id.currency_txt1);
+		
+		currencyTextView1= (TextView) findViewById(R.id.currency_txt1);
 		currencyTextView2 = (TextView) findViewById(R.id.currency_txt2);
 		symbolTextView1 =  (TextView) findViewById(R.id.symbol_txt1);
 		symbolTextView2 =  (TextView) findViewById(R.id.symbol_txt2);
@@ -270,6 +265,18 @@ public class NetOutActivity extends BaseHomeActivity {
 		setResult(12, resultintent);
 
 	}
+	
+	
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		currencyTextView1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currencyTextView2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+	}
+
+
 
 	public Runnable mTask = new Runnable() {
 
@@ -1026,94 +1033,19 @@ public class NetOutActivity extends BaseHomeActivity {
 			finish();
 			return true;
 		case R.id.action_add:
-			  int tranactionSize = AccountDao.selectTransactionAllSize(NetOutActivity.this);
-			  SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);  
-		      Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
 		        
-			  if ( !Common.mIsPaid && tranactionSize >= 70) {
-					
-			    	 new AlertDialog.Builder(NetOutActivity.this)
-						.setTitle("Upgrade to Pro? ")
-						.setMessage(
-								"You've reached the max number of transactions allowed in the free version. Would you like to upgrade to pro to remove ads and transaction limitation? ")
-						.setPositiveButton("Upgrade to Pro",
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(
-											DialogInterface dialog,
-											int which) {
-										
-										// TODO Auto-generated method stub
-										
-										if (iap_is_ok && mHelper != null) {
-											 mHelper.flagEndAsync();
-											 mHelper.launchPurchaseFlow(NetOutActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
-										}
-										dialog.dismiss();
-
-									}
-								})
-								.setNegativeButton("No", new DialogInterface.OnClickListener(){
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										// TODO Auto-generated method stub
-										dialog.dismiss();
-									}
-									
-								})
-								.show();
-			    	 
-				} else {
-					
 			Intent intent = new Intent();
 			intent.setClass(NetOutActivity.this, CreatTransactionActivity.class);
 			startActivityForResult(intent, 6);
-				}
+			
 			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 	
-	 boolean verifyDeveloperPayload(Purchase p) {
-	        String payload = p.getDeveloperPayload();
-	        return true;
-	    }
 	    
 	
 	 // Callback for when a purchase is finished
-    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
-    	
-    	@Override
-        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-
-            // if we were disposed of in the meantime, quit.
-            if (mHelper == null) return;
-   			
-            if (result.isFailure()) {
-            	Log.v("mtest", "1结果"+result);
-                return;
-            }
-            if (!verifyDeveloperPayload(purchase)) {
-            	Log.v("mtest", "2结果"+result);
-                return;
-            }
-
-            if (purchase.getSku().equals(Paid_Id_VF)) {
-                // bought the premium upgrade!
-            	Log.v("mtest", "3结果"+result);
-             Common.mIsPaid =true;
-   		     SharedPreferences sharedPreferences = NetOutActivity.this.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
-   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
-   			 meditor.putBoolean("isPaid",Common.mIsPaid ); 
-   			 meditor.commit();
-            }
-        }
-
-	
-    };
     
     void alert(String message) {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
@@ -1125,12 +1057,6 @@ public class NetOutActivity extends BaseHomeActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // very important:
-        if (mHelper != null) {
-            mHelper.dispose();
-            mHelper = null;
-        }
     }
 	
 	@Override
@@ -1156,36 +1082,6 @@ public class NetOutActivity extends BaseHomeActivity {
 			}
 			break;
 		}
-		if (mHelper == null) return;
-		if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
-			Log.v("mtest", "result edn");
-			super.onActivityResult(requestCode, resultCode, data);
-			 if (requestCode == RC_REQUEST) {     
-			      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
-			      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-			      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
-			        
-			      if (resultCode == RESULT_OK) {
-			         try {
-			            JSONObject jo = new JSONObject(purchaseData);
-			            String sku = jo.getString("productId");
-			            alert("Thank you for upgrading to pro!");
-			             SharedPreferences sharedPreferences = NetOutActivity.this.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
-					     SharedPreferences.Editor meditor = sharedPreferences.edit();  
-						 meditor.putBoolean("isPaid",true ); 
-						 meditor.commit();
-			            
-			          }
-			          catch (JSONException e) {
-			             e.printStackTrace();
-			          }
-			      }
-			   }
-			 
-        }
-       
-        else {
-        }
 	}
 
 	@Override

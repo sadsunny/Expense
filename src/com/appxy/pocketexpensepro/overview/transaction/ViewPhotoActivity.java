@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview.transaction;
 
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,7 +27,7 @@ public class ViewPhotoActivity extends Activity {
 		Intent intent = getIntent();
 		String picPath = intent.getStringExtra("picPath");
 		if (picPath != null && picPath.length() > 0) {
-			Bitmap camorabitmap = BitmapFactory.decodeFile(picPath);
+			Bitmap camorabitmap = MEntity.decodeSampledBitmapFromResource(picPath, 480, 800);
 			mImageView.setImageBitmap(camorabitmap);
 		}
 	}

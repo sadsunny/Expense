@@ -522,6 +522,12 @@ public class SettingActivity extends BaseHomeActivity {
 	    	  fragmentDialog.dismiss();
 		}
 		
+	      if (Common.mIsPaid) {
+		    	proButton1.setVisibility(View.GONE);
+				proButton2.setVisibility(View.GONE);
+		 }
+			
+	      
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		passCode = (String) mList.get(0).get("passcode");
 
@@ -539,10 +545,16 @@ public class SettingActivity extends BaseHomeActivity {
 
 	        // very important:
 	        Log.d(TAG, "Destroying helper.");
-	        if (mHelper != null) {
-	            mHelper.dispose();
-	            mHelper = null;
+	        
+	        if (mHelper != null){
+	            try {
+	            	mHelper.dispose();
+	            }catch (IllegalArgumentException ex){
+	                ex.printStackTrace();
+	            }finally{}
 	        }
+	        mHelper = null;
+	        
 	    }
 	 
 	 @Override

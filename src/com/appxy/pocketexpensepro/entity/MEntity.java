@@ -12,11 +12,57 @@ import java.util.UUID;
 
 import android.R.integer;
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
+	
+	public static int calculateInSampleSize(  // 根据图片的尺寸，返回一个合适的大小 
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    // Raw height and width of image
+    final int height = options.outHeight;
+    final int width = options.outWidth;
+    int inSampleSize = 1;
+
+    if (height > reqHeight || width > reqWidth) {
+
+        final int halfHeight = height / 2;
+        final int halfWidth = width / 2;
+
+        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+        // height and width larger than the requested height and width.
+        while ((halfHeight / inSampleSize) > reqHeight
+                && (halfWidth / inSampleSize) > reqWidth) {
+            inSampleSize *= 2;
+        }
+    }
+    return inSampleSize;
+}
+	
+	public static Bitmap decodeSampledBitmapFromResource(String picPath ,int reqWidth, int reqHeight ) {  //照相图片 缩放较大的图片
+		/*
+		 * 第一步先计算出图片的尺寸
+		 */
+		
+		BitmapFactory.Options options = new BitmapFactory.Options(); 
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(picPath, options);
+
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    options.inJustDecodeBounds = true;
+
+	    // Calculate inSampleSize
+	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    return BitmapFactory.decodeFile(picPath, options);
+	}
+	
 	
 	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
 		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");

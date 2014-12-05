@@ -109,10 +109,16 @@ public class PurFragmentA extends Fragment {
 	public void onDestroy() {
 		super.onDestroy();
 		// very important:
-		if (mHelper != null) {
-			mHelper.dispose();
-			mHelper = null;
-		}
+		   
+        if (mHelper != null){
+            try {
+            	mHelper.dispose();
+            }catch (IllegalArgumentException ex){
+                ex.printStackTrace();
+            }finally{}
+        }
+        mHelper = null;
+        
 	}
 
 	IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
