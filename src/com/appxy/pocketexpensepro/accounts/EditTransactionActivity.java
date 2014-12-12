@@ -339,7 +339,7 @@ public class EditTransactionActivity extends BaseHomeActivity {
 			picPath = photoName;
 			File file = new File(photoName);
 			if (file.exists()) {
-				camorabitmap = BitmapFactory.decodeFile(photoName);
+				camorabitmap =  MEntity.decodeSampledBitmapFromResource(photoName, 128, 200);
 				mImageView.setImageBitmap(camorabitmap);
 			}
 		}

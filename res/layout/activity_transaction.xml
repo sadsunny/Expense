@@ -67,13 +67,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="none"
+                        android:inputType="number"
                         android:maxLength="13"
                         android:minHeight="48dip"
                         android:gravity="bottom"
                         android:singleLine="true"
                         android:text="@string/zero_label" 
                         android:textColor="@color/text_black1">
+
 
                         <requestFocus />
                     </EditText>

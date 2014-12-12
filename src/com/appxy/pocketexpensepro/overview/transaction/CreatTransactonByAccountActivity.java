@@ -143,7 +143,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	private LinearLayout pickPhotoButton;
 	private LinearLayout deletePhotoButton;
 	private LinearLayout viewPhotoButton;
-	private String picPath = "";
+	private static String picPath = "";
 	private ImageView mImageView;
 	private EditText memoEditText;
 	private Spinner clearSpinner;
@@ -157,6 +157,14 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	private Cursor mCursor;
 	private CharSequence sKey;
 
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		picPath = "";
+	}
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

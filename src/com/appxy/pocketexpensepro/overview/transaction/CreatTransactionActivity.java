@@ -166,6 +166,14 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private Uri imageuri;
 	private KeyboardUtil customKeyBoard;
 	
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		picPath = "";
+	}
+	
 	@Override public void onBackPressed() {
 	    if( customKeyBoard.isCustomKeyboardVisible() ){
 	    	customKeyBoard.hideKeyboard();
@@ -399,113 +407,114 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 		});
 
-		amountEditText.setInputType(InputType.TYPE_NULL); 
-		amountEditText.setText("0");
-		
-		if (amountEditText != null) {
-   		 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-   		 imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), 0);
-		}
-		amountEditText.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-		             
-					 customKeyBoard = new KeyboardUtil(CreatTransactionActivity.this, CreatTransactionActivity.this, amountEditText, v);
-					 customKeyBoard.showKeyboard(); 
-				
-			}
-		});
-		amountEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				// TODO Auto-generated method stub
-				if (hasFocus) {
-					
-					if (customKeyBoard != null) {
-						customKeyBoard.showKeyboard(); 
+//		amountEditText.setInputType(InputType.TYPE_NULL); 
+//		amountEditText.setText("0");
+//		
+//		if (amountEditText != null) {
+//   		 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//   		 imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), 0);
+//		}
+//		amountEditText.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//		             
+//					 customKeyBoard = new KeyboardUtil(CreatTransactionActivity.this, CreatTransactionActivity.this, amountEditText, v);
+//					 customKeyBoard.showKeyboard(); 
+//				
+//			}
+//		});
+//		amountEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+//			
+//			@Override
+//			public void onFocusChange(View v, boolean hasFocus) {
+//				// TODO Auto-generated method stub
+//				if (hasFocus) {
+//					
+//					if (customKeyBoard != null) {
+//						customKeyBoard.showKeyboard(); 
+//					}
+//					
+//				}else {
+//					if (customKeyBoard != null) {
+//						customKeyBoard.hideKeyboard();
+//					}
+//					
+//				}
+//				
+//			}
+//		});
+		amountEditText.setText("0.00");
+		amountEditText.setSelection(4);
+		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
+					private boolean isChanged = false;
+
+					@Override
+					public void onTextChanged(CharSequence s, int start,
+							int before, int count) {
+						// TODO Auto-generated method stub
+
 					}
-					
-				}else {
-					if (customKeyBoard != null) {
-						customKeyBoard.hideKeyboard();
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start,
+							int count, int after) {
+						// TODO Auto-generated method stub
 					}
-					
-				}
-				
-			}
-		});
-		
-//		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
-//					private boolean isChanged = false;
-//
-//					@Override
-//					public void onTextChanged(CharSequence s, int start,
-//							int before, int count) {
-//						// TODO Auto-generated method stub
-//
-//					}
-//
-//					@Override
-//					public void beforeTextChanged(CharSequence s, int start,
-//							int count, int after) {
-//						// TODO Auto-generated method stub
-//					}
-//
-//					@Override
-//					public void afterTextChanged(Editable s) {
-//						// TODO Auto-generated method stub
-//
-//						if (isChanged) {// ----->如果字符未改变则返回
-//							return;
-//						}
-//						String str = s.toString();
-//
-//						isChanged = true;
-//						String cuttedStr = str;
-//						/* 删除字符串中的dot */
-//						for (int i = str.length() - 1; i >= 0; i--) {
-//							char c = str.charAt(i);
-//							if ('.' == c) {
-//								cuttedStr = str.substring(0, i)
-//										+ str.substring(i + 1);
-//								break;
-//							}
-//						}
-//						/* 删除前面多余的0 */
-//						int NUM = cuttedStr.length();
-//						int zeroIndex = -1;
-//						for (int i = 0; i < NUM - 2; i++) {
-//							char c = cuttedStr.charAt(i);
-//							if (c != '0') {
-//								zeroIndex = i;
-//								break;
-//							} else if (i == NUM - 3) {
-//								zeroIndex = i;
-//								break;
-//							}
-//						}
-//						if (zeroIndex != -1) {
-//							cuttedStr = cuttedStr.substring(zeroIndex);
-//						}
-//						/* 不足3位补0 */
-//						if (cuttedStr.length() < 3) {
-//							cuttedStr = "0" + cuttedStr;
-//						}
-//						/* 加上dot，以显示小数点后两位 */
-//						cuttedStr = cuttedStr.substring(0,
-//								cuttedStr.length() - 2)
-//								+ "."
-//								+ cuttedStr.substring(cuttedStr.length() - 2);
-//
-//						amountEditText.setText(cuttedStr);
-//						amountString = amountEditText.getText().toString();
-//						amountEditText.setSelection(cuttedStr.length());
-//						isChanged = false;
-//					}
-//				});
+
+					@Override
+					public void afterTextChanged(Editable s) {
+						// TODO Auto-generated method stub
+
+						if (isChanged) {// ----->如果字符未改变则返回
+							return;
+						}
+						String str = s.toString();
+
+						isChanged = true;
+						String cuttedStr = str;
+						/* 删除字符串中的dot */
+						for (int i = str.length() - 1; i >= 0; i--) {
+							char c = str.charAt(i);
+							if ('.' == c) {
+								cuttedStr = str.substring(0, i)
+										+ str.substring(i + 1);
+								break;
+							}
+						}
+						/* 删除前面多余的0 */
+						int NUM = cuttedStr.length();
+						int zeroIndex = -1;
+						for (int i = 0; i < NUM - 2; i++) {
+							char c = cuttedStr.charAt(i);
+							if (c != '0') {
+								zeroIndex = i;
+								break;
+							} else if (i == NUM - 3) {
+								zeroIndex = i;
+								break;
+							}
+						}
+						if (zeroIndex != -1) {
+							cuttedStr = cuttedStr.substring(zeroIndex);
+						}
+						/* 不足3位补0 */
+						if (cuttedStr.length() < 3) {
+							cuttedStr = "0" + cuttedStr;
+						}
+						/* 加上dot，以显示小数点后两位 */
+						cuttedStr = cuttedStr.substring(0,
+								cuttedStr.length() - 2)
+								+ "."
+								+ cuttedStr.substring(cuttedStr.length() - 2);
+
+						amountEditText.setText(cuttedStr);
+						amountString = amountEditText.getText().toString();
+						amountEditText.setSelection(cuttedStr.length());
+						isChanged = false;
+					}
+				});
 
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(MainActivity.selectedDate);

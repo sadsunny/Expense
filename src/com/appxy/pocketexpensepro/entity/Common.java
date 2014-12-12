@@ -283,11 +283,11 @@ public class Common {
 		}
 		 
 		 if (cName.equals("icon_entertainment.png")) {
-			 return 31;
+			 return 31-1;
 		}
 		 
 		 if (cName.equals("icon_utilities_gas.png") || cName.equals("utility_gas.png")) {
-			 return 71;
+			 return 71-1;
 		 }
 		 
 		 if ( cName.equals("medicare.png") || cName.equals("SDI.png") || cName.equals("soc-sec.png") || cName.equals("tax-other.png") || cName.equals("tax-property.png") || cName.equals("tax-state.png") ) {

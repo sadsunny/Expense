@@ -97,6 +97,8 @@ public class MainActivity extends BaseHomeActivity implements
 	private LinearLayout mAccountLinearLayout;
 	private LinearLayout mReportLinearLayout;
 	private LinearLayout mBillsLinearLayout;
+	private LinearLayout mBudgetLinearLayout;
+	
 	private View choose_view1;
 	private View choose_view2;
 	private View choose_view3;

@@ -120,7 +120,11 @@ public class BudgetTemplateTable {
 			
 			uuid = iRecord.getString("uuid");
 			budgettemplate_category =  iRecord.getString("budgettemplate_category");
-			budgettemplate_isrollover = (int) iRecord.getLong("budgettemplate_isrollover");
+			
+			if (iRecord.hasField("budgettemplate_isrollover")) {
+				budgettemplate_isrollover = (int) iRecord.getLong("budgettemplate_isrollover");
+			}
+			
 			budgettemplate_isnew = (int) iRecord.getLong("budgettemplate_isnew");
 			dateTime = iRecord.getDate("dateTime");
 			state = iRecord.getString("state");

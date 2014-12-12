@@ -50,11 +50,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint.Align;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -101,6 +104,8 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 	private ArrayList<String> labelArrayList;
 	private TextView date1;
 	private TextView date2;
+	private TextView testTextView;
+	
 	private ListView mListView;
 	private Button changeButton;
 	private List<Map<String, Object>> mCategoryDataList;
@@ -122,6 +127,7 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 	private long startDate;
 	private long endDate;
 	private final static long DAYMILLIS = 86400000L - 1L;
+	private double max = 0;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -142,7 +148,7 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 						+ MEntity.turnToDateString(MainActivity.endDate);
 				date1.setText(dateString);
 				date2.setText(dateString);
-
+				
 				pieLayout.removeAllViews();
 				DefaultRenderer renderer = buildCategoryRenderer();
 				pChart = (GraphicalView) ChartFactory.getDoughnutChartView(
@@ -220,6 +226,8 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 		pieLayout = (LinearLayout) view.findViewById(R.id.PieChartLayout);
 		date1 = (TextView) view.findViewById(R.id.date1);
 		date2 = (TextView) view.findViewById(R.id.date2);
+		testTextView = (TextView) view.findViewById(R.id.test_txt);
+		
 		mListView = (ListView) view.findViewById(R.id.mListView);
 		changeButton = (Button) view.findViewById(R.id.change_btn);
 
@@ -530,16 +538,31 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 		XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 
 		XYSeries series = new XYSeries("Expense");
+		max = expenseArrayList.get(0);
+		
 		for (int k = 0; k < expenseArrayList.size(); k++) {
-
-			series.add(k, expenseArrayList.get(k));
+			
+			double  everyDouble = expenseArrayList.get(k);
+			
+			
+			if (max < everyDouble) {
+				max = everyDouble;
+			}
+			
+			series.add(k, everyDouble);
+			
 		}
 		dataset.addSeries(series);
 
 		series = new XYSeries("Income");
 		for (int k = 0; k < incomeArrayList.size(); k++) {
 
-			series.add(k, incomeArrayList.get(k));
+			double  everyDouble = incomeArrayList.get(k);
+			series.add(k, everyDouble);
+			
+			if (max < everyDouble) {
+				max = everyDouble;
+			}
 		}
 		dataset.addSeries(series);
 
@@ -548,15 +571,25 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 
 	public XYMultipleSeriesRenderer getRenderer(ArrayList<String> xLable) {
 
+		String maxTextString = String.valueOf(max);
+		
+		testTextView.setTextSize( MEntity.dip2px(mActivity, 5));
+		testTextView.setText(maxTextString);
+		
+		
+		TextPaint paint = testTextView.getPaint();
+		Rect rect = new Rect();
+		paint.getTextBounds(maxTextString, 0, maxTextString.length(), rect);
+		
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		renderer.setAxisTitleTextSize(16);// 设置坐标轴标题文本大小
 		renderer.setChartTitleTextSize(20); // 设置图表标题文本大小
-		renderer.setLabelsTextSize(18); // 设置轴标签文本大小
-		renderer.setLegendTextSize(18); // 设置图例文本大小
+		renderer.setLabelsTextSize( MEntity.dip2px(mActivity, 9) ); // 设置轴标签文本大小
+		renderer.setLegendTextSize(MEntity.dip2px(mActivity, 7)); // 设置图例文本大小
 		renderer.setXLabelsColor(Color.parseColor("#acadb2"));
 		renderer.setYLabelsColor(0,Color.parseColor("#acadb2"));
 		renderer.setMargins(new int[] { MEntity.dip2px(mActivity, 10),
-				MEntity.dip2px(mActivity, 40), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
+				(int)(rect.width()/1.3), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
 		renderer.setApplyBackgroundColor(true);
 		renderer.setBackgroundColor(Color.WHITE);
 		renderer.setMarginsColor(Color.WHITE);

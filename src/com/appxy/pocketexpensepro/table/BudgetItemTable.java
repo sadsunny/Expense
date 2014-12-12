@@ -128,9 +128,15 @@ public class BudgetItemTable {
 			
 			if ( iRecord.hasField("budgetitem_enddate")) {
 			budgetitem_enddate = iRecord.getDate("budgetitem_enddate");
+			}else{
+				budgetitem_enddate = new Date();
+			}
+				
+			
+			if (iRecord.hasField("budgetitem_rolloveramount")) {
+				budgetitem_rolloveramount = iRecord.getDouble("budgetitem_rolloveramount");
 			}
 			
-			budgetitem_rolloveramount = iRecord.getDouble("budgetitem_rolloveramount");
 			dateTime = iRecord.getDate("dateTime");
 			state = iRecord.getString("state");
 			

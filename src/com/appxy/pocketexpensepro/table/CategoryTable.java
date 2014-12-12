@@ -130,8 +130,12 @@ public class CategoryTable {
 					}
 					
 				}else {
+					
+					   List<Map<String, Object>> mNameList= CategoryDao.checkCategoryByName(context, category_categoryname);
+					   if (mNameList.size() <= 0) {
 					   CategoryDao.insertCategoryAll(context, category_categoryname, ConversionType(category_categorytype), Common.positionCategory(category_iconname), category_issystemrecord, category_isdefault, dateTime.getTime(), state, uuid);
-				}
+					  }
+				  }
 			}
 			
 		}
@@ -288,6 +292,17 @@ public class CategoryTable {
 		DbxTable.QueryResult results = mTable.query(queryParams);
 		Iterator<DbxRecord> it = results.iterator();
 
+//		if (thisFields.hasField("category_categoryname")) {
+//			DbxFields queryCaName = new DbxFields(); // 判断改名字的Category的个数
+//			queryCaName.set("category_categoryname", thisFields.getString("category_categoryname"));
+//			DbxTable.QueryResult nameResults = mTable.query(queryCaName);
+//			int  resultsCount = nameResults.count();
+//			if (resultsCount >= 2) {
+//				
+//			}
+//		}
+//		
+		
 		if (it.hasNext()) {
 			DbxRecord firstResult = it.next();
 			if (firstResult.getDate("dateTime").getTime() <= thisFields.getDate(
@@ -303,8 +318,9 @@ public class CategoryTable {
 		} else {
 			mTable.insert(thisFields);
 		}
+		
 	}
 
-	}
+  }
 
 }

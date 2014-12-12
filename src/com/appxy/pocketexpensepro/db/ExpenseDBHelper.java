@@ -356,12 +356,11 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 			if (ruleUUId != null) {
 				  ep_billItemString1 = DbDao.selectBillRuleUUid(db, billItemHasBillRule)+" "+turnMilltoDate(ep_billDueDate) ;
 			}
-					 
+			
 			if (_id > 0) {
+				Log.e("mtag", "ep_billItemString1"+ep_billItemString1);
 				DbDao.updateEP_BillItem(db, _id, 1+"", MEntity.getUUID(), syncTime, ep_billItemString1);
 			} 
-			
-			
 		}
 		
 	}

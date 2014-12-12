@@ -112,6 +112,30 @@ public class CategoryDao {
 		return mList;
 	}
 	
+	public static List<Map<String, Object>> checkCategoryByName(Context context,
+			String categoryName) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime, a.uuid from Category a where a.categoryName = " + "'"+categoryName+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			String uuid = mCursor.getString(1);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mMap.put("uuid", uuid);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	public static long updateCategoryAll(Context context,String categoryName,
 			int categoryType, int iconName, int isSystemRecord,  int isDefault, long dateTime, String state, String uuid) {
 		SQLiteDatabase db = getConnection(context);

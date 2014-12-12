@@ -33,12 +33,14 @@ import android.app.ActionBar.LayoutParams;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.Paint.Align;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -95,6 +97,8 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 	private List<Map<String, Object>> mExpenseData;
 	private List<Map<String, Object>> mIncomeData;
 	private int rangeType =  0;
+	private double max = 0;
+	private TextView testTextView;
 	
 	private final static long DAYMILLIS = 86400000L - 1L;
 	
@@ -171,6 +175,7 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 		mExpenseData = new ArrayList<Map<String,Object>>();
 		mIncomeData = new ArrayList<Map<String,Object>>();
 		
+		testTextView = (TextView) view.findViewById(R.id.test_txt);
 		changeButton = (Button) view.findViewById(R.id.change_btn);
 		dateTextView  = (TextView) view.findViewById(R.id.date_txt);
 		lineLayout = (LinearLayout) view.findViewById(R.id.LineChartLayout);
@@ -245,9 +250,17 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 			series = new XYSeries("Income");
 		}
 		
+		max = dataList.get(0);
 		for (int k = 0; k < dataList.size(); k++) {
 
-			series.add(k, dataList.get(k));
+			double  everyDouble = dataList.get(k);
+			
+			series.add(k, everyDouble);
+
+			if (max < everyDouble) {
+				max = everyDouble;
+			}
+			
 		}
 		dataset.addSeries(series);
 
@@ -255,16 +268,26 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 	}
 
 	public XYMultipleSeriesRenderer getRenderer(ArrayList<String> xLable) {
-
+		
+      String maxTextString = String.valueOf(max);
+		
+		testTextView.setTextSize( MEntity.dip2px(mActivity, 5));
+		testTextView.setText(maxTextString);
+		
+		
+		TextPaint paint = testTextView.getPaint();
+		Rect rect = new Rect();
+		paint.getTextBounds(maxTextString, 0, maxTextString.length(), rect);
+		
 		XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 		renderer.setAxisTitleTextSize(16);// 设置坐标轴标题文本大小
 		renderer.setChartTitleTextSize(20); // 设置图表标题文本大小
-		renderer.setLabelsTextSize(18); // 设置轴标签文本大小
-		renderer.setLegendTextSize(18); // 设置图例文本大小
+		renderer.setLabelsTextSize(MEntity.dip2px(mActivity, 9)); // 设置轴标签文本大小
+		renderer.setLegendTextSize(MEntity.dip2px(mActivity, 7)); // 设置图例文本大小
 		renderer.setXLabelsColor(Color.parseColor("#acadb2"));
 		renderer.setYLabelsColor(0,Color.parseColor("#acadb2"));
 		renderer.setMargins(new int[] { MEntity.dip2px(mActivity, 10),
-				MEntity.dip2px(mActivity,40), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
+				(int)(rect.width()/1.3), MEntity.dip2px(mActivity, 8), 0 }); // 设置4边留白上左下右
 		renderer.setApplyBackgroundColor(true);
 		renderer.setBackgroundColor(Color.WHITE);
 		renderer.setMarginsColor(Color.WHITE);
@@ -272,7 +295,7 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 		renderer.setShowGrid(true);
 		renderer.setPanEnabled(true, false);// 设置XY轴的滑动
 		renderer.setYLabelsAlign(Align.RIGHT);
-//		renderer.addYTextLabel(1, "label");
+		
 		
 		XYSeriesRenderer r = new XYSeriesRenderer();
 		FillOutsideLine fill = new FillOutsideLine(
@@ -285,6 +308,7 @@ public class ReportCashFragment extends Fragment implements OnSyncFinishedListen
 			
 			fill.setColor(Color.argb(39, 243, 61, 36));
 			r.addFillOutsideLine(fill);
+			
 			renderer.addSeriesRenderer(r);
 			
 		} else {

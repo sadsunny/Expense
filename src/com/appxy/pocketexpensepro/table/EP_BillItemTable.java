@@ -328,15 +328,20 @@ public class EP_BillItemTable {
 			return nowMillis;
 		}
 
+		public String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的月日年
+			SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(milliSeconds);
+			return formatter.format(calendar.getTime());
+		}
+		
 
 		public void setEP_BillItemData(Map<String, Object> mMap) {
 
 			String billRuleUUID = SyncDao.selectBillRuleUUid(context,
 					Integer.parseInt( (String) mMap.get("billitemhasbillrule")) ); // 获取UUID
 			billitemhasbillrule = billRuleUUID;
-			billitem_ep_billitemstring1 = billRuleUUID+" "
-					+ ((String) mMap.get("billitem_ep_billitemstring1"))
-							.split(" ")[1];
+			
 			uuid = (String) mMap.get("uuid");
 
 			long billitemduedatenew = (Long) mMap
@@ -345,8 +350,18 @@ public class EP_BillItemTable {
 
 			billitemhascategory = SyncDao.selectCategoryUUid(context,
 					Integer.parseInt( (String) mMap.get("billitemhascategory")) );
-			billitem_ep_billitemduedate = MEntity
-					.getMilltoDateFormat(billitemduedatenew);
+			billitem_ep_billitemduedate = MEntity.getMilltoDateFormat(billitemduedatenew);
+			
+			String ep_billItemString1 = (String) mMap.get("billitem_ep_billitemstring1");
+			if (ep_billItemString1 != null) {
+				billitem_ep_billitemstring1 = billRuleUUID+" "
+						+ (ep_billItemString1)
+								.split(" ")[1];
+			}else {
+				billitem_ep_billitemstring1 = billRuleUUID+" "
+						+ turnMilltoDate(billitemduedatenew);
+			}
+			
 			billitem_ep_billitemamount = (Double) mMap
 					.get("billitem_ep_billitemamount");
 			billitem_ep_billitemname = (String) mMap

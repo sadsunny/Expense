@@ -645,12 +645,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 		for (Map<String, Object> iMap : groupDataList) {
 			
-			long dateTime = (Long) iMap.get("dateTime");
+			long dateTime = (Long) iMap.get("dateTime"); //group的时间
 			List<Map<String, Object>> childrenDataList = new ArrayList<Map<String, Object>>();
 			for (Map<String, Object> mMap : mData) {
 				long mDateTime = (Long) mMap.get("dateTime");
 				if (getFirstDayOfMonthMillis(dateTime) <= mDateTime
-						&& mDateTime <= getLastDayOfMonthMillis(dateTime)) {
+						&& mDateTime <= ( getLastDayOfMonthMillis(dateTime)+ 24*60*60*1000 -1)) { //最后一天不显示的bug
 					childrenDataList.add(mMap);
 				}
 			}
