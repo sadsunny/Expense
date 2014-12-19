@@ -111,6 +111,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	static final int RC_REQUEST = 10001;
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
+	private int isAutoClear = 0;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -221,6 +222,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		_id = intent.getIntExtra("_id", 0);
 		if (_id <= 0) {
 			finish();
+		}
+		List<Map<String, Object>> mList = AccountDao.selectAccountById(this, _id);
+		if (mList.size()  > 0 ) {
+			isAutoClear = (Integer) mList.get(0).get("autoClear");
+		} else {
+			isAutoClear = 0;
 		}
 		accName = intent.getStringExtra("accName");
 		
@@ -1022,6 +1029,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		        
 			Intent intent = new Intent();
 			intent.putExtra("acount_id", _id);
+			intent.putExtra("isAutoClear", isAutoClear);
 			intent.setClass(AccountToTransactionActivity.this, CreatTransactonByAccountActivity.class);
 			startActivityForResult(intent, 6);
 			

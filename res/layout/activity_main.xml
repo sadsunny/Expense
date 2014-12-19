@@ -183,7 +183,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="25dp"
-                android:src="@drawable/report" />
+                android:src="@drawable/budget" />
 
             <TextView
                 android:id="@+id/budget_text"

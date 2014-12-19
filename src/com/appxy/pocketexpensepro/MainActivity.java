@@ -36,6 +36,7 @@ import com.appxy.pocketexpensepro.overview.MonthViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.OverViewFragmentMonth;
 import com.appxy.pocketexpensepro.overview.OverviewFragment;
 import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
+import com.appxy.pocketexpensepro.overview.budgets.BudgetFragment;
 import com.appxy.pocketexpensepro.passcode.Activity_Start;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.reports.ReportCashFragment;
@@ -103,6 +104,7 @@ public class MainActivity extends BaseHomeActivity implements
 	private View choose_view2;
 	private View choose_view3;
 	private View choose_view4;
+	private View choose_view5;
 	
 	private android.support.v4.app.FragmentManager fragmentManager;
 	private OnUpdateListListener onUpdateListListener;
@@ -187,7 +189,6 @@ public class MainActivity extends BaseHomeActivity implements
 					// TODO Auto-generated method stub
 					if (!result.isSuccess()) {
 	                    // Oh noes, there was a problem.
-//	                    complain("Problem setting up in-app billing: " + result);
 	                    return;
 	                }
 					
@@ -212,10 +213,13 @@ public class MainActivity extends BaseHomeActivity implements
 		mAccountLinearLayout = (LinearLayout) findViewById(R.id.account_linearlayout);
 		mReportLinearLayout = (LinearLayout) findViewById(R.id.report_linearLayout);
 		mBillsLinearLayout = (LinearLayout) findViewById(R.id.bills_linearLayout);
+		mBudgetLinearLayout = (LinearLayout) findViewById(R.id.budget_linearLayout);
+		
 		layoutArrayList.add(mOverViewLinearLayout);
 		layoutArrayList.add(mAccountLinearLayout);
 		layoutArrayList.add(mReportLinearLayout);
 		layoutArrayList.add(mBillsLinearLayout);
+		layoutArrayList.add(mBudgetLinearLayout);
 		
 		fragmentManager = getSupportFragmentManager();
 		
@@ -223,10 +227,12 @@ public class MainActivity extends BaseHomeActivity implements
 		choose_view2 = (View) findViewById(R.id.choose_view2);
 		choose_view3 = (View) findViewById(R.id.choose_view3);
 		choose_view4 = (View) findViewById(R.id.choose_view4);
+		choose_view5 = (View) findViewById(R.id.choose_view5);
 		viewArrayList.add(choose_view1);
 		viewArrayList.add(choose_view2);
 		viewArrayList.add(choose_view3);
 		viewArrayList.add(choose_view4);
+		viewArrayList.add(choose_view5);
 		
 //		 new Thread(new Runnable() {
 //				
@@ -257,9 +263,14 @@ public class MainActivity extends BaseHomeActivity implements
 //				getActionBar().setTitle(mTitle);
 				invalidateOptionsMenu(); // creates call to
 											// onPrepareOptionsMenu()
-				if (mItemPosition == 1) {
+				if (mItemPosition == 1 || mItemPosition == 4) {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-					getActionBar().setTitle("Accounts");
+					if (mItemPosition == 1) {
+						getActionBar().setTitle("Accounts");
+					}else if (mItemPosition == 4) {
+						getActionBar().setTitle("Budget");
+					}
+					
 				} else {
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 					actionBar.setDisplayShowTitleEnabled(false);
@@ -283,7 +294,8 @@ public class MainActivity extends BaseHomeActivity implements
 		mAccountLinearLayout.setOnClickListener(mClickListener);
 		mReportLinearLayout.setOnClickListener(mClickListener);
 		mBillsLinearLayout.setOnClickListener(mClickListener);
-
+		mBudgetLinearLayout.setOnClickListener(mClickListener);
+		
 		mDrawerLayout.closeDrawer(mLinearLayout);
 
 		Calendar calendar = Calendar.getInstance();
@@ -561,6 +573,39 @@ public class MainActivity extends BaseHomeActivity implements
 				}
 
 				break;
+			case R.id.budget_linearLayout:
+				
+				mDrawerLayout.closeDrawer(mLinearLayout);
+				
+				if (mItemPosition == 4) {
+					getActionBar().setTitle("Budget");
+					actionBar.setDisplayShowTitleEnabled(true);
+				} else {
+
+					BudgetFragment budgetFragment = new BudgetFragment();
+					FragmentTransaction fragmentTransaction2 = fragmentManager
+							.beginTransaction();
+					fragmentTransaction2.replace(R.id.content_frame,
+							budgetFragment);
+					fragmentTransaction2.commit();
+					
+					mItemPosition = 4;
+					actionBar.setDisplayHomeAsUpEnabled(true);
+					actionBar.setDisplayShowTitleEnabled(true);
+					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+				}
+				
+				for (int i = 0; i < layoutArrayList.size(); i++) {
+					if (i == mItemPosition) {
+						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
+						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
+					} else {
+						layoutArrayList.get(i).setBackgroundResource(R.color.white);
+						viewArrayList.get(i).setBackgroundResource(R.color.white);
+					}
+				}
+				
+				break;
 			default:
 				for (int i = 0; i < layoutArrayList.size(); i++) {
 					if (i == 0) {
@@ -670,7 +715,7 @@ public class MainActivity extends BaseHomeActivity implements
 		menu.findItem(R.id.action_settings).setVisible(drawerOpen);
 //		actionBar.setDisplayShowTitleEnabled(drawerOpen);
 		
-		if (mItemPosition == 0 || mItemPosition == 2 ) {
+		if (mItemPosition == 0 || mItemPosition == 2 || mItemPosition == 4) {
 			menu.findItem(R.id.action_add).setVisible(false);
 			
 			if (drawerOpen) {

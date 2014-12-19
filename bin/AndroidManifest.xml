@@ -469,6 +469,14 @@
             android:screenOrientation="portrait" >
         </activity>
         
+          <activity
+            android:name="com.appxy.pocketexpensepro.overview.related.RelatedActivity"
+            android:label="@string/related"
+            android:logo="@drawable/logo_inside"
+            android:screenOrientation="portrait" >
+        </activity>
+        
+        
     </application>
 
 </manifest>

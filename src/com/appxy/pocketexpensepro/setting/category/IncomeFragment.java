@@ -131,6 +131,8 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 					.get(childPosition).get("_id");
 			String uuid = (String) childrenAllDataList.get(groupPosition)
 					.get(childPosition).get("uuid");
+			int categoryType = (Integer) childrenAllDataList.get(groupPosition)
+					.get(childPosition).get("categoryType");
 			
 			if (0 <= cId && cId <= 49) {
 				return true;
@@ -139,6 +141,7 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 				Intent intent = new Intent();
 				intent.putExtra("_id", cId);
 				intent.putExtra("uuid", uuid);
+				intent.putExtra("categoryType", categoryType);
 				intent.setClass(getActivity(), EditCategoryActivity.class);
 				startActivityForResult(intent, 11);
 				return true;
@@ -155,6 +158,7 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 			// TODO Auto-generated method stub
 			int cId = (Integer) groupDataList.get(groupPosition).get("_id");
 			String uuid =  (String) groupDataList.get(groupPosition).get("uuid");
+			int categoryType = (Integer) groupDataList.get(groupPosition).get("categoryType");
 			
 			if (0 <= cId && cId <= 49) {
 				return true;
@@ -162,6 +166,7 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 				Intent intent = new Intent();
 				intent.putExtra("_id", cId);
 				intent.putExtra("uuid", uuid);
+				intent.putExtra("categoryType", categoryType);
 				intent.setClass(getActivity(), EditCategoryActivity.class);
 				startActivityForResult(intent, 11);
 				return true;

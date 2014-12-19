@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.appxy.pocketexpensepro.R.id;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 
 public class OverViewDao {
@@ -383,6 +384,61 @@ public class OverViewDao {
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.* from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.category = b._id and b.categoryName like '"+ categorName +"%' and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			String uuid = mCursor.getString(16);
+
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("notes", notes);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("index", 0);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("uuid", uuid);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+public static List<Map<String, Object>> selectTransactionByCategoryId(Context context, int categoryId ) { // 根据category的Id查询transaction
+		
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* from 'Transaction' a , Category b where a.category = b._id and b._id = "+ categoryId +" and a.parTransaction != -1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

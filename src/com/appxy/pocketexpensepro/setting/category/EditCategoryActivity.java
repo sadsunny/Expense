@@ -67,6 +67,7 @@ public class EditCategoryActivity extends BaseHomeActivity {
 		Intent intent = getIntent();
 		_id = intent.getIntExtra("_id", 0);
 		uuid = intent.getStringExtra("uuid");
+		mcheck = intent.getIntExtra("categoryType", 0); 
 		
 		if (_id == 0 || uuid == null) {
 			finish();

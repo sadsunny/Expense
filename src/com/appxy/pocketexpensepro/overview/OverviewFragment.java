@@ -45,6 +45,7 @@ import com.appxy.pocketexpensepro.expinterface.ReturnFragmentListenter;
 import com.appxy.pocketexpensepro.expinterface.TellMainBuyPro;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetsDao;
 import com.appxy.pocketexpensepro.overview.budgets.EditBudgetActivity;
+import com.appxy.pocketexpensepro.overview.related.RelatedActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.reports.ReCashListActivity;
@@ -369,134 +370,6 @@ public class OverviewFragment extends Fragment implements
 		};
 	};
 	
-	//获取价格
-		private void getPrice(){
-			ArrayList<String> skus = new ArrayList<String>();
-			skus.add(Paid_Id_VF);
-			billingservice = mHelper.getService();
-			
-			Bundle querySkus = new Bundle();
-		    querySkus.putStringArrayList("ITEM_ID_LIST", skus);
-			try {
-				Bundle skuDetails = billingservice.getSkuDetails(3, mActivity.getPackageName(),"inapp", querySkus);
-				Log.v("mtest", "skuDetails"+skuDetails);
-				ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
-				Log.v("mtest", "responseList"+responseList);
-				if (null!=responseList) {
-					for (String thisResponse : responseList) {
-			            try {
-							SkuDetails d = new SkuDetails(thisResponse);
-							
-							for (int i = 0; i < sku_list.size(); i++) {
-								if (sku_list.get(i).equals(d.getSku())) {
-									price_list.set(i, d.getPrice());
-								}
-							}
-							iapHandler.sendEmptyMessage(0);
-							
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-			            
-			        }
-				}
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	
-	
-	 IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
-			
-			@Override
-			public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-				// TODO Auto-generated method stub
-				 if (mHelper == null) return;
-				 
-				 if (!result.isSuccess()) {
-		                return;
-		            }
-				 
-				 Purchase premiumPurchase = inv.getPurchase(Paid_Id_VF);
-				
-				 Common.mIsPaid = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
-			     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
-			     SharedPreferences.Editor meditor = sharedPreferences.edit();  
-				 meditor.putBoolean("isPaid",Common.mIsPaid ); 
-				 meditor.commit();
-				 
-				  Log.v("mtest", "查询中的pay状况"+Common.mIsPaid);
-				 if (Common.mIsPaid) {
-					 Log.v("mtest", "查询中出paid设置状态");
-					adsLayout.setVisibility(View.GONE);
-				}
-				 
-			}
-		};
-		
-        void loadIsPaid() { //查询是否支付
-        	
-			    SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);  
-		        Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
-		}
-        
-	    boolean verifyDeveloperPayload(Purchase p) {
-	        String payload = p.getDeveloperPayload();
-	        return true;
-	    }
-	    
-	   public void alert(String message) {
-	        AlertDialog.Builder bld = new AlertDialog.Builder(mActivity);
-	        bld.setMessage(message);
-	        bld.setNeutralButton("OK", null);
-	        bld.create().show();
-	    }
-//	    void complain(String message) {
-//	        Log.e(TAG, "**** Expense Error: " + message);
-//	        alert("Error: " + message);
-//	    }
-	    
-	    // Callback for when a purchase is finished
-	    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
-	    	
-	    	@Override
-	        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
-
-	            // if we were disposed of in the meantime, quit.
-	            if (mHelper == null) return;
-	   			
-	            Log.v("mtest", "*****调用查询queryInventoryAsync*****"+result);
-	             mHelper.queryInventoryAsync(mGotInventoryListener);
-	            
-	            if (!result.isSuccess()) {
-	            	Log.v("mtest", "1结果"+result);
-//	            	complain("Error purchasing: " + result);
-	                return;
-	            }
-	            if (!verifyDeveloperPayload(purchase)) {
-	            	Log.v("mtest", "2结果"+result);
-	                return;
-	            }
-
-	            if (purchase.getSku().equals(Paid_Id_VF)) {
-	                // bought the premium upgrade!
-	                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
-	            	Log.v("mtest", "3结果"+result);
-	                alert("Thank you for upgrading to pro!");
-	             Common.mIsPaid =true;
-	   		     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
-	   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
-	   			 meditor.putBoolean("isPaid",Common.mIsPaid ); 
-	   			 meditor.commit();
-	   			 adsLayout.setVisibility(View.GONE);
-	            }
-	        }
-
-		
-	    };
-
 
 	@SuppressLint("ResourceAsColor")
 	@Override
@@ -883,6 +756,10 @@ public class OverviewFragment extends Fragment implements
 			final int _id = (Integer) mDataList.get(arg2).get("_id");
 			final String uuid = (String) mDataList.get(arg2).get("uuid");
 			
+			final int theCategory = (Integer) mDataList.get(arg2).get("category");
+			final int theExpenseAccount = (Integer) mDataList.get(arg2).get("expenseAccount");
+			final int theIncomeAccount = (Integer) mDataList.get(arg2).get("incomeAccount");
+			
 			final Map<String, Object> mMap = mDataList.get(arg2);
 			final int parTransaction = (Integer) mDataList.get(arg2).get(
 					"parTransaction");
@@ -890,7 +767,7 @@ public class OverviewFragment extends Fragment implements
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,
 					null);
 
-			String[] data = { "Duplicate", "Delete" };
+			String[] data = { "Related" ,"Duplicate", "Delete" };
 			ListView diaListView = (ListView) dialogView
 					.findViewById(R.id.dia_listview);
 			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
@@ -902,8 +779,15 @@ public class OverviewFragment extends Fragment implements
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
 					// TODO Auto-generated method stub
-
 					if (arg2 == 0) {
+						Intent intent = new Intent();
+						intent.putExtra("categoryId", theCategory);
+						intent.putExtra("expenseAccountId", theExpenseAccount);
+						intent.putExtra("incomeAccountId", theIncomeAccount);
+						intent.setClass(mActivity, RelatedActivity.class);
+						startActivityForResult(intent, 15);
+						alertDialog.dismiss();
+					}else if (arg2 == 1) {
 
 						Calendar c = Calendar.getInstance(); // 处理为当天固定格式时间
 						Date date = new Date(c.getTimeInMillis());
@@ -944,7 +828,7 @@ public class OverviewFragment extends Fragment implements
 						onBackTimeListener.OnBackTime(
 								MainActivity.selectedDate, viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 
-					} else if (arg2 == 1) {
+					} else if (arg2 == 2) {
 
 						long row = AccountDao.deleteTransaction(mActivity, _id, uuid, MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 						if (parTransaction == -1) {
@@ -1114,6 +998,15 @@ public class OverviewFragment extends Fragment implements
 			}
 			break;
 			
+		case 15:
+
+			if (data != null) {
+
+				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
+						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+			}
+			break;
+			
 		}
 		
 		if (mHelper == null) return;
@@ -1150,6 +1043,136 @@ public class OverviewFragment extends Fragment implements
 
 	}
 
+	
+	//获取价格
+			private void getPrice(){
+				ArrayList<String> skus = new ArrayList<String>();
+				skus.add(Paid_Id_VF);
+				billingservice = mHelper.getService();
+				
+				Bundle querySkus = new Bundle();
+			    querySkus.putStringArrayList("ITEM_ID_LIST", skus);
+				try {
+					Bundle skuDetails = billingservice.getSkuDetails(3, mActivity.getPackageName(),"inapp", querySkus);
+					Log.v("mtest", "skuDetails"+skuDetails);
+					ArrayList<String> responseList = skuDetails.getStringArrayList("DETAILS_LIST");
+					Log.v("mtest", "responseList"+responseList);
+					if (null!=responseList) {
+						for (String thisResponse : responseList) {
+				            try {
+								SkuDetails d = new SkuDetails(thisResponse);
+								
+								for (int i = 0; i < sku_list.size(); i++) {
+									if (sku_list.get(i).equals(d.getSku())) {
+										price_list.set(i, d.getPrice());
+									}
+								}
+								iapHandler.sendEmptyMessage(0);
+								
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+				            
+				        }
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		
+		
+		 IabHelper.QueryInventoryFinishedListener mGotInventoryListener = new IabHelper.QueryInventoryFinishedListener() {
+				
+				@Override
+				public void onQueryInventoryFinished(IabResult result, Inventory inv) {
+					// TODO Auto-generated method stub
+					 if (mHelper == null) return;
+					 
+					 if (!result.isSuccess()) {
+			                return;
+			            }
+					 
+					 Purchase premiumPurchase = inv.getPurchase(Paid_Id_VF);
+					
+					 Common.mIsPaid = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
+				     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+				     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+					 meditor.putBoolean("isPaid",Common.mIsPaid ); 
+					 meditor.commit();
+					 
+					  Log.v("mtest", "查询中的pay状况"+Common.mIsPaid);
+					 if (Common.mIsPaid) {
+						 Log.v("mtest", "查询中出paid设置状态");
+						adsLayout.setVisibility(View.GONE);
+					}
+					 
+				}
+			};
+			
+	        void loadIsPaid() { //查询是否支付
+	        	
+				    SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);  
+			        Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+			}
+	        
+		    boolean verifyDeveloperPayload(Purchase p) {
+		        String payload = p.getDeveloperPayload();
+		        return true;
+		    }
+		    
+		   public void alert(String message) {
+		        AlertDialog.Builder bld = new AlertDialog.Builder(mActivity);
+		        bld.setMessage(message);
+		        bld.setNeutralButton("OK", null);
+		        bld.create().show();
+		    }
+//		    void complain(String message) {
+//		        Log.e(TAG, "**** Expense Error: " + message);
+//		        alert("Error: " + message);
+//		    }
+		    
+		    // Callback for when a purchase is finished
+		    IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener = new IabHelper.OnIabPurchaseFinishedListener() {
+		    	
+		    	@Override
+		        public void onIabPurchaseFinished(IabResult result, Purchase purchase) {
+
+		            // if we were disposed of in the meantime, quit.
+		            if (mHelper == null) return;
+		   			
+		            Log.v("mtest", "*****调用查询queryInventoryAsync*****"+result);
+		             mHelper.queryInventoryAsync(mGotInventoryListener);
+		            
+		            if (!result.isSuccess()) {
+		            	Log.v("mtest", "1结果"+result);
+//		            	complain("Error purchasing: " + result);
+		                return;
+		            }
+		            if (!verifyDeveloperPayload(purchase)) {
+		            	Log.v("mtest", "2结果"+result);
+		                return;
+		            }
+
+		            if (purchase.getSku().equals(Paid_Id_VF)) {
+		                // bought the premium upgrade!
+		                Log.d(TAG, "Purchase is premium upgrade. Congratulating user.");
+		            	Log.v("mtest", "3结果"+result);
+		                alert("Thank you for upgrading to pro!");
+		             Common.mIsPaid =true;
+		   		     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+		   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
+		   			 meditor.putBoolean("isPaid",Common.mIsPaid ); 
+		   			 meditor.commit();
+		   			 adsLayout.setVisibility(View.GONE);
+		            }
+		        }
+
+			
+		    };
+
+		    
 	@Override
 	public void OnChangeState(int state) {
 		// TODO Auto-generated method stub

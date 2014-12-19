@@ -116,7 +116,6 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 					   parentString1 = mButton.getText().toString();
 				}
 				
-				
 				if (mCategoryString == null
 						|| mCategoryString.trim().length() == 0
 						|| mCategoryString.trim().equals("")) {
@@ -320,12 +319,12 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 			if (temp[0].equals(cName)) {
 				mCheck = false;
 			}
+			
 			if (temp.length > 1) {
 				if (temp[1].equals(cName)) {
 					mCheck = false;
 				}
 			}
-
 		}
 
 		return mCheck;

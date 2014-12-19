@@ -37,8 +37,10 @@
                     android:completionThreshold="1"
                     android:textColor="@color/text_black1"
                     android:inputType="textCapWords|textAutoCorrect"
-                    android:gravity="bottom"
-                    />
+                    android:gravity="bottom">
+                    
+                      
+                    </AutoCompleteTextView>
 
             </LinearLayout>
 
@@ -67,16 +69,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="number"
                         android:maxLength="13"
                         android:minHeight="48dip"
                         android:gravity="bottom"
                         android:singleLine="true"
+                        android:inputType="none"
                         android:text="@string/zero_label" 
                         android:textColor="@color/text_black1">
-
-
-                        <requestFocus />
+                      
                     </EditText>
                 </LinearLayout>
 
@@ -277,10 +277,10 @@
         
     </ScrollView>
     
-     <android.inputmethodservice.KeyboardView
+     <com.appxy.pocketexpensepro.keyboard.CustomKeyboardView
         android:id="@+id/keyboardview"
         android:layout_alignParentBottom="true"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"

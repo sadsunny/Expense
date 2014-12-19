@@ -173,6 +173,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 		
 		Intent intent = getIntent();
 		int account_id = intent.getIntExtra("acount_id", 0);
+		isCleared = intent.getIntExtra("isAutoClear", 1);
+		
 	    if (account_id <= 0) {
 			finish();
 		}
@@ -224,7 +226,6 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 				autoListAdapter = new AutoListAdapter(
 						CreatTransactonByAccountActivity.this, mCursor, true);
 				payeeEditText.setAdapter(autoListAdapter);
-				Log.v("mtest", "mCursor11" + mCursor);
 				sKey = s;
 
 			}
@@ -334,6 +335,13 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 		adapterSpinner
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		clearSpinner.setAdapter(adapterSpinner);
+
+		if ( isCleared == 0) {
+			clearSpinner.setSelection(1);
+		} else if ( isCleared  == 1) {
+			clearSpinner.setSelection(0);
+		}
+		
 		clearSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
