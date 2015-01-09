@@ -84,50 +84,55 @@
                 android:textColor="@color/main_text_black"
                 android:textSize="17.3dp" />
         </LinearLayout>
+        
+        
 
         <View
             android:id="@+id/devider2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/main_divide" />
-
-        <LinearLayout
-            android:id="@+id/bills_linearLayout"
+        
+        
+            <LinearLayout
+            android:id="@+id/budget_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/main_choose_gray"
             android:orientation="horizontal" >
 
             <View
-                android:id="@+id/choose_view4"
+                android:id="@+id/choose_view5"
                 android:layout_width="3dp"
                 android:layout_height="match_parent" />
 
             <ImageView
-                android:id="@+id/bills_image"
+                android:id="@+id/budget_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="25dp"
-                android:src="@drawable/bill_main" />
+                android:src="@drawable/budget" />
 
             <TextView
-                android:id="@+id/bills_text"
+                android:id="@+id/budget_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:text="@string/bills"
+                android:text="@string/budget"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/main_text_black"
                 android:textSize="17.3sp" />
         </LinearLayout>
 
         <View
-            android:id="@+id/devider3"
+            android:id="@+id/devider5"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/main_divide" />
+        
+
+      
 
         <LinearLayout
             android:id="@+id/report_linearLayout"
@@ -166,42 +171,45 @@
             android:layout_height="1dp"
             android:background="@color/main_divide" />
         
-        <LinearLayout
-            android:id="@+id/budget_linearLayout"
+          <LinearLayout
+            android:id="@+id/bills_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="56dp"
+            android:background="@color/main_choose_gray"
             android:orientation="horizontal" >
 
             <View
-                android:id="@+id/choose_view5"
+                android:id="@+id/choose_view4"
                 android:layout_width="3dp"
                 android:layout_height="match_parent" />
 
             <ImageView
-                android:id="@+id/budget_image"
+                android:id="@+id/bills_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="25dp"
-                android:src="@drawable/budget" />
+                android:src="@drawable/bill_main" />
 
             <TextView
-                android:id="@+id/budget_text"
+                android:id="@+id/bills_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="15dp"
-                android:text="@string/budget"
+                android:text="@string/bills"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="@color/main_text_black"
                 android:textSize="17.3sp" />
         </LinearLayout>
 
         <View
-            android:id="@+id/devider5"
+            android:id="@+id/devider3"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/main_divide" />
+        
+    
         
     </LinearLayout>
 

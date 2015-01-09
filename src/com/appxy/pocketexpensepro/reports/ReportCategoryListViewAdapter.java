@@ -77,7 +77,7 @@ public class ReportCategoryListViewAdapter extends BaseAdapter {
 		if (convertView == null) {
 			viewholder = new ViewHolder();
 
-			convertView = mInflater.inflate(R.layout.report_category_item,
+			convertView = mInflater.inflate(R.layout.report_category_itemv2,
 					null);
 
 			viewholder.colorView = (View) convertView.findViewById(R.id.color_view);

@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.passcode;
 
 
+import com.crashlytics.android.Crashlytics;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.ParseException;
@@ -74,10 +75,11 @@ public class Activity_Start extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		Crashlytics.start(this);
 		setContentView(R.layout.activity_start);
 		 
 		 if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
-			 Log.v("mtest", "判定NotificationService");
+			 Log.v("mtest", "?��?NotificationService");
 	 		} else {
 	 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 	 	         long firstTime = SystemClock.elapsedRealtime();
@@ -88,7 +90,7 @@ public class Activity_Start extends Activity {
 	 		}
 	         
 	         if (PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
-	        	 Log.v("mtest", "判定PastDueService");
+	        	 Log.v("mtest", "?��?PastDueService");
 	  		} else {
 	  			 pAlarmSender = PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 	  	         long firstTime = SystemClock.elapsedRealtime();
@@ -99,7 +101,7 @@ public class Activity_Start extends Activity {
 	  		}
 	         
 	         try {
-	        	 List<Map<String, Object>> mCategoryList = CategoryDao.selectCategoryById(Activity_Start.this, 1); // 查询一下初始的category还有account,以便触发升级
+	        	 List<Map<String, Object>> mCategoryList = CategoryDao.selectCategoryById(Activity_Start.this, 1); // ??????????category????account,???????
 	 	         List<Map<String, Object>> mAccountList = AccountDao.selectAccountById(Activity_Start.this, 1);
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -180,7 +182,7 @@ public class Activity_Start extends Activity {
 // 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 // 	         long firstTime = SystemClock.elapsedRealtime();
 // 	         //   Schedule the alarm!
-// 	         am = (AlarmManager)getSystemService(ALARM_SERVICE);//锟叫讹拷锟斤拷锟斤拷执锟斤拷一锟斤拷
+// 	         am = (AlarmManager)getSystemService(ALARM_SERVICE);//?��???????????
 // 	         am.set(AlarmManager.RTC_WAKEUP,firstTime, mAlarmSender);
 // 	         am.setRepeating(AlarmManager.RTC_WAKEUP, getZeroTime(), days, mAlarmSender);
 // 		}
@@ -190,7 +192,7 @@ public class Activity_Start extends Activity {
 //  			 pAlarmSender = PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, BillPastDueService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 //  	         long firstTime = SystemClock.elapsedRealtime();
 //  	         //   Schedule the alarm!
-//  	         pm = (AlarmManager)getSystemService(ALARM_SERVICE);//锟叫讹拷锟斤拷锟斤拷执锟斤拷一锟斤拷
+//  	         pm = (AlarmManager)getSystemService(ALARM_SERVICE);//?��???????????
 //  	         pm.set(AlarmManager.RTC_WAKEUP,firstTime, pAlarmSender);
 //  	         pm.setRepeating(AlarmManager.RTC_WAKEUP, getNineTime(), days, pAlarmSender);
 //  		}
@@ -198,14 +200,14 @@ public class Activity_Start extends Activity {
 	}
 	
 	
-     public String getMilltoDate(long milliSeconds) {//锟斤拷锟斤拷锟斤拷转锟斤拷锟缴固讹拷锟斤拷式锟斤拷锟斤拷锟斤拷锟斤拷
+     public String getMilltoDate(long milliSeconds) {//????????????????????????
 			SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(milliSeconds);
 			return formatter.format(calendar.getTime());
 		}
 	  
-	  public long  getNineTime() { //每锟斤拷诺憧�始
+	  public long  getNineTime() { //???????
 			 Date date1=new Date(); 
 			 SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy");
 		     String nowTime = formatter.format(date1);
@@ -217,7 +219,7 @@ public class Activity_Start extends Activity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-		     long nowMillis = c.getTimeInMillis()+nineHours; //锟斤拷取锟斤拷锟斤拷锟斤拷锟斤拷锟秸讹拷应锟侥猴拷锟斤拷锟斤拷锟饺ナ憋拷锟斤拷耄�锟斤拷锟斤拷锟斤拷锟�
+		     long nowMillis = c.getTimeInMillis()+nineHours; //??????????????????????????????????????
 		     return nowMillis;
 }
 	
@@ -233,7 +235,7 @@ public class Activity_Start extends Activity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	     long nowMillis = c.getTimeInMillis()+days; //锟斤拷取锟斤拷锟斤拷锟斤拷锟斤拷锟秸讹拷应锟侥猴拷锟斤拷锟斤拷锟饺ナ憋拷锟斤拷耄�锟斤拷锟斤拷锟斤拷锟�
+	     long nowMillis = c.getTimeInMillis()+days; //??????????????????????????????????????
 	     return nowMillis;
 	}
 	

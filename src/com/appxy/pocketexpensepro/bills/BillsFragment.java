@@ -747,7 +747,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 		
 		if (overDuedata.size() > 0) { 
 			Map<String, Object> map = new HashMap<String, Object>();
-			 map.put("dueString", "PAST DUE");
+			 map.put("dueString", "Overdue");
 			 map.put("dueCount", overDuedata.size());
 			 groupDataList.add(map);
 			 childrenAllDataList.add(overDuedata);
@@ -784,6 +784,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 			String ep_billAmount = (String) iMap.get("ep_billAmount");
 			int indexflag = (Integer) iMap.get("indexflag");
 			BigDecimal b0 = new BigDecimal(ep_billAmount);
+			iMap.put("remain", ep_billAmount);
 			
 			if (indexflag == 0 || indexflag == 1) {
 
@@ -803,6 +804,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 						iMap.put("payState", 2);// 全部支付
 					} else {
 						iMap.put("payState", 1);// 部分支付
+						iMap.put("remain", (remain>0)?remain:(0-remain)+"");
 					}
 
 				} else {
@@ -832,6 +834,7 @@ public class BillsFragment extends Fragment implements OnSyncFinishedListener{
 						iMap.put("payState", 2);
 					} else {
 						iMap.put("payState", 1);
+						iMap.put("remain", (remain>0)?remain:(0-remain)+"");
 					}
 
 				} else {

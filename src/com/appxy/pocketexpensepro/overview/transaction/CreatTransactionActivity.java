@@ -194,7 +194,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_transaction);
 
-		
 		inflater = LayoutInflater.from(CreatTransactionActivity.this);
 		ActionBar mActionBar = getActionBar();
 		
@@ -654,6 +653,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 			case R.id.action_done:
 
+				amountString = amountEditText.getText().toString();
 				try {
 					amountDouble = Double.parseDouble(amountString);
 				} catch (NumberFormatException e) {

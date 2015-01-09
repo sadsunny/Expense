@@ -24,7 +24,9 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.LoadMoreListView;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.AgendaListenerInterface;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.EditSplitActivity;
@@ -72,7 +74,7 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class AccountToTransactionActivity extends BaseHomeActivity {
+public class AccountToTransactionActivity extends BaseHomeActivity implements AgendaListenerInterface{
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
@@ -81,12 +83,14 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 	private int _id;
 	private String accName;
-	private ExpandableListView mExpandableListView;
+	private LoadMoreListView mExpandableListView;
 
 	private List<Map<String, Object>> groupDataList;
 	private List<List<Map<String, Object>>> childrenAllDataList;
 	private thisExpandableListViewAdapter mExpandableListViewAdapter;
 	private List<Map<String, Object>> mDataList;
+	private List<Map<String, Object>> mAllDataList;
+	
 	private NavigationListAdapter mNavigationListAdapter;
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
@@ -112,6 +116,8 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
 	private int isAutoClear = 0;
+	
+	private int  loadSize = 30 ;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -152,8 +158,6 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 					balanceTextView.setText(MEntity.doublepoint2str(banlance+""));
 				}
 				
-				mExpandableListViewAdapter.setAdapterData(groupDataList,
-						childrenAllDataList);
 				mExpandableListViewAdapter.notifyDataSetChanged();
 
 				int groupCount = groupDataList.size();
@@ -242,7 +246,9 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
-
+		mAllDataList =  new ArrayList<Map<String, Object>>();
+		
+		
 		currencyTextView1 = (TextView) findViewById(R.id.currency_txt1);
 		currencyTextView2 = (TextView) findViewById(R.id.currency_txt2);
 		symbolTextView1 =  (TextView) findViewById(R.id.symbol_txt1);
@@ -250,7 +256,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		outstandingTextView = (TextView) findViewById(R.id.outstanding_txt);
 		balanceTextView = (TextView) findViewById(R.id.balance_txt);
 		
-		mExpandableListView = (ExpandableListView) findViewById(R.id.mExpandableListView);
+		mExpandableListView = (LoadMoreListView) findViewById(R.id.mExpandableListView);
+		
+		mExpandableListView.setPullLoadEnable(true);
+		mExpandableListView.setPullRefreshEnable(true);
+		mExpandableListView.setXListViewListener(this);
+		
 		mExpandableListViewAdapter = new thisExpandableListViewAdapter(this,
 				_id);
 		mExpandableListView.setAdapter(mExpandableListViewAdapter);
@@ -259,16 +270,83 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		mExpandableListView.setOnChildClickListener(onChildClickListener);
 		mExpandableListView.setOnItemLongClickListener(onLongClickListener);
 
-		if (mThread == null) {
-			mThread = new Thread(mTask);
-			mThread.start();
-		}
+		mExpandableListViewAdapter.setAdapterData(groupDataList,
+				childrenAllDataList);
+		
+//		if (mThread == null) {
+//			mThread = new Thread(mTask);
+//			mThread.start();
+//		}
+		
+		setData();
 		
 		Intent resultintent = new Intent();
 		resultintent.putExtra("row", 1);
 		setResult(12, resultintent);
 
 	}
+	
+	private void setData() {
+		     mDataList = AccountDao.selectTransactionByAccountLimit(
+					AccountToTransactionActivity.this, _id, loadSize);
+			 mAllDataList.addAll(mDataList);
+			loadSize = mAllDataList.size();
+			Log.v("mtag", "****mDataList"+mDataList.size());
+			if (mDataList != null ) {
+				reFillData(mDataList);
+				filterData(mDataList);
+			}
+			BigDecimal b0 = new BigDecimal("0");
+			BigDecimal b1 = new BigDecimal("0");
+			for (Map<String, Object> iMap : mDataList) {
+				String amount = (String) iMap.get("amount");
+				int clear = (Integer) iMap.get("isClear");
+				BigDecimal b2 = new BigDecimal(amount);
+
+				int expenseAccount = (Integer) iMap.get("expenseAccount");
+				int incomeAccount = (Integer) iMap.get("incomeAccount");
+				if (expenseAccount == _id ) {
+					b0 = b0.subtract(b2);
+				} else if (incomeAccount == _id) {
+					b0 = b0.add(b2);
+				}
+				
+				if (clear == 0) {
+					if (expenseAccount == _id) {
+						b1 = b1.subtract(b2);
+					} else if (incomeAccount == _id) {
+						b1 = b1.add(b2);
+					}
+				}
+				
+			}
+			outstanding = b1.doubleValue();
+			banlance = b0.doubleValue();
+			
+			mExpandableListViewAdapter.notifyDataSetChanged();
+
+			int groupCount = groupDataList.size();
+
+			for (int i = 0; i < groupCount; i++) {
+				mExpandableListView.expandGroup(i);
+			}
+			mExpandableListView
+					.setOnGroupClickListener(new OnGroupClickListener() {
+
+						@Override
+						public boolean onGroupClick(
+								ExpandableListView parent, View v,
+								int groupPosition, long id) {
+							// TODO Auto-generated method stub
+							return true;
+						}
+					});
+
+			mExpandableListView.setCacheColorHint(0);
+
+			
+//			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+		}
 
 	public Runnable mTask = new Runnable() {
 
@@ -277,9 +355,14 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 			if (queryCheck == 0) {
 
-				mDataList = AccountDao.selectTransactionByAccount(
-						AccountToTransactionActivity.this, _id);
 
+				 mDataList = AccountDao.selectTransactionByAccountLimit(
+						AccountToTransactionActivity.this, _id, loadSize);
+				 mAllDataList.addAll(mDataList);
+				loadSize = mAllDataList.size();
+
+				Log.v("mtag", "mDataList"+mDataList.size());
+				
 			} else if (queryCheck == 1) {
 
 				mDataList = AccountDao.selectTransactionByAccountAndClear(
@@ -623,9 +706,10 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 
 	public void filterData(List<Map<String, Object>> mData) {// 根据时间过滤子类和父类
 
-		groupDataList.clear();
-		childrenAllDataList.clear();
 
+		List<Map<String, Object>> groupLoadDataList = new ArrayList<Map<String, Object>>();
+	    List<List<Map<String, Object>>> childrenAllLoadDataList = new ArrayList<List<Map<String, Object>>>();
+	
 		ArrayList<Long> mDatelist = new ArrayList<Long>();
 
 		for (Map<String, Object> mMap : mData) {
@@ -645,12 +729,12 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 		while (it2.hasNext()) {
 			Map<String, Object> mMap = new HashMap<String, Object>();
 			mMap.put("dateTime", (Long) it2.next());
-			groupDataList.add(mMap);
+			groupLoadDataList.add(mMap);
 		}
-		Collections.sort(groupDataList, new MEntity.MapComparatorTime());
+		Collections.sort(groupLoadDataList, new MEntity.MapComparatorTime());
 		Log.v("mtest", "groupDataList降序"+groupDataList);
 
-		for (Map<String, Object> iMap : groupDataList) {
+		for (Map<String, Object> iMap : groupLoadDataList) {
 			
 			long dateTime = (Long) iMap.get("dateTime"); //group的时间
 			List<Map<String, Object>> childrenDataList = new ArrayList<Map<String, Object>>();
@@ -661,8 +745,11 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 					childrenDataList.add(mMap);
 				}
 			}
-			childrenAllDataList.add(childrenDataList);
+			childrenAllLoadDataList.add(childrenDataList);
 		}
+		
+		groupDataList.addAll(groupLoadDataList);
+		childrenAllDataList.addAll(childrenAllLoadDataList);
 
 	}
 
@@ -1087,5 +1174,25 @@ public class AccountToTransactionActivity extends BaseHomeActivity {
 				Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
 	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onLoadMore() {
+		// TODO Auto-generated method stub
+		
+//		mHandler.post(mTask);
+		setData();
+		Log.v("mtag", "下拉 ");
+		
+		mExpandableListView.stopRefresh();
+		mExpandableListView.stopLoadMore();
+	}
+	
+	
 
 }

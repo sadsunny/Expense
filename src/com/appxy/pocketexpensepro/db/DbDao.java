@@ -24,6 +24,7 @@ public class DbDao {
 		Map<String, Integer> mMap = new HashMap<String, Integer>();
 		String sql = "select * from AccountType";
 		Cursor mCursor = db.rawQuery(sql, null);
+		
 		while (mCursor.moveToNext()) {
 			int _id = mCursor.getInt(0);
 			mMap.put( String.valueOf(_id), _id);

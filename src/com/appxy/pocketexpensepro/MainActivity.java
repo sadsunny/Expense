@@ -39,6 +39,8 @@ import com.appxy.pocketexpensepro.overview.ViewPagerAdapter;
 import com.appxy.pocketexpensepro.overview.budgets.BudgetFragment;
 import com.appxy.pocketexpensepro.passcode.Activity_Start;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
+import com.appxy.pocketexpensepro.reports.CashReportFragment;
+import com.appxy.pocketexpensepro.reports.CategorysReportFragment;
 import com.appxy.pocketexpensepro.reports.ReportCashFragment;
 import com.appxy.pocketexpensepro.reports.ReportCategoryFragment;
 import com.appxy.pocketexpensepro.reports.ReportOverviewFragment;
@@ -121,8 +123,12 @@ public class MainActivity extends BaseHomeActivity implements
 	private BillsFragmentMonth billsFragmentMonth;
 	
 	public static int rangePositon = 0; 
+	public static int rangeCashPositon = 0; 
 	public static long startDate;
 	public static long endDate;
+	
+	public static long startCashDate;
+	public static long endCashDate;
 	
 	private ArrayList<LinearLayout> layoutArrayList = new ArrayList<LinearLayout>();
 	private ArrayList<View> viewArrayList = new ArrayList<View>();
@@ -206,6 +212,15 @@ public class MainActivity extends BaseHomeActivity implements
 		startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
 		endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
 
+	    Calendar c4 = Calendar.getInstance();
+		c4.set(Calendar.MONTH, 0);
+		startCashDate = MEntity.getFirstDayOfMonthMillis(c4
+				.getTimeInMillis());
+		c4.set(Calendar.MONTH, 11);
+		endCashDate = MEntity.getLastDayOfMonthMillis(c4
+				.getTimeInMillis());
+		
+		
 		mTitle = mDrawerTitle = getTitle();
 		mLinearLayout = (LinearLayout) findViewById(R.id.left_drawer);
 		
@@ -508,9 +523,8 @@ public class MainActivity extends BaseHomeActivity implements
 					overViewNavigationListAdapter
 							.setSubTitle(turnToDate(selectedDate));
 					List<String> reportStrings = new ArrayList<String>();
-					reportStrings.add("OverView                 ");
-					reportStrings.add("Cash Flow                ");
 					reportStrings.add("Category                 ");
+					reportStrings.add("Cash Flow                ");
 					overViewNavigationListAdapter
 							.setDownItemData(reportStrings);
 					actionBar.setListNavigationCallbacks(
@@ -628,8 +642,10 @@ public class MainActivity extends BaseHomeActivity implements
 
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
-
-				ReportOverviewFragment reportOverviewFragment = new ReportOverviewFragment();
+				overViewNavigationListAdapter
+				.setSubTitle("Categorys");
+				
+				CategorysReportFragment reportOverviewFragment = new CategorysReportFragment();
 				FragmentTransaction fragmentTransaction = fragmentManager
 						.beginTransaction();
 				fragmentTransaction.replace(R.id.content_frame,
@@ -638,7 +654,10 @@ public class MainActivity extends BaseHomeActivity implements
 
 			} else if (itemPosition == 1) {
 				overViewNavigationListAdapter.setChoosed(1);
-				ReportCashFragment cashFragment = new ReportCashFragment();
+				overViewNavigationListAdapter
+				.setSubTitle("Cash Flow");
+				
+				CashReportFragment cashFragment = new CashReportFragment();
 				FragmentTransaction fragmentTransaction = fragmentManager
 						.beginTransaction();
 				fragmentTransaction.replace(R.id.content_frame,
@@ -646,17 +665,7 @@ public class MainActivity extends BaseHomeActivity implements
 				fragmentTransaction.commit();
 
 				
-			} else if (itemPosition == 2) {
-				overViewNavigationListAdapter.setChoosed(2);
-				
-				ReportCategoryFragment categoryFragment = new ReportCategoryFragment();
-				FragmentTransaction fragmentTransaction = fragmentManager
-						.beginTransaction();
-				fragmentTransaction.replace(R.id.content_frame,
-						categoryFragment);
-				fragmentTransaction.commit();
-
-			}
+			} 
 			overViewNavigationListAdapter.notifyDataSetChanged();
 			return false;
 

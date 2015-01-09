@@ -487,6 +487,37 @@ public class CategoryDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectCategoryAllExceptId(Context context, int id) { // 查询Category
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select * from Category where _id != "+id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String categoryName = mCursor.getString(3);
+			int categoryType = mCursor.getInt(5);
+			int hasBudget = mCursor.getInt(8);
+			int iconName = mCursor.getInt(9);
+			int isDefault = mCursor.getInt(10);
+
+			mMap.put("_id", _id);
+			mMap.put("categoryName", categoryName);
+			mMap.put("categoryType", categoryType);
+			mMap.put("hasBudget", hasBudget);
+			mMap.put("iconName", iconName);
+			mMap.put("isDefault", isDefault);
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
 
 	public static List<Map<String, Object>> selectCategory(Context context,
 			int type) { // 查询Category

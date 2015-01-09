@@ -426,6 +426,12 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 				 mHandler.post(mTask);
 			}
 			break;
+		case 11:
+
+			if (data != null) {
+				mHandler.post(mTask);
+			}
+			break;
 		}
 	}
 

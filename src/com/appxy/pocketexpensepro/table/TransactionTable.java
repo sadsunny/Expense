@@ -125,7 +125,12 @@ public class TransactionTable {
 				trans_incomeaccount = iRecord.getString("trans_incomeaccount");
 			}
 			
-			trans_amount = iRecord.getDouble("trans_amount");
+			if (iRecord.hasField("trans_amount")) {
+				trans_amount = iRecord.getDouble("trans_amount");
+			}else {
+				trans_amount = 0;
+			}
+			
 			if (iRecord.hasField("trans_notes")) {
 				trans_notes = iRecord.getString("trans_notes");
 			}

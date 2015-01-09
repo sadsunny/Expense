@@ -108,6 +108,13 @@ public class EditCategoryActivity extends BaseHomeActivity {
 				mButton.setText("");
 				mEditText.setText(categoryName);
 				mEditText.setSelection(categoryName.length());
+				
+				if (CategoryDao.selectCategoryLikeName(EditCategoryActivity.this, categoryName).size() > 0) {
+					mButton.setEnabled(false);
+				} else {
+					mButton.setEnabled(true);
+				}
+				
 			}
 		} else {
 			finish();
@@ -136,13 +143,14 @@ public class EditCategoryActivity extends BaseHomeActivity {
 			case R.id.action_done:
 				String mCategoryString = mEditText.getText().toString();
 				mCategoryString = mCategoryString.replace(":", "");
+				
 				String parentNameString = mButton.getText().toString();
 				
 				String allNameSrting = "";
 				if (parentNameString != null && parentNameString.length() > 0) {
 					allNameSrting = parentNameString+":"+mCategoryString;
 				} else {
-					allNameSrting = parentNameString;
+					allNameSrting = mCategoryString;
 				}
 				
 				if (mCategoryString == null
@@ -166,7 +174,7 @@ public class EditCategoryActivity extends BaseHomeActivity {
 										}
 									}).show();
 
-				} else if ( !comparisonName(mCategoryString,CategoryDao.selectCategoryAll(EditCategoryActivity.this)) && !allNameSrting.equals(categoryName) ) {
+				} else if ( judgeName(mCategoryString) ) {
 
 					new AlertDialog.Builder(EditCategoryActivity.this)
 							.setTitle("Warning! ")
@@ -340,6 +348,28 @@ public class EditCategoryActivity extends BaseHomeActivity {
 			}
 		}
 		return temDataList;
+	}
+	
+	
+	public boolean judgeName(String cName) { //根据编辑的全名判断category是否重名
+		boolean tag = false;
+		
+		List<Map<String, Object>> mData = CategoryDao.selectCategoryAllExceptId(EditCategoryActivity.this, _id);
+		
+				for (Map<String, Object> mMap : mData) { 
+					
+					String categoryName = (String) mMap.get("categoryName");
+
+					if (categoryName.equals(cName)) {
+						tag = true;
+						return tag;
+					}
+					
+
+				}
+		
+		return tag;
+		
 	}
 
 	public boolean comparisonName(String cName, List<Map<String, Object>> mData) {

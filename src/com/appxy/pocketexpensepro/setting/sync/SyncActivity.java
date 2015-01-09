@@ -74,32 +74,45 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	private boolean isSync;
 	private boolean isUpload = false;
 	private ProgressDialog progressDialog;
-	
+
 	private DbxDatastore.SyncStatusListener mDatastoreListener = new DbxDatastore.SyncStatusListener() {
-        @Override
-        public void onDatastoreStatusChange(DbxDatastore ds) {
-        	
-        	if (ds.getSyncStatus().hasIncoming) {
-				try {
+		@Override
+		public void onDatastoreStatusChange(DbxDatastore ds) {
 
-					Map<String, Set<DbxRecord>> mMap = mDatastore.sync();
+			if (ds.getSyncStatus().hasIncoming) {
 
-					dataHasIncoming(mMap);
-					MainActivity.isFirstSync = true;
-					if (isUpload) {
-	        			justSync(true);
+				Thread mThread = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						try {
+
+							Map<String, Set<DbxRecord>> mMap = mDatastore
+									.sync();
+
+							dataHasIncoming(mMap);
+							MainActivity.isFirstSync = true;
+							if (isUpload) {
+								justSync(true);
+							}
+
+							mDatastore.sync();
+						} catch (DbxException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-					
-					mDatastore.sync();
 
-				} catch (DbxException e) {
-					handleException(e);
-				}
+				});
+				
+				mThread.start();
+
 			}
-        	
-        }
-    };
-    
+
+		}
+	};
+
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -108,21 +121,20 @@ public class SyncActivity extends BaseHomeSyncActivity {
 				Toast.makeText(SyncActivity.this, "Dropbox sync successed",
 						Toast.LENGTH_SHORT).show();
 
-				 if(progressDialog!=null && progressDialog.isShowing()){
-		    			progressDialog.dismiss();
-		    		}
-				 isUpload = false;
+				if (progressDialog != null && progressDialog.isShowing()) {
+					progressDialog.dismiss();
+				}
+				isUpload = false;
 				break;
 
 			case MSG_FAILURE:
-				Toast.makeText(SyncActivity.this, "Exception", Toast.LENGTH_SHORT)
-						.show();
+				Toast.makeText(SyncActivity.this, "Exception",
+						Toast.LENGTH_SHORT).show();
 				break;
 			}
 		}
 	};
 
-	
 	DbxAccount.Listener mAccountListener = new DbxAccount.Listener() {
 
 		@Override
@@ -156,7 +168,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		mPreferences = getSharedPreferences("ExpenseSync", MODE_PRIVATE);
 		isSync = mPreferences.getBoolean("isSync", false);
-		
+
 		accountNameTextView = (TextView) findViewById(R.id.account_name);
 		syncSwitch = (Switch) findViewById(R.id.sync_switch);
 		syncSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -167,11 +179,11 @@ public class SyncActivity extends BaseHomeSyncActivity {
 				// TODO Auto-generated method stub
 				if (isChecked) {
 
-					if (!mDbxAcctMgr.hasLinkedAccount()) { 
+					if (!mDbxAcctMgr.hasLinkedAccount()) {
 						mDbxAcctMgr.startLink(SyncActivity.this,
 								REQUEST_LINK_TO_DBX);
 					}
-						
+
 				} else {
 
 					accountNameTextView.setVisibility(View.INVISIBLE);
@@ -180,13 +192,13 @@ public class SyncActivity extends BaseHomeSyncActivity {
 					meditor.putBoolean("isSync", isSync);
 					meditor.commit();
 					if (mDbxAcctMgr != null) {
-						
+
 						try {
 							mDbxAcctMgr.unlink();
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
-						
+
 					}
 
 				}
@@ -195,211 +207,233 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		});
 
 	}
-	
+
 	public void deleteAllRecod() throws DbxException {
-		AccountsTable accountsTable = new AccountsTable(mDatastore,this);
+		AccountsTable accountsTable = new AccountsTable(mDatastore, this);
 		accountsTable.deleteAll();
-		
-		AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, this);
+
+		AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore,
+				this);
 		accountTypeTable.deleteAll();
-		
+
 		BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
 		budgetItemTable.deleteAll();
-		
-		BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, this);
+
+		BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(
+				mDatastore, this);
 		budgetTemplateTable.deleteAll();
-		
-		BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore,this);
+
+		BudgetTransferTable budgetTransferTable = new BudgetTransferTable(
+				mDatastore, this);
 		budgetTransferTable.deleteAll();
-		
+
 		CategoryTable categoryTable = new CategoryTable(mDatastore, this);
 		categoryTable.deleteAll();
-		
-		EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
+
+		EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore,
+				this);
 		ep_BillItemTable.deleteAll();
-		
-		EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,this);
+
+		EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,
+				this);
 		ep_BillRuleTable.deleteAll();
-		
+
 		PayeeTable payeeTable = new PayeeTable(mDatastore, this);
 		payeeTable.deleteAll();
-		
-		TransactionTable transactionTable = new TransactionTable(mDatastore,this);
+
+		TransactionTable transactionTable = new TransactionTable(mDatastore,
+				this);
 		transactionTable.deleteAll();
-		
+
 		mDatastore.sync();
 		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 	}
-	
-	public void upLoadAllDate() throws DbxException { //上传所有数据
-		
-		List<Map<String, Object>> CategoryList = SyncDao.selectCategory(SyncActivity.this);
-		for (Map<String, Object> iMap:CategoryList) {
+
+	public void upLoadAllDate() throws DbxException { // 上传所有数据
+
+		List<Map<String, Object>> CategoryList = SyncDao
+				.selectCategory(SyncActivity.this);
+		for (Map<String, Object> iMap : CategoryList) {
 			CategoryTable categoryTable = new CategoryTable(mDatastore, this);
 			Category category = categoryTable.getCategory();
 			category.setCategoryData(iMap);
 			categoryTable.insertRecords(category.getFields());
 		}
-		
-		List<Map<String, Object>> AccountTypeList = SyncDao.selectAccountType(SyncActivity.this);
-		for (Map<String, Object> iMap:AccountTypeList) {
-			AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, this);
+
+		List<Map<String, Object>> AccountTypeList = SyncDao
+				.selectAccountType(SyncActivity.this);
+		for (Map<String, Object> iMap : AccountTypeList) {
+			AccountTypeTable accountTypeTable = new AccountTypeTable(
+					mDatastore, this);
 			AccountType accountType = accountTypeTable.getAccountType();
 			accountType.setAccountTypeData(iMap);
 			accountTypeTable.insertRecords(accountType.getFields());
 		}
-		
-		List<Map<String, Object>> AccountsList = SyncDao.selectAccount(SyncActivity.this);
-		for (Map<String, Object> iMap:AccountsList) {
-			AccountsTable accountsTable = new AccountsTable(mDatastore,this);
+
+		List<Map<String, Object>> AccountsList = SyncDao
+				.selectAccount(SyncActivity.this);
+		for (Map<String, Object> iMap : AccountsList) {
+			AccountsTable accountsTable = new AccountsTable(mDatastore, this);
 			Accounts accounts = accountsTable.getAccounts();
 			accounts.setAccountsData(iMap);
 			accountsTable.insertRecords(accounts.getFields());
 		}
-		
-		List<Map<String, Object>> PayeeList = SyncDao.selectPayee(SyncActivity.this);
-		for (Map<String, Object> iMap:PayeeList) {
+
+		List<Map<String, Object>> PayeeList = SyncDao
+				.selectPayee(SyncActivity.this);
+		for (Map<String, Object> iMap : PayeeList) {
 			PayeeTable payeeTable = new PayeeTable(mDatastore, this);
 			Payee payee = payeeTable.getPayee();
 			payee.setPayeeData(iMap);
 			payeeTable.insertRecords(payee.getFields());
 		}
-		
-		List<Map<String, Object>> BudgetTemplateList = SyncDao.selectBudgetTemplate(SyncActivity.this);
-		for (Map<String, Object> iMap:BudgetTemplateList) {
-			BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, this);
-			BudgetTemplate budgetTemplate = budgetTemplateTable.getBudgetTemplate();
+
+		List<Map<String, Object>> BudgetTemplateList = SyncDao
+				.selectBudgetTemplate(SyncActivity.this);
+		for (Map<String, Object> iMap : BudgetTemplateList) {
+			BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(
+					mDatastore, this);
+			BudgetTemplate budgetTemplate = budgetTemplateTable
+					.getBudgetTemplate();
 			budgetTemplate.setBudgetTemplateData(iMap);
 			budgetTemplateTable.insertRecords(budgetTemplate.getFields());
 		}
-		
-		List<Map<String, Object>> BudgetItemList = SyncDao.selectBudgetItem(SyncActivity.this);
-		for (Map<String, Object> iMap:BudgetItemList) {
-			BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
+
+		List<Map<String, Object>> BudgetItemList = SyncDao
+				.selectBudgetItem(SyncActivity.this);
+		for (Map<String, Object> iMap : BudgetItemList) {
+			BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore,
+					this);
 			BudgetItem budgetItem = budgetItemTable.getBudgetItem();
 			budgetItem.setBudgetItemData(iMap);
 			budgetItemTable.insertRecords(budgetItem.getFields());
 		}
-		
-	
-		List<Map<String, Object>> BudgetTransferList = SyncDao.selectBudgetTransfer(SyncActivity.this);
-		for (Map<String, Object> iMap:BudgetTransferList) {
-			BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore,this);
-			BudgetTransfer budgetTransfer = budgetTransferTable.getBudgetTransfer();
+
+		List<Map<String, Object>> BudgetTransferList = SyncDao
+				.selectBudgetTransfer(SyncActivity.this);
+		for (Map<String, Object> iMap : BudgetTransferList) {
+			BudgetTransferTable budgetTransferTable = new BudgetTransferTable(
+					mDatastore, this);
+			BudgetTransfer budgetTransfer = budgetTransferTable
+					.getBudgetTransfer();
 			budgetTransfer.setBudgetTransferData(iMap);
 			budgetTransferTable.insertRecords(budgetTransfer.getFields());
 		}
-		
-		List<Map<String, Object>> EP_BillRuleList = SyncDao.selectEP_BillRule(SyncActivity.this);
-		for (Map<String, Object> iMap:EP_BillRuleList) {
-			EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore,this);
+
+		List<Map<String, Object>> EP_BillRuleList = SyncDao
+				.selectEP_BillRule(SyncActivity.this);
+		for (Map<String, Object> iMap : EP_BillRuleList) {
+			EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(
+					mDatastore, this);
 			EP_BillRule ep_BillRule = ep_BillRuleTable.getEP_BillRule();
 			ep_BillRule.setEP_BillRuleData(iMap);
 			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
 		}
-		
-		List<Map<String, Object>> EP_BillItemList = SyncDao.selectEP_BillItem(SyncActivity.this);
-		for (Map<String, Object> iMap:EP_BillItemList) {
-			
-			EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
+
+		List<Map<String, Object>> EP_BillItemList = SyncDao
+				.selectEP_BillItem(SyncActivity.this);
+		for (Map<String, Object> iMap : EP_BillItemList) {
+
+			EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(
+					mDatastore, this);
 			EP_BillItem ep_BillItem = ep_BillItemTable.getEP_BillItem();
 			ep_BillItem.setEP_BillItemData(iMap);
 			ep_BillItemTable.insertRecords(ep_BillItem.getFields());
 		}
-		
-		
-		List<Map<String, Object>> TransactionList = SyncDao.selectTransaction(SyncActivity.this);
-		for (Map<String, Object> iMap:TransactionList) {
-			TransactionTable transactionTable = new TransactionTable(mDatastore,this);
+
+		List<Map<String, Object>> TransactionList = SyncDao
+				.selectTransaction(SyncActivity.this);
+		for (Map<String, Object> iMap : TransactionList) {
+			TransactionTable transactionTable = new TransactionTable(
+					mDatastore, this);
 			Transaction transaction = transactionTable.getTransaction();
 			transaction.setTransactionData(iMap);
 			transactionTable.insertRecords(transaction.getFields());
 		}
-		
+
 		mDatastore.sync();
 		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
-		
+
 	}
-	
-	public void checkSync() { //check状态
-		
-		
+
+	public void checkSync() { // check状态
+
 		if (isSync) {
 			if (mDbxAcctMgr.hasLinkedAccount()) {
 
 				try {
-					
+
 					if (null == mDbxAcct) {
-						 mDbxAcct=mDbxAcctMgr.getLinkedAccount();
-			         }
-					
-					if (null == mDatastore) {
-						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+						mDbxAcct = mDbxAcctMgr.getLinkedAccount();
 					}
-					
-					 String accName = mPreferences.getString("accountName", "");
-					 accountNameTextView.setVisibility(View.VISIBLE);
-					 accountNameTextView.setText(accName);
-					 syncSwitch.setChecked(true);
-					 
-					 mDatastore.addSyncStatusListener(mDatastoreListener);
-					 mDbxAcct.addListener(mAccountListener);
-					 
+
+					if (null == mDatastore) {
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
+								.getLinkedAccount());
+					}
+
+					String accName = mPreferences.getString("accountName", "");
+					accountNameTextView.setVisibility(View.VISIBLE);
+					accountNameTextView.setText(accName);
+					syncSwitch.setChecked(true);
+
+					mDatastore.addSyncStatusListener(mDatastoreListener);
+					mDbxAcct.addListener(mAccountListener);
+
 				} catch (DbxException e) {
 					handleException(e);
 				}
 
-				
 			}
 		} else {
-           accountNameTextView.setVisibility(View.INVISIBLE);
-           syncSwitch.setChecked(false);
+			accountNameTextView.setVisibility(View.INVISIBLE);
+			syncSwitch.setChecked(false);
 		}
-		
+
 	}
-	
+
 	public void justSync(boolean justLinked) { // 同步并上传数据库
-		
+
 		if (isSync) {
 			if (mDbxAcctMgr.hasLinkedAccount()) {
 
 				try {
-					
+
 					if (null == mDbxAcct) {
-						 mDbxAcct=mDbxAcctMgr.getLinkedAccount();
-			         }
-					
+						mDbxAcct = mDbxAcctMgr.getLinkedAccount();
+					}
+
 					if (null == mDatastore) {
-						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr
+								.getLinkedAccount());
 					}
-					
-					 if (isUpload) {
-						 Thread mThread = new Thread(new Runnable() {
-								
-								@Override
-								public void run() {
-									// TODO Auto-generated method stub
-									try {
-										upLoadAllDate();
-//										deleteAllRecod();
-									} catch (DbxException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
+
+					if (isUpload) {
+						Thread mThread = new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								try {
+									upLoadAllDate();
+									// deleteAllRecod();
+								} catch (DbxException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
-							});
-							mThread.start();
+							}
+						});
+						mThread.start();
 					}
-					
+
 				} catch (DbxException e) {
 					handleException(e);
 				}
 
-				
 			}
 		} else {
-           accountNameTextView.setVisibility(View.INVISIBLE);
-           syncSwitch.setChecked(false);
+			accountNameTextView.setVisibility(View.INVISIBLE);
+			syncSwitch.setChecked(false);
 		}
 
 	}
@@ -409,23 +443,23 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 		checkSync();
-		
+
 	}
 
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		super.onPause();
-		
+
 		if (mDatastore != null) {
-	        mDatastore.removeSyncStatusListener(mDatastoreListener);
-	        mDatastore.close();
-	        mDatastore = null;
-	    }
+			mDatastore.removeSyncStatusListener(mDatastoreListener);
+			mDatastore.close();
+			mDatastore = null;
+		}
 		if (mDbxAcct != null) {
 			mDbxAcct.removeListener(mAccountListener);
 			mDbxAcct = null;
-	    }
+		}
 
 	}
 
@@ -436,21 +470,21 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			if (resultCode == RESULT_OK) {
 				isSync = true;
 				isUpload = true;
-				
 
-				progressDialog = ProgressDialog.show(SyncActivity.this, null, "Syncing....");
-				
+				progressDialog = ProgressDialog.show(SyncActivity.this, null,
+						"Syncing....");
+
 				if (mDbxAcctMgr != null && mDbxAcctMgr.hasLinkedAccount()) {
 
-					SharedPreferences.Editor meditor = mPreferences.edit();	
+					SharedPreferences.Editor meditor = mPreferences.edit();
 					meditor.putBoolean("isSync", isSync);
 					meditor.commit();
 				}
-				
-				
+
 			} else {
 				// ... Link failed or was cancelled by the user.
-				Toast.makeText(this, "Link to Dropbox failed.",Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Link to Dropbox failed.",
+						Toast.LENGTH_SHORT).show();
 			}
 		} else {
 			super.onActivityResult(requestCode, resultCode, data);
@@ -477,173 +511,175 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	public void syncDateChange() {
 		// TODO Auto-generated method stub
 	}
-	
-	
-private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap) throws DbxException{//处理同步数据incoming
-		
+
+	private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap)
+			throws DbxException {// 处理同步数据incoming
+
 		if (mMap.containsKey("db_category_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_category_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					CategoryTable categoryTable = new CategoryTable(mDatastore, this);
-					Category category =  categoryTable.getCategory();
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					CategoryTable categoryTable = new CategoryTable(mDatastore,
+							this);
+					Category category = categoryTable.getCategory();
 					category.setIncomingData(iRecord);
 					category.insertOrUpdate();
-					
+
 				}
 			}
 		}
-		
+
 		if (mMap.containsKey("db_accounttype_table")) {
 			Set<DbxRecord> incomeDate = mMap.get("db_accounttype_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					AccountTypeTable accountTypeTable = new AccountTypeTable(mDatastore, this);
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					AccountTypeTable accountTypeTable = new AccountTypeTable(
+							mDatastore, this);
 					AccountType accountType = accountTypeTable.getAccountType();
 					accountType.setIncomingData(iRecord);
-					accountType.insertOrUpdate(); 
-					
+					accountType.insertOrUpdate();
+
 				}
 			}
 		}
-		
+
 		if (mMap.containsKey("db_payee_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_payee_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
 					PayeeTable payeeTable = new PayeeTable(mDatastore, this);
 					Payee payee = payeeTable.getPayee();
 					payee.setIncomingData(iRecord);
 					payee.insertOrUpdate();
-					
+
 				}
 			}
 		}
-		
-		
-		
+
 		if (mMap.containsKey("db_account_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_account_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					AccountsTable accountsTable = new AccountsTable(mDatastore, this);
-					Accounts accounts =accountsTable.getAccounts();
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					AccountsTable accountsTable = new AccountsTable(mDatastore,
+							this);
+					Accounts accounts = accountsTable.getAccounts();
 					accounts.setIncomingData(iRecord);
 					accounts.insertOrUpdate();
 				}
 			}
-			
+
 		}
-		
-		
+
 		if (mMap.containsKey("db_budgettemplate_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_budgettemplate_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(mDatastore, this);
-					BudgetTemplate budgetTemplate = budgetTemplateTable.getBudgetTemplate();
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					BudgetTemplateTable budgetTemplateTable = new BudgetTemplateTable(
+							mDatastore, this);
+					BudgetTemplate budgetTemplate = budgetTemplateTable
+							.getBudgetTemplate();
 					budgetTemplate.setIncomingData(iRecord);
 					budgetTemplate.insertOrUpdate();
 				}
 			}
-			
+
 		}
 
-		
 		if (mMap.containsKey("db_budgetitem_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_budgetitem_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					BudgetItemTable budgetItemTable = new BudgetItemTable(mDatastore, this);
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					BudgetItemTable budgetItemTable = new BudgetItemTable(
+							mDatastore, this);
 					BudgetItem budgetItem = budgetItemTable.getBudgetItem();
 					budgetItem.setIncomingData(iRecord);
 					budgetItem.insertOrUpdate();
-					
+
 				}
 			}
-			
+
 		}
 
-		
 		if (mMap.containsKey("db_budgettransfer_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_budgettransfer_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					BudgetTransferTable budgetTransferTable = new BudgetTransferTable(mDatastore, this);
-					BudgetTransfer budgetTransfer = budgetTransferTable.getBudgetTransfer();
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					BudgetTransferTable budgetTransferTable = new BudgetTransferTable(
+							mDatastore, this);
+					BudgetTransfer budgetTransfer = budgetTransferTable
+							.getBudgetTransfer();
 					budgetTransfer.setIncomingData(iRecord);
 					budgetTransfer.insertOrUpdate();
-					
+
 				}
 			}
-			
+
 		}
-		
+
 		if (mMap.containsKey("db_ep_billrule_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_ep_billrule_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(mDatastore, this);
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					EP_BillRuleTable ep_BillRuleTable = new EP_BillRuleTable(
+							mDatastore, this);
 					EP_BillRule eP_BillRule = ep_BillRuleTable.getEP_BillRule();
 					eP_BillRule.setIncomingData(iRecord);
 					eP_BillRule.insertOrUpdate();
-					
+
 				}
 			}
-			
+
 		}
-		
+
 		if (mMap.containsKey("db_ep_billitem_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_ep_billitem_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(mDatastore, this);
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					EP_BillItemTable ep_BillItemTable = new EP_BillItemTable(
+							mDatastore, this);
 					EP_BillItem eP_BillItem = ep_BillItemTable.getEP_BillItem();
 					eP_BillItem.setIncomingData(iRecord);
 					eP_BillItem.insertOrUpdate();
-					
+
 				}
 			}
-			
+
 		}
-		
+
 		if (mMap.containsKey("db_transaction_table")) {
-			
+
 			Set<DbxRecord> incomeDate = mMap.get("db_transaction_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
-					
-					TransactionTable transactionTable = new TransactionTable(mDatastore, this);
+			for (DbxRecord iRecord : incomeDate) {
+				if (!iRecord.isDeleted()) {
+
+					TransactionTable transactionTable = new TransactionTable(
+							mDatastore, this);
 					Transaction transaction = transactionTable.getTransaction();
 					transaction.setIncomingData(iRecord);
 					transaction.insertOrUpdate();
-					
+
 				}
 			}
-			
-		}
-		
-		
 
-		
+		}
+
 	}
-	
 
 }

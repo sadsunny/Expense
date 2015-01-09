@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,7 +61,8 @@ public class BillDetailsActivity extends BaseHomeActivity {
 	private TextView paidTextView;
 	private TextView remainTextView;
 	private ListView mListView;
-
+	private LinearLayout paidLayout;
+	
 	private int _id;
 	private int indexflag;
 	private String ep_billAmount;
@@ -93,15 +95,19 @@ public class BillDetailsActivity extends BaseHomeActivity {
 				paidTextView.setText(MEntity.doublepoint2str(paidAmount + ""));
 
 				if (remain <= 0) {
-					payButton.setEnabled(false);
-					payButton.setText("Paid");
-					payButton.setTextColor(Color.parseColor("#947156"));
-					payButton.setBackgroundResource(R.drawable.paid_bag);
+//					payButton.setEnabled(false);
+//					payButton.setText("Paid");
+//					payButton.setTextColor(Color.parseColor("#947156"));
+//					payButton.setBackgroundResource(R.drawable.paid_bag);
 					remainTextView.setText(MEntity.doublepoint2str(0 + ""));
 
+					payButton.setVisibility(View.GONE);
+					paidLayout.setVisibility(View.VISIBLE);
 				} else {
+					payButton.setVisibility(View.VISIBLE);
+					paidLayout.setVisibility(View.GONE);
 					payButton.setEnabled(true);
-					payButton.setText("Add a payment");
+					payButton.setText("Pay Bill");
 					payButton.setTextColor(Color.parseColor("#45211c"));
 					payButton
 							.setBackgroundResource(R.drawable.add_payment_selector);
@@ -141,6 +147,7 @@ public class BillDetailsActivity extends BaseHomeActivity {
 			finish();
 		}
 
+		paidLayout = (LinearLayout) findViewById(R.id.PaidLinearLayout);
 		categoryImageView = (ImageView) findViewById(R.id.category_imageView);
 		nameTextView = (TextView) findViewById(R.id.account_textView);
 		dueDaTextView = (TextView) findViewById(R.id.date_textView);

@@ -9,6 +9,8 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -29,7 +31,6 @@ public class ExpandableListViewAdapter extends
 
 		inflater = LayoutInflater.from(context);
 	}
-
 	public void setAdapterData(List<Map<String, Object>> groupList,
 			List<List<Map<String, Object>>> childList) {
 
@@ -66,6 +67,7 @@ public class ExpandableListViewAdapter extends
 		return groupPosition;
 	}
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
@@ -81,9 +83,11 @@ public class ExpandableListViewAdapter extends
 		} else {
 			viewholder = (gViewHolder) convertView.getTag();
 		}
-
-		viewholder.dueTextView.setText(groupList.get(groupPosition).get("dueString")+"");
+		
+		String textString = (String)groupList.get(groupPosition).get("dueString");
+		viewholder.dueTextView.setText(textString);
 		viewholder.dueCountTextView.setText(groupList.get(groupPosition).get("dueCount")+"");
+		
 		
 		convertView.setOnTouchListener(new View.OnTouchListener() { //设置Group是否可点击
 
@@ -137,8 +141,17 @@ public class ExpandableListViewAdapter extends
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		long dueDate = (Long) childList.get(groupPosition).get(childPosition).get("ep_billDueDate");
 		viewholder.dateTextView.setText(MEntity.turnToDateString(dueDate));
-		viewholder.amountTextView.setText( MEntity.doublepoint2str((String)childList.get(groupPosition).get(childPosition).get("ep_billAmount")));
+		viewholder.amountTextView.setText( MEntity.doublepoint2str((String)childList.get(groupPosition).get(childPosition).get("remain")));
 
+		String textString = (String)groupList.get(groupPosition).get("dueString");
+		if (textString.equals("Overdue")) {
+			viewholder.currencyTextView.setTextColor(Color.parseColor("#dd5656"));
+			viewholder.amountTextView.setTextColor(Color.parseColor("#dd5656"));
+		} else {
+			viewholder.currencyTextView.setTextColor(Color.parseColor("#36373c"));
+			viewholder.amountTextView.setTextColor(Color.parseColor("#36373c"));
+		}
+		
 		if (childPosition == 0 ) {
 			viewholder.mline_label.setVisibility(View.INVISIBLE);
 		} else {

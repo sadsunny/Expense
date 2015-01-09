@@ -4,13 +4,12 @@
     android:layout_height="match_parent"
     android:background="@color/white" >
 
-    <ExpandableListView
+    <com.appxy.pocketexpensepro.entity.LoadMoreListView
         android:id="@+id/mExpandableListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="55dp"
-        android:dividerHeight="0dp" >
-    </ExpandableListView>
+        android:dividerHeight="0dp" />
     
      <View 
         android:layout_width="match_parent"

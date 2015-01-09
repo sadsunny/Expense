@@ -36,9 +36,6 @@ public abstract class BaseHomeSyncActivity extends FragmentActivity{
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		Log.v("mtag", "Base的 onCreate1");
-		
-	
 		List<Map<String, Object>> mList = SettingDao.selectSetting(BaseHomeSyncActivity.this);
 	 	passCode = (String) mList.get(0).get("passcode");
 		if (passCode != null && passCode.length() > 2) {
@@ -50,7 +47,6 @@ public abstract class BaseHomeSyncActivity extends FragmentActivity{
 		context = this;
 		receiver = new HomeKeyEventBroadCastReceiver();
 		registerReceiver(receiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
-		Log.v("mtag", "Base的 onCreate3");
 	}
 
 	public abstract void syncDateChange();
