@@ -626,6 +626,87 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	public static List<Map<String, Object>> selectAccountBySum(Context context) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, b.iconName, b.typeName, (a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id order by a.orderIndex ASC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String accName = mCursor.getString(1);
+			String amount = mCursor.getString(2);
+			int autoClear = mCursor.getInt(3);
+			long dateTime = mCursor.getLong(6);
+			int accountType = mCursor.getInt(16);
+			int iconName = mCursor.getInt(22);
+			String typeName = mCursor.getString(23);
+			String uuid  = mCursor.getString(15);
+			double allAmount = mCursor.getDouble(24);
+
+			mMap.put("_id", _id);
+			mMap.put("accName", accName);
+			mMap.put("amount", amount);
+			mMap.put("autoClear", autoClear);
+			mMap.put("dateTime", dateTime);
+			mMap.put("accountType", accountType);
+			mMap.put("iconName", iconName);
+			mMap.put("typeName", typeName);
+			mMap.put("uuid", uuid);
+			mMap.put("allAmount", allAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static List<Map<String, Object>> selectAccountNetworthById(Context context, int id) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id and a._id = "+ id;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double allAmount = mCursor.getDouble(0);
+			mMap.put("allAmount", allAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	
+	
+	public static List<Map<String, Object>> selectAccountNetworth(Context context) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double allAmount = mCursor.getDouble(0);
+			mMap.put("allAmount", allAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
 
 	public static List<Map<String, Object>> selectAccount(Context context) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -702,6 +783,57 @@ public class AccountDao {
 		return mList;
 	}
 
+	
+	public static List<Map<String, Object>> selectTransactionOutstandingByid( // clear = off 的总额
+			Context context, int clear, int id) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select (total(a.amount) - ( select total(a.amount)  from 'Transaction' a where a.isClear = "+ clear+ " and a.childTransactions != 1 and (expenseAccount > 0 and incomeAccount <= 0) ) ) " +
+				"from 'Transaction' a where a.isClear = "
+				+ clear
+				+ " and a.childTransactions != 1 and (expenseAccount <= 0 and incomeAccount > 0)";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			
+			double outstandingAmount = mCursor.getDouble(0);
+			mMap.put("outstandingAmount", outstandingAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static List<Map<String, Object>> selectTransactionOutstanding( // clear = off 的总额
+			Context context, int clear) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select (total(a.amount) - ( select total(a.amount) from 'Transaction' a where a.isClear = "
+				+ clear
+				+ " and a.childTransactions != 1 and (expenseAccount > 0 or incomeAccount <= 0) ) ) from 'Transaction' a where a.isClear = "
+				+ clear
+				+ " and a.childTransactions != 1 and (expenseAccount <= 0 or incomeAccount > 0)";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double outstandingAmount = mCursor.getDouble(0);
+			mMap.put("outstandingAmount", outstandingAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	public static List<Map<String, Object>> selectTransactionOnClear(
 			Context context, int clear) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
@@ -864,16 +996,16 @@ public class AccountDao {
 	}
 
 	
-	public static List<Map<String, Object>> selectTransactionByAccountLimit(
+	public static ArrayList<HashMap<String, Object>> selectTransactionByAccountLimitLeftJoin(
 			Context context, int accountId, int allSize) { // Account查询
-		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
-		Map<String, Object> mMap;
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where (a.expenseAccount = "
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where (a.expenseAccount = "
 				+ accountId
 				+ " or a.incomeAccount = "
 				+ accountId
-				+ ") and a.childTransactions != 1 order by a.dateTime ASC , a._id ASC limit 25 offset "+ allSize;
+				+ ") and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC limit 30 offset "+ allSize;
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -895,11 +1027,15 @@ public class AccountDao {
 			int payee = mCursor.getInt(23);
 			int transactionHasBillItem = mCursor.getInt(24);
 			int transactionHasBillRule = mCursor.getInt(25);
-
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
 			mMap.put("dateTime", dateTime);
 			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
 			mMap.put("photoName", photoName);
 			mMap.put("recurringType", recurringType);
 			mMap.put("category", category);
@@ -910,6 +1046,67 @@ public class AccountDao {
 			mMap.put("payee", payee);
 			mMap.put("transactionHasBillItem", transactionHasBillItem);
 			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByAccountLimitLeftJoin(
+			Context context, int allSize) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where a.childTransactions != 1 order by a.dateTime DESC , a._id DESC limit 30 offset "+ allSize;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
 
 			mList.add(mMap);
 		}
@@ -919,6 +1116,247 @@ public class AccountDao {
 		return mList;
 	}
 
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByAccountLimitLeftJoinClear(
+			Context context, int accountId,int is_clear, int allSize) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where (a.expenseAccount = "
+				+ accountId
+				+ " or a.incomeAccount = "
+				+ accountId
+				+ ") and a.childTransactions != 1 and a.isClear = "+is_clear+" order by a.dateTime DESC , a._id DESC limit 30 offset "+ allSize;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByAccountLimitLeftJoinClear(
+			Context context,int is_clear, int allSize) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where a.childTransactions != 1 and a.isClear = "+is_clear+" order by a.dateTime DESC , a._id DESC limit 30 offset "+ allSize;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByIdLeftJoin(
+			Context context, int accountId, int tId) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where (a.expenseAccount = " + accountId+ " or a.incomeAccount = "+ accountId+ ") and  a._id = "+tId ;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByIdLeftJoin(
+			Context context, int tId) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where  a._id = "+tId ;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	
 	
 	public static List<Map<String, Object>> selectTransactionByID(
@@ -1216,6 +1654,7 @@ public class AccountDao {
 			String childTransactions, int expenseAccount, int incomeAccount,
 			int parTransaction, int payee ,String uuid, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore ) { 
 
+		long rId = 0;
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		
@@ -1239,7 +1678,7 @@ public class AccountDao {
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?",
 					new String[] { mId });
-			
+			rId = id;
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) {
@@ -1273,12 +1712,12 @@ public class AccountDao {
 			}
 
 			db.close();
-			return id;
 		} catch (Exception e) {
 			// TODO: handle exception
 			db.close();
-			return 0;
+			
 		}
+		return rId;
 
 	}
 
@@ -1339,10 +1778,10 @@ public class AccountDao {
 	}
 
 	public static long deleteTransaction(Context context, int id,String uuid , DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		long row = 0;
 		SQLiteDatabase db = getConnection(context);
 		db.execSQL("PRAGMA foreign_keys = ON ");
 		String _id = id + "";
-		long row = 0;
 		String trans_string = SyncDao.selecTransactionString(context, id);
 		try {
 			row = db.delete("'Transaction'", "_id = ?", new String[] { _id });
@@ -1361,7 +1800,6 @@ public class AccountDao {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			row = 0;
 		}
 		db.close();
 		return row;
@@ -1417,6 +1855,8 @@ public class AccountDao {
 	}
 
 	public static long updateTransactionClear( Context context, long _id, int clear, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore ) { // Account更新排序字段
+		
+		long rId = 0;
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		long dateTime_sync = System.currentTimeMillis() ;
@@ -1429,6 +1869,9 @@ public class AccountDao {
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?",
 					new String[] { mId });
+			rId = id;
+			Log.v("mtag", "updateTransactionClear1"+id);
+			
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) {
@@ -1450,12 +1893,18 @@ public class AccountDao {
 				}
 			}
 			db.close();
-			return id;
+			
+			Log.v("mtag", "updateTransactionClear2"+id);
+			
 		} catch (Exception e) {
 			// TODO: handle exception
 			db.close();
-			return 0;
+			Log.v("mtag", "updateTransactionClear异常");
+			
+			
 		}
+		
+		return rId;
 	}
 
 }

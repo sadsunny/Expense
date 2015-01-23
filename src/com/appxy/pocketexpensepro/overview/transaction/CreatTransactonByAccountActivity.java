@@ -559,6 +559,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 									
 				}else {
 
+					long rId = 0;
 					if (payeeString != null && payeeString.trim().length() != 0 && !payeeString.trim().equals("")) {
 
 						boolean check = checkPayee(payeeString);
@@ -576,13 +577,12 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 
 					if (mReturnList != null && mReturnList.size() > 1) { //category splite情况
 
-						Log.v("mtest", "mReturnList" + mReturnList);
 						long row = TransactionDao.insertTransactionAll(
 								CreatTransactonByAccountActivity.this, amountString,
 								dateLong, isCleared, memoString, picPath, 0,
 								categoryDefault, childTransactionsDefault + "",
 								accountId, incomeAccountDefault, -1, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore); // -1标识其本身为父本,split的父本只会是expense，因为所以的子类只能选择expense
-
+						rId = row ;
 						String idList = "";
 
 						for (Map<String, Object> iMap : mReturnList) {
@@ -617,6 +617,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 												childTransactionsDefault + "",
 												accountId, incomeAccountDefault, 0,
 												payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
+								rId = row ;
 							} else {
 								long row = TransactionDao.insertTransactionAll(
 										CreatTransactonByAccountActivity.this,
@@ -625,6 +626,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 										categoryId, childTransactionsDefault + "",
 										expenseAccountDefault, accountId, 0,
 										payeeId, null, 0, 0 , mDbxAcctMgr, mDatastore);
+								rId = row ;
 							}
 							
 						}
@@ -632,7 +634,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 					}
 
 					Intent intent = new Intent();
-					intent.putExtra("done", 1);
+					intent.putExtra("done", rId);
 					setResult(6, intent);
 					finish();
 

@@ -87,17 +87,13 @@ public class ReCashListActivity extends BaseHomeActivity {
 		this.getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
-		int rangType = intent.getIntExtra("rangType", 0);
 		long dateLong = intent.getLongExtra("dateLong", 0);
 
-		if (rangType == 4 || rangType == 5) {
 			startDate = MEntity.getFirstDayOfMonthMillis(dateLong);
 			endDate = MEntity.getLastDayOfMonthMillis(dateLong);
-		} else {
-			startDate = dateLong;
-			endDate = dateLong;
-		}
 
+			this.getActionBar().setTitle(turnToDateString(dateLong));
+			
 		mAdapter = new ReCashListAdapter(this);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(onClickListener);
@@ -124,15 +120,41 @@ public class ReCashListActivity extends BaseHomeActivity {
 					"expenseAccount");
 			int incomeAccount = (Integer) mDataList.get(arg2).get(
 					"incomeAccount");
+			
 			String childTransactionstring = (String) mDataList.get(arg2).get(
 					"childTransactions");
+			
+			int parTransaction =  (Integer) mDataList.get(arg2).get(
+					"parTransaction");
+			
+			
 			int childTransactions = 0;
-			try {
-				childTransactions = Integer.parseInt(childTransactionstring);
-			} catch (Exception e) {
-				// TODO: handle exception
-				childTransactions = 1;
+			
+			if ( childTransactionstring == null) {
+				childTransactions = 0;
+			} else {
+				
+				if (childTransactionstring.length() == 0) {
+					childTransactions = 0;
+				} else {
+
+					try {
+						childTransactions = Integer.parseInt(childTransactionstring);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						childTransactions = 1;
+					}
+					
+				}
+
 			}
+
+			
+			if (parTransaction > 0 ) {
+				childTransactions = 1;
+			} 
+			
 			if (childTransactions == 1) {
 
 				new AlertDialog.Builder(ReCashListActivity.this)
@@ -187,13 +209,37 @@ public class ReCashListActivity extends BaseHomeActivity {
 			
 			String childTransactionstring = (String) mDataList.get(arg2).get(
 					"childTransactions");
+			
+			int parTransaction =  (Integer) mDataList.get(arg2).get(
+					"parTransaction");
+			
+			
 			int childTransactions = 0;
-			try {
-				childTransactions = Integer.parseInt(childTransactionstring);
-			} catch (Exception e) {
-				// TODO: handle exception
-				childTransactions = 1;
+			
+			if ( childTransactionstring == null) {
+				childTransactions = 0;
+			} else {
+				
+				if (childTransactionstring.length() == 0) {
+					childTransactions = 0;
+				} else {
+
+					try {
+						childTransactions = Integer.parseInt(childTransactionstring);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						childTransactions = 1;
+					}
+					
+				}
+
 			}
+
+			
+			if (parTransaction > 0 ) {
+				childTransactions = 1;
+			} 
 
 			if (childTransactions == 1) {
 
@@ -290,6 +336,14 @@ public class ReCashListActivity extends BaseHomeActivity {
 		}
 	}
 
+	public String turnToDateString(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
+	
 	@Override
 	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
 		// TODO Auto-generated method stub

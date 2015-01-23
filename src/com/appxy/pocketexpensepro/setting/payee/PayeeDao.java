@@ -110,7 +110,7 @@ public class PayeeDao {
 	
 	public static int selectCategoryIdByUUid(Context context,String uuid) {
 		
-    	int id  = 26;
+    	int id  = 0;
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a._id from Category a where a.uuid = "+"'"+uuid+"'";
 		Cursor mCursor = db.rawQuery(sql, null);

@@ -11,7 +11,6 @@ import java.util.Map;
 import android.content.Context;
 import android.util.Log;
 
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.bills.BillsDao;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
@@ -211,15 +210,19 @@ public class EP_BillItemTable {
 			if (iRecord.hasField("billitem_ep_billitemstring1")) {
 				billitem_ep_billitemstring1 = iRecord.getString("billitem_ep_billitemstring1");
 			}
-			uuid = iRecord.getString("uuid");
-
+			
+			if (iRecord.hasField("uuid")) {
+				uuid = iRecord.getString("uuid");
+			} else {
+				uuid = null;
+			}
+			
 			if (iRecord.hasField("billitemhascategory")) {
 				billitemhascategory = iRecord.getString("billitemhascategory");
 			}
 			
 			if (iRecord.hasField("billitem_ep_billitemduedate")) {
 				billitem_ep_billitemduedate = iRecord.getDate("billitem_ep_billitemduedate");
-				Log.v("mtag", "billitem_ep_billitemduedate "+billitem_ep_billitemduedate);
 			}
 			
 			billitem_ep_billitemamount = iRecord.getDouble("billitem_ep_billitemamount");
@@ -231,12 +234,22 @@ public class EP_BillItemTable {
 			if (iRecord.hasField("billitemhaspayee")) {
 				billitemhaspayee = iRecord.getString("billitemhaspayee");
 			}
-			dateTime = iRecord.getDate("dateTime");
+			
+			if (iRecord.hasField("dateTime")) {
+				dateTime = iRecord.getDate("dateTime");
+			} else {
+				dateTime = new Date();
+			}
 			
 			if (iRecord.hasField("billitem_ep_billitemenddate")) {
 				billitem_ep_billitemenddate = iRecord.getDate("billitem_ep_billitemenddate");
 			}
-			state = iRecord.getString("state");
+			
+			if (iRecord.hasField("state")) {
+				state = iRecord.getString("state");
+			} else {
+				state = "1";
+			}
 
 			if (iRecord.hasField("billitem_ep_billitemreminderdate")) {
 				billitem_ep_billitemreminderdate = iRecord.getString("billitem_ep_billitemreminderdate");
@@ -251,8 +264,12 @@ public class EP_BillItemTable {
 				billitem_ep_billitemduedatenew = iRecord.getDate("billitem_ep_billitemduedatenew");
 			}
 
-			billitem_ep_billisdelete = iRecord.getString("billitem_ep_billisdelete");
-
+			if (iRecord.hasField("billitem_ep_billisdelete")) {
+				billitem_ep_billisdelete = iRecord.getString("billitem_ep_billisdelete");
+			} else {
+				billitem_ep_billisdelete = "0";
+			}
+			
 			if (iRecord.hasField("billitem_ep_billitemnote")) {
 				billitem_ep_billitemnote = iRecord.getString("billitem_ep_billitemnote");
 			}
@@ -260,6 +277,8 @@ public class EP_BillItemTable {
 		}
 		
 		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+				
+			 if (uuid != null) {
 				
 				if (state.equals("0")) {
 					
@@ -309,6 +328,7 @@ public class EP_BillItemTable {
 					}
 			}
 				
+			}
 		}
 
 		public long getMillis2Int(long mills) { // 除去时分秒的时间

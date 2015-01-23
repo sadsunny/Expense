@@ -275,6 +275,8 @@ public class TransactionDao {
 			String childTransactions, int expenseAccount , int incomeAccount, 
 			int parTransaction, int payee, String transactionstring,int trans_billitem,int trans_billrule, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {  
 
+		long rId = 0;
+		
 		SQLiteDatabase db = getConnection(context);
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
@@ -304,6 +306,7 @@ public class TransactionDao {
 		try {
 			long id = db.insert("'Transaction'", null, cv);
 			
+			rId = id;
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
@@ -337,12 +340,11 @@ public class TransactionDao {
 			}
 			
 			db.close();
-			return id;
 		} catch (Exception e) {
 			// TODO: handle exception
 			db.close();
-			return 0;
 		}
+		return rId;
 
 	}
 	

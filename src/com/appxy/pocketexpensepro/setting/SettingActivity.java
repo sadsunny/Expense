@@ -11,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.bills.CreatBillsActivity;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
@@ -164,6 +163,7 @@ public class SettingActivity extends BaseHomeActivity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				
 				if (Common.mIsPaid) {
 					
 					Intent intent = new Intent();

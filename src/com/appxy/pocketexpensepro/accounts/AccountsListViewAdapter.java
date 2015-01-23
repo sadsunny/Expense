@@ -93,13 +93,7 @@ public class AccountsListViewAdapter extends BaseAdapter {
 		viewholder.accountTextView.setText(mData.get(position).get("accName")+"");
 		viewholder.typeTextView.setText(mData.get(position).get("typeName")+"");
 		
-		Double mAmount;
-		try {
-			mAmount = Double.parseDouble(mData.get(position).get("lastAmount")+"");
-		} catch (Exception e) {
-			// TODO: handle exception
-			mAmount = 0.0;
-		}
+		double mAmount = (Double)mData.get(position).get("allAmount");
 		
 		viewholder.currencyTextView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		
@@ -113,7 +107,7 @@ public class AccountsListViewAdapter extends BaseAdapter {
 			viewholder.symbolTextView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.currencyTextView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amountTextView.setTextColor(Color.rgb(83, 150, 39));
-			viewholder.amountTextView.setText( MEntity.doublepoint2str((String)mData.get(position).get("lastAmount")));
+			viewholder.amountTextView.setText( MEntity.doublepoint2str( (Double)mData.get(position).get("allAmount") +""));
 		}
 		
 		

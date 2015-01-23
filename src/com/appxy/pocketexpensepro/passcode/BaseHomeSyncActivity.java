@@ -49,8 +49,6 @@ public abstract class BaseHomeSyncActivity extends FragmentActivity{
 		registerReceiver(receiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
 	}
 
-	public abstract void syncDateChange();
-
 	 
 	@Override
 	protected void onResume() {

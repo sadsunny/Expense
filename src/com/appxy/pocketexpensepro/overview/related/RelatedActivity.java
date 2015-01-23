@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;

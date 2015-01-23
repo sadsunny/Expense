@@ -183,27 +183,27 @@ public class OverViewDao {
 	}
 	
 	public static List<Map<String, Object>> selectSumCategory(
-			Context context, long beginTime, long endTime) { // Account查询
+			Context context, long beginTime, long endTime, int type) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select b.* , sum(a.amount) from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id group by b._id ";
+		String sql = "select b.categoryType ,b.categoryName, sum(a.amount) from 'Transaction' a , Category b where b.categoryType = "+type+"  and a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id group by b._id";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
 
-			int _id = mCursor.getInt(0);
-			int categoryType = mCursor.getInt(5);
-			String categoryName = mCursor.getString(3);
-			double sum = mCursor.getDouble(24);
+			int categoryType = mCursor.getInt(0);
+			String categoryName = mCursor.getString(1);
+			double sum = mCursor.getDouble(2);
 			
-			mMap.put("_id", _id);
 			mMap.put("categoryType", categoryType);
 			mMap.put("categoryName", categoryName);
 			mMap.put("sum", sum);
 
 			mList.add(mMap);
 		}
+		
+		
 		mCursor.close();
 		db.close();
 

@@ -87,6 +87,7 @@ public class PurFragmentA extends Fragment {
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+	
 
 		upgradeButton.setOnClickListener(new OnClickListener() {
 
@@ -95,6 +96,7 @@ public class PurFragmentA extends Fragment {
 				// TODO Auto-generated method stub
 
 				if (iap_is_ok && mHelper != null) {
+					mHelper.flagEndAsync();
 					String payload = "";
 					mHelper.launchPurchaseFlow(getActivity(), Paid_Id_VF,
 							RC_REQUEST, mPurchaseFinishedListener);

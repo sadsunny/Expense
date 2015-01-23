@@ -12,7 +12,6 @@ import java.util.Set;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.budgets.CreatBudgetsActivity;

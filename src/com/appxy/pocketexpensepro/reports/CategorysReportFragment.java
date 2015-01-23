@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -19,6 +20,7 @@ import org.achartengine.renderer.SimpleSeriesRenderer;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
+import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
@@ -30,6 +32,8 @@ import android.app.DatePickerDialog;
 import android.app.ActionBar.LayoutParams;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -99,6 +103,11 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 	private TextView currency2 ;
 	private TextView expenseAmount ; 
 	private TextView incomeAmount ; 
+	
+	private double expenseAll = 0;
+	private double incomeAll = 0;
+	
+	private TreeMap<String, HashMap<String, Object>> mDataMap = new TreeMap<String, HashMap<String, Object> >();
 	  
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
@@ -122,6 +131,9 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 						+ MEntity.turnToDateString(MainActivity.endDate);
 				dateTextView.setText(dateString);
 
+				expenseAmount.setText(MEntity.doublepoint2str(expenseAll+""));
+				incomeAmount.setText(MEntity.doublepoint2str(incomeAll+""));
+				
 				break;
 
 			case MSG_FAILURE:
@@ -188,6 +200,20 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 		
 		mAdapter = new ReportCategoryListViewAdapter(mActivity);
 		mListView.setAdapter(mAdapter);
+		mListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				// TODO Auto-generated method stub
+				
+				Intent intent = new Intent();
+				intent.putExtra("categoryName", (String) mCategoryDataList.get(position).get("categoryName"));
+				intent.setClass(mActivity, CategoryListActivity.class);
+				startActivityForResult(intent, 2);
+				
+			}
+		});
 		
 		expenseLayout.setOnClickListener(new OnClickListener() {
 			
@@ -246,16 +272,71 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mCategoryDataListAll = OverViewDao.selectSumCategory(mActivity,
-					MainActivity.startDate, MainActivity.endDate);
-			mCategoryDataList.clear();
-			for (Map<String, Object> iMap : mCategoryDataListAll) {
-				int categoryType = (Integer) iMap.get("categoryType");
-				if (mCategoryType == categoryType) {
-					mCategoryDataList.add(iMap);
+			
+			List<Map<String, Object>> mSumList = ReportDao.selectCategoryAllSum(mActivity, MainActivity.startDate, MainActivity.endDate);  //查询该时间段的总额
+			
+			if (mSumList.size() > 0) { 
+				
+				for (int i = 0; i < mSumList.size(); i++) {
+					double sum = (Double) mSumList.get(i).get("sum");
+					int categoryType = (Integer) mSumList.get(i).get("categoryType");
+					if (categoryType == 0 ) {
+						expenseAll = sum;
+					}else if (categoryType == 1) {
+						incomeAll = sum ;
+					}
+					
 				}
+			}else {
+				expenseAll = 0 ;
+				incomeAll = 0 ;
 			}
-
+			
+			
+			if (mCategoryType == 0) {
+				total = expenseAll;
+			} else {
+				total = incomeAll;
+			}
+			
+			mCategoryDataListAll = OverViewDao.selectSumCategory(mActivity,
+					MainActivity.startDate, MainActivity.endDate, mCategoryType);
+			
+			mCategoryDataList.clear();
+			mDataMap.clear();
+			
+			for (Map<String, Object> iMap : mCategoryDataListAll) {
+				
+				String categoryName = (String) iMap.get("categoryName");
+				double sum = (Double) iMap.get("sum");
+				
+				String groupName = categoryName.split(":")[0];
+				
+				if (mDataMap.containsKey(groupName)) {
+					double temSum = (Double) mDataMap.get(groupName).get("sum");
+					
+					BigDecimal b1 = new BigDecimal(temSum);
+					BigDecimal b2 = new BigDecimal(sum);
+					
+					double newSum = b1.add(b2).doubleValue();
+					iMap.put("sum", newSum);
+					iMap.put("categoryName", groupName);
+					
+					mDataMap.put(groupName, (HashMap<String, Object>) iMap);
+					
+				}else {
+					iMap.put("categoryName", groupName);
+					mDataMap.put(groupName, (HashMap<String, Object>) iMap);
+				}
+				
+			}
+			
+			 for (Map.Entry entry : mDataMap.entrySet()) {  
+				 Object value = entry.getValue();
+				 mCategoryDataList.add((Map<String, Object>) value);
+			 }
+			
+			
 			Collections.sort(mCategoryDataList,
 					new MEntity.MapComparatorAmount());
 
@@ -265,7 +346,6 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 			double[] valueDoubles = new double[mCategoryDataList.size()];
 			String[] titleStrings = new String[mCategoryDataList.size()];
 			int k = 0;
-			BigDecimal b0 = new BigDecimal("0");
 			if (mCategoryDataList.size() == 0) {
 				valueDoubles = new double[1];
 				titleStrings = new String[1];
@@ -277,16 +357,15 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 					String title = (String) iMap.get("categoryName");
 					double sum = (Double) iMap.get("sum");
 					BigDecimal b1 = new BigDecimal(sum);
-					b0 = b0.add(b1);
 					valueDoubles[k] = sum;
 					titleStrings[k] = title;
 					k++;
 				}
 			}
-			total = b0.doubleValue();
 			values.add(valueDoubles);
 			titles.add(titleStrings);
-
+			
+			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -716,6 +795,24 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 
 	}
 
+	
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		switch (resultCode) {
+		case 2:
+
+			if (data != null) {
+				
+					mHandler.post(mTask);
+			}
+			break;
+		}
+		
+	}
 
 	@Override
 	public void onSyncFinished() {

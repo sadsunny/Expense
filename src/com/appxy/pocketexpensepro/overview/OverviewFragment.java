@@ -125,7 +125,6 @@ public class OverviewFragment extends Fragment implements
 	private WeekFragment weekFragment;
 	private ListView mListView;
 	private List<Map<String, Object>> mDataList;
-	private List<Map<String, Object>> mNetworthDataList;
 	private ListViewAdapter mListViewAdapter;
 	private Thread mThread;
 	private long selectedDate;
@@ -166,6 +165,8 @@ public class OverviewFragment extends Fragment implements
 	private Button adsButton;
 	private TextView notiTextView;
 	private TellMainBuyPro tellMainBuyPro;
+	
+	private double networthDoubel = 0;
 	/*
 	 * 
 	 */
@@ -215,19 +216,9 @@ public class OverviewFragment extends Fragment implements
 							.doublepoint2str((transactionAmount) + ""));
 				}
 
-				BigDecimal b1 = new BigDecimal("0");
-				for (Map<String, Object> iMap : mNetworthDataList) {
-					String amount = (String) iMap.get("lastAmount");
-					if (amount == null) {
-						amount = "1";
-					}
-					BigDecimal b2 = new BigDecimal(amount);
-					b1 = b1.add(b2);
-				}
 
-				double netWorth = b1.doubleValue();
 				networthTextView.setText(MEntity.doublepoint2str(String
-						.valueOf(netWorth)));
+						.valueOf(networthDoubel)));
 
 				if ((mBudgetList == null) || mBudgetList.size() == 0) {
 					mProgressBar.setProgress(0);
@@ -627,8 +618,6 @@ public class OverviewFragment extends Fragment implements
 			List<Map<String, Object>> mTransferList = OverViewDao
 					.selectBudgetTransfer(mActivity, firstDay, lastDay);
 
-			Log.v("mtest", "firstDay" + MEntity.turnToDateString(firstDay));
-			Log.v("mtest", "lastDay" + MEntity.turnToDateString(lastDay));
 
 			BigDecimal budgetBig = new BigDecimal("0");
 			BigDecimal transactionBig = new BigDecimal("0");
@@ -678,40 +667,12 @@ public class OverviewFragment extends Fragment implements
 			budgetAmount = budgetBig.doubleValue();
 			transactionAmount = transactionBig.doubleValue();
 
-			Log.v("mtest", "budgetAmount" + budgetAmount);
-			Log.v("mtest", "transactionAmount" + transactionAmount);
-
-			mNetworthDataList = AccountDao.selectAccount(mActivity);
-
-			for (Map<String, Object> iMap : mNetworthDataList) {
-				int _id = (Integer) iMap.get("_id");
-				String amount = (String) iMap.get("amount");
-				BigDecimal b1 = new BigDecimal(amount);
-
-				List<Map<String, Object>> mTemList = AccountDao
-						.selectTransactionByAccount(mActivity, _id);
-				BigDecimal b0 = new BigDecimal(0);
-				for (Map<String, Object> tMap : mTemList) {
-
-					String tAmount = (String) tMap.get("amount");
-					BigDecimal b2 = new BigDecimal(tAmount);
-
-					int expenseAccount = (Integer) tMap.get("expenseAccount");
-					int incomeAccount = (Integer) tMap.get("incomeAccount");
-
-					if (expenseAccount == _id) {
-						b0 = b0.subtract(b2);
-					} else if (incomeAccount == _id) {
-						b0 = b0.add(b2);
-					}
-
-				}
-
-				b1 = b1.add(b0);
-				double lastAmount = b1.doubleValue();
-				iMap.put("lastAmount", lastAmount + "");
+			List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(mActivity);
+			 if (newwothList!= null && newwothList.size() >0) {
+				 networthDoubel = (Double) newwothList.get(0).get("allAmount");
+			}else {
+				networthDoubel = 0;
 			}
-
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};

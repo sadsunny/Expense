@@ -17,7 +17,6 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.TransactionRecurringCheck;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.service.NotificationService;
@@ -79,7 +78,7 @@ public class Activity_Start extends Activity {
 		setContentView(R.layout.activity_start);
 		 
 		 if (PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
-			 Log.v("mtest", "?§Ø?NotificationService");
+			 Log.v("mtest", "?ï¿½ï¿½?NotificationService");
 	 		} else {
 	 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, NotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 	 	         long firstTime = SystemClock.elapsedRealtime();
@@ -90,7 +89,7 @@ public class Activity_Start extends Activity {
 	 		}
 	         
 	         if (PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_NO_CREATE) !=null) {
-	        	 Log.v("mtest", "?§Ø?PastDueService");
+	        	 Log.v("mtest", "?ï¿½ï¿½?PastDueService");
 	  		} else {
 	  			 pAlarmSender = PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, PastDueService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 	  	         long firstTime = SystemClock.elapsedRealtime();
@@ -182,7 +181,7 @@ public class Activity_Start extends Activity {
 // 			 mAlarmSender = PendingIntent.getService(Activity_Start.this, 0, new Intent(Activity_Start.this, BillNotificationService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 // 	         long firstTime = SystemClock.elapsedRealtime();
 // 	         //   Schedule the alarm!
-// 	         am = (AlarmManager)getSystemService(ALARM_SERVICE);//?§Ø???????????
+// 	         am = (AlarmManager)getSystemService(ALARM_SERVICE);//?ï¿½ï¿½???????????
 // 	         am.set(AlarmManager.RTC_WAKEUP,firstTime, mAlarmSender);
 // 	         am.setRepeating(AlarmManager.RTC_WAKEUP, getZeroTime(), days, mAlarmSender);
 // 		}
@@ -192,7 +191,7 @@ public class Activity_Start extends Activity {
 //  			 pAlarmSender = PendingIntent.getService(Activity_Start.this, 1, new Intent(Activity_Start.this, BillPastDueService.class), PendingIntent.FLAG_UPDATE_CURRENT);
 //  	         long firstTime = SystemClock.elapsedRealtime();
 //  	         //   Schedule the alarm!
-//  	         pm = (AlarmManager)getSystemService(ALARM_SERVICE);//?§Ø???????????
+//  	         pm = (AlarmManager)getSystemService(ALARM_SERVICE);//?ï¿½ï¿½???????????
 //  	         pm.set(AlarmManager.RTC_WAKEUP,firstTime, pAlarmSender);
 //  	         pm.setRepeating(AlarmManager.RTC_WAKEUP, getNineTime(), days, pAlarmSender);
 //  		}

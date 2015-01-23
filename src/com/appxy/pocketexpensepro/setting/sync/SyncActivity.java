@@ -45,7 +45,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -251,6 +250,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 	public void upLoadAllDate() throws DbxException { // 上传所有数据
 
+		int pageSize = 0;
+		
 		List<Map<String, Object>> CategoryList = SyncDao
 				.selectCategory(SyncActivity.this);
 		for (Map<String, Object> iMap : CategoryList) {
@@ -258,6 +259,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			Category category = categoryTable.getCategory();
 			category.setCategoryData(iMap);
 			categoryTable.insertRecords(category.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> AccountTypeList = SyncDao
@@ -268,6 +275,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			AccountType accountType = accountTypeTable.getAccountType();
 			accountType.setAccountTypeData(iMap);
 			accountTypeTable.insertRecords(accountType.getFields());
+			pageSize ++;
+			
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> AccountsList = SyncDao
@@ -277,6 +290,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			Accounts accounts = accountsTable.getAccounts();
 			accounts.setAccountsData(iMap);
 			accountsTable.insertRecords(accounts.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> PayeeList = SyncDao
@@ -286,6 +305,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			Payee payee = payeeTable.getPayee();
 			payee.setPayeeData(iMap);
 			payeeTable.insertRecords(payee.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> BudgetTemplateList = SyncDao
@@ -297,6 +322,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 					.getBudgetTemplate();
 			budgetTemplate.setBudgetTemplateData(iMap);
 			budgetTemplateTable.insertRecords(budgetTemplate.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> BudgetItemList = SyncDao
@@ -307,6 +338,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			BudgetItem budgetItem = budgetItemTable.getBudgetItem();
 			budgetItem.setBudgetItemData(iMap);
 			budgetItemTable.insertRecords(budgetItem.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> BudgetTransferList = SyncDao
@@ -318,6 +355,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 					.getBudgetTransfer();
 			budgetTransfer.setBudgetTransferData(iMap);
 			budgetTransferTable.insertRecords(budgetTransfer.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> EP_BillRuleList = SyncDao
@@ -328,6 +371,12 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			EP_BillRule ep_BillRule = ep_BillRuleTable.getEP_BillRule();
 			ep_BillRule.setEP_BillRuleData(iMap);
 			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> EP_BillItemList = SyncDao
@@ -339,16 +388,29 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			EP_BillItem ep_BillItem = ep_BillItemTable.getEP_BillItem();
 			ep_BillItem.setEP_BillItemData(iMap);
 			ep_BillItemTable.insertRecords(ep_BillItem.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		List<Map<String, Object>> TransactionList = SyncDao
 				.selectTransaction(SyncActivity.this);
+		
 		for (Map<String, Object> iMap : TransactionList) {
 			TransactionTable transactionTable = new TransactionTable(
 					mDatastore, this);
 			Transaction transaction = transactionTable.getTransaction();
 			transaction.setTransactionData(iMap);
 			transactionTable.insertRecords(transaction.getFields());
+			
+			pageSize ++;
+			if (pageSize%1000 == 0 ) {
+				mDatastore.sync();
+			}
+			
 		}
 
 		mDatastore.sync();
@@ -447,20 +509,20 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	}
 
 	@Override
-	protected void onPause() {
+	protected void onDestroy() {
 		// TODO Auto-generated method stub
-		super.onPause();
-
-		if (mDatastore != null) {
-			mDatastore.removeSyncStatusListener(mDatastoreListener);
-			mDatastore.close();
-			mDatastore = null;
-		}
-		if (mDbxAcct != null) {
-			mDbxAcct.removeListener(mAccountListener);
-			mDbxAcct = null;
-		}
-
+		super.onDestroy();
+		
+			if (mDatastore != null) {
+				mDatastore.removeSyncStatusListener(mDatastoreListener);
+				mDatastore.close();
+				mDatastore = null;
+			}
+			if (mDbxAcct != null) {
+				mDbxAcct.removeListener(mAccountListener);
+				mDbxAcct = null;
+			}
+		
 	}
 
 	@Override
@@ -507,10 +569,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
 	}
 
-	@Override
-	public void syncDateChange() {
-		// TODO Auto-generated method stub
-	}
 
 	private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap)
 			throws DbxException {// 处理同步数据incoming
@@ -546,6 +604,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 		}
 
+		
 		if (mMap.containsKey("db_payee_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_payee_table");
@@ -628,7 +687,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
-
+		
 		if (mMap.containsKey("db_ep_billrule_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_ep_billrule_table");
@@ -646,6 +705,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 		}
 
+		
 		if (mMap.containsKey("db_ep_billitem_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_ep_billitem_table");
@@ -662,7 +722,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
-
+		
 		if (mMap.containsKey("db_transaction_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_transaction_table");
@@ -679,7 +739,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
-
+		
 	}
 
 }

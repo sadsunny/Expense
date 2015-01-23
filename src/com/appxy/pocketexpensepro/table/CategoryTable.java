@@ -115,7 +115,7 @@ public class CategoryTable {
 
 		}
 		
-	 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+	 public void insertOrUpdate() { //��规��state���浣���版��搴�锛�涓�杞藉�����澶����
 			
 			if (state.equals("0")) {
 				CategoryDao.deleteCategoryByUUid(context, uuid);
@@ -155,10 +155,22 @@ public class CategoryTable {
 			
 			category_iconname = iRecord.getString("category_iconname") ;
 			uuid = iRecord.getString("uuid") ;
-			category_isdefault = (int)iRecord.getLong("category_isdefault");
+			
+			if (iRecord.hasField("category_isdefault")) {
+				category_isdefault = (int)iRecord.getLong("category_isdefault");
+			}else {
+				category_isdefault = 0;
+			}
+			
 			category_categoryname = iRecord.getString("category_categoryname");
 			dateTime = iRecord.getDate("dateTime");
-			state = iRecord.getString("state");
+			
+			if (iRecord.hasField("state")) {
+				state = iRecord.getString("state");
+			}else {
+				state = "1";
+			}
+			
 			category_issystemrecord = (int)iRecord.getLong("category_issystemrecord");
 			category_categorytype = iRecord.getString("category_categorytype");
 			
@@ -241,7 +253,7 @@ public class CategoryTable {
 	}
 		
 
-	public void updateState(String uuid, String state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String state) throws DbxException {// ��存�圭�舵��
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);
@@ -293,7 +305,7 @@ public class CategoryTable {
 		Iterator<DbxRecord> it = results.iterator();
 
 //		if (thisFields.hasField("category_categoryname")) {
-//			DbxFields queryCaName = new DbxFields(); // 判断改名字的Category的个数
+//			DbxFields queryCaName = new DbxFields(); // ��ゆ����瑰��瀛����Category���涓����
 //			queryCaName.set("category_categoryname", thisFields.getString("category_categoryname"));
 //			DbxTable.QueryResult nameResults = mTable.query(queryCaName);
 //			int  resultsCount = nameResults.count();
@@ -306,7 +318,7 @@ public class CategoryTable {
 		if (it.hasNext()) {
 			DbxRecord firstResult = it.next();
 			if (firstResult.getDate("dateTime").getTime() <= thisFields.getDate(
-					"dateTime").getTime()) { // 比对同步时间
+					"dateTime").getTime()) { // 姣�瀵瑰��姝ユ�堕��
 
 				firstResult.setAll(thisFields);
 				while (it.hasNext()) {

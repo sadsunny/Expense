@@ -20,97 +20,88 @@ import android.util.Log;
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
-	
-	public static int calculateInSampleSize(  // 根据图片的尺寸，返回一个合适的大小 
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-    // Raw height and width of image
-    final int height = options.outHeight;
-    final int width = options.outWidth;
-    int inSampleSize = 1;
 
-    if (height > reqHeight || width > reqWidth) {
+	public static int calculateInSampleSize( // 根据图片的尺寸，返回一个合适的大小
+			BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		// Raw height and width of image
+		final int height = options.outHeight;
+		final int width = options.outWidth;
+		int inSampleSize = 1;
 
-        final int halfHeight = height / 2;
-        final int halfWidth = width / 2;
+		if (height > reqHeight || width > reqWidth) {
 
-        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-        // height and width larger than the requested height and width.
-        while ((halfHeight / inSampleSize) > reqHeight
-                && (halfWidth / inSampleSize) > reqWidth) {
-            inSampleSize *= 2;
-        }
-    }
-    return inSampleSize;
-}
-	
-	public static Bitmap decodeSampledBitmapFromResource(String picPath ,int reqWidth, int reqHeight ) {  //照相图片 缩放较大的图片
+			final int halfHeight = height / 2;
+			final int halfWidth = width / 2;
+
+			// Calculate the largest inSampleSize value that is a power of 2 and
+			// keeps both
+			// height and width larger than the requested height and width.
+			while ((halfHeight / inSampleSize) > reqHeight
+					&& (halfWidth / inSampleSize) > reqWidth) {
+				inSampleSize *= 2;
+			}
+		}
+		return inSampleSize;
+	}
+
+	public static Bitmap decodeSampledBitmapFromResource(String picPath,
+			int reqWidth, int reqHeight) { // 照相图片 缩放较大的图片
 		/*
 		 * 第一步先计算出图片的尺寸
 		 */
-		
-		BitmapFactory.Options options = new BitmapFactory.Options(); 
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeFile(picPath, options);
 
-	    // First decode with inJustDecodeBounds=true to check dimensions
-	    options.inJustDecodeBounds = true;
+		// First decode with inJustDecodeBounds=true to check dimensions
+		options.inJustDecodeBounds = true;
 
-	    // Calculate inSampleSize
-	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+		// Calculate inSampleSize
+		options.inSampleSize = calculateInSampleSize(options, reqWidth,
+				reqHeight);
 
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    return BitmapFactory.decodeFile(picPath, options);
+		// Decode bitmap with inSampleSize set
+		options.inJustDecodeBounds = false;
+		return BitmapFactory.decodeFile(picPath, options);
 	}
-	
-	
+
 	public static String turnMilltoDate(long milliSeconds) {// 将毫秒转化成固定格式的年月日
 		SimpleDateFormat formatter = new SimpleDateFormat("MMddyyyy");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		return formatter.format(calendar.getTime());
 	}
-	
-	public static String[]  TransactionRecurring = {
-        "Never",
-        "Daily",
-        "Weekly",
-        "Every 2 Weeks",
-        "Every 3 Weeks",
-        "Every 4 Weeks",
-        "Semimonthly",
-        "Monthly",
-        "Every 2 Months",
-        "Every 3 Months",
-        "Every 4 Months",
-        "Every 5 Months",
-        "Every 6 Months",
-        "Every Year"
-	};
-	
+
+	public static String[] TransactionRecurring = { "Never", "Daily", "Weekly",
+			"Every 2 Weeks", "Every 3 Weeks", "Every 4 Weeks", "Semimonthly",
+			"Monthly", "Every 2 Months", "Every 3 Months", "Every 4 Months",
+			"Every 5 Months", "Every 6 Months", "Every Year" };
+
 	public static int positionTransactionRecurring(String transactionRecurring) {
 		int position = 0;
 		for (int i = 0; i < TransactionRecurring.length; i++) {
-			if (TransactionRecurring [i].equals(transactionRecurring) ) {
+			if (TransactionRecurring[i].equals(transactionRecurring)) {
 				return i;
 			}
 		}
 		return position;
 	}
-	
-	public static String [] reminderTypeStrings = {"None" , "1 day before","2 days before" , "3 days before","1 week before" ,"2 weeks before" ,"on date of event" };
-			
+
+	public static String[] reminderTypeStrings = { "None", "1 day before",
+			"2 days before", "3 days before", "1 week before",
+			"2 weeks before", "on date of event" };
+
 	public static int positionReminder(String reminder) {
 		int position = 0;
 		for (int i = 0; i < reminderTypeStrings.length; i++) {
-			if (reminderTypeStrings [i].equals(reminder) ) {
+			if (reminderTypeStrings[i].equals(reminder)) {
 				return i;
 			}
 		}
 		return position;
 	}
-	
-	
+
 	public static String reminderDate(int remindDate) { // 转换提前提醒
 		String before = "None";
 		if (remindDate == 0) {
@@ -134,24 +125,17 @@ public class MEntity {
 	public static int positionRecurring(String recurringtype) {
 		int position = 0;
 		for (int i = 0; i < recurringTypeStrings.length; i++) {
-			if (recurringTypeStrings [i].equals(recurringtype) ) {
+			if (recurringTypeStrings[i].equals(recurringtype)) {
 				return i;
 			}
 		}
 		return position;
 	}
-	
-	public static String [] recurringTypeStrings = {  
-		"Never",
-		"Weekly",
-		"Every 2 Weeks" , 
-		"Every 4 Weeks",
-		"Semimonthly", 
-		"Monthly", 
-		"Every 2 Months",  
-		"Every 3 Months" ,
-		"Every Year" };
-	
+
+	public static String[] recurringTypeStrings = { "Never", "Weekly",
+			"Every 2 Weeks", "Every 4 Weeks", "Semimonthly", "Monthly",
+			"Every 2 Months", "Every 3 Months", "Every Year" };
+
 	public static String turnTorecurring(int remindDate) { // 转换提前提醒
 		String recurring = "Never";
 		if (remindDate == 0) {
@@ -175,25 +159,26 @@ public class MEntity {
 		}
 		return recurring;
 	}
-	
-	
+
 	public static Date getMilltoDropBox(long milliSeconds) {// 将毫秒转化成固定格式的年月日
-		SimpleDateFormat formatter = new SimpleDateFormat("EE MM dd yyyy HH:mm:ss");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				"EE MM dd yyyy HH:mm:ss");
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliSeconds);
 		Date date = new Date();
 		try {
-			date = (Date)formatter.parseObject( formatter.format(calendar.getTime()));
+			date = (Date) formatter.parseObject(formatter.format(calendar
+					.getTime()));
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return date;
 	}
-	
+
 	public static Date getMilltoDateFormat(long milliSeconds) {// 将毫秒转化成Date
-		
-		if ( milliSeconds == -1 ) {
+
+		if (milliSeconds == -1) {
 			return null;
 		}
 		Date date = new Date();
@@ -201,8 +186,7 @@ public class MEntity {
 		return date;
 	}
 
-
-	public static String getUUID() { //获取随机的唯一ID
+	public static String getUUID() { // 获取随机的唯一ID
 
 		UUID uuid = UUID.randomUUID();
 		String uniqueId = uuid.toString();
@@ -240,12 +224,62 @@ public class MEntity {
 		@Override
 		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
 			// TODO Auto-generated method stub
+			
 			long due1 = (Long) o1.get("dateTime");
 			long due2 = (Long) o2.get("dateTime");
 			if (due1 > due2) {
 				return -1;
 			} else if (due1 < due2) {
 				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+	
+	
+	public static long getMilltoDate(String date) {
+		Calendar calendar = Calendar.getInstance();
+		try {
+			calendar.setTime(new SimpleDateFormat("MMMM, yyyy").parse(date));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return calendar.getTimeInMillis();
+		}
+		return calendar.getTimeInMillis();
+	}
+	
+
+	public static class MapComparatorGroupTime implements // sort Group list
+			Comparator<String> {
+		@Override
+		public int compare(String o1, String o2) {
+			// TODO Auto-generated method stub
+			
+			long due1 = getMilltoDate( o1 );
+			long due2 = getMilltoDate( o2 );
+			if (due1 > due2) {
+				return -1;
+			} else if (due1 < due2) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	}
+
+	public static class MapComparatorTimeDesc implements
+			Comparator<Map<String, Object>> {
+		@Override
+		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+			// TODO Auto-generated method stub
+			long due1 = (Long) o1.get("dateTime");
+			long due2 = (Long) o2.get("dateTime");
+			if (due1 > due2) {
+				return 1;
+			} else if (due1 < due2) {
+				return -1;
 			} else {
 				return 0;
 			}

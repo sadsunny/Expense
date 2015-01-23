@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.support.v4.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -97,14 +98,12 @@ public class AccountActivity extends BaseHomeActivity {
 					mAccountsListViewAdapter.sortIsChecked(-1);
 					mAccountsListViewAdapter.notifyDataSetChanged();
 
-					BigDecimal b1 = new BigDecimal("0");
-					for (Map<String, Object> iMap : mDataList) {
-						String amount = (String) iMap.get("lastAmount");
-						BigDecimal b2 = new BigDecimal(amount);
-						b1 = b1.add(b2);
-					}
-					
-					netWorth = b1.doubleValue();
+//					for (Map<String, Object> iMap : mDataList) {
+//						String amount = (String) iMap.get("lastAmount");
+//						BigDecimal b2 = new BigDecimal(amount);
+//						b1 = b1.add(b2);
+//					}
+//					
 					netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
 				}else {
 					mListView.setVisibility(View.INVISIBLE);
@@ -410,54 +409,26 @@ public class AccountActivity extends BaseHomeActivity {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mDataList = AccountDao.selectAccount(AccountActivity.this);
 			
-			for (Map<String, Object> iMap : mDataList) {
-				int _id = (Integer) iMap.get("_id");
-				String amount = (String) iMap.get("amount");
-				BigDecimal b1 = new BigDecimal(amount);
-
-				List<Map<String, Object>> mTemList = AccountDao
-						.selectTransactionByAccount(AccountActivity.this, _id);
-				BigDecimal b0 = new BigDecimal(0);
-				for (Map<String, Object> tMap : mTemList) {
-
-					String tAmount = (String) tMap.get("amount");
-					BigDecimal b2 = new BigDecimal(tAmount);
-
-					int expenseAccount = (Integer) tMap.get("expenseAccount");
-					int incomeAccount = (Integer) tMap.get("incomeAccount");
-
-					if (expenseAccount == _id) {
-						b0 = b0.subtract(b2);
-					} else if (incomeAccount == _id) {
-						b0 = b0.add(b2);
-					}
-
-				}
-
-				b1 = b1.add(b0);
-				double lastAmount = b1.doubleValue();
-				iMap.put("lastAmount", lastAmount + "");
+			if (mDataList!= null) {
+				mDataList.clear();
 			}
-
-			List<Map<String, Object>> mOutList = AccountDao.selectTransactionOnClear(AccountActivity.this, 0);
-			BigDecimal b1 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mOutList) {
-				
-				String amount = (String) iMap.get("amount");
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				BigDecimal b2 = new BigDecimal(amount);
-				
-				if (expenseAccount > 0 && incomeAccount <= 0) {
-					b1 = b1.subtract(b2);
-				} else if (incomeAccount > 0 && expenseAccount <= 0) {
-					b1 = b1.add(b2);
-				}
+			 mDataList = AccountDao.selectAccountBySum(AccountActivity.this);
+			
+			 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(AccountActivity.this);
+			 if (newwothList!= null && newwothList.size() >0) {
+				 netWorth = (Double) newwothList.get(0).get("allAmount");
+			}else {
+				 netWorth = 0;
 			}
-			outDouble = b1.doubleValue();
-
+			
+			 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(AccountActivity.this, 0);
+			 if (outList!= null && outList.size() > 0) {
+				 outDouble = (Double) outList.get(0).get("outstandingAmount");
+			} else {
+				 outDouble = 0;
+			}
+			 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 
 		}

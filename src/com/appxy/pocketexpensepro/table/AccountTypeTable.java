@@ -86,6 +86,8 @@ public class AccountTypeTable {
 
 		public void insertOrUpdate() { //根据state操作数据库，下载后的处理
 			
+			if (uuid != null) {
+				
 			if (state.equals("0")) {
 				AccountDao.deleteAccountTypeByUUID(context, uuid);
 			} else if (state.equals("1")){
@@ -103,7 +105,7 @@ public class AccountTypeTable {
 
 				}
 			}
-			
+		  }
 		}
 
 		public void setAccountTypeData(Map<String, Object> mMap) {
@@ -119,12 +121,40 @@ public class AccountTypeTable {
 		
 		public void setIncomingData(DbxRecord iRecord) { 
 			
-			accounttype_typename = iRecord.getString("accounttype_typename");
-			accounttype_iconname = iRecord.getString("accounttype_iconname");
-			dateTime = iRecord.getDate("dateTime");
-			state = iRecord.getString("state");
-			accounttype_isdefault = (int)iRecord.getLong("accounttype_isdefault");
-			uuid = iRecord.getString("uuid");
+			if (iRecord.hasField("accounttype_typename")) {
+				accounttype_typename = iRecord.getString("accounttype_typename");
+			} else {
+				accounttype_typename = "";
+			}
+			
+			if (iRecord.hasField("accounttype_iconname")) {
+				accounttype_iconname = iRecord.getString("accounttype_iconname");
+			} else {
+				accounttype_iconname = "";
+			}
+			
+			if (iRecord.hasField("dateTime")) {
+				dateTime = iRecord.getDate("dateTime");
+			} else {
+				dateTime = new Date();
+			}
+		
+			if (iRecord.hasField("state")) {
+				state = iRecord.getString("state");
+			} else {
+				state = "1";
+			}
+			
+			if (iRecord.hasField("accounttype_isdefault")) {
+				accounttype_isdefault = (int)iRecord.getLong("accounttype_isdefault");
+			} else {
+				accounttype_isdefault = 1;
+			}
+			
+			if (iRecord.hasField("uuid")) {
+				uuid = iRecord.getString("uuid");
+			}
+			
 			
 		}
 

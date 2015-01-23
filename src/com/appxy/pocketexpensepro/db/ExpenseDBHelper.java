@@ -87,7 +87,7 @@ public class ExpenseDBHelper extends SQLiteOpenHelper {
 		String CREAT_Setting_TABLE = "CREATE TABLE IF NOT EXISTS Setting ( _id INTEGER PRIMARY KEY AUTOINCREMENT ,accDRendDate TEXT, accDRstartDate TEXT, accDRstring TEXT, budgetNewStyle TEXT, budgetNewStyleCycle TEXT, cateDRendDate TEXT, cateDRstartDate TEXT, cateDRstring TEXT, currency TEXT, dateTime TEXT, expDRString TEXT, expenseLastView TEXT, isBefore TEXT, otherBool TEXT, otherBool1 TEXT, otherBool2 TEXT, otherBool3 TEXT, otherBool4 TEXT, otherBool5 TEXT, otherBool6 TEXT, otherBool7 TEXT, otherBool8 TEXT, otherBool9 TEXT, otherBool10 TEXT, otherBool11 TEXT, otherBool12 TEXT, otherBool13 TEXT, otherBool14 TEXT, otherBool15 TEXT, otherBool16 TEXT, otherBool17 TEXT, otherBool18 TEXT, otherBool19 TEXT, otherBool20 TEXT, others TEXT, others1 TEXT, others2 TEXT, others3 TEXT, others4 TEXT, others5 TEXT, others6 TEXT, others7 TEXT, others8 TEXT, others9 TEXT, others10 TEXT, others11 TEXT, others12 TEXT, others13 TEXT, others14 TEXT, others15 TEXT, others16 TEXT, others17 TEXT, others18 TEXT, others19 TEXT, others20 TEXT, passcode TEXT, payeeCategory INTEGER, payeeCfged INTEGER, payeeMemo INTEGER, payeeName INTEGER, payeeTranAmount INTEGER, payeeTranClear INTEGER, payeeTranMemo INTEGER, payeeTranType INTEGER, playorder INTEGER, sortType TEXT, state TEXT, uuid TEXT, weekstartday TEXT)" ;
 	    paramSQLiteDatabase.execSQL(CREAT_Setting_TABLE);
 
-	
+	    
 		accountTypeIni(0, 1, "Asset", "F2243FC7-6E01-4CD8-8A03-6AE56E7B20E1");
 		accountTypeIni(1, 1, "Cash", "9832B8FA-537C-4963-8CA9-19385E9732E5");
 		accountTypeIni(2, 1, "Checking","9C4251B9-5B57-4472-8B6E-BAF1A4D60650");

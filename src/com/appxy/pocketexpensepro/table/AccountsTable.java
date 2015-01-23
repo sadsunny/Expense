@@ -114,11 +114,36 @@ public class AccountsTable {
 		
 		public void setIncomingData(DbxRecord iRecord) { //incoming数据初始化
 
-			name = iRecord.getString("name");
-			state = iRecord.getString("state");;
-			datetime = iRecord.getDate("datetime");
-			autoclear = (int) iRecord.getLong("autoclear");
-			amount = iRecord.getDouble("amount");
+			if (iRecord.hasField("name")) {
+				name = iRecord.getString("name");
+			} else {
+				name = "";
+			}
+			
+			if (iRecord.hasField("state")) {
+				state = iRecord.getString("state");
+			} else {
+				state = "1";
+			}
+			
+			if (iRecord.hasField("datetime")) {
+				datetime = iRecord.getDate("datetime");
+			} else {
+				datetime = new Date();
+			}
+			
+			if (iRecord.hasField("autoclear")) {
+				autoclear = (int) iRecord.getLong("autoclear");
+			} else {
+				autoclear = 1;
+			}
+			
+			if (iRecord.hasField("amount")) {
+				amount = iRecord.getDouble("amount");
+			} else {
+				amount = 0;
+			}
+			
 			
 			if (iRecord.hasField("accountType")) {
 				accountType = iRecord.getString("accountType");
@@ -127,16 +152,28 @@ public class AccountsTable {
 			if (iRecord.hasField("orderindex")) {
 			  orderindex = (int) iRecord.getLong("orderindex");
 			}else {
-			 orderindex = 100;
+			  orderindex = 100;
 			}
 			
-			dateTime_sync = iRecord.getDate("dateTime_sync");
-			uuid = iRecord.getString("uuid");
+			if (iRecord.hasField("dateTime_sync")) {
+				dateTime_sync = iRecord.getDate("dateTime_sync");
+			} else {
+				dateTime_sync = new Date();
+			}
+			
+			if (iRecord.hasField("uuid")) {
+				uuid = iRecord.getString("uuid");
+			} else {
+				uuid = null;
+			}
+			
 			
 		}
 		
 		public void insertOrUpdate() { //根据state操作数据库
 			
+			if (uuid != null) {
+				
 			if (state.equals("0")) {
 				long row = AccountDao.deleteAccountByUUID(context, uuid);
 			} else if (state.equals("1")){
@@ -153,7 +190,7 @@ public class AccountsTable {
 					 long row = AccountDao.insertAccountAll(context, name, amount+"", datetime.getTime(), autoclear, AccountDao.getAccountTypeIdByUUID(context,accountType),state ,uuid, dateTime_sync.getTime(), orderindex);
 				}
 			}
-			
+		  }
 		}
 		
 		

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.Common;
 
 import android.annotation.SuppressLint;

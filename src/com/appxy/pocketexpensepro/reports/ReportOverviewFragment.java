@@ -329,7 +329,7 @@ public class ReportOverviewFragment extends Fragment implements OnSyncFinishedLi
 			filterData(mDataList);
 
 			mCategoryDataListAll = OverViewDao.selectSumCategory(mActivity,
-					MainActivity.startDate, MainActivity.endDate);
+					MainActivity.startDate, MainActivity.endDate, mCategoryType);
 			mCategoryDataList.clear();
 			for (Map<String, Object> iMap : mCategoryDataListAll) {
 				int categoryType = (Integer) iMap.get("categoryType");

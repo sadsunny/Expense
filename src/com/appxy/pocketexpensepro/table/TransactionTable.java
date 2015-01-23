@@ -7,7 +7,6 @@ import java.util.Map;
 
 import android.R.integer;
 import android.content.Context;
-import android.util.Log;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -128,7 +127,7 @@ public class TransactionTable {
 			if (iRecord.hasField("trans_amount")) {
 				trans_amount = iRecord.getDouble("trans_amount");
 			}else {
-				trans_amount = 0;
+				trans_amount =  0;
 			}
 			
 			if (iRecord.hasField("trans_notes")) {
@@ -146,19 +145,45 @@ public class TransactionTable {
 				trans_category = iRecord.getString("trans_category");
 			}
 			
-			dateTime_sync = iRecord.getDate("dateTime_sync");
-			state = iRecord.getString("state");
+			if (iRecord.hasField("dateTime_sync")) {
+				dateTime_sync = iRecord.getDate("dateTime_sync");
+			}else {
+				dateTime_sync = new Date();
+			}
+			
+			if (iRecord.hasField("uuid")) {
+				uuid = iRecord.getString("uuid");
+			}else {
+				uuid = null;
+			}
+			
+			if (iRecord.hasField("state")) {
+				state = iRecord.getString("state");
+			}else{
+				state = "1";
+			}
 			
 			if (iRecord.hasField("trans_recurringtype")) {
 				
 				trans_recurringtype = iRecord.getString("trans_recurringtype");
 			}
 			
-			trans_datetime = iRecord.getDate("trans_datetime");
+			if (iRecord.hasField("trans_datetime")) {
+				trans_datetime = iRecord.getDate("trans_datetime");
+			}
 			
-			trans_isclear = (int)iRecord.getLong("trans_isclear");
 			
-			uuid = iRecord.getString("uuid");
+			try {
+				if (iRecord.hasField("trans_isclear")) {
+					trans_isclear = (int)iRecord.getLong("trans_isclear");
+				}else {
+					trans_isclear = 0;
+				}
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+				trans_isclear = 0;
+			}
 			
 			if (iRecord.hasField("trans_partransaction")) {
 				trans_partransaction = iRecord.getString("trans_partransaction");
@@ -173,7 +198,9 @@ public class TransactionTable {
 			
 		}
 		
-		 public void insertOrUpdate() { //根据state操作数据库，下载后的处理
+		 public void insertOrUpdate() { 
+				
+			 if (uuid != null) {
 				
 				if (state.equals("0")) {
 					
@@ -208,7 +235,7 @@ public class TransactionTable {
 						
 					}
 				}
-				
+			  }
 			}
 		 
 		 
@@ -371,7 +398,7 @@ public class TransactionTable {
 
 	}
 
-	public void updateState(String uuid, String trans_string, String state) throws DbxException {// 更改状态
+	public void updateState(String uuid, String trans_string, String state) throws DbxException {// ��存�圭�舵��
 
 		DbxFields queryParams = new DbxFields().set("uuid", uuid);
 		DbxTable.QueryResult results = mTable.query(queryParams);

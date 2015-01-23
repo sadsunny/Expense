@@ -561,10 +561,15 @@ public class EditTransferActivity extends BaseHomeActivity {
 					// context, amount, dateTime, isClear, notes, photoName, recurringType, category, childTransactions, expenseAccount , incomeAccount, parTransaction, payee)
 					 if(fromId != toId){
 						 long row = AccountDao.updateTransactionAll(_id, EditTransferActivity.this,amountString,dateLong,isCleared, memoString, picPath, 0, 0, 0+"", fromId ,toId , 0 ,payeeId, uuid, mDbxAcctMgr, mDatastore);
+						    
+						 if(row > 0){
+							    Intent resultintent = new Intent();
+								resultintent.putExtra("row", row);
+								setResult(13, resultintent);
+						 }
+						   
 					 }
-					    Intent resultintent = new Intent();
-						resultintent.putExtra("row", 1);
-						setResult(13, resultintent);
+					   
 
 					finish();
 				}

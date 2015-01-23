@@ -8,7 +8,6 @@ import java.util.Map;
 import android.content.Context;
 import android.util.Log;
 
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.setting.category.CategoryDao;

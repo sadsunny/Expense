@@ -2,14 +2,19 @@ package com.appxy.pocketexpensepro.accounts;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.dropbox.sync.android.DbxAccountManager;
+import com.dropbox.sync.android.DbxDatastore;
 
+import android.R.bool;
 import android.R.integer;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -30,32 +35,45 @@ import android.widget.TextView;
 public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
 	private LayoutInflater inflater;
-	private List<Map<String, Object>> groupList;
-	private List<List<Map<String, Object>>> childList;
-	private int accountId;
 	private Context context;
-	private int reconcileCheck; 
-
-	public ExpandableListViewAdapter(Context context, int id) {
+	private boolean isReconcile = false; // 是否显示前面的选择框，ture代表显示前面的checkbox
+	private String currencyLable = "$";
+	private int accountId = 0;
+	private int colorGreen = Color.rgb(83,150,39);
+	private int colorRed = Color.rgb(208, 47 ,58);
+	
+	private boolean hideClear = true;
+	
+	private DbxAccountManager mDbxAcctMgr;
+	private DbxDatastore mDatastore;
+	
+	private ArrayList<String> mGroupList;
+	private HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap; 
+	
+	
+	public ExpandableListViewAdapter(Context context,int accountId) {
 		this.context = context;
 		inflater = LayoutInflater.from(context);
-		this.accountId = id;
+		currencyLable = Common.CURRENCY_SIGN[Common.CURRENCY] ;
+		this.accountId = accountId;
 	}
 
-	public void setAdapterData(List<Map<String, Object>> groupList,
-			List<List<Map<String, Object>>> childList) {
+	public void setAdapterData(ArrayList<String> mGroupList,
+			HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 
-		this.groupList = groupList;
-		this.childList = childList;
-
+		this.mGroupList = mGroupList;
+		this.mChildMap = mChildMap;
+		this.mDbxAcctMgr = mDbxAcctMgr;
+		this.mDatastore = mDatastore;
+		
 	}
 
-	public List<List<Map<String, Object>>> getAdapterDate() {
-		return this.childList;
+	public void setReconcile( boolean isReconcile) {
+		this.isReconcile = isReconcile;
 	}
 	
-	public void setReconcile(int check) {
-		this.reconcileCheck = check;
+	public void setShowClear( boolean hideClear) {
+		this.hideClear = hideClear;
 	}
 
 	@Override
@@ -66,28 +84,21 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	// counts the number of group/parent items so the list knows how many times
+	// counts the number of group/parent items so the list knows how many
+	// times
 	// calls getGroupView() method
 	public int getGroupCount() {
 		// TODO Auto-generated method stub
-		if (groupList == null) {
+		if (mGroupList == null) {
 			return 0;
 		}
-		return groupList.size();
+		return mGroupList.size();
 	}
 
 	@Override
 	public long getGroupId(int groupPosition) {
 		// TODO Auto-generated method stub
 		return groupPosition;
-	}
-
-	public String turnToDate(long mills) { // 锟斤拷锟斤拷锟斤拷锟斤拷转锟斤拷为锟斤拷锟节猴拷锟斤拷锟斤拷
-
-		Date date2 = new Date(mills);
-		SimpleDateFormat sdf = new SimpleDateFormat("MMMM, yyyy");
-		String theDate = sdf.format(date2);
-		return theDate;
 	}
 
 	@Override
@@ -106,8 +117,8 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 			viewholder = (gViewHolder) convertView.getTag();
 		}
 
-		viewholder.mTextView.setText(turnToDate((Long) groupList.get(
-				groupPosition).get("dateTime")));
+		String dateKey = mGroupList.get(groupPosition);
+		viewholder.mTextView.setText( dateKey  );
 
 		convertView.setOnTouchListener(new View.OnTouchListener() { // 设置Group是否可点击
 
@@ -134,7 +145,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 		return childPosition;
 	}
 
-	public String turnToDateString(long mills) { // 锟斤拷锟斤拷锟斤拷锟斤拷转锟斤拷为锟斤拷锟节猴拷锟斤拷锟斤拷
+	public String turnToDateString(long mills) {
 
 		Date date2 = new Date(mills);
 		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
@@ -143,17 +154,18 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(final int groupPosition, final int childPosition,
-			boolean isLastChild, View convertView, ViewGroup parent) {
+	public View getChildView( final int groupPosition,
+			 final int childPosition, boolean isLastChild, View convertView,
+			ViewGroup parent) {
 		// TODO Auto-generated method stub
 		cViewHolder viewholder = null;
 		if (convertView == null) {
 			viewholder = new cViewHolder();
-			convertView = inflater.inflate(R.layout.transaction_child_item, parent,
-					false);
-			
-			viewholder.mCheckBox =(CheckBox) convertView
-					.findViewById(R.id.checkBox1); 
+			convertView = inflater.inflate(R.layout.transaction_item,
+					parent, false);
+
+			viewholder.mCheckBox = (CheckBox) convertView
+					.findViewById(R.id.checkBox1);
 			viewholder.mImageView = (ImageView) convertView
 					.findViewById(R.id.mImageView);
 			viewholder.mImageView1 = (ImageView) convertView
@@ -178,108 +190,141 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 			viewholder = (cViewHolder) convertView.getTag();
 
 		}
-		viewholder.mImageView.setImageResource( Common.ACCOUNT_TYPE_ICON[(Integer) childList.get(groupPosition).get(childPosition).get("iconName")]);
-		viewholder.currency_textView.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		
-		if (reconcileCheck == 1) {
+		
+		final String dateKey = mGroupList.get(groupPosition) ;
+		
+		final int _id = (Integer) mChildMap.get(dateKey).get(childPosition).get("_id");
+		int iconName = (Integer) mChildMap.get(dateKey).get(childPosition).get("iconName");
+		final int isClear = (Integer) mChildMap.get(dateKey).get(childPosition).get("isClear");
+		long dateTime = (Long) mChildMap.get(dateKey).get(childPosition).get("dateTime");
+		int recurringType = (Integer) mChildMap.get(dateKey).get(childPosition).get("recurringType");
+		String photoName = (String) mChildMap.get(dateKey).get(childPosition).get("photoName");
+		String notes = (String) mChildMap.get(dateKey).get(childPosition).get("notes");
+		String amount = (String) mChildMap.get(dateKey).get(childPosition).get("amount");
+		int expenseAccount = (Integer)  mChildMap.get(dateKey).get(childPosition).get("expenseAccount");
+		int incomeAccount = (Integer)  mChildMap.get(dateKey).get(childPosition).get("incomeAccount");
+		String payeeName = (String) mChildMap.get(dateKey).get(childPosition).get("payeeName");
+		
+		viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[iconName]);
+		viewholder.currency_textView.setText(currencyLable);
+
+		
+		if (isReconcile) {
 			viewholder.mCheckBox.setVisibility(View.VISIBLE);
 			viewholder.mImageView.setVisibility(View.INVISIBLE);
 		} else {
 			viewholder.mCheckBox.setVisibility(View.INVISIBLE);
 			viewholder.mImageView.setVisibility(View.VISIBLE);
 		}
-		
-		final int cleard = (Integer) childList.get(groupPosition).get(childPosition).get("isClear");
-		
-		if (cleard == 1) {
+
+
+		if (isClear == 1) {
 			viewholder.mCheckBox.setChecked(true);
 		} else {
 			viewholder.mCheckBox.setChecked(false);
 		}
+
 		
-		final int _id = (Integer) childList.get(groupPosition).get(childPosition).get("_id");
 		viewholder.mCheckBox.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if (cleard == 1) {
-					childList.get(groupPosition).get(childPosition).put("isClear", 0);
-//					AccountDao.updateTransactionClear(context, _id, 0);
+				int settedClear = (isClear == 1)?0:1;
+				
+				long rId = AccountDao.updateTransactionClear(context, _id, settedClear, mDbxAcctMgr, mDatastore);
+				
+				if (rId >0) {
+					
+				if (!hideClear) {
+					 mChildMap.get(dateKey).get(childPosition).put("isClear", settedClear);
 				} else {
-					childList.get(groupPosition).get(childPosition).put("isClear", 1);
-//					AccountDao.updateTransactionClear(context, _id, 1);
+					 mChildMap.get(dateKey).remove(childPosition);
+					 if (mChildMap.get(dateKey) == null) {
+						mGroupList.remove(groupPosition);
+					}else {
+						
+						 if ( mChildMap.get(dateKey).size() <=0) 
+						 {
+							 mGroupList.remove(groupPosition); 
+						 }
+						
+					}
 				}
-				notifyDataSetChanged();
+					 notifyDataSetChanged();
+			 }
+
 			}
 		});
-		
-		
-		long dateTime = (Long)childList.get(groupPosition).get(childPosition).get("dateTime");
+
 		viewholder.mTextView2.setText(turnToDateString(dateTime));
-		
-		int recurringType = (Integer)childList.get(groupPosition).get(childPosition).get("recurringType");
+
+	
 		if (recurringType > 0) {
 			viewholder.mImageView1.setVisibility(View.VISIBLE);
-		}else {
+		} else {
+			viewholder.mImageView1.setVisibility(View.INVISIBLE);
+		}
+
+		
+		if (photoName != null && photoName.length() > 0) {
+		
+		File file = new File(photoName);
+		if ( file.exists()) {
+
+			viewholder.mImageView1.setVisibility(View.VISIBLE);
+		} else {
+			viewholder.mImageView1.setVisibility(View.INVISIBLE);
+		}
+		} else {
 			viewholder.mImageView1.setVisibility(View.INVISIBLE);
 		}
 		
-		String photoName = (String)childList.get(groupPosition).get(childPosition).get("photoName");
-		File file = new File(photoName);
-		if (photoName.length() > 0 && file.exists()) {
-			
+		
+		if (notes != null && notes.length()>0) {
 			viewholder.mImageView2.setVisibility(View.VISIBLE);
-		}else {
+		} else {
 			viewholder.mImageView2.setVisibility(View.INVISIBLE);
 		}
-		
-		Double mAmount;
-		try {
-			mAmount = Double.parseDouble((String)childList.get(groupPosition).get(childPosition).get("amount"));
-		} catch (Exception e) {
-			// TODO: handle exception
-			mAmount = 0.0;
-		}
-		
-		int expenseAccount = (Integer)childList.get(groupPosition).get(childPosition).get("expenseAccount");
-		int incomeAccount = (Integer)childList.get(groupPosition).get(childPosition).get("incomeAccount");
-		
 
-		if (expenseAccount == accountId) {
-			mAmount = 0 - mAmount;
-		}
-		
-		if (expenseAccount > 0 && incomeAccount >0) {
-			List<Map<String, Object>> mList1 = AccountDao.selectAccountById(context,expenseAccount);
-			List<Map<String, Object>> mList2 = AccountDao.selectAccountById(context,incomeAccount);
+		int thisItemColor = colorRed;
+
+		if (expenseAccount > 0 && incomeAccount > 0) {
+			List<Map<String, Object>> mList1 = AccountDao
+					.selectAccountById(context, expenseAccount);
+			List<Map<String, Object>> mList2 = AccountDao
+					.selectAccountById(context, incomeAccount);
 			String mFromAccount = (String) mList1.get(0).get("accName");
 			String mInAccount = (String) mList2.get(0).get("accName");
-			viewholder.mTextView1.setText((String)childList.get(groupPosition).get(childPosition).get("payeeName")+"("+mFromAccount+" > "+mInAccount +")");
-		}else {
-			viewholder.mTextView1.setText((String)childList.get(groupPosition).get(childPosition).get("payeeName"));
-		}
-		
-		if (mAmount < 0) {
-			viewholder.symbol_txt.setVisibility(View.VISIBLE);
-			viewholder.symbol_txt.setText("-");
-			viewholder.symbol_txt.setTextColor(Color.RED);
-			viewholder.currency_textView.setTextColor(Color.RED);
-			viewholder.amount_textView.setTextColor(Color.RED);
-			double amount = 0-mAmount;
-			viewholder.amount_textView.setText( MEntity.doublepoint2str(amount+""));
+			viewholder.mTextView1.setText("(" + mFromAccount + " > " + mInAccount + ")");
+			
+			if (expenseAccount == accountId) {
+				thisItemColor = colorRed;
+			} else {
+				
+				if (accountId == -1) {
+					thisItemColor = Color.BLACK;
+				} else {
+					thisItemColor = colorGreen;
+				}
+				
+			}
+			
 		} else {
-			viewholder.symbol_txt.setVisibility(View.INVISIBLE);
-			viewholder.symbol_txt.setText("");
-			viewholder.symbol_txt.setTextColor(Color.GREEN);
-			viewholder.currency_textView.setTextColor(Color.GREEN);
-			viewholder.amount_textView.setTextColor(Color.GREEN);
-			viewholder.amount_textView.setText( MEntity.doublepoint2str((String)childList.get(groupPosition).get(childPosition).get("amount")));
+			viewholder.mTextView1.setText(payeeName);
+			if (expenseAccount > 0) {
+				thisItemColor = colorRed;
+			} else {
+				thisItemColor = colorGreen;
+			}
 		}
-		
-		
-		viewholder.amount_textView.setText((String)childList.get(groupPosition).get(childPosition).get("amount"));
-		
+
+			viewholder.symbol_txt.setTextColor(thisItemColor);
+			viewholder.currency_textView.setTextColor(thisItemColor);
+			viewholder.amount_textView.setTextColor(thisItemColor);
+			viewholder.amount_textView.setText(MEntity.doublepoint2str(amount));
+
 		if (childPosition == 0) {
 			viewholder.mline_label.setVisibility(View.INVISIBLE);
 		} else {
@@ -307,11 +352,16 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 	// calls getChildView() method
 	public int getChildrenCount(int groupPosition) {
 		// TODO Auto-generated method stub
-
-		if (childList == null) {
+		
+		if (mGroupList == null) {
 			return 0;
 		}
-		return childList.get(groupPosition).size();
+		
+		if (mChildMap == null) {
+			return 0;
+		}
+		
+		return mChildMap.get(mGroupList.get(groupPosition)).size();
 
 	}
 

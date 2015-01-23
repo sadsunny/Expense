@@ -18,7 +18,6 @@ import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
 import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
-import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity.thisExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;

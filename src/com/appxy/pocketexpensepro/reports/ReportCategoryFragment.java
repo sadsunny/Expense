@@ -197,7 +197,7 @@ public class ReportCategoryFragment extends Fragment implements OnSyncFinishedLi
 		public void run() {
 			// TODO Auto-generated method stub
 			mCategoryDataListAll = OverViewDao.selectSumCategory(mActivity,
-					MainActivity.startDate, MainActivity.endDate);
+					MainActivity.startDate, MainActivity.endDate, mCategoryType);
 			mCategoryDataList.clear();
 			for (Map<String, Object> iMap : mCategoryDataListAll) {
 				int categoryType = (Integer) iMap.get("categoryType");

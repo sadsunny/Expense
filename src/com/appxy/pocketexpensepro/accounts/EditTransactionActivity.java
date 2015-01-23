@@ -728,11 +728,12 @@ public class EditTransactionActivity extends BaseHomeActivity {
 					// context, amount, dateTime, isClear, notes, photoName,
 					// recurringType, category, childTransactions,
 					// expenseAccount , incomeAccount, parTransaction, payee)
-
+					long row = 0; // 判断返回结果
+					
 					if (mReturnList != null && mReturnList.size() > 1) {
 
 						Log.v("mtest", "mReturnList" + mReturnList);
-						long row = AccountDao.updateTransactionAll(_id,
+						row = AccountDao.updateTransactionAll(_id,
 								EditTransactionActivity.this, amountString,
 								dateLong, isCleared, memoString, picPath, 0,
 								categoryDefault, childTransactionsDefault + "",
@@ -751,12 +752,9 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									incomeAccountDefault, _id, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							idList = idList + id + ",";
 						}
-						Log.v("mtest", "row" + row);
-						Log.v("mtest", "idList" + idList);
 
 						long rid = TransactionDao.updateParTransactionChild(
 								EditTransactionActivity.this, _id, idList);
-						Log.v("mtest", "rid" + rid);
 
 					} else {
 						List<Map<String, Object>> mCategoryList = TransactionDao
@@ -764,14 +762,14 @@ public class EditTransactionActivity extends BaseHomeActivity {
 						int categoryType = judgeCategoryType(mCategoryList,
 								categoryId);
 						if (categoryType == 0) {
-							long row = AccountDao.updateTransactionAll(_id,
+							    row = AccountDao.updateTransactionAll(_id,
 									EditTransactionActivity.this, amountString,
 									dateLong, isCleared, memoString, picPath,
 									recurringTpye, categoryId,
 									childTransactionsDefault + "", accountId,
 									incomeAccountDefault, 0, payeeId, uuid, mDbxAcctMgr,mDatastore);
 						} else {
-							long row = AccountDao.updateTransactionAll(_id,
+							   row = AccountDao.updateTransactionAll(_id,
 									EditTransactionActivity.this, amountString,
 									dateLong, isCleared, memoString, picPath,
 									recurringTpye, categoryId,
@@ -780,10 +778,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 									payeeId, uuid, mDbxAcctMgr,mDatastore);
 						}
 					}
-					    Intent resultintent = new Intent();
-						resultintent.putExtra("row", 1);
-						setResult(13, resultintent);
-
+					
+					if( row > 0){
+						    Intent resultintent = new Intent();
+							resultintent.putExtra("row", row);
+							setResult(13, resultintent);
+					}
+					   
 					finish();
 				}
 

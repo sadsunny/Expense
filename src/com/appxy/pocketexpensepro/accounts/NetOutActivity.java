@@ -20,7 +20,9 @@ import org.json.JSONObject;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.LoadMoreListView;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.AgendaListenerInterface;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
@@ -66,21 +68,15 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class NetOutActivity extends BaseHomeActivity {
+public class NetOutActivity extends BaseHomeActivity implements AgendaListenerInterface {
 
-	private static final int MSG_SUCCESS = 1;
-	private static final int MSG_FAILURE = 0;
 	private ActionBar actionBar;
-	private Thread mThread;
 
 	private int type;
 	private String accName;
-	private ExpandableListView mExpandableListView;
+	private LoadMoreListView mExpandableListView;
 
-	private List<Map<String, Object>> groupDataList;
-	private List<List<Map<String, Object>>> childrenAllDataList;
-	private thisExpandableListViewAdapter mExpandableListViewAdapter;
-	private List<Map<String, Object>> mDataList;
+	private ExpandableListViewAdapter mExpandableListViewAdapter;
 	private NavigationListAdapter mNavigationListAdapter;
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
@@ -106,80 +102,17 @@ public class NetOutActivity extends BaseHomeActivity {
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
 	
+
+	private int loadSize = 0 ;
 	
+	private ArrayList<String> mGroupList;
+	private HashMap<String, Long> mGroupMap;
+	private HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap; 
 	
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {// 此方法在ui线程运行
-			switch (msg.what) {
-			case MSG_SUCCESS:
-				
-				if (outstanding < 0) {
-//					symbolTextView1.setText("-");
-//					symbolTextView1.setVisibility(View.VISIBLE);
-//					symbolTextView1.setTextColor(Color.RED);
-//					currencyTextView1.setTextColor(Color.RED);
-//					outstandingTextView.setTextColor(Color.RED);
-					double tem = 0 - outstanding;
-					outstandingTextView.setText(MEntity.doublepoint2str(tem+""));
-				} else {
-//					symbolTextView1.setText("");
-//					symbolTextView1.setVisibility(View.INVISIBLE);
-//					symbolTextView1.setTextColor(R.color.black_gray);
-//					currencyTextView1.setTextColor(R.color.black_gray);
-//					outstandingTextView.setTextColor(R.color.black_gray);
-					outstandingTextView.setText(MEntity.doublepoint2str(outstanding+""));
-				}
-				
-				if (banlance < 0) {
-//					symbolTextView2.setText("-");
-//					symbolTextView2.setVisibility(View.VISIBLE);
-//					symbolTextView2.setTextColor(Color.RED);
-//					currencyTextView2.setTextColor(Color.RED);
-//					balanceTextView.setTextColor(Color.RED);
-					double tem = 0 - banlance;
-					balanceTextView.setText(MEntity.doublepoint2str(tem+""));
-				} else {
-//					symbolTextView2.setText("");
-//					symbolTextView2.setVisibility(View.INVISIBLE);
-//					symbolTextView2.setTextColor(R.color.black_gray);
-//					currencyTextView2.setTextColor(R.color.black_gray);
-//					balanceTextView.setTextColor(R.color.black_gray);
-					balanceTextView.setText(MEntity.doublepoint2str(banlance+""));
-				}
-				
-				mExpandableListViewAdapter.setAdapterData(groupDataList,
-						childrenAllDataList);
-				mExpandableListViewAdapter.notifyDataSetChanged();
-
-				int groupCount = groupDataList.size();
-
-				for (int i = 0; i < groupCount; i++) {
-					mExpandableListView.expandGroup(i);
-				}
-				mExpandableListView
-						.setOnGroupClickListener(new OnGroupClickListener() {
-
-							@Override
-							public boolean onGroupClick(
-									ExpandableListView parent, View v,
-									int groupPosition, long id) {
-								// TODO Auto-generated method stub
-								return true;
-							}
-						});
-
-				mExpandableListView.setCacheColorHint(0);
-
-				break;
-
-			case MSG_FAILURE:
-				Toast.makeText(NetOutActivity.this, "Exception",
-						Toast.LENGTH_SHORT).show();
-				break;
-			}
-		}
-	};
-
+	private int clickedGroupPosition = 0;
+	private int clickedChildPosition = 0;
+	private int clickedId = 0;
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -225,6 +158,10 @@ public class NetOutActivity extends BaseHomeActivity {
 			queryCheck = 1 ;
 		}
 		
+		mChildMap = new HashMap<String, ArrayList<HashMap<String, Object>>>();
+		mGroupList = new ArrayList<String>();
+		mGroupMap = new HashMap<String, Long>();
+		
 		mNavigationListAdapter = new NavigationListAdapter(this, accName);
 		
 		content = new ArrayList<String>();
@@ -236,9 +173,6 @@ public class NetOutActivity extends BaseHomeActivity {
 		actionBar.setListNavigationCallbacks(mNavigationListAdapter,
 				new DropDownListenser());
 		
-		groupDataList = new ArrayList<Map<String, Object>>();
-		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
-
 		
 		currencyTextView1= (TextView) findViewById(R.id.currency_txt1);
 		currencyTextView2 = (TextView) findViewById(R.id.currency_txt2);
@@ -247,25 +181,26 @@ public class NetOutActivity extends BaseHomeActivity {
 		outstandingTextView = (TextView) findViewById(R.id.outstanding_txt);
 		balanceTextView = (TextView) findViewById(R.id.balance_txt);
 		
-		mExpandableListView = (ExpandableListView) findViewById(R.id.mExpandableListView);
-		mExpandableListViewAdapter = new thisExpandableListViewAdapter(this);
+		
+		mExpandableListView = (LoadMoreListView) findViewById(R.id.mExpandableListView);
+		
+		mExpandableListView.setPullLoadEnable(true);
+		mExpandableListView.setPullRefreshEnable(true);
+		mExpandableListView.setXListViewListener(this);
+		
+		mExpandableListViewAdapter = new ExpandableListViewAdapter(this, -1);
+		mExpandableListViewAdapter.setAdapterData(mGroupList, mChildMap, mDbxAcctMgr, mDatastore);
 		mExpandableListView.setAdapter(mExpandableListViewAdapter);
 		mExpandableListView.setGroupIndicator(null);
 		mExpandableListView.setDividerHeight(0);
+		mExpandableListViewAdapter.setReconcile(reconcileBoolean);
+		mExpandableListViewAdapter.setShowClear(hideBoolean);
 		mExpandableListView.setOnChildClickListener(onChildClickListener);
 		mExpandableListView.setOnItemLongClickListener(onLongClickListener);
-
-		if (mThread == null) {
-			mThread = new Thread(mTask);
-			mThread.start();
-		}
 		
-		Intent resultintent = new Intent();
-		resultintent.putExtra("row", 1);
-		setResult(12, resultintent);
+		setData() ;
 
 	}
-	
 	
 
 	@Override
@@ -278,53 +213,69 @@ public class NetOutActivity extends BaseHomeActivity {
 
 
 
-	public Runnable mTask = new Runnable() {
-
-		@Override
-		public void run() {
-
-			if (queryCheck == 0) {
-
-				mDataList = AccountDao.selectTransactionAllList(NetOutActivity.this);
-
-			} else if (queryCheck == 1) {
-
-				mDataList = AccountDao.selectTransactionAllAndClear(NetOutActivity.this);
-			}
-
+	private void getOutAndBanlance(){ // 计算两者总和
+		
+		 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(NetOutActivity.this);
+		 if (newwothList!= null && newwothList.size() >0) {
+			 banlance = (Double) newwothList.get(0).get("allAmount");
+		}else {
+			banlance = 0;
+		}
+		
+		 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(NetOutActivity.this, 0);
+		 if (outList!= null && outList.size() > 0) {
+			 outstanding= (Double) outList.get(0).get("outstandingAmount");
+		} else {
+			outstanding = 0;
+		}
+		 
+		 outstandingTextView.setText(MEntity.doublepoint2str(outstanding+""));
+	     balanceTextView.setText(MEntity.doublepoint2str(banlance+""));
+	}
+	
+	private void setData() {
+		
+		ArrayList<HashMap<String, Object>> mDataList ;
+		if (hideBoolean) {
+			
+			 mDataList = AccountDao.selectTransactionByAccountLimitLeftJoinClear(NetOutActivity.this, 0, loadSize);
+			
+		} else {
+			 mDataList = AccountDao.selectTransactionByAccountLimitLeftJoin(NetOutActivity.this, loadSize);
+		}
+		
+			
+		 loadSize = loadSize + mDataList.size();
+		 
 			if (mDataList != null ) {
 				reFillData(mDataList);
 				filterData(mDataList);
 			}
-			BigDecimal b0 = new BigDecimal("0");
-			BigDecimal b1 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mDataList) {
-				String amount = (String) iMap.get("amount");
-				int clear = (Integer) iMap.get("isClear");
-				BigDecimal b2 = new BigDecimal(amount);
+			
+			
+			mExpandableListViewAdapter.notifyDataSetChanged();
 
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				if (expenseAccount > 0 ) {
-					b0 = b0.subtract(b2);
-				} else if (incomeAccount> 0) {
-					b0 = b0.add(b2);
-				}
-				
-				if (clear == 0) {
-					if (expenseAccount > 0) {
-						b1 = b1.subtract(b2);
-					} else if (incomeAccount > 0) {
-						b1 = b1.add(b2);
-					}
-				}
-				
+			int groupCount = mGroupList.size();
+
+			for (int i = 0; i < groupCount; i++) {
+				mExpandableListView.expandGroup(i);
 			}
-			outstanding = b1.doubleValue();
-			banlance = b0.doubleValue();
-			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+			mExpandableListView
+					.setOnGroupClickListener(new OnGroupClickListener() {
+
+						@Override
+						public boolean onGroupClick(
+								ExpandableListView parent, View v,
+								int groupPosition, long id) {
+							// TODO Auto-generated method stub
+							return true;
+						}
+					});
+
+			mExpandableListView.setCacheColorHint(0);
+			
 		}
-	};
+
 
 	class DropDownListenser implements OnNavigationListener // actionbar下拉菜单监听
 	{
@@ -335,14 +286,13 @@ public class NetOutActivity extends BaseHomeActivity {
 				if (firstCheck) {
 					actionBar.setSelectedNavigationItem(2);
 					if (reconcileBoolean) {
-						mExpandableListViewAdapter.setReconcile(1);
-						mExpandableListViewAdapter.notifyDataSetChanged();
 						item1 = "Reconcile OFF              ";
 					} else {
-						mExpandableListViewAdapter.setReconcile(0);
-						mExpandableListViewAdapter.notifyDataSetChanged();
 						item1 = "Reconcile ON               ";
 					}
+					mExpandableListViewAdapter.setReconcile(reconcileBoolean);
+					mExpandableListViewAdapter.notifyDataSetChanged();
+					
 				}else{
 					
 					reconcileBoolean = reconcileBoolean ? false : true;
@@ -354,20 +304,19 @@ public class NetOutActivity extends BaseHomeActivity {
 		   			 meditor.commit();
 		   			 
 					if (reconcileBoolean) {
-						mExpandableListViewAdapter.setReconcile(1);
-						mExpandableListViewAdapter.notifyDataSetChanged();
 						item1 = "Reconcile OFF              ";
 					} else {
-						mExpandableListViewAdapter.setReconcile(0);
-						mExpandableListViewAdapter.notifyDataSetChanged();
 						item1 = "Reconcile ON               ";
 					}
+					mExpandableListViewAdapter.setReconcile(reconcileBoolean);
+					mExpandableListViewAdapter.notifyDataSetChanged();
 					
 				}
 				
 				firstCheck = false;
 				
 			} else if (itemPosition == 1) {
+				
 				hideBoolean = hideBoolean ? false : true;
 				actionBar.setSelectedNavigationItem(2);
 				
@@ -377,22 +326,23 @@ public class NetOutActivity extends BaseHomeActivity {
 	   			 meditor.commit();
 				
 				if (hideBoolean) {
-					queryCheck = 1;
 					item2 = "Show Cleared";
 				} else {
-					queryCheck = 0;
 					item2 = "Hide Cleared";
 				}
 				
-				mHandler.post(mTask);
+				mExpandableListViewAdapter.setShowClear(hideBoolean);
+				loadSize = 0;
+				mGroupList.clear();
+				mGroupMap.clear();
+				mChildMap.clear();
+				setData();
+				
 			}
 			
 			content.clear();
 			content.add(item1);
-			if (type == 0) {
-				content.add(item2);
-			}
-			
+			content.add(item2);
 			
 			mNavigationListAdapter.setDownItemData(content);
 //			mNavigationListAdapter.notifyDataSetChanged();
@@ -401,7 +351,8 @@ public class NetOutActivity extends BaseHomeActivity {
 
 		}
 	};
-
+	
+	
 	private OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
 
 		@Override
@@ -412,7 +363,9 @@ public class NetOutActivity extends BaseHomeActivity {
 			// TODO Auto-generated method stub
 			final int groupPosition = mExpandableListView.getPackedPositionGroup(arg3);
 			final int childPosition = mExpandableListView.getPackedPositionChild(arg3);
-
+			   clickedGroupPosition = groupPosition;
+			   clickedChildPosition = childPosition;
+			   
 			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,null);
 
 			String[] data = { "Duplicate", "Delete" };
@@ -428,15 +381,14 @@ public class NetOutActivity extends BaseHomeActivity {
 						int arg2, long arg3) {
 					// TODO Auto-generated method stub
 
-					int _id = (Integer) childrenAllDataList.get(groupPosition)
-							.get(childPosition).get("_id");
+					String dateKey = mGroupList.get(groupPosition);
 					
-					String uuid = (String) childrenAllDataList.get(groupPosition)
-							.get(childPosition).get("uuid");
+					int _id = (Integer) mChildMap.get(dateKey).get(childPosition).get("_id");
+					clickedId = _id;
+					String uuid = (String) mChildMap.get(dateKey).get(childPosition).get("uuid");
 
 					if (arg2 == 0) {
-						Map<String, Object> mMap = childrenAllDataList.get(
-								groupPosition).get(childPosition);
+						HashMap<String, Object> mMap = mChildMap.get(dateKey).get(childPosition);
 
 						Calendar c = Calendar.getInstance(); //处理为当天固定格式时间
 						Date date = new Date(c.getTimeInMillis());
@@ -469,21 +421,37 @@ public class NetOutActivity extends BaseHomeActivity {
 								dateTime, isClear, notes, photoName,
 								recurringType, category, childTransactions,
 								expenseAccount, incomeAccount, parTransaction,
-								payee,new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+								payee, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
+						
+						judegeReturn((int)row);
+						
 						alertDialog.dismiss();
-
-
-						mHandler.post(mTask);
 
 					} else if (arg2 == 1) {
 
 						long row = AccountDao.deleteTransaction(
 								NetOutActivity.this, _id, uuid, mDbxAcctMgr, mDatastore);
+						
+						mChildMap.get(dateKey).remove(childPosition);
+						
+						if (mChildMap.get(dateKey) == null) {
+							mGroupList.remove(groupPosition);
+							mGroupMap.remove(dateKey);
+						} else {
+							
+							if (mChildMap.get(dateKey).size() == 0) {
+								mGroupList.remove(groupPosition);
+								mGroupMap.remove(dateKey);
+							}
+
+						}
+						loadSize = loadSize -1;
+						mExpandableListViewAdapter.notifyDataSetChanged();
+						
 						alertDialog.dismiss();
 						Intent intent = new Intent();
 						intent.putExtra("row", row);
 						setResult(12, intent);
-						mHandler.post(mTask);
 					}
 
 				}
@@ -505,13 +473,18 @@ public class NetOutActivity extends BaseHomeActivity {
 		public boolean onChildClick(ExpandableListView parent, View v,
 				int groupPosition, int childPosition, long id) {
 			// TODO Auto-generated method stub
-			final int tId = (Integer) childrenAllDataList.get(groupPosition)
-					.get(childPosition).get("_id");
-			int expenseAccount = (Integer) childrenAllDataList
-					.get(groupPosition).get(childPosition)
-					.get("expenseAccount");
-			int incomeAccount = (Integer) childrenAllDataList
-					.get(groupPosition).get(childPosition).get("incomeAccount");
+			
+			
+		   clickedGroupPosition = groupPosition;
+		   clickedChildPosition = childPosition;
+			
+			String dateKey = mGroupList.get(groupPosition);
+			
+			final int tId = (Integer) mChildMap.get(dateKey).get(childPosition).get("_id");
+			clickedId = tId;
+			
+			int expenseAccount = (Integer) mChildMap.get(dateKey).get(childPosition).get("expenseAccount");
+			int incomeAccount = (Integer) mChildMap.get(dateKey).get(childPosition).get("incomeAccount");
 
 			if (expenseAccount > 0 && incomeAccount > 0) {
 
@@ -630,390 +603,7 @@ public class NetOutActivity extends BaseHomeActivity {
 		return c.getTimeInMillis();
 	}
 
-	public void filterData(List<Map<String, Object>> mData) {// 根据时间过滤子类和父类
 
-		groupDataList.clear();
-		childrenAllDataList.clear();
-
-		ArrayList<Long> mDatelist = new ArrayList<Long>();
-
-		for (Map<String, Object> mMap : mData) {
-			long dateTime = turnMillsToMonth((Long) mMap.get("dateTime"));
-			mDatelist.add(dateTime);
-		}
-		
-
-		Iterator<Long> it1 = mDatelist.iterator();
-		Map<Long, Long> msp = new TreeMap<Long, Long>();
-		
-		while (it1.hasNext()) {
-			long obj = it1.next();
-			msp.put(obj, obj);
-		}
-		Iterator<Long> it2 = msp.keySet().iterator();
-		while (it2.hasNext()) {
-			Map<String, Object> mMap = new HashMap<String, Object>();
-			mMap.put("dateTime", (Long) it2.next());
-			groupDataList.add(mMap);
-		}
-		Collections.sort(groupDataList, new MEntity.MapComparatorTime());
-		Log.v("mtest", "groupDataList降序"+groupDataList);
-
-		for (Map<String, Object> iMap : groupDataList) {
-			
-			long dateTime = (Long) iMap.get("dateTime");
-			List<Map<String, Object>> childrenDataList = new ArrayList<Map<String, Object>>();
-			for (Map<String, Object> mMap : mData) {
-				long mDateTime = (Long) mMap.get("dateTime");
-				if (getFirstDayOfMonthMillis(dateTime) <= mDateTime
-						&& mDateTime <= getLastDayOfMonthMillis(dateTime)) {
-					childrenDataList.add(mMap);
-				}
-			}
-			childrenAllDataList.add(childrenDataList);
-		}
-
-	}
-
-	public class thisExpandableListViewAdapter extends
-			BaseExpandableListAdapter {
-
-		private LayoutInflater inflater;
-		private List<Map<String, Object>> groupList;
-		private List<List<Map<String, Object>>> childList;
-		private Context context;
-		private int reconcileCheck;
-
-		public thisExpandableListViewAdapter(Context context) {
-			this.context = context;
-			inflater = LayoutInflater.from(context);
-		}
-
-		public void setAdapterData(List<Map<String, Object>> groupList,
-				List<List<Map<String, Object>>> childList) {
-
-			this.groupList = groupList;
-			this.childList = childList;
-
-		}
-
-		public List<List<Map<String, Object>>> getAdapterDate() {
-			return this.childList;
-		}
-
-		public void setReconcile(int check) {
-			this.reconcileCheck = check;
-		}
-
-		@Override
-		// gets the title of each parent/group
-		public Object getGroup(int groupPosition) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		// counts the number of group/parent items so the list knows how many
-		// times
-		// calls getGroupView() method
-		public int getGroupCount() {
-			// TODO Auto-generated method stub
-			if (groupList == null) {
-				return 0;
-			}
-			return groupList.size();
-		}
-
-		@Override
-		public long getGroupId(int groupPosition) {
-			// TODO Auto-generated method stub
-			return groupPosition;
-		}
-
-		public String turnToDate(long mills) {
-
-			Date date2 = new Date(mills);
-			SimpleDateFormat sdf = new SimpleDateFormat("MMMM, yyyy");
-			String theDate = sdf.format(date2);
-			return theDate;
-		}
-
-		@Override
-		public View getGroupView(int groupPosition, boolean isExpanded,
-				View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
-			gViewHolder viewholder = null;
-			if (convertView == null) {
-				viewholder = new gViewHolder();
-				convertView = inflater.inflate(R.layout.transaction_group_item,
-						parent, false);
-				viewholder.mTextView = (TextView) convertView
-						.findViewById(R.id.dateTextView);
-				convertView.setTag(viewholder);
-			} else {
-				viewholder = (gViewHolder) convertView.getTag();
-			}
-
-			viewholder.mTextView.setText(turnToDate((Long) groupList.get(
-					groupPosition).get("dateTime")));
-
-			convertView.setOnTouchListener(new View.OnTouchListener() { // 设置Group是否可点击
-
-						@Override
-						public boolean onTouch(View v, MotionEvent event) {
-							// TODO Auto-generated method stub
-							return true;
-						}
-					});
-
-			return convertView;
-		}
-
-		@Override
-		// gets the name of each item
-		public Object getChild(int groupPosition, int childPosition) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public long getChildId(int groupPosition, int childPosition) {
-			// TODO Auto-generated method stub
-			return childPosition;
-		}
-
-		public String turnToDateString(long mills) {
-
-			Date date2 = new Date(mills);
-			SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy");
-			String theDate = sdf.format(date2);
-			return theDate;
-		}
-
-		@Override
-		public View getChildView(final int groupPosition,
-				final int childPosition, boolean isLastChild, View convertView,
-				ViewGroup parent) {
-			// TODO Auto-generated method stub
-			cViewHolder viewholder = null;
-			if (convertView == null) {
-				viewholder = new cViewHolder();
-				convertView = inflater.inflate(R.layout.transaction_item,
-						parent, false);
-
-				viewholder.mCheckBox = (CheckBox) convertView
-						.findViewById(R.id.checkBox1);
-				viewholder.mImageView = (ImageView) convertView
-						.findViewById(R.id.mImageView);
-				viewholder.mImageView1 = (ImageView) convertView
-						.findViewById(R.id.mImageView1);
-				viewholder.mImageView2 = (ImageView) convertView
-						.findViewById(R.id.mImageView2);
-				viewholder.mTextView1 = (TextView) convertView
-						.findViewById(R.id.TextView1);
-				viewholder.mTextView2 = (TextView) convertView
-						.findViewById(R.id.TextView2);
-				viewholder.symbol_txt = (TextView) convertView
-						.findViewById(R.id.symbol_txt);
-				viewholder.currency_textView = (TextView) convertView
-						.findViewById(R.id.currency_txt);
-				viewholder.amount_textView = (TextView) convertView
-						.findViewById(R.id.amounttextView);
-				viewholder.mline_label = (View) convertView
-						.findViewById(R.id.mline_label);
-
-				convertView.setTag(viewholder);
-			} else {
-				viewholder = (cViewHolder) convertView.getTag();
-
-			}
-			viewholder.mImageView
-					.setImageResource(Common.CATEGORY_ICON[(Integer) childList
-							.get(groupPosition).get(childPosition)
-							.get("iconName")]);
-			viewholder.currency_textView
-					.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-
-			if (reconcileCheck == 1) {
-				viewholder.mCheckBox.setVisibility(View.VISIBLE);
-				viewholder.mImageView.setVisibility(View.INVISIBLE);
-			} else {
-				viewholder.mCheckBox.setVisibility(View.INVISIBLE);
-				viewholder.mImageView.setVisibility(View.VISIBLE);
-			}
-
-			final int cleard = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("isClear");
-
-			if (cleard == 1) {
-				viewholder.mCheckBox.setChecked(true);
-			} else {
-				viewholder.mCheckBox.setChecked(false);
-			}
-
-			final int _id = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("_id");
-			viewholder.mCheckBox.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					// TODO Auto-generated method stub
-					if (cleard == 1) {
-						// childList.get(groupPosition).get(childPosition).put("isClear",
-						// 0);
-						AccountDao.updateTransactionClear(context, _id, 0, mDbxAcctMgr, mDatastore);
-					} else {
-						// childList.get(groupPosition).get(childPosition).put("isClear",
-						// 1);
-						AccountDao.updateTransactionClear(context, _id, 1, mDbxAcctMgr, mDatastore);
-					}
-
-					mHandler.post(mTask);
-
-				}
-			});
-
-			long dateTime = (Long) childList.get(groupPosition)
-					.get(childPosition).get("dateTime");
-			viewholder.mTextView2.setText(turnToDateString(dateTime));
-
-			int recurringType = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("recurringType");
-			if (recurringType > 0) {
-				viewholder.mImageView1.setVisibility(View.VISIBLE);
-			} else {
-				viewholder.mImageView1.setVisibility(View.INVISIBLE);
-			}
-
-			String photoName = (String) childList.get(groupPosition)
-					.get(childPosition).get("photoName");
-			if (photoName != null) {
-			
-			File file = new File(photoName);
-			if (photoName.length() > 0 && file.exists()) {
-
-				viewholder.mImageView1.setVisibility(View.VISIBLE);
-			} else {
-				viewholder.mImageView1.setVisibility(View.INVISIBLE);
-			}
-			} else {
-				viewholder.mImageView1.setVisibility(View.INVISIBLE);
-			}
-			
-			String notes = (String) childList.get(groupPosition)
-					.get(childPosition).get("notes");
-			Log.v("mtest", "notes"+notes);
-			
-			if (notes != null && notes.length()>0) {
-				viewholder.mImageView2.setVisibility(View.VISIBLE);
-			} else {
-				viewholder.mImageView2.setVisibility(View.INVISIBLE);
-			}
-
-			Double mAmount;
-			try {
-				mAmount = Double.parseDouble((String) childList
-						.get(groupPosition).get(childPosition).get("amount"));
-			} catch (Exception e) {
-				// TODO: handle exception
-				mAmount = 0.0;
-			}
-
-			int expenseAccount = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("expenseAccount");
-			int incomeAccount = (Integer) childList.get(groupPosition)
-					.get(childPosition).get("incomeAccount");
-
-			if (expenseAccount > 0) {
-				mAmount = 0 - mAmount;
-			}
-
-			if (expenseAccount > 0 && incomeAccount > 0) {
-				List<Map<String, Object>> mList1 = AccountDao
-						.selectAccountById(context, expenseAccount);
-				List<Map<String, Object>> mList2 = AccountDao
-						.selectAccountById(context, incomeAccount);
-				String mFromAccount = (String) mList1.get(0).get("accName");
-				String mInAccount = (String) mList2.get(0).get("accName");
-				viewholder.mTextView1.setText((String) childList
-						.get(groupPosition).get(childPosition).get("payeeName")
-						+ "(" + mFromAccount + " > " + mInAccount + ")");
-			} else {
-				viewholder.mTextView1
-						.setText((String) childList.get(groupPosition)
-								.get(childPosition).get("payeeName"));
-			}
-
-			if (mAmount < 0) {
-				viewholder.symbol_txt.setTextColor(Color.rgb(208, 47 ,58));
-				viewholder.currency_textView.setTextColor(Color.rgb(208, 47 ,58));
-				viewholder.amount_textView.setTextColor(Color.rgb(208, 47 ,58));
-				double amount = 0 - mAmount;
-				viewholder.amount_textView.setText(MEntity
-						.doublepoint2str(amount + ""));
-			} else {
-				viewholder.symbol_txt.setTextColor(Color.rgb(83,150,39));
-				viewholder.currency_textView.setTextColor( Color.rgb(83,150,39));
-				viewholder.amount_textView.setTextColor(Color.rgb(83,150,39));
-				viewholder.amount_textView.setText(MEntity
-						.doublepoint2str((String) childList.get(groupPosition)
-								.get(childPosition).get("amount")));
-			}
-
-
-			if (childPosition == 0) {
-				viewholder.mline_label.setVisibility(View.INVISIBLE);
-			} else {
-				viewholder.mline_label.setVisibility(View.VISIBLE);
-			}
-
-			return convertView;
-		}
-
-		public class cViewHolder {
-			public CheckBox mCheckBox;
-			public ImageView mImageView;
-			public ImageView mImageView1;
-			public ImageView mImageView2;
-			public TextView mTextView1;
-			public TextView mTextView2;
-			public TextView symbol_txt;
-			public TextView currency_textView;
-			public TextView amount_textView;
-			public View mline_label;
-		}
-
-		@Override
-		// counts the number of children items so the list knows how many times
-		// calls getChildView() method
-		public int getChildrenCount(int groupPosition) {
-			// TODO Auto-generated method stub
-
-			if (childList == null) {
-				return 0;
-			}
-			return childList.get(groupPosition).size();
-
-		}
-
-		class gViewHolder {
-			public TextView mTextView;
-		}
-
-		@Override
-		public boolean hasStableIds() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public boolean isChildSelectable(int groupPosition, int childPosition) {
-			// TODO Auto-generated method stub
-			return true;
-		}
-
-	}
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub
@@ -1059,7 +649,7 @@ public class NetOutActivity extends BaseHomeActivity {
         super.onDestroy();
     }
 	
-	@Override
+    @Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
@@ -1068,20 +658,28 @@ public class NetOutActivity extends BaseHomeActivity {
 		case 13:
 
 			if (data != null) {
-				// mThread = new Thread(mTask);
-				// mThread.start();
-				mHandler.post(mTask);
+				
+				long rId = data.getLongExtra("row", 0);
+				
+				if (rId >0) {
+					judegeReturn(clickedId);
+				}
+				
 			}
 			break;
 		case 6:
 
 			if (data != null) {
-				// mThread = new Thread(mTask);
-				// mThread.start();
-				mHandler.post(mTask);
+				
+				long rId = data.getLongExtra("done", 0);
+				
+				Log.v("mtag", "新增rId"+rId);
+				
+				judegeReturn((int)rId);
 			}
 			break;
 		}
+		
 	}
 
 	@Override
@@ -1089,7 +687,211 @@ public class NetOutActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",
 				Toast.LENGTH_SHORT).show();
-		mHandler.post(mTask);
+	}
+
+
+
+	public void reFillData( ArrayList<HashMap<String, Object>> mData) {
+
+		for (Map<String, Object> mMap : mData) {
+			
+			String payeeName = (String) mMap.get("payeeName");
+			int categoryId = (Integer) mMap.get("categoryId");
+
+			if (categoryId <= 0) {
+				int expenseAccount = (Integer) mMap.get("expenseAccount");
+				int incomeAccount = (Integer) mMap.get("incomeAccount");
+				
+				if (expenseAccount > 0 && incomeAccount > 0) {
+					mMap.put("iconName", 69);
+				} else {
+					mMap.put("iconName", 56);
+				}
+				
+			}
+			
+			if (payeeName == null) {
+				String memoString = (String) mMap.get("notes");
+				if (memoString == null ) {
+					mMap.put("payeeName", "--");
+				} else {
+					
+					if (memoString.length() > 0) {
+						mMap.put("payeeName", memoString);
+					} else {
+						mMap.put("payeeName", "--");
+					}
+					
+				}
+			} 
+			
+
+		}
+	}
+	
+	
+	public void filterData( ArrayList<HashMap<String, Object>> mData) {// 根据时间过滤子类和父类
+
+		
+        for (HashMap<String, Object> iMap : mData) {
+			
+			long dateTime = (Long) iMap.get("dateTime");
+			String dateKey = turnToDate( dateTime );
+			
+			if (mGroupMap.containsKey(dateKey)) {
+
+		        mChildMap.get(dateKey).add(iMap);
+		        
+			} else {
+				
+				ArrayList<HashMap<String, Object>> mChildArrayList = new ArrayList<HashMap<String,Object>>();
+				mChildArrayList.add(iMap);												
+				mChildMap.put(dateKey, mChildArrayList);
+				mGroupList.add(dateKey);
+				mGroupMap.put(dateKey, dateTime);
+			}
+
+		}
+        
+        Log.v("mtag", "net mGroupList"+mGroupList);
+        Log.v("mtag", "net mChildMap"+mChildMap);
+
+	}
+	
+	public String turnToDate(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MMMM, yyyy");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
+	
+	
+private void judegeReturn(int id) { //根据id，判断改数据在页面是否插入
+		
+		ArrayList<HashMap<String, Object>> mList = AccountDao.selectTransactionByIdLeftJoin(this, id);
+		
+		 if (mList.size() > 0) {
+			
+			long dateTime = (Long) mList.get(0).get("dateTime");
+			String newKey = turnToDate(dateTime);
+			
+			if (mGroupMap.containsKey(newKey)) {
+				
+				if (clickedId == id) { //表示修改
+					
+					    String oldKey = mGroupList.get(clickedGroupPosition); // first Remove Old map
+			    	    int oldChildSize = mChildMap.get(oldKey).size(); 
+			    		mChildMap.get(oldKey).remove(clickedChildPosition);
+			    		
+			    	    if ( oldChildSize - 1 == 0) {
+			    	    	
+			    	    	if (!newKey.equals(oldKey)) { 
+			    	    		mGroupMap.remove(oldKey);
+			    	    		mGroupList.remove(clickedGroupPosition);
+							} 
+				    	    
+						} 
+			    	    
+			    	    HashMap<String, Object> newMap = mList.get(0);
+			    	    mChildMap.get(newKey).add(newMap);
+			    	    
+			    	    Collections.sort(mChildMap.get(newKey), new MEntity.MapComparatorTime());
+			    	    
+				} else { //表示新增数据
+					
+			    	    HashMap<String, Object> newMap = mList.get(0);
+			    	    mChildMap.get(newKey).add(newMap);
+			    	    
+			    	    Collections.sort(mChildMap.get(newKey), new MEntity.MapComparatorTime());
+			    	    loadSize = loadSize +1;
+
+				}
+				    	   
+				    	    
+			} else {
+				
+				if (clickedId == id) { //表示修改
+					
+				    String oldKey = mGroupList.get(clickedGroupPosition); // first Remove Old map
+		    	    int oldChildSize = mChildMap.get(oldKey).size(); 
+		    		mChildMap.get(oldKey).remove(clickedChildPosition);
+		    		
+		    		 loadSize = loadSize - 1;
+		    	    if ( oldChildSize - 1 == 0) {
+		    	    	
+		    	    	if (!newKey.equals(oldKey)) { 
+		    	    		mGroupMap.remove(oldKey);
+		    	    		mGroupList.remove(clickedGroupPosition);
+						} 
+			    	    
+					} 
+		    	    
+			   } 
+				
+				long lastGroupTime = 0;
+				if (mGroupMap!= null && mGroupMap.size() >1) {
+					
+				   lastGroupTime = mGroupMap.get( mGroupList.get(mGroupList.size()-1) );
+				   
+				}else{
+					lastGroupTime = 0;
+				}
+					
+				
+				 if ( dateTime > lastGroupTime ) {// newTime > last Group time. bulid group
+		    	    	
+					    mGroupMap.put(newKey, dateTime);
+					    mGroupList.add(newKey);
+					    
+					    Collections.sort(mGroupList, new MEntity.MapComparatorGroupTime());
+					    
+					    HashMap<String, Object> newMap = mList.get(0);
+					    ArrayList<HashMap<String, Object>> mChildArrayList = new ArrayList<HashMap<String,Object>>();
+						mChildArrayList.add(newMap);												
+						mChildMap.put(newKey, mChildArrayList);
+						
+						 loadSize = loadSize +1;
+						
+					}
+				
+
+			}
+			
+		}else { 
+			
+			    String oldKey = mGroupList.get(clickedGroupPosition); // first Remove Old map
+	    	    int oldChildSize = mChildMap.get(oldKey).size(); 
+	    		mChildMap.get(oldKey).remove(clickedChildPosition);
+	    		
+	    		 loadSize = loadSize -1;
+	    		 
+	    		if ( oldChildSize - 1 == 0) {
+	    	    	
+	    	    		mGroupMap.remove(oldKey);
+	    	    		mGroupList.remove(clickedGroupPosition);
+		    	    
+				} 
+	    		
+			
+		}
+		mExpandableListViewAdapter.notifyDataSetChanged();
+		
+	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void onLoadMore() {
+		// TODO Auto-generated method stub
+		setData();
+		mExpandableListView.stopRefresh();
+		mExpandableListView.stopLoadMore();
 	}
 
 }
