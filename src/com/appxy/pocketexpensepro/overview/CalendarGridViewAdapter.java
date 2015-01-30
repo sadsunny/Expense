@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -31,101 +32,68 @@ import android.widget.TextView;
 
 @SuppressLint("ResourceAsColor")
 public class CalendarGridViewAdapter extends BaseAdapter {
-	private Context mContext;
-	private Calendar month;
-	public Calendar pmonth; // calendar instance for previous month
-	/**
-	 * calendar instance for previous month for getting complete view
-	 */
-	public Calendar pmonthmaxset;
-	int firstDay;
-	int maxWeeknumber;
-	int maxP;
-	int calMaxP;
-	int lastWeekDay;
-	int leftDays;
-	int mnthlength;
-	String itemvalue;
-	DateFormat df;
-
-	public List<String> dayString;
-	private List<Map<String, Object>> mDataList;
-	private String checkDate;
-	private ArrayList<String> items;
+	
+	private final static long DAYMILLIS = 86400000L - 1L;
+	
+	private Context context ;
+	private ArrayList<Long> mGroupList;
+	private HashMap<String, Double> mChildMap;
+	
+	private long checkDate;
 	private int itemWidth;
-
-	public CalendarGridViewAdapter(Context c, Calendar monthCalendar) {
-
-		this.dayString = new ArrayList<String>();
-//		Locale.setDefault(Locale.ENGLISH);
-		month = monthCalendar;
-		mContext = c;
-		month.set(Calendar.DAY_OF_MONTH, 1);
-		df = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-		refreshDays();
+	private long firstDayDate;
+	private long LastDayDate ;
+	private long todayLong ;
+	
+	public CalendarGridViewAdapter(Context context) {
+		this.context = context;
 		itemWidth = getWeekItemWidth();
-		this.items = new ArrayList<String>();
+		todayLong = MEntity.getNowMillis();
 	}
 
-	public List<String> getDayString() {
-		return this.dayString;
+	public void setGroupData(ArrayList<Long> mGroupList, long thisMonth) {
+		this.mGroupList = mGroupList;
+		firstDayDate = MEntity.getFirstDayOfMonthMillis(thisMonth);
+		LastDayDate = MEntity.getLastDayOfMonthMillis(thisMonth);
 	}
 
-	public void setDataList(List<Map<String, Object>> mDataList) {
-		this.mDataList = mDataList;
-		this.items.clear();
-		for (Map<String, Object> iMap : mDataList) {
-			long mDayDate = (Long) iMap.get("dateTime");
-			String mDayDateString = df.format(mDayDate);
-			this.items.add(mDayDateString);
-		}
+	public void setChildData(HashMap<String, Double> mChildMap) {
+		this.mChildMap = mChildMap;
 	}
 
-	public List<String> getCalendarItem() {
-		return this.dayString;
-	}
-
-	public void setCheckDat(long date) {
-		this.checkDate = df.format(date);
-	}
-
-	public long getStringtoDate(String day) {
-		Calendar c = Calendar.getInstance();
-		try {
-			c.setTime(new SimpleDateFormat("yyyy-MM-dd").parse(day));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return c.getTimeInMillis();
-
+	public void setCheckDat(long checkDate) {
+		this.checkDate = checkDate;
 	}
 
 	public int getCount() {
-		return dayString.size();
+		
+		if (mGroupList == null) {
+			return 0;
+		}
+		return mGroupList.size();
 	}
 
 	public Object getItem(int position) {
-		return dayString.get(position);
+		return mGroupList.get(position);
 	}
 
 	public int getWeekItemWidth() {
-		DisplayMetrics dm = mContext.getResources().getDisplayMetrics();
+		DisplayMetrics dm = context.getResources().getDisplayMetrics();
 		return dm.widthPixels / 7;
 	}
 
 	@Override
 	public boolean isEnabled(int position) {
 		// TODO Auto-generated method stub
-		String[] separatedTime = dayString.get(position).split("-");
-		String gridvalue = separatedTime[2].replaceFirst("^0*", "");
-		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
-			return false;
-		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
-			return false;
-		} else {
-			return true;
-		}
+		long dateLong = mGroupList.get(position);
+//		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
+//			return false;
+//		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
+//			return false;
+//		} else {
+//			return true;
+//		}
+		return true;
 	}
 
 	// create a new view for each item referenced by the Adapter
@@ -134,10 +102,9 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 		if (convertView == null) { // if it's not recycled, initialize some
 			// attributes
-			LayoutInflater vi = LayoutInflater.from(mContext);
+			LayoutInflater vi = LayoutInflater.from(context);
 
-			convertView = vi.inflate(R.layout.fragment_overview_calender_item,
-					null);
+			convertView = vi.inflate(R.layout.fragment_overview_calender_item,null);
 			viewholder = new ViewHolder();
 
 			viewholder.dayView = (TextView) convertView
@@ -159,35 +126,33 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		relativeParams.width = itemWidth;
 		viewholder.mLayout.setLayoutParams(relativeParams);
 
-		String everyDay = dayString.get(position); // 定位为当天
-		// separates daystring into parts.
-		String[] separatedTime = dayString.get(position).split("-");
-		// taking last part of date. ie; 2 from 2012-12-02
-		String gridvalue = separatedTime[2].replaceFirst("^0*", "");
-		// checking whether the day is in current month or not.
+		long todayTime = mGroupList.get(position);
+		String dayString = turnToDate(todayTime);
+		
+		String expenseKey = turnToDateKey(todayTime)+"-0";
+		String incomeKey = turnToDateKey(todayTime)+"-1";
+		
 
-		if ((Integer.parseInt(gridvalue) > 1) && (position < firstDay)) {
+		if ( todayTime<firstDayDate || todayTime  >LastDayDate ) {
 			// setting offdays to white color.
-			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
-			viewholder.dayView.setClickable(false);
-			viewholder.dayView.setFocusable(false);
-		} else if ((Integer.parseInt(gridvalue) < 7) && (position > 28)) {
 			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
 		} else {
 
-			if (everyDay.equals(turnToDate())) {
+			if ( (todayTime - todayLong) <= DAYMILLIS ) {
 				viewholder.dayView.setTextColor(Color.rgb(3, 128, 255));
 			} else {
 				viewholder.dayView.setTextColor(Color.rgb(94, 99, 117));
 			}
 
 		}
-		viewholder.dayView.setText(gridvalue);
+		
+		viewholder.dayView.setText(dayString);
 
-		if (everyDay.equals(checkDate)) {
-			if (everyDay.equals(turnToDate())) {
+		if (todayTime == checkDate ) {
+			
+			if (todayTime == todayTime) {
 				viewholder.mLayout.setBackgroundResource(R.color.text_blue);
 			} else {
 				viewholder.mLayout.setBackgroundResource(R.color.sel_gray);
@@ -196,21 +161,28 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		} else {
 			viewholder.mLayout.setBackgroundResource(R.color.bag_gray);
 		}
+		
 
-		if (items != null && items.contains(everyDay)) { // 该位置表示当天
-
-			double expense = 0;
-			double income = 0;
-			for (Map<String, Object> iMap : mDataList) {
-				long mDayDate = (Long) iMap.get("dateTime");
-				String mDayDateString = df.format(mDayDate);
-
-				if (mDayDateString.equals(everyDay)) {
-					expense = (Double) iMap.get("expense");
-					income = (Double) iMap.get("income");
-				}
-			}
+		double expense = 0;
+		double income = 0;
+		
+		if (mChildMap != null) {
 			
+			   if (mChildMap.containsKey(expenseKey)) {
+				
+		         expense = mChildMap.get(expenseKey);
+				
+		     	} 
+			
+			
+			    if (mChildMap.containsKey(incomeKey)) {
+				
+			       income = mChildMap.get(incomeKey);
+					
+			    } 
+			
+			}
+
 			if (expense != 0) {
 				viewholder.expenseTextView.setText(Common.doublepoint2str(expense
 						+ ""));
@@ -227,13 +199,6 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 				viewholder.incomeTextView.setText("");
 			}
 		
-			
-
-		} else {
-			viewholder.expenseTextView.setText("");
-			viewholder.incomeTextView.setText("");
-
-		}
 		return convertView;
 	}
 
@@ -243,56 +208,21 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 		TextView expenseTextView;
 		TextView incomeTextView;
 	}
+	
+	public String turnToDateKey(long mills) {
 
-	public String turnToDate() {
-
-		return df.format(System.currentTimeMillis());
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+		String theDate = sdf.format(date2);
+		return theDate;
 	}
 
-	public void refreshDays() {
-		// clear items
-		dayString.clear();
-//		Locale.setDefault(Locale.ENGLISH);
-		pmonth = (Calendar) month.clone();
-		// Log.v("mtest","month在adapter中"+MEntity.getMilltoDate(month.getTimeInMillis()));
-		// month start day. ie; sun, mon, etc
-		firstDay = month.get(Calendar.DAY_OF_WEEK);
-		// finding number of weeks in current month.
-		maxWeeknumber = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
-		// allocating maximum row number for the gridview.
-		mnthlength = maxWeeknumber * 7;
-		maxP = getMaxP(); // previous month maximum day 31,30....
-		calMaxP = maxP - (firstDay - 1);// calendar offday starting 24,25 ...
-		/**
-		 * Calendar instance for getting a complete gridview including the three
-		 * month's (previous,current,next) dates.
-		 */
-		pmonthmaxset = (Calendar) pmonth.clone();
-		/**
-		 * setting the start date as previous month's required date.
-		 */
-		pmonthmaxset.set(Calendar.DAY_OF_MONTH, calMaxP + 1);
-		/**
-		 * filling calendar gridview.
-		 */
-		for (int n = 0; n < mnthlength; n++) {
-			itemvalue = df.format(pmonthmaxset.getTime());
-			pmonthmaxset.add(Calendar.DATE, 1);
-			dayString.add(itemvalue);
-		}
-	}
+	public String turnToDate(long mills) {
 
-	private int getMaxP() {
-		int maxP;
-		if (month.get(Calendar.MONTH) == month.getActualMinimum(Calendar.MONTH)) {
-			pmonth.set((month.get(Calendar.YEAR) - 1),
-					month.getActualMaximum(Calendar.MONTH), 1);
-		} else {
-			pmonth.set(Calendar.MONTH, month.get(Calendar.MONTH) - 1);
-		}
-		maxP = pmonth.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-		return maxP;
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("d");
+		String theDate = sdf.format(date2);
+		return theDate;
 	}
 
 	@Override

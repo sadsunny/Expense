@@ -60,7 +60,6 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 	private TextView currency_txt1;
 	private TextView currency_txt2;
 	
-	
 	public static SectionController c;
 	private LayoutInflater mInflater;
 	public static int sortCheck = 0; // 是否正在排序
@@ -85,6 +84,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		// TODO Auto-generated method stub
 		super.onResume();
 		
+		getBalance();
 		currency_txt1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_txt2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		mAccountsListViewAdapter.notifyDataSetChanged();
@@ -102,25 +102,18 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
+				
 				if (mDataList != null && mDataList.size() > 0) {
 					mListView.setVisibility(View.VISIBLE);
 					notiTextView.setVisibility(View.INVISIBLE);
+					
 					mListView.setLongClickable(true);
 
 					mAccountsListViewAdapter.setAdapterDate(mDataList);
 					mAccountsListViewAdapter.sortIsChecked(-1);
 					mAccountsListViewAdapter.notifyDataSetChanged();
 
-					BigDecimal b1 = new BigDecimal("0");
-					for (Map<String, Object> iMap : mDataList) {
-						String amount = (String) iMap.get("lastAmount");
-						BigDecimal b2 = new BigDecimal(amount);
-						b1 = b1.add(b2);
-					}
 					
-					netWorth = b1.doubleValue();
-					netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
 				}else {
 					mListView.setVisibility(View.INVISIBLE);
 					notiTextView.setVisibility(View.VISIBLE);
@@ -340,6 +333,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 						} else {
 							long row = AccountDao.deleteAccount(getActivity(), id, uuid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 							mHandler.post(mTask);
+							getBalance();
 							alertDialog.dismiss();
 						}
 
@@ -425,58 +419,36 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mDataList = AccountDao.selectAccount(mActivity);
-
-			for (Map<String, Object> iMap : mDataList) {
-				int _id = (Integer) iMap.get("_id");
-				String amount = (String) iMap.get("amount");
-				BigDecimal b1 = new BigDecimal(amount);
-
-				List<Map<String, Object>> mTemList = AccountDao
-						.selectTransactionByAccount(mActivity, _id);
-				BigDecimal b0 = new BigDecimal(0);
-				for (Map<String, Object> tMap : mTemList) {
-
-					String tAmount = (String) tMap.get("amount");
-					BigDecimal b2 = new BigDecimal(tAmount);
-
-					int expenseAccount = (Integer) tMap.get("expenseAccount");
-					int incomeAccount = (Integer) tMap.get("incomeAccount");
-
-					if (expenseAccount == _id) {
-						b0 = b0.subtract(b2);
-					} else if (incomeAccount == _id) {
-						b0 = b0.add(b2);
-					}
-
-				}
-
-				b1 = b1.add(b0);
-				double lastAmount = b1.doubleValue();
-				iMap.put("lastAmount", lastAmount + "");
+			if (mDataList!= null) {
+				mDataList.clear();
 			}
-
-			List<Map<String, Object>> mOutList = AccountDao.selectTransactionOnClear(mActivity, 0);
-			BigDecimal b1 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mOutList) {
-				
-				String amount = (String) iMap.get("amount");
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				BigDecimal b2 = new BigDecimal(amount);
-				
-				if (expenseAccount > 0 && incomeAccount <= 0) {
-					b1 = b1.subtract(b2);
-				} else if (incomeAccount > 0 && expenseAccount <= 0) {
-					b1 = b1.add(b2);
-				}
-			}
-			outDouble = b1.doubleValue();
-
+			 mDataList = AccountDao.selectAccountBySum(mActivity);
+			 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 
 		}
 	};
+
+	private void getBalance(){
+		
+		List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(mActivity);
+		 if (newwothList!= null && newwothList.size() >0) {
+			 netWorth = (Double) newwothList.get(0).get("allAmount");
+		}else {
+			 netWorth = 0;
+		}
+		
+		 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(mActivity, 0);
+		 if (outList!= null && outList.size() > 0) {
+			 outDouble = (Double) outList.get(0).get("outstandingAmount");
+		} else {
+			 outDouble = 0;
+		}
+		 
+		outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
+		netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+		 
+	}
 
 
 	@Override
@@ -589,7 +561,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 		// TODO Auto-generated method stub
 		Toast.makeText(mActivity, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
-		
+		getBalance();
 	}
 
 

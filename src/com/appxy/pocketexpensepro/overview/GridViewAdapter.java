@@ -1,13 +1,16 @@
 package com.appxy.pocketexpensepro.overview;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.flurry.sdk.ex;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -28,15 +31,21 @@ public class GridViewAdapter extends BaseAdapter {
 	private Context context;
 	private int mSelect = 0;
 	private int mBack = -1;
-	private List<Map<String, Object>> mList;
 	private long choosedTime;
+	
+	private ArrayList<Long> mGroupList;
+	private HashMap<String, Double> mChildMap;
 
 	public GridViewAdapter(Context context) {
 		this.context = context;
 	}
 
-	public void setDate(List<Map<String, Object>> mList) {
-		this.mList = mList;
+	public void setGroupDate(ArrayList<Long> mGroupList) {
+		this.mGroupList = mGroupList;
+	}
+	
+	public void setChildDate(HashMap<String,Double> mChildMap) {
+		this.mChildMap = mChildMap;
 	}
 
 	public void setChoosedTime(long chooseTime) {
@@ -45,10 +54,10 @@ public class GridViewAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		if (mList == null || mList.size() == 0) {
+		if (mGroupList == null || mGroupList.size() == 0) {
 			return 0;
 		}
-		return mList.size();
+		return mGroupList.size();
 	}
 
 	@Override
@@ -97,8 +106,11 @@ public class GridViewAdapter extends BaseAdapter {
 		relativeParams.width = getWeekItemWidth() + 1;
 		viewHolder.mLayout.setLayoutParams(relativeParams);
 
-		long todayTime = (Long) mList.get(position).get("weekTime");
+		long todayTime = (Long) mGroupList.get(position);
 		viewHolder.dateTextView.setText(turnToDate(todayTime));
+		
+		String expenseKey = turnToDateKey(todayTime)+"-0";
+		String incomeKey = turnToDateKey(todayTime)+"-1";
 
 		if (todayTime == MEntity.getNowMillis()) {
 			viewHolder.dateTextView.setTextColor(Color.rgb(3, 128, 255));
@@ -118,8 +130,25 @@ public class GridViewAdapter extends BaseAdapter {
 			viewHolder.mLayout.setBackgroundColor(Color.rgb(242, 242, 242));
 		}
 
-		double expense = (Double) mList.get(position).get("expense");
-		double income = (Double) mList.get(position).get("income");
+		double expense = 0;
+		double income = 0;
+		
+		if (mChildMap != null) {
+		
+		   if (mChildMap.containsKey(expenseKey)) {
+			
+	         expense = mChildMap.get(expenseKey);
+			
+	     	} 
+		
+		
+		    if (mChildMap.containsKey(incomeKey)) {
+			
+		       income = mChildMap.get(incomeKey);
+				
+		    } 
+		
+		}
 
 		if (expense != 0) {
 			viewHolder.expenseTextView.setText(Common.doublepoint2str(expense
@@ -136,6 +165,14 @@ public class GridViewAdapter extends BaseAdapter {
 		}
 
 		return view;
+	}
+	
+	public String turnToDateKey(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+		String theDate = sdf.format(date2);
+		return theDate;
 	}
 
 	public String turnToDate(long mills) {

@@ -595,12 +595,9 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 									incomeAccountDefault, (int) row, payeeId, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 							idList = idList + id + ",";
 						}
-						Log.v("mtest", "row" + row);
-						Log.v("mtest", "idList" + idList);
 
 						long rid = TransactionDao.updateParTransactionChild(
 								CreatTransactonByAccountActivity.this, row, idList);
-						Log.v("mtest", "rid" + rid);
 
 					} else {
 						

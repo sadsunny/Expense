@@ -124,7 +124,7 @@ public class OverviewFragment extends Fragment implements
 	public  ViewPagerAdapter mViewPagerAdapter;
 	private WeekFragment weekFragment;
 	private ListView mListView;
-	private List<Map<String, Object>> mDataList;
+	private ArrayList<HashMap<String, Object>> mDataList;
 	private ListViewAdapter mListViewAdapter;
 	private Thread mThread;
 	private long selectedDate;
@@ -193,12 +193,15 @@ public class OverviewFragment extends Fragment implements
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
+				
 				if (mDataList != null && mDataList.size() > 0 ) {
-					mListViewAdapter.setAdapterDate(mDataList);
-					mListViewAdapter.notifyDataSetChanged();
 					
 					notiTextView.setVisibility(View.INVISIBLE);
 					mListView.setVisibility(View.VISIBLE);
+					
+					mListViewAdapter.setAdapterDate(mDataList);
+					mListViewAdapter.notifyDataSetChanged();
+					
 				}else{
 					notiTextView.setVisibility(View.VISIBLE);
 					mListView.setVisibility(View.INVISIBLE);
@@ -225,14 +228,10 @@ public class OverviewFragment extends Fragment implements
 					mProgressBar.setMax((int) 1);
 					mProgressBar.setSecondaryProgress((int) 100);
 				} else {
-					Log.v("mdb", "budgetAmount" + budgetAmount);
-					Log.v("mdb", "transactionAmount" + transactionAmount);
 					mProgressBar.setProgress((int) (transactionAmount * 0.8));
 					mProgressBar.setMax((int) budgetAmount);
 					mProgressBar
 							.setSecondaryProgress((int) (budgetAmount * 10));
-					Log.v("mdb", "budgetAmountX" + (int) (budgetAmount * 10));
-					Log.v("mdb", "budgetAmountINT" + (int) budgetAmount);
 				}
 
 				if ((budgetAmount - transactionAmount) < 0) {
@@ -241,6 +240,7 @@ public class OverviewFragment extends Fragment implements
 					mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
 				}
 
+				
 				break;
 
 			case MSG_FAILURE:
@@ -251,86 +251,21 @@ public class OverviewFragment extends Fragment implements
 		}
 	};
 	
-	 @Override
-	    public void onDestroy() {
-	        super.onDestroy();
-	        // very important:
-	        Log.d(TAG, "Destroying helper.");
-	        
-	        if (mHelper != null){
-	            try {
-	            	mHelper.dispose();
-	            }catch (IllegalArgumentException ex){
-	                ex.printStackTrace();
-	            }finally{}
-	        }
-	        mHelper = null;
-	        
-	    }
-
-	@Override
-	public void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		
-		  SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME, 0);  
-	      Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
-	        
-		if (Common.mIsPaid && adsLayout != null) {
-			adsLayout.setVisibility(View.GONE);
-		}
-
-		TransactionRecurringCheck.recurringCheck(mActivity,
-				MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
-		mListViewAdapter.notifyDataSetChanged();
-
-		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
-
-		if (BdgetSetting == 0) {
-			left_label.setText("LEFT");
-			leftTextView.setText(MEntity
-					.doublepoint2str((budgetAmount - transactionAmount) + ""));
-		} else {
-			left_label.setText("SPENT");
-			leftTextView.setText(MEntity.doublepoint2str((transactionAmount)
-					+ ""));
-		}
-
-		if ((budgetAmount - transactionAmount) < 0) {
-			mProgressBar.setPaintColor(Color.rgb(246, 48, 48));
-		} else {
-			mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
-		}
-
-		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-
-		if (MainActivity.sqlChange == 1 || MainActivity.isFirstSync) {
-			
-			onBackTimeListener.OnBackTime(MainActivity.selectedDate,
-					viewPagerPosition);// viewPagerPosition用于判断具体的fragment
-			
-			if(MainActivity.sqlChange == 1){
-				MainActivity.sqlChange = 0;
+	private Handler iapHandler = new Handler(){
+		public void handleMessage(android.os.Message msg) {
+			switch(msg.what){
+			case 0:
+				adsButton.setText(price_list.get(0));
+				break;
 			}
-			
-			if (MainActivity.isFirstSync) {
-				MainActivity.isFirstSync = false;
-			}
-			
-		}
-		
-	}
-
+		};
+	};
+	
 	@Override
 	public void onAttach(Activity activity) {
 		// TODO Auto-generated method stub
 		super.onAttach(activity);
 		mActivity = (FragmentActivity) activity;
-		onBackTimeListener = (OnBackTimeListener) mActivity;
-		
-		mViewPagerAdapter = new ViewPagerAdapter(
-				mActivity.getSupportFragmentManager());
 	}
 
 	@Override
@@ -338,8 +273,14 @@ public class OverviewFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
+		
+		onBackTimeListener = (OnBackTimeListener) mActivity;
 		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
+		mViewPagerAdapter = new ViewPagerAdapter(mActivity.getSupportFragmentManager());
 
+		mPreferences = mActivity.getSharedPreferences("Expense",mActivity.MODE_PRIVATE); 
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+		
 		Bundle bundle = getArguments();
 		if (bundle != null) {
 			argumentsDate = bundle.getLong("selectedDate");
@@ -351,52 +292,39 @@ public class OverviewFragment extends Fragment implements
 
 	}
 	
-	Handler iapHandler = new Handler(){
-		public void handleMessage(android.os.Message msg) {
-			switch(msg.what){
-			case 0:
-				adsButton.setText(price_list.get(0));
-				break;
-			}
-		};
-	};
-	
-
 	@SuppressLint("ResourceAsColor")
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		
 		View view = inflater.inflate(R.layout.fragment_overview, container,
 				false);
 		mInflater = inflater;
+		
 		mProgressBar = (RoundProgressBar) view.findViewById(R.id.roundBar);
-
-		mPreferences = mActivity.getSharedPreferences("Expense",
-				mActivity.MODE_PRIVATE);
-		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
-
 		currency_label1 = (TextView) view.findViewById(R.id.currency_label1);
 		currency_label2 = (TextView) view.findViewById(R.id.currency_label2);
 		notiTextView = (TextView) view.findViewById(R.id.notice_txt);
-		
 		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
-
 		networthTextView = (TextView) view.findViewById(R.id.net_amount);
-		budgetRelativeLayout = (LinearLayout) view
-				.findViewById(R.id.budget_relativeLayout);
+		budgetRelativeLayout = (LinearLayout) view.findViewById(R.id.budget_relativeLayout);
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);
 		left_label = (TextView) view.findViewById(R.id.left_label);
 		addView = (Button) view.findViewById(R.id.add_btn);
+		
+		Typeface tf=Typeface.createFromAsset(mActivity.getAssets(), "fonts/ROBOTO-REGULAR.TTF"); 
+		currency_label1.setTypeface(tf); 
+		currency_label2.setTypeface(tf); 
+		leftTextView.setTypeface(tf);
+		left_label.setTypeface(tf);
 		
 		sku_list = new ArrayList<String>();
 		price_list = new ArrayList<String>();
 		sku_list.add(Paid_Id_VF);
 		price_list.add("N/A");
 		
-		 loadIsPaid();//查询是否paid
-		 
 		 adsLayout = (RelativeLayout) view.findViewById(R.id.ads_layout);
 		 adsButton = (Button) view.findViewById(R.id.ads_button);
 		 
@@ -445,14 +373,10 @@ public class OverviewFragment extends Fragment implements
 				public void onClick(View paramView) {
 					// TODO Auto-generated method stub
 					
-//					tellMainBuyPro = (TellMainBuyPro)mActivity;
-//					tellMainBuyPro.mainBuyPro();
-					
 					if (iap_is_ok && mHelper != null) {
 						mHelper.flagEndAsync();
 						String payload = "";
-						 mHelper.launchPurchaseFlow(mActivity, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
-					}else{
+						mHelper.launchPurchaseFlow(mActivity, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
 					}
 					
 				}
@@ -594,7 +518,7 @@ public class OverviewFragment extends Fragment implements
 			mThread = new Thread(mTask);
 			mThread.start();
 		}
-
+		
 		return view;
 	}
 
@@ -603,69 +527,46 @@ public class OverviewFragment extends Fragment implements
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-
-			mDataList = OverViewDao.selectTransactionByTime(mActivity,
+ 
+			mDataList = OverViewDao.selectTransactionByDayTime(mActivity,
 					selectedDate);
-			
 			reFillData(mDataList);
 
-			mBudgetList = OverViewDao.selectBudget(mActivity);
 
 			long firstDay = MEntity
 					.getFirstDayOfMonthMillis(MainActivity.selectedDate);
 			long lastDay = MEntity
 					.getLastDayOfMonthMillis(MainActivity.selectedDate);
-			List<Map<String, Object>> mTransferList = OverViewDao
-					.selectBudgetTransfer(mActivity, firstDay, lastDay);
-
-
-			BigDecimal budgetBig = new BigDecimal("0");
-			BigDecimal transactionBig = new BigDecimal("0");
+			
+			
+			mBudgetList = OverViewDao.selectBudget(mActivity);
+			
+			BigDecimal b0 = new BigDecimal("0");
+			BigDecimal bt0 = new BigDecimal("0");
+			
 			for (Map<String, Object> iMap : mBudgetList) {
-				int _id = (Integer) iMap.get("_id");
-				String amount = (String) iMap.get("amount");
-				int category_id = (Integer) iMap.get("category");
+				
 				String catrgoryName = (String) iMap.get("categoryName");
+				String amount = (String) iMap.get("amount");
 
-				BigDecimal big1 = new BigDecimal(amount);
-				budgetBig = budgetBig.add(big1);
-				for (Map<String, Object> mMap : mTransferList) {
-
-					int fromBudget = (Integer) mMap.get("fromBudget");
-					int toBudget = (Integer) mMap.get("toBudget");
-					String amountTransfer = (String) mMap.get("amount");
-
-					BigDecimal big2 = new BigDecimal(amountTransfer);
-					if (_id == fromBudget) {
-						big1 = big1.subtract(big2);
-					} else if (_id == toBudget) {
-						big1 = big1.add(big2);
-					}
-				}
-				iMap.put("amount", big1.doubleValue() + "");
-
-				BigDecimal bigz = new BigDecimal("0");
+				BigDecimal b1 = new BigDecimal(amount);
+				b0 = b0.add(b1);
+				
 				List<Map<String, Object>> mTransactionList = OverViewDao
-						.selectTransactionByCategoryIdAndTime(mActivity,
-								catrgoryName, firstDay, lastDay);
-				for (Map<String, Object> tMap : mTransactionList) {
-
-					String tAmount = (String) tMap.get("amount");
-					int expenseAccount = (Integer) tMap.get("expenseAccount");
-					int incomeAccount = (Integer) tMap.get("incomeAccount");
-					BigDecimal big3 = new BigDecimal(tAmount);
-
-					if (expenseAccount > 0 && incomeAccount <= 0) {
-						bigz = bigz.add(big3);
-					}
+						.selectTransactionSumByCategoryIdAndTime(
+								mActivity, catrgoryName, firstDay,
+								lastDay);
+				
+				if (mTransactionList.size() > 0) {
+					double sumSpent = (Double) mTransactionList.get(0).get("allAmount");
+					BigDecimal bz = new BigDecimal(sumSpent);
+					bt0 = bt0.add(bz);
 				}
-				transactionBig = transactionBig.add(bigz);
-				double tAmount = bigz.doubleValue();
-				iMap.put("tAmount", tAmount + "");
-			}
 
-			budgetAmount = budgetBig.doubleValue();
-			transactionAmount = transactionBig.doubleValue();
+			}
+			
+			budgetAmount = b0.doubleValue();
+			transactionAmount = bt0.doubleValue();
 
 			List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(mActivity);
 			 if (newwothList!= null && newwothList.size() >0) {
@@ -673,9 +574,61 @@ public class OverviewFragment extends Fragment implements
 			}else {
 				networthDoubel = 0;
 			}
+			 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+			
 		}
 	};
+	
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		loadIsPaid();
+		if (Common.mIsPaid && adsLayout != null) {
+			adsLayout.setVisibility(View.GONE);
+		}
+
+		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
+
+		if (BdgetSetting == 0) {
+			left_label.setText("LEFT");
+			leftTextView.setText(MEntity
+					.doublepoint2str((budgetAmount - transactionAmount) + ""));
+		} else {
+			left_label.setText("SPENT");
+			leftTextView.setText(MEntity.doublepoint2str((transactionAmount)
+					+ ""));
+		}
+
+		if ((budgetAmount - transactionAmount) < 0) {
+			mProgressBar.setPaintColor(Color.rgb(246, 48, 48));
+		} else {
+			mProgressBar.setPaintColor(Color.rgb(12, 164, 227));
+		}
+
+		currency_label1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+		currency_label2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
+
+		if (MainActivity.sqlChange == 1 || MainActivity.isFirstSync) {
+			
+			onBackTimeListener.OnBackTime(MainActivity.selectedDate,
+					viewPagerPosition);// viewPagerPosition用于判断具体的fragment
+			
+			if(MainActivity.sqlChange == 1){
+				MainActivity.sqlChange = 0;
+			}
+			
+			if (MainActivity.isFirstSync) {
+				MainActivity.isFirstSync = false;
+			}
+			
+		}
+		
+		
+	}
 
 	private OnItemClickListener onClickListener = new OnItemClickListener() {
 
@@ -824,40 +777,43 @@ public class OverviewFragment extends Fragment implements
 		}
 		return calendar.getTimeInMillis();
 	}
+	
+	public void reFillData( ArrayList<HashMap<String, Object>> mData) {
 
-	public void reFillData(List<Map<String, Object>> mData) {
-
+		long s = System.currentTimeMillis();
+		
 		for (Map<String, Object> mMap : mData) {
-			int category = (Integer) mMap.get("category");
-			int payee = (Integer) mMap.get("payee");
-
-			if (category > 0) {
-				List<Map<String, Object>> mList = AccountDao
-						.selectCategoryById(mActivity, category);
-				if (mList != null && mList.size() > 0) {
-					int iconName = (Integer) mList.get(0).get("iconName");
-					mMap.put("iconName", iconName);
-				} else {
+			
+			String payeeName = (String) mMap.get("payeeName");
+			int categoryId = (Integer) mMap.get("categoryId");
+			if (categoryId <= 0) {
+				int expenseAccount = (Integer) mMap.get("expenseAccount");
+				int incomeAccount = (Integer) mMap.get("incomeAccount");
+				
+				if (expenseAccount > 0 && incomeAccount > 0) {
 					mMap.put("iconName", 69);
-				}
-			} else {
-				mMap.put("iconName", 69); // 设置为not sure
-			}
-
-			if (payee > 0) {
-				List<Map<String, Object>> mList = AccountDao.selectPayeeById(
-						mActivity, payee);
-				if (mList != null && mList.size() > 0) {
-					String payeeName = (String) mList.get(0).get("name");
-					mMap.put("payeeName", payeeName);
 				} else {
-					mMap.put("payeeName", "--");
+					mMap.put("iconName", 56);
 				}
-			} else {
-				mMap.put("payeeName", "--");
+				
 			}
-
+			
+			if (payeeName == null) {
+				String memoString = (String) mMap.get("notes");
+				if (memoString == null ) {
+					mMap.put("payeeName", "--");
+				} else {
+					
+					if (memoString.length() > 0) {
+						mMap.put("payeeName", memoString);
+					} else {
+						mMap.put("payeeName", "--");
+					}
+					
+				}
+			} 
 		}
+		
 	}
 
 	@Override
@@ -928,6 +884,8 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 
+				TransactionRecurringCheck.recurringCheck(mActivity,
+						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);
 			}
@@ -936,6 +894,8 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 //				mHandler.post(mTask);
+				TransactionRecurringCheck.recurringCheck(mActivity,
+						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);
 			}
@@ -944,6 +904,8 @@ public class OverviewFragment extends Fragment implements
 		case 13:
 
 			if (data != null) {
+				TransactionRecurringCheck.recurringCheck(mActivity,
+						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
@@ -953,6 +915,8 @@ public class OverviewFragment extends Fragment implements
 		case 2:
 
 			if (data != null) {
+				TransactionRecurringCheck.recurringCheck(mActivity,
+						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
@@ -963,6 +927,8 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 
+				TransactionRecurringCheck.recurringCheck(mActivity,
+						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
@@ -1063,9 +1029,7 @@ public class OverviewFragment extends Fragment implements
 					 meditor.putBoolean("isPaid",Common.mIsPaid ); 
 					 meditor.commit();
 					 
-					  Log.v("mtest", "查询中的pay状况"+Common.mIsPaid);
 					 if (Common.mIsPaid) {
-						 Log.v("mtest", "查询中出paid设置状态");
 						adsLayout.setVisibility(View.GONE);
 					}
 					 
@@ -1133,6 +1097,23 @@ public class OverviewFragment extends Fragment implements
 			
 		    };
 
+		   @Override
+		    public void onDestroy() {
+		        super.onDestroy();
+		        // very important:
+		        
+		        if (mHelper != null){
+		            try {
+		            	mHelper.dispose();
+		            }catch (IllegalArgumentException ex){
+		                ex.printStackTrace();
+		            }finally{}
+		        }
+		        mHelper = null;
+		        
+		    }
+
+		    
 		    
 	@Override
 	public void OnChangeState(int state) {

@@ -190,34 +190,30 @@ public class ReportDao{
 	}
 	
 	
-	
-	
-	public static List<HashMap<String, Object>>  selectTransactionGroup(Context context, long startTime, long endTime) { // Group 查询transaction的总额，通过type，一段时间内的expense和income
-		List<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+	public static HashMap<String, Double> selectTransactionGroup(Context context, long startTime, long endTime) { // Group 查询transaction的总额，通过type，一段时间内的expense和income
+		
+		HashMap<String, Double> mChildMap = new HashMap<String, Double>(); 
+		
 		SQLiteDatabase db = getConnection(context);
 		
-		HashMap<String, Object> mMap;
 		
-		String sqltest = "select total(a.amount) , strftime('%m %Y',datetime( a.dateTime/1000, 'unixepoch'),'localtime') as customDate, b.categoryType from 'Transaction' a,  Category b where a.category = b._id group by customDate, b.categoryType order by customDate" ;
+		String sqltest = "select total(a.amount) , strftime('%m-%d',datetime( a.dateTime/1000, 'unixepoch'),'localtime') as customDate, b.categoryType from 'Transaction' a,  Category b where  a.dateTime >= "+ startTime +" and a.dateTime <  "+(endTime+DAYMILLIS) +" and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  group by customDate, b.categoryType" ;
 		Cursor mCursortest = db.rawQuery(sqltest, null);
 		
 		while (mCursortest.moveToNext()) {
 			
-			mMap = new HashMap<String, Object>();
 			double sum = mCursortest.getDouble(0);
 			String DateString = mCursortest.getString(1);
 			int categoryType = mCursortest.getInt(2);
 
-			mMap.put("sum", sum);
-			mMap.put("DateString", DateString);
-			mMap.put("categoryType", categoryType);
-			mList.add(mMap);
+			String dateKey = DateString+"-"+categoryType;
+			mChildMap.put(dateKey, sum);
 		}
 		
 		mCursortest.close();
 		db.close();
 
-		return mList;
+		return mChildMap;
 	}
 	
 	

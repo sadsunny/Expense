@@ -2,7 +2,9 @@ package com.appxy.pocketexpensepro.overview;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,16 +28,18 @@ import android.widget.TextView;
 
 public class ListViewAdapter extends BaseAdapter {
 	private Context context;
-	private List<Map<String, Object>> mData;
+	private ArrayList<HashMap<String, Object>> mData;
 	private LayoutInflater mInflater;
 	public static int ISCHECKED = -1;
+	private static String currencyLable = "$" ;
 
 	public ListViewAdapter(Context context) {
 		this.context = context;
 		this.mInflater = LayoutInflater.from(context);
+		
 	}
 
-	public void setAdapterDate(List<Map<String, Object>> data) {
+	public void setAdapterDate(ArrayList<HashMap<String, Object>> data) {
 		this.mData = data;
 	}
 

@@ -75,6 +75,65 @@ public class OverViewDao {
 
 		return mList;
 	}
+	
+	public static  ArrayList<HashMap<String, Object>> selectTransactionByDayTime(
+			Context context, long time) { // Account查询
+		 ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		 HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* , Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where a.dateTime >= "+ time +" and a.dateTime <  "+(time+DAYMILLIS)+ " and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);                               
+			String amount = mCursor.getString(1);                      
+			long dateTime = mCursor.getLong(2);                        
+			int isClear = mCursor.getInt(5);                           
+			String notes = mCursor.getString(6);                       
+			String photoName = mCursor.getString(9);                   
+			int recurringType = mCursor.getInt(10);                    
+			int category = mCursor.getInt(18);                         
+			String childTransactions = mCursor.getString(19);          
+			int expenseAccount = mCursor.getInt(20);                   
+			int incomeAccount = mCursor.getInt(21);                    
+			int parTransaction = mCursor.getInt(22);                   
+			int payee = mCursor.getInt(23);                            
+			int transactionHasBillItem = mCursor.getInt(24);           
+			int transactionHasBillRule = mCursor.getInt(25);           
+			String uuid =  mCursor.getString(16); 
+			String payeeName = mCursor.getString(27); 
+			int iconName = mCursor.getInt(28);                                                                               
+			int categoryId = mCursor.getInt(29);    
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("notes", notes);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("uuid", uuid);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 
 	public static List<Map<String, Object>> selectTransactionByTimeBE(
 			Context context, long beginTime, long endTime) { // Account查询
@@ -377,6 +436,70 @@ public class OverViewDao {
 
 		return mList;
 	}
+	
+	
+	public static List<Map<String, Object>> selectBudgetAllSum(Context context) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select total(a.amount) from BudgetItem a, BudgetTemplate b, Category c where a.budgetTemplate = b._id and b.category = c._id";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double allAmount = mCursor.getDouble(0);
+			mMap.put("allAmount", allAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	public static List<Map<String, Object>> selectBudgetSumSpentByTime(Context context, long beginTime , long endTime) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select total(d.amount) from 'Transaction' d, BudgetItem a, BudgetTemplate b, Category c where a.budgetTemplate = b._id and b.category = c._id and d.category = c._id and d.dateTime >= "+ beginTime+ " and d.dateTime <= "+ (endTime+DAYMILLIS) ;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double allAmount = mCursor.getDouble(0);
+			mMap.put("allAmount", allAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+public static List<Map<String, Object>> selectTransactionSumByCategoryIdAndTime(Context context, String categorName,long beginTime, long endTime) { // 根据category的名字查询transaction
+		
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select total(a.amount) from 'Transaction' a , Category b where a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS)+ " and a.category = b._id and b.categoryName like '"+ categorName +"%' and a.parTransaction != -1 ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double allAmount = mCursor.getDouble(0);
+			mMap.put("allAmount", allAmount);
+			
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
 	
 	public static List<Map<String, Object>> selectTransactionByCategoryIdAndTime(Context context, String categorName,long beginTime, long endTime) { // 根据category的名字查询transaction
 		

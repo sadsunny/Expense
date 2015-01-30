@@ -11,6 +11,14 @@
             backward-compatibility can go here.
         -->
     </style>
+    
+    
+    <style name="myNoActionBar" parent="@android:style/Theme.Holo.Light.NoActionBar">  
+       <item name="android:windowBackground">@color/transparent</item>  
+　           <item name="android:windowIsTranslucent">true</item>  
+       <item name="android:windowContentOverlay">@null</item>  
+   </style>  
+   
 
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
@@ -22,7 +30,14 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:actionBarStyle">@style/customActionBarStyle</item>
          <item name="android:actionBarItemBackground">@drawable/actionbar_bag_selector</item>
-         <item name="android:actionDropDownStyle">@style/MyDropDownNav</item>   
+         <item name="android:actionDropDownStyle">@style/MyDropDownNav</item> 
+         <item name="android:textViewStyle">@style/AppTheme.Widget.TextView</item> 
+          
+    </style>
+    
+    <style name="AppTheme.Widget.TextView" parent="android:Widget.Holo.Light.TextView">
+        <item name="android:typeface">sans</item>
+        
     </style>
 
     <style name="customActionBarStyle" parent="android:Widget.ActionBar">

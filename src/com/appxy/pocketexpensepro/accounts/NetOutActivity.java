@@ -23,6 +23,7 @@ import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.LoadMoreListView;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.AgendaListenerInterface;
+import com.appxy.pocketexpensepro.expinterface.OnAtoBListenner;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
@@ -68,7 +69,7 @@ import android.widget.Toast;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
 @SuppressLint("ResourceAsColor")
-public class NetOutActivity extends BaseHomeActivity implements AgendaListenerInterface {
+public class NetOutActivity extends BaseHomeActivity implements AgendaListenerInterface, OnAtoBListenner {
 
 	private ActionBar actionBar;
 
@@ -101,7 +102,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	static final int RC_REQUEST = 10001;
 	private static final String PREFS_NAME = "SAVE_INFO";
 	private boolean firstCheck = true; //下拉框第一次进去的check，第一次加载不允许改变值
-	
 
 	private int loadSize = 0 ;
 	
@@ -111,7 +111,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	
 	private int clickedGroupPosition = 0;
 	private int clickedChildPosition = 0;
-	private int clickedId = 0;
+	private int clickedId = -1;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +119,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_account_to_transaction);
 		
-	  	
 		mInflater = LayoutInflater.from(this);
 		actionBar = this.getActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -129,33 +128,34 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		Intent intent = getIntent();
 		type = intent.getIntExtra("type", 0);
 		
+		
+		 SharedPreferences sharedPreferences = getSharedPreferences("reconcileBoolean", MODE_PRIVATE);  
+	      reconcileBoolean = sharedPreferences.getBoolean("reconcileBoolean", true);
+	      
+	      SharedPreferences sharedPreferences1 = getSharedPreferences("hideBoolean", MODE_PRIVATE);  
+	      hideBoolean = sharedPreferences1.getBoolean("hideBoolean", false);
+	      
+	      if (reconcileBoolean) {
+				item1 = "Reconcile OFF              ";
+			} else {
+				item1 = "Reconcile ON               ";
+			}
+	      
+	  	if (hideBoolean) {
+			queryCheck = 1;
+			item2 = "Show Cleared";
+		 } else {
+			queryCheck = 0;
+			item2 = "Hide Cleared";
+		}
+	  	
+		
 		if (type == 0) {
 			accName = "Net Worth";
 			
-			  SharedPreferences sharedPreferences = getSharedPreferences("reconcileBoolean", MODE_PRIVATE);  
-		      reconcileBoolean = sharedPreferences.getBoolean("reconcileBoolean", true);
-		      
-		      SharedPreferences sharedPreferences1 = getSharedPreferences("hideBoolean", MODE_PRIVATE);  
-		      hideBoolean = sharedPreferences1.getBoolean("hideBoolean", false);
-		      
-		      if (reconcileBoolean) {
-					item1 = "Reconcile OFF              ";
-				} else {
-					item1 = "Reconcile ON               ";
-				}
-		      
-		  	if (hideBoolean) {
-				queryCheck = 1;
-				item2 = "Show Cleared";
-			 } else {
-				queryCheck = 0;
-				item2 = "Hide Cleared";
-			}
-		  	
 		} else {
-			
+			hideBoolean = true;
 			accName = "Outstanding";
-			queryCheck = 1 ;
 		}
 		
 		mChildMap = new HashMap<String, ArrayList<HashMap<String, Object>>>();
@@ -180,7 +180,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		symbolTextView2 =  (TextView) findViewById(R.id.symbol_txt2);
 		outstandingTextView = (TextView) findViewById(R.id.outstanding_txt);
 		balanceTextView = (TextView) findViewById(R.id.balance_txt);
-		
 		
 		mExpandableListView = (LoadMoreListView) findViewById(R.id.mExpandableListView);
 		
@@ -207,13 +206,14 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		
+		getOutAndBanlance();
 		currencyTextView1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currencyTextView2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 	}
 
 
-
-	private void getOutAndBanlance(){ // 计算两者总和
+	public void getOutAndBanlance(){ // 计算两者总和
 		
 		 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(NetOutActivity.this);
 		 if (newwothList!= null && newwothList.size() >0) {
@@ -424,7 +424,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 								payee, new String(), 0, 0 , mDbxAcctMgr, mDatastore);
 						
 						judegeReturn((int)row);
-						
+						getOutAndBanlance();
 						alertDialog.dismiss();
 
 					} else if (arg2 == 1) {
@@ -446,7 +446,28 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 
 						}
 						loadSize = loadSize -1;
-						mExpandableListViewAdapter.notifyDataSetChanged();
+						
+						getOutAndBanlance();
+						
+						 mExpandableListViewAdapter.notifyDataSetChanged();
+						  int groupCount = mGroupList.size();
+
+							for (int i = 0; i < groupCount; i++) {
+								mExpandableListView.expandGroup(i);
+							}
+							mExpandableListView
+									.setOnGroupClickListener(new OnGroupClickListener() {
+
+										@Override
+										public boolean onGroupClick(
+												ExpandableListView parent, View v,
+												int groupPosition, long id) {
+											// TODO Auto-generated method stub
+											return true;
+										}
+									});
+
+							mExpandableListView.setCacheColorHint(0);
 						
 						alertDialog.dismiss();
 						Intent intent = new Intent();
@@ -473,7 +494,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		public boolean onChildClick(ExpandableListView parent, View v,
 				int groupPosition, int childPosition, long id) {
 			// TODO Auto-generated method stub
-			
 			
 		   clickedGroupPosition = groupPosition;
 		   clickedChildPosition = childPosition;
@@ -673,8 +693,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 				
 				long rId = data.getLongExtra("done", 0);
 				
-				Log.v("mtag", "新增rId"+rId);
-				
 				judegeReturn((int)rId);
 			}
 			break;
@@ -687,6 +705,22 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",
 				Toast.LENGTH_SHORT).show();
+		loadSize = 0;
+		
+		if (mGroupList != null) {
+			mGroupList.clear();
+		}
+		
+		if (mChildMap != null) {
+			mChildMap.clear();
+		}
+		
+		if (mGroupMap != null) {
+			mGroupMap.clear();
+		}
+		
+		setData();
+		getOutAndBanlance();
 	}
 
 
@@ -752,9 +786,6 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 			}
 
 		}
-        
-        Log.v("mtag", "net mGroupList"+mGroupList);
-        Log.v("mtag", "net mChildMap"+mChildMap);
 
 	}
 	
@@ -768,9 +799,16 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	
 	
 private void judegeReturn(int id) { //根据id，判断改数据在页面是否插入
+	
+	ArrayList<HashMap<String, Object>> mList ;
+	if (hideBoolean) {
 		
-		ArrayList<HashMap<String, Object>> mList = AccountDao.selectTransactionByIdLeftJoin(this, id);
+		mList = AccountDao.selectTransactionByIdLeftJoinCleared(this, id, 0);
 		
+	} else {
+		mList = AccountDao.selectTransactionByIdLeftJoin(this, id);
+	}
+	
 		 if (mList.size() > 0) {
 			
 			long dateTime = (Long) mList.get(0).get("dateTime");
@@ -839,7 +877,7 @@ private void judegeReturn(int id) { //根据id，判断改数据在页面是否�
 				}
 					
 				
-				 if ( dateTime > lastGroupTime ) {// newTime > last Group time. bulid group
+				 if ( dateTime > lastGroupTime || loadSize < 31 ) {// newTime > last Group time. bulid group
 		    	    	
 					    mGroupMap.put(newKey, dateTime);
 					    mGroupList.add(newKey);
@@ -851,7 +889,7 @@ private void judegeReturn(int id) { //根据id，判断改数据在页面是否�
 						mChildArrayList.add(newMap);												
 						mChildMap.put(newKey, mChildArrayList);
 						
-						 loadSize = loadSize +1;
+						loadSize = loadSize +1;
 						
 					}
 				
@@ -860,6 +898,9 @@ private void judegeReturn(int id) { //根据id，判断改数据在页面是否�
 			
 		}else { 
 			
+			
+			if (clickedId == id) { 
+				
 			    String oldKey = mGroupList.get(clickedGroupPosition); // first Remove Old map
 	    	    int oldChildSize = mChildMap.get(oldKey).size(); 
 	    		mChildMap.get(oldKey).remove(clickedChildPosition);
@@ -872,11 +913,32 @@ private void judegeReturn(int id) { //根据id，判断改数据在页面是否�
 	    	    		mGroupList.remove(clickedGroupPosition);
 		    	    
 				} 
+			}
 	    		
 			
 		}
-		mExpandableListViewAdapter.notifyDataSetChanged();
-		
+		 
+		  mExpandableListViewAdapter.notifyDataSetChanged();
+		  int groupCount = mGroupList.size();
+
+			for (int i = 0; i < groupCount; i++) {
+				mExpandableListView.expandGroup(i);
+			}
+			mExpandableListView
+					.setOnGroupClickListener(new OnGroupClickListener() {
+
+						@Override
+						public boolean onGroupClick(
+								ExpandableListView parent, View v,
+								int groupPosition, long id) {
+							// TODO Auto-generated method stub
+							return true;
+						}
+					});
+
+			mExpandableListView.setCacheColorHint(0);
+			
+			getOutAndBanlance() ;
 	}
 
 	@Override
@@ -892,6 +954,13 @@ private void judegeReturn(int id) { //根据id，判断改数据在页面是否�
 		setData();
 		mExpandableListView.stopRefresh();
 		mExpandableListView.stopLoadMore();
+	}
+
+
+	@Override
+	public void OnA2B() {
+		// TODO Auto-generated method stub
+		getOutAndBanlance();
 	}
 
 }

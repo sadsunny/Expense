@@ -400,7 +400,6 @@ public class TransactionDao {
 					transaction.setTrans_string(transactionstring);
 					transaction.setUuid(uuid);
 					transactionTable.insertRecords(transaction.getFields());
-					mDatastore.sync();
 					
 				}
 

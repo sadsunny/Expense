@@ -1014,10 +1014,8 @@ public class AccountDao {
 			String amount = mCursor.getString(1);
 			long dateTime = mCursor.getLong(2);
 			int isClear = mCursor.getInt(5);
-
 			String notes = mCursor.getString(6);
 			String photoName = mCursor.getString(9);
-
 			int recurringType = mCursor.getInt(10);
 			int category = mCursor.getInt(18);
 			String childTransactions = mCursor.getString(19);
@@ -1297,6 +1295,65 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByIdLeftJoin(
+			Context context, int accountId, int tId, int cleared) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where (a.expenseAccount = " + accountId+ " or a.incomeAccount = "+ accountId+ ") and  a._id = "+tId +" and a.isClear = "+cleared;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
 
 	
 	public static ArrayList<HashMap<String, Object>> selectTransactionByIdLeftJoin(
@@ -1356,6 +1413,66 @@ public class AccountDao {
 
 		return mList;
 	}
+	
+	
+	public static ArrayList<HashMap<String, Object>> selectTransactionByIdLeftJoinCleared(
+			Context context, int tId, int cleared) { // Account查询
+		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.*, Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where  a._id = "+tId +" and a.isClear = "+cleared;
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);
+			String amount = mCursor.getString(1);
+			long dateTime = mCursor.getLong(2);
+			int isClear = mCursor.getInt(5);
+
+			String notes = mCursor.getString(6);
+			String photoName = mCursor.getString(9);
+
+			int recurringType = mCursor.getInt(10);
+			int category = mCursor.getInt(18);
+			String childTransactions = mCursor.getString(19);
+			int expenseAccount = mCursor.getInt(20);
+			int incomeAccount = mCursor.getInt(21);
+			int parTransaction = mCursor.getInt(22);
+			int payee = mCursor.getInt(23);
+			int transactionHasBillItem = mCursor.getInt(24);
+			int transactionHasBillRule = mCursor.getInt(25);
+			String payeeName = mCursor.getString(27);
+			int iconName = mCursor.getInt(28);
+			int categoryId = mCursor.getInt(29);
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("notes", notes);
+			mMap.put("photoName", photoName);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	
 	
 	

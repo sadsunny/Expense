@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.accounts;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,12 +12,15 @@ import java.util.Map;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.expinterface.OnAtoBListenner;
+import com.crashlytics.android.internal.t;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
 
 import android.R.bool;
 import android.R.integer;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -50,12 +54,18 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 	private ArrayList<String> mGroupList;
 	private HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap; 
 	
+	private OnAtoBListenner a2bAtoBListenner ;
 	
 	public ExpandableListViewAdapter(Context context,int accountId) {
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		currencyLable = Common.CURRENCY_SIGN[Common.CURRENCY] ;
 		this.accountId = accountId;
+		
+		if (context != null) {
+			a2bAtoBListenner = (OnAtoBListenner)context;
+		}
+		
 	}
 
 	public void setAdapterData(ArrayList<String> mGroupList,
@@ -191,7 +201,6 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
 		}
 		
-		
 		final String dateKey = mGroupList.get(groupPosition) ;
 		
 		final int _id = (Integer) mChildMap.get(dateKey).get(childPosition).get("_id");
@@ -252,6 +261,10 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 						
 					}
 				}
+				
+				  if (a2bAtoBListenner != null) {
+					  a2bAtoBListenner.OnA2B();
+				   }
 					 notifyDataSetChanged();
 			 }
 

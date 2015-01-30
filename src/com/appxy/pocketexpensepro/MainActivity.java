@@ -153,25 +153,6 @@ public class MainActivity extends BaseHomeActivity implements
 	public static DbxAccountManager mDbxAcctMgr1;
 	public static DbxDatastore mDatastore1;
 	
-   private Handler mHandler = new Handler() {
-		public void handleMessage(Message msg) {// 此方法在ui线程运行
-			switch (msg.what) {
-			case MSG_SUCCESS:
-				
-				mDialog.dismiss();
-
-				break;
-
-			case MSG_FAILURE:
-				Toast.makeText(MainActivity.this, "Exception", Toast.LENGTH_SHORT)
-						.show();
-				break;
-			}
-		}
-	};
-	
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -182,7 +163,7 @@ public class MainActivity extends BaseHomeActivity implements
 		List<Map<String, Object>> mList = SettingDao.selectSetting(this);
 		Common.CURRENCY = (Integer) mList.get(0).get("currency");
 		
-		 loadIsPaid();//查询是否paid
+		 loadIsPaid();//ispaid
 		 //bitcoin address: 1Po29hbdAK1jH3fMKLypRC9SZfWUHBeiMj
 		 
 		 try {
@@ -208,7 +189,6 @@ public class MainActivity extends BaseHomeActivity implements
 			// TODO: handle exception
 		}
 		
-		 
 		startDate = MEntity.getFirstDayOfMonthMillis(System.currentTimeMillis());
 		endDate = MEntity.getLastDayOfMonthMillis(System.currentTimeMillis());
 
@@ -249,21 +229,9 @@ public class MainActivity extends BaseHomeActivity implements
 		viewArrayList.add(choose_view4);
 		viewArrayList.add(choose_view5);
 		
-//		 new Thread(new Runnable() {
-//				
-//				@Override
-//				public void run() {
-//					// TODO Auto-generated method stub
-		TransactionRecurringCheck.recurringCheck(MainActivity.this, MEntity.getNowMillis(), mDbxAcctMgr, mDatastore);
-////					mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
-//				}
-//			}).start();
-		 
-		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
-		// enable ActionBar app icon to behave as action to toggle nav drawer
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		// getActionBar().setDisplayShowHomeEnabled(false);
 		
@@ -356,11 +324,12 @@ public class MainActivity extends BaseHomeActivity implements
 				viewArrayList.get(i).setBackgroundResource(R.color.white);
 			}
 		}
+		
 
 	}
 	
 
-	class DropDownListenser implements OnNavigationListener // actionbar下拉菜单监听
+	class DropDownListenser implements OnNavigationListener // overview actionbar下拉菜单监听
 	{
 
 		public boolean onNavigationItemSelected(int itemPosition, long itemId) {
@@ -737,19 +706,16 @@ public class MainActivity extends BaseHomeActivity implements
 					OverViewFragmentMonth.item.setVisible(false);
 				}
 				
-				if (ReportOverviewFragment.item != null) {
-					ReportOverviewFragment.item.setVisible(false);
+				if (CategorysReportFragment.item != null) {
+					CategorysReportFragment.item.setVisible(false);
 				}
 				
-				if (ReportCashFragment.item != null) {
-					ReportCashFragment.item.setVisible(false);
-				}
-				
-				if (ReportCategoryFragment.item != null) {
-					ReportCategoryFragment.item.setVisible(false);
+				if (CashReportFragment.item != null) {
+					CashReportFragment.item.setVisible(false);
 				}
 				
 			}
+			
 		} else {
 			menu.findItem(R.id.action_add).setVisible(!drawerOpen);
 		}
@@ -857,7 +823,7 @@ public class MainActivity extends BaseHomeActivity implements
 		
 		overviewFragment = new OverviewFragment();
 		Bundle bundle = new Bundle();
-		bundle.putLong("selectedDate", MainActivity.selectedDate);
+		bundle.putLong("selectedDate", this.selectedDate);
 		overviewFragment.setArguments(bundle);
 
 		FragmentTransaction fragmentTransaction1 = this.getSupportFragmentManager().beginTransaction();
@@ -868,7 +834,6 @@ public class MainActivity extends BaseHomeActivity implements
 		overViewNavigationListAdapter.setChoosed(0);
 		overViewNavigationListAdapter.setSubTitle(turnToDate(this.selectedDate));
 		overViewNavigationListAdapter.notifyDataSetChanged();
-		
 		
 	}
 	

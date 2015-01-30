@@ -109,6 +109,7 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 	
 	private TreeMap<String, HashMap<String, Object>> mDataMap = new TreeMap<String, HashMap<String, Object> >();
 	  
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {

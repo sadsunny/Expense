@@ -51,7 +51,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 		// TODO Auto-generated method stub
 		Fragment fragment = (Fragment) super.instantiateItem(arg0, arg1);
 		registeredFragments.put(arg1, fragment);
-		Log.v("mtest", "registeredFragments in"+registeredFragments);
 		
 		return fragment;
 	}

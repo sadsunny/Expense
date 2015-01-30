@@ -15,6 +15,8 @@ import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateWeekSelectListener;
 import com.appxy.pocketexpensepro.expinterface.OnWeekSelectedListener;
+import com.appxy.pocketexpensepro.reports.ReportDao;
+import com.crashlytics.android.internal.f;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -50,14 +52,19 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 	private Thread mThread;
 	private long selectedDate;
 	private int offset;
+	
+	private long firstDayDate ;
+	private ArrayList<Long> mGroupList;
+	private HashMap<String, Double> mChildMap; 
 
+	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
 				if (mDataList != null) {
-					mAdapter.setDate(mDataList);
+					mAdapter.setChildDate(mChildMap);
 					mAdapter.setChoosedTime(MainActivity.selectedDate);
 					mAdapter.notifyDataSetChanged();
 				}
@@ -118,6 +125,14 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		
 	}
 	
+	public String turnToDateKey(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -130,6 +145,22 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		offset = position - MID_VALUE;
 		selectedDate = MainActivity.selectedDate;
 		mDataList = new ArrayList<Map<String, Object>>();
+		
+		mGroupList = new ArrayList<Long>();
+		mChildMap =  new HashMap<String, Double>();
+		
+		
+		long firstWeekDay = getWeekByOffset(offset);
+		
+		firstDayDate = firstWeekDay;
+		
+		for (int i = 0; i < 7; i++) {
+			
+			mGroupList.add(firstWeekDay);
+			firstWeekDay = firstWeekDay + DAYMILLIS;
+		}
+		
+		
 	}
 
 	@Override
@@ -140,6 +171,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		View view = inflater.inflate(R.layout.fragment_week, container, false);
 		mGridView = (GridView) view.findViewById(R.id.mGridView);
 		mAdapter = new GridViewAdapter(mActivity);
+		mAdapter.setGroupDate(mGroupList);
 		mGridView.setAdapter(mAdapter);
 		mGridView.setOnItemClickListener(mListener);
 		
@@ -163,7 +195,7 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		public void onItemClick(AdapterView<?> paramAdapterView,
 				View paramView, int paramInt, long paramLong) {
 			// TODO Auto-generated method stub
-			selectedDate = (Long) mDataList.get(paramInt).get("weekTime");
+			selectedDate = (Long) mGroupList.get(paramInt);
 			
 			weekCallBack.OnWeekSelected(selectedDate);
 			mAdapter.setChoosedTime(selectedDate);
@@ -179,41 +211,11 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		public void run() {
 			// TODO Auto-generated method stub
 
-			long firstDayDate = getWeekByOffset(offset);
+			mChildMap = ReportDao
+					.selectTransactionGroup(mActivity, firstDayDate, firstDayDate+7*DAYMILLIS);
 			
-			mDataList.clear();
-			for (int i = 0; i < 7; i++) {
-				
-				Map<String, Object> mMap = new HashMap<String, Object>();
-				mMap.put("weekTime", firstDayDate);
-
-				List<Map<String, Object>> mTemList = OverViewDao.selectTransactionByTime(mActivity, firstDayDate);
-				BigDecimal b1 = new BigDecimal("0");
-				BigDecimal b2 = new BigDecimal("0");
-				for (Map<String, Object> iMap : mTemList) {
-					String amount = (String) iMap.get("amount");
-					int expenseAccount = (Integer) iMap.get("expenseAccount");
-					int incomeAccount = (Integer) iMap.get("incomeAccount");
-					BigDecimal b3 = new BigDecimal(amount);
-
-					if (expenseAccount > 0 && incomeAccount <= 0) {
-						b1 = b1.subtract(b3);
-					} 
-					else if (incomeAccount > 0 && expenseAccount <= 0) {
-						b2 = b2.add(b3);
-					}
-				}
-				
-				double expense = b1.doubleValue();
-				double income = b2.doubleValue();
-				mMap.put("expense", expense);
-				mMap.put("income", income);
-
-				firstDayDate = firstDayDate + DAYMILLIS;
-				mDataList.add(mMap);
-			}
-            Log.v("mspecial", "week的位置"+position+"  week中得mDataList，检查是否七天"+mDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
+			
 		}
 	};
 

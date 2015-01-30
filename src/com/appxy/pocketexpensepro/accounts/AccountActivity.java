@@ -87,7 +87,7 @@ public class AccountActivity extends BaseHomeActivity {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
+				
 				if (mDataList != null && mDataList.size() > 0) {
 					mListView.setVisibility(View.VISIBLE);
 					notiTextView.setVisibility(View.INVISIBLE);
@@ -98,13 +98,7 @@ public class AccountActivity extends BaseHomeActivity {
 					mAccountsListViewAdapter.sortIsChecked(-1);
 					mAccountsListViewAdapter.notifyDataSetChanged();
 
-//					for (Map<String, Object> iMap : mDataList) {
-//						String amount = (String) iMap.get("lastAmount");
-//						BigDecimal b2 = new BigDecimal(amount);
-//						b1 = b1.add(b2);
-//					}
-//					
-					netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+					
 				}else {
 					mListView.setVisibility(View.INVISIBLE);
 					notiTextView.setVisibility(View.VISIBLE);
@@ -138,7 +132,7 @@ public class AccountActivity extends BaseHomeActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+		getBalance();
 		currency_txt1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currency_txt2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 	}
@@ -316,6 +310,7 @@ public class AccountActivity extends BaseHomeActivity {
 											// method stub
 											long row = AccountDao.deleteAccount(AccountActivity.this, id, uuid ,mDbxAcctMgr, mDatastore);
 											mHandler.post(mTask);
+											getBalance();
 											alertDialog.dismiss();
 										}
 									}).show();
@@ -323,6 +318,7 @@ public class AccountActivity extends BaseHomeActivity {
 						} else {
 							long row = AccountDao.deleteAccount(AccountActivity.this, id, uuid,mDbxAcctMgr, mDatastore);
 							mHandler.post(mTask);
+							getBalance();
 							alertDialog.dismiss();
 						}
 						
@@ -414,25 +410,33 @@ public class AccountActivity extends BaseHomeActivity {
 				mDataList.clear();
 			}
 			 mDataList = AccountDao.selectAccountBySum(AccountActivity.this);
-			
-			 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(AccountActivity.this);
-			 if (newwothList!= null && newwothList.size() >0) {
-				 netWorth = (Double) newwothList.get(0).get("allAmount");
-			}else {
-				 netWorth = 0;
-			}
-			
-			 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(AccountActivity.this, 0);
-			 if (outList!= null && outList.size() > 0) {
-				 outDouble = (Double) outList.get(0).get("outstandingAmount");
-			} else {
-				 outDouble = 0;
-			}
 			 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 
 		}
 	};
+	
+	
+	private void getBalance(){
+		
+		List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(AccountActivity.this);
+		 if (newwothList!= null && newwothList.size() >0) {
+			 netWorth = (Double) newwothList.get(0).get("allAmount");
+		}else {
+			 netWorth = 0;
+		}
+		
+		 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(AccountActivity.this, 0);
+		 if (outList!= null && outList.size() > 0) {
+			 outDouble = (Double) outList.get(0).get("outstandingAmount");
+		} else {
+			 outDouble = 0;
+		}
+		 
+		outTextView.setText(MEntity.doublepoint2str(String.valueOf(outDouble)));
+		netTextView.setText(MEntity.doublepoint2str(String.valueOf(netWorth)));
+		 
+	}
 
 
 	
@@ -554,7 +558,9 @@ public class AccountActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
-	
+		
+		getBalance();
+		
 		Intent intent = new Intent();
 		intent.putExtra("done", 1);
 		setResult(14, intent);

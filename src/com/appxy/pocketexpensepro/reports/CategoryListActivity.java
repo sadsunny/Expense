@@ -1,8 +1,12 @@
 package com.appxy.pocketexpensepro.reports;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,12 +14,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.Attributes.Name;
+import java.util.zip.Inflater;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.AccountToTransactionActivity;
+import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.entity.LoadMoreListView;
@@ -38,9 +44,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 
@@ -109,6 +118,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 		Intent intent = getIntent();
 		categoryName = intent.getStringExtra("categoryName");
 		
+		mInflater =  LayoutInflater.from(this);
 		this.getActionBar().setDisplayShowTitleEnabled(true);
 		this.getActionBar().setTitle(categoryName);
 		this.getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -117,6 +127,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 		mExpandableListView.setGroupIndicator(null);
 		mExpandableListView.setDividerHeight(0);
 		mExpandableListView.setOnChildClickListener(onChildClickListener);
+		mExpandableListView.setOnItemLongClickListener(onLongClickListener);
 		
 		mExpandableListViewAdapter = new ExpandableListViewAdapter(this);
 		mExpandableListView.setAdapter(mExpandableListViewAdapter);
@@ -157,6 +168,66 @@ public class CategoryListActivity extends BaseHomeActivity {
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
+	
+	
+	
+	private OnItemLongClickListener onLongClickListener = new OnItemLongClickListener() {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int arg2, long arg3) {
+			
+			
+			// TODO Auto-generated method stub
+			final int groupPosition = mExpandableListView.getPackedPositionGroup(arg3);
+			final int childPosition = mExpandableListView.getPackedPositionChild(arg3);
+			   
+			View dialogView = mInflater.inflate(R.layout.dialog_item_operation,null);
+
+			String[] data = { "Delete" };
+			ListView diaListView = (ListView) dialogView
+					.findViewById(R.id.dia_listview);
+			DialogItemAdapter mDialogItemAdapter = new DialogItemAdapter(
+					CategoryListActivity.this, data);
+			diaListView.setAdapter(mDialogItemAdapter);
+			diaListView.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					// TODO Auto-generated method stub
+
+					
+					  String categoryNameKey = (String) mGroupList.get(groupPosition).get("categoryName");
+				     int tId  = (Integer) mChildMap.get(categoryNameKey).get(childPosition).get("_id");
+					String uuid = (String) mChildMap.get(categoryNameKey).get(childPosition).get("uuid");
+
+					 if (arg2 == 0) {
+
+						long row = AccountDao.deleteTransaction(
+								CategoryListActivity.this, tId, uuid, mDbxAcctMgr, mDatastore);
+						
+						mHandler.post(mTask);
+						
+						alertDialog.dismiss();
+						Intent intent = new Intent();
+						intent.putExtra("row", row);
+						setResult(2, intent);
+					}
+
+				}
+			});
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					CategoryListActivity.this);
+			builder.setView(dialogView);
+			alertDialog = builder.create();
+			alertDialog.show();
+
+			return true;
+		}
+	};
+	
 
 	
 	private OnChildClickListener onChildClickListener = new OnChildClickListener() {
@@ -234,6 +305,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed", Toast.LENGTH_SHORT)
 				.show();
+		mHandler.post(mTask);
 	}
 
 }

@@ -24,6 +24,7 @@ import com.appxy.pocketexpensepro.expinterface.OnUpdateListListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateMonthListener;
 import com.appxy.pocketexpensepro.expinterface.OnUpdateNavigationListener;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.reports.ReportDao;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -66,13 +67,13 @@ public class MonthViewFragment extends Fragment implements
 	private TextView currencyTextView2;
 	private TextView currencyTextView3;
 
-	private double expense;
-	private double income;
-	private double amount;
+	private double expense = 0;
+	private double income = 0;
+	private double amount = 0;
 
-	private double pexpense;
-	private double pincome;
-	private double pamount;
+	private double pexpense = 0;
+	private double pincome = 0;
+	private double pamount = 0;
 
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static SparseArray<Fragment> registeredMonthFragments;
@@ -94,6 +95,9 @@ public class MonthViewFragment extends Fragment implements
 	private TextView currency_txt2;
 	private TextView currency_txt3;
 	private final static long DAYMILLIS = 86400000L - 1L;
+	
+	private ArrayList<Long> mGroupList;
+	private HashMap<String, Double> mChildMap;
 	
 	private Handler mHandler = new Handler() {
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
@@ -205,7 +209,7 @@ public class MonthViewFragment extends Fragment implements
 				}
 
 				calendarGridViewAdapter.setCheckDat(MainActivity.selectedDate);
-				calendarGridViewAdapter.setDataList(mGridDataList);
+				calendarGridViewAdapter.setChildData(mChildMap);
 				calendarGridViewAdapter.notifyDataSetChanged();
 
 				break;
@@ -244,6 +248,7 @@ public class MonthViewFragment extends Fragment implements
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
 		setHasOptionsMenu(true);
 		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		Bundle bundle = getArguments();
@@ -254,17 +259,23 @@ public class MonthViewFragment extends Fragment implements
 		offset = position - MID_VALUE;
 		selectedDate = MainActivity.selectedDate;
 		month = (Calendar) Calendar.getInstance();
+		
+		mGroupList = new ArrayList<Long>();
+		mChildMap =  new HashMap<String, Double>();
+		
 	}
 
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 		// TODO Auto-generated method stub
 		super.setUserVisibleHint(isVisibleToUser);
-
+		
+		long s = System.currentTimeMillis();
+		
 		if (isVisibleToUser) {
 
 			MainActivity.attachFragment = this;
-			// weekCallBack.OnWeekSelected(selectedDate);
+			// weekCallBack.OnWeekSelected(selectedDate); // nouse
 			//
 			if (mThread == null) {
 				mThread = new Thread(mTask);
@@ -274,12 +285,17 @@ public class MonthViewFragment extends Fragment implements
 			}
 
 		}
+		
+		long e = System.currentTimeMillis();
+		Log.v("mtag", "UserVisi "+(e-s));
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		long s = System.currentTimeMillis();
+		
 		View view = inflater.inflate(R.layout.fragment_month_view, container,
 				false);
 
@@ -306,12 +322,12 @@ public class MonthViewFragment extends Fragment implements
 		month.setTimeInMillis(MEntity
 				.getFirstDayOfMonthMillis(getMonthByOffset(offset)));
 
-		// Log.v("mtest", "offset"+offset);
-		// Log.v("mtest",
-		// "offset代表的时间"+MEntity.getMilltoDate(getMonthByOffset(offset)));
 
+		getCalendarDate(month);
+		
 		mGridView = (GridView) view.findViewById(R.id.mGridview);
-		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity, month);
+		calendarGridViewAdapter = new CalendarGridViewAdapter(mActivity);
+		calendarGridViewAdapter.setGroupData(mGroupList,month.getTimeInMillis());
 		mGridView.setAdapter(calendarGridViewAdapter);
 
 		mGridView.setOnItemClickListener(new OnItemClickListener() {
@@ -320,10 +336,8 @@ public class MonthViewFragment extends Fragment implements
 			public void onItemClick(AdapterView<?> paramAdapterView,
 					View paramView, int paramInt, long paramLong) {
 				// TODO Auto-generated method stub
-				long mChooseTime = getMilltoDate(calendarGridViewAdapter
-						.getDayString().get(paramInt));
-				Log.v("mtest",
-						"mChooseTime" + MEntity.getMilltoDate(mChooseTime));
+				long mChooseTime = mGroupList.get(paramInt);
+				
 				selectedDate = mChooseTime;
 
 				calendarGridViewAdapter.setCheckDat(selectedDate);
@@ -337,11 +351,14 @@ public class MonthViewFragment extends Fragment implements
 			}
 		});
 
-		// if (mThread == null) {
-		// mThread = new Thread(mTask);
-		// mThread.start();
-		// }
+		 if (mThread == null) {
+		     mThread = new Thread(mTask);
+		     mThread.start();
+		 }
 
+		long e = System.currentTimeMillis();
+		Log.v("mtag", "onCreateView "+(e-s));
+		
 		return view;
 	}
 
@@ -354,27 +371,24 @@ public class MonthViewFragment extends Fragment implements
 
 			long beginTime = MEntity.getFirstDayOfMonthMillis(selectedDate);
 			long endTime = MEntity.getLastDayOfMonthMillis(selectedDate);
-			List<Map<String, Object>> mCalendarDataList = OverViewDao.selectTransactionByTimeBE(mActivity, beginTime, endTime);
 			
-			Log.v("mtag", "1mCalendarDataList"+mCalendarDataList);
+			List<Map<String, Object>> mSumList = ReportDao.selectCategoryAllSum(mActivity, beginTime, endTime);  //查询该时间段的总额
 			
-			BigDecimal b1 = new BigDecimal("0");
-			BigDecimal b2 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mCalendarDataList) {
-				String amount = (String) iMap.get("amount");
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				BigDecimal b3 = new BigDecimal(amount);
-
-				if (expenseAccount > 0 && incomeAccount <= 0) {
-					b1 = b1.add(b3);
-				} else if (incomeAccount > 0 && expenseAccount <= 0) {
-					b2 = b2.add(b3);
+			if (mSumList.size() > 0) { 
+				
+				for (int i = 0; i < mSumList.size(); i++) {
+					double sum = (Double) mSumList.get(i).get("sum");
+					int categoryType = (Integer) mSumList.get(i).get("categoryType");
+					if (categoryType == 0 ) {
+						expense = sum;
+					}else if (categoryType == 1) {
+						income = sum ;
+					}
+					
 				}
 			}
-			expense = b1.doubleValue();
-			income = b2.doubleValue();
-			amount = b2.subtract(b1).doubleValue();
+			
+			amount = income - expense;
 
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(selectedDate);
@@ -384,33 +398,79 @@ public class MonthViewFragment extends Fragment implements
 					.getTimeInMillis());
 			long preEndTime = MEntity.getLastDayOfMonthMillis(calendar
 					.getTimeInMillis());
-			List<Map<String, Object>> mPreCalendarDataList = OverViewDao
-					.selectTransactionByTimeBE(mActivity, preBeginTime,
-							preEndTime);
-
-			BigDecimal pb1 = new BigDecimal("0");
-			BigDecimal pb2 = new BigDecimal("0");
-			for (Map<String, Object> iMap : mPreCalendarDataList) {
-				String amount = (String) iMap.get("amount");
-				int expenseAccount = (Integer) iMap.get("expenseAccount");
-				int incomeAccount = (Integer) iMap.get("incomeAccount");
-				BigDecimal b3 = new BigDecimal(amount);
-
-				if (expenseAccount > 0 && incomeAccount <= 0) {
-					pb1 = pb1.add(b3);
-				} else if (incomeAccount > 0 && expenseAccount <= 0) {
-					pb2 = pb2.add(b3);
+			
+			List<Map<String, Object>> mPreSumList = ReportDao.selectCategoryAllSum(mActivity, preBeginTime, preEndTime);  //查询该时间段的总额
+			
+			if (mSumList.size() > 0) { 
+				
+				for (int i = 0; i < mSumList.size(); i++) {
+					double sum = (Double) mSumList.get(i).get("sum");
+					int categoryType = (Integer) mSumList.get(i).get("categoryType");
+					if (categoryType == 0 ) {
+						pexpense = sum;
+					}else if (categoryType == 1) {
+						pincome = sum ;
+					}
+					
 				}
 			}
-			pexpense = pb1.doubleValue();
-			pincome = pb2.doubleValue();
-			pamount = pb2.subtract(pb1).doubleValue();
+			
+			pamount = pincome - pexpense;
+			
+			mChildMap = ReportDao
+					.selectTransactionGroup(mActivity, beginTime, endTime+7*DAYMILLIS);
 
-			Log.v("mtag", "mCalendarDataList"+mCalendarDataList);
-			mGridDataList = filterDataByTime(mCalendarDataList);
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
+	
+	
+	public void getCalendarDate( Calendar month) {
+		// clear items
+		mGroupList.clear();
+		
+		month.setFirstDayOfWeek(Calendar.SUNDAY); // testFor
+		month.set(Calendar.HOUR_OF_DAY, 0);
+		month.set(Calendar.MINUTE, 0);
+		month.set(Calendar.SECOND, 0);
+		month.set(Calendar.MILLISECOND, 0);
+		
+		Calendar pmonth = (Calendar) month.clone(); 
+		
+		// month start day. ie; sun, mon, etc
+		int firstDay = month.get(Calendar.DAY_OF_WEEK);
+		// finding number of weeks in current month.
+		int maxWeeknumber = month.getActualMaximum(Calendar.WEEK_OF_MONTH);
+		// allocating maximum row number for the gridview.
+		int mnthlength = maxWeeknumber * 7;
+		
+		if (month.get(Calendar.MONTH) == month.getActualMinimum(Calendar.MONTH)) {
+			pmonth.set((month.get(Calendar.YEAR) - 1),month.getActualMaximum(Calendar.MONTH), 1);
+		} else {
+			pmonth.set(Calendar.MONTH, month.get(Calendar.MONTH) - 1);
+		}
+		int maxP = pmonth.getActualMaximum(Calendar.DAY_OF_MONTH);// previous month maximum day 31,30....
+		
+		int calMaxP = maxP - (firstDay - 1);// calendar offday starting 24,25 ...
+		
+		/**
+		 * Calendar instance for getting a complete gridview including the three
+		 * month's (previous,current,next) dates.
+		 */
+		Calendar pmonthmaxset = (Calendar) pmonth.clone();
+		/**
+		 * setting the start date as previous month's required date.
+		 */
+		pmonthmaxset.set(Calendar.DAY_OF_MONTH, calMaxP + 1);
+		/**
+		 * filling calendar gridview.
+		 */
+		for (int n = 0; n < mnthlength; n++) {
+			mGroupList.add(pmonthmaxset.getTimeInMillis());
+			pmonthmaxset.add(Calendar.DATE, 1);
+		}
+	}
+
 
 	public List<Map<String, Object>> filterDataByTime(
 			List<Map<String, Object>> mData) {// Transaction根据时间分类计算
@@ -519,7 +579,7 @@ public class MonthViewFragment extends Fragment implements
 		mHandler.post(mTask);
 
 		month.setTimeInMillis(MEntity.getFirstDayOfMonthMillis(selectedDate));
-		calendarGridViewAdapter.refreshDays();
+//		calendarGridViewAdapter.refreshDays();
 		calendarGridViewAdapter.notifyDataSetChanged();
 	}
 
