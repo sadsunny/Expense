@@ -66,6 +66,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 	private LayoutInflater mInflater;
 	private AlertDialog alertDialog;
 	private String categoryName = "";
+	private int categoryType;
 	private double allAmount = 0; // 该类别下所有交易的总和，用于计算百分比
 	private ExpandableListView mExpandableListView;
 	private int loadSize = 0;// 每次加载的条数，记录已经加载的条数,删除自动减去一个，如果新增就走新增算法，判断是在在这之前加载
@@ -117,6 +118,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 		
 		Intent intent = getIntent();
 		categoryName = intent.getStringExtra("categoryName");
+		categoryType = intent.getIntExtra("categoryType", 0);
 		
 		mInflater =  LayoutInflater.from(this);
 		this.getActionBar().setDisplayShowTitleEnabled(true);
@@ -147,15 +149,16 @@ public class CategoryListActivity extends BaseHomeActivity {
 			mGroupList.clear();
 			mChildMap.clear();
 			
-			allAmount = ReportDao.selectTransactionSumByNameLike(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate);
-			mGroupList =   ReportDao.selectTransactionSumByNameLikeGroup(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate);
+			allAmount = ReportDao.selectTransactionSumByNameLike(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate, categoryType);
+			mGroupList =   ReportDao.selectTransactionSumByNameLikeGroup(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate, categoryType);
+			
 			
 			if (mGroupList != null && mGroupList.size() > 0) {
 				
 				for (HashMap<String, Object> iMap:mGroupList) {
 					String categoryName = (String) iMap.get("categoryName");
-					ArrayList<HashMap<String, Object>> mChildArrayList = ReportDao.selectTransactionByNameLikeLeftJoin(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate);
-
+					ArrayList<HashMap<String, Object>> mChildArrayList = ReportDao.selectTransactionByNameLikeLeftJoin(CategoryListActivity.this, categoryName, MainActivity.startDate, MainActivity.endDate, categoryType);
+					
 					if (mChildMap.containsKey(categoryName)) {
 						mChildMap.get(categoryName).add(iMap);
 					} else {

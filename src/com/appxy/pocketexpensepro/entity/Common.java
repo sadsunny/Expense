@@ -66,6 +66,30 @@ public class Common {
 		
 	}
 	
+public static String doublepoint2strNoPoint(String num) {
+		
+		double turnNum = Double.parseDouble(num);
+		
+		if (turnNum < 0) {
+			turnNum = 0 - turnNum;
+		}
+		
+		if (turnNum > 99999) {
+			
+			return coolFormat(turnNum, 0);
+			
+		}else {
+			
+			BigDecimal bg = new BigDecimal(num);
+			double f1 = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+			DecimalFormat df = new DecimalFormat("###,##0");
+			return df.format(f1);
+		}
+		
+		
+	}
+
+	
 	
 	public static int getName2Identity(Context context, String name) { // 文件名转化成ID
 		int resId = R.drawable.ic_logo;
@@ -113,6 +137,24 @@ public class Common {
 		return 0;
 		
 	}
+	
+	public final static Integer[] MAIN_ICON = {
+		R.drawable.overview,
+		R.drawable.account, 
+		R.drawable.report,
+		R.drawable.bill,
+		R.drawable.budget,
+
+};
+	
+	public final static Integer[] MAIN_ICON_SEL = {
+		R.drawable.overview_sel,
+		R.drawable.account_sel, 
+		R.drawable.report_sel,
+		R.drawable.bill_sel,
+		R.drawable.budget_sel,
+
+};
 	
 	
 	public final static Integer[] ACCOUNT_TYPE_ICON = {

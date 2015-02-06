@@ -17,13 +17,21 @@
         android:layout_width="match_parent"
         android:layout_height="48dp" >
 
-        <CheckBox
+        <RelativeLayout 
+        android:id="@+id/viewLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+        >
+            
+            <CheckBox
             android:id="@+id/checkBox1"
             android:layout_width="wrap_content"
-            android:layout_height="?android:attr/listPreferredItemHeight"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="13dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:button="@drawable/checkbox_selector"
             android:checked="true" 
             android:focusable="false"/>
 
@@ -31,18 +39,20 @@
             android:id="@+id/mImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="13dp"
+            android:layout_centerInParent="true"
             android:src="@drawable/auto2" 
             />
+        
+        </RelativeLayout>
+        
 
         <TextView
             android:id="@+id/TextView1"
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="15dp"
-            android:layout_toRightOf="@+id/mImageView"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/viewLayout"
             android:gravity="bottom"
             android:maxEms="12"
             android:singleLine="true"
@@ -56,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="24dp"
             android:layout_below="@+id/TextView1"
-            android:layout_marginLeft="15dp"
-            android:layout_toRightOf="@+id/mImageView"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/viewLayout"
             android:layout_marginTop="2dp"
             android:gravity="top"
             android:maxEms="12"

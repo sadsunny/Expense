@@ -1,9 +1,12 @@
 package com.appxy.pocketexpensepro.overview.transaction;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,5 +52,11 @@ public class ViewPhotoActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+	    super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+	}
+	
+	
 }

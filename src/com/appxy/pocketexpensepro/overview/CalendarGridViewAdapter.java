@@ -138,9 +138,10 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			viewholder.dayView.setTextColor(Color.rgb(205, 205, 205));
 			viewholder.dayView.setClickable(false);
 			viewholder.dayView.setFocusable(false);
+			
 		} else {
 
-			if ( (todayTime - todayLong) <= DAYMILLIS ) {
+			if ( turnToDateKey(todayLong).equals (turnToDateKey(todayTime)) ) {
 				viewholder.dayView.setTextColor(Color.rgb(3, 128, 255));
 			} else {
 				viewholder.dayView.setTextColor(Color.rgb(94, 99, 117));
@@ -152,7 +153,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 
 		if (todayTime == checkDate ) {
 			
-			if (todayTime == todayTime) {
+			if ( turnToDateKey(todayLong).equals (turnToDateKey(todayTime)) ) {
 				viewholder.mLayout.setBackgroundResource(R.color.text_blue);
 			} else {
 				viewholder.mLayout.setBackgroundResource(R.color.sel_gray);
@@ -180,11 +181,23 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			       income = mChildMap.get(incomeKey);
 					
 			    } 
+			    
+			    
+				if ( todayTime  >LastDayDate) {
+					
+					if (mChildMap.containsKey(expenseKey)) {
+						
+				         Log.v("mtag", "position "+position+" 数据"+mChildMap.get(expenseKey)); 
+						
+				     	} 
+					
+				}
+
 			
 			}
 
 			if (expense != 0) {
-				viewholder.expenseTextView.setText(Common.doublepoint2str(expense
+				viewholder.expenseTextView.setText(Common.doublepoint2strNoPoint(expense
 						+ ""));
 				viewholder.expenseTextView.setTextColor(Color.rgb(208, 47, 58));
 			} else {
@@ -192,7 +205,7 @@ public class CalendarGridViewAdapter extends BaseAdapter {
 			}
 			
 			if (income != 0) {
-				viewholder.incomeTextView.setText(Common.doublepoint2str(income
+				viewholder.incomeTextView.setText(Common.doublepoint2strNoPoint(income
 						+ ""));
 				viewholder.incomeTextView.setTextColor(Color.rgb(83, 150, 39));
 			} else {

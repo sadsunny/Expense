@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
@@ -14,6 +16,7 @@ import com.dropbox.sync.android.DbxRecord;
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -179,8 +182,6 @@ public class CategoryActivity extends BaseHomeActivity {
 		}
 		
 	}
-	
-	
 	
 
 }

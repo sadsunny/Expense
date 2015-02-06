@@ -20,6 +20,8 @@ import java.util.TreeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
@@ -703,6 +705,10 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 				
 				if (rId >0) {
 					judegeReturn(clickedId);
+					
+					Intent intent = new Intent();
+					intent.putExtra("row", 1);
+					setResult(12, intent);
 				}
 				
 			}
@@ -714,6 +720,10 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 				long rId = data.getLongExtra("done", 0);
 				
 				judegeReturn((int)rId);
+				
+				Intent intent = new Intent();
+				intent.putExtra("row", 1);
+				setResult(12, intent);
 			}
 			break;
 		}
@@ -910,6 +920,4 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 		getOutAndBanlance(); 
 	}
 	
-	
-
 }

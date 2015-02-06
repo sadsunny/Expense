@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
@@ -460,31 +462,31 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 				        
 		
 		customKeyBoard = new KeyboardUtil(CreatTransactionActivity.this, CreatTransactionActivity.this, amountEditText); 
-		amountEditText.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				 EditText edittext = (EditText) v;
-			        int inType = edittext.getInputType();       // Backup the input type
-			        edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
-			        edittext.setInputType(inType);              // Restore input type
-		        
-			        View view = getWindow().peekDecorView();
-			          if (view != null) {
-			            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-			            inputmanger.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-			         }
-			  
-				if (customKeyBoard != null) {
-					
-					if (!customKeyBoard.isCustomKeyboardVisible()) {
-						 customKeyBoard.showKeyboard();
-					}
-				}
-				
-			}
-		});
+//		amountEditText.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				 EditText edittext = (EditText) v;
+//			        int inType = edittext.getInputType();       // Backup the input type
+//			        edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
+//			        edittext.setInputType(inType);              // Restore input type
+//		        
+//			        View view = getWindow().peekDecorView();
+//			          if (view != null) {
+//			            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//			            inputmanger.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+//			         }
+//			  
+//				if (customKeyBoard != null) {
+//					
+//					if (!customKeyBoard.isCustomKeyboardVisible()) {
+//						 customKeyBoard.showKeyboard();
+//					}
+//				}
+//				
+//			}
+//		});
 		
 		amountEditText.setInputType(0);
 		amountEditText.setOnTouchListener(new OnTouchListener() {
@@ -716,24 +718,7 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else if(payeeString == null || payeeString.trim().length() == 0 || payeeString.trim().equals("")){
-					
-					new AlertDialog.Builder(CreatTransactionActivity.this)
-					.setTitle("Warning! ")
-					.setMessage(" Payee is required! ")
-					.setPositiveButton("Retry",
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(
-										DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-								}
-					 }).show();
-									
-				}else {
+				} else {
 
 					long rId = 0;
 					
@@ -749,6 +734,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 								payeeId = (int) row;
 							}
 						}
+					}else{
+						payeeId = 0;
 					}
 
 					final String memoString = memoEditText.getText().toString();
@@ -1833,4 +1820,6 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		Toast.makeText(this, "Dropbox sync successed",
 				Toast.LENGTH_SHORT).show();
 	}
+	
+	
 }

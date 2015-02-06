@@ -2,6 +2,7 @@ package com.appxy.pocketexpensepro.entity;
 
 import java.util.List;  
 
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.keyboard.CustomKeyboardView;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
@@ -13,6 +14,7 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;  
 import android.inputmethodservice.Keyboard.Key;  
 import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;  
+import android.os.CountDownTimer;
 import android.text.Editable;  
 import android.util.Log;
 import android.view.Gravity;
@@ -51,11 +53,10 @@ public class KeyboardUtil {   // 模拟弹出框
         private double preValue = 0.0;
         private boolean isCalculate = false;
         
-        private Animation animation; 
-        		
+        private Animation animation;
+        
         public KeyboardUtil(Activity mActivity, Context context, EditText edit) {  
         	
-        	    
                 this.mActivity = mActivity;  
                 this.context = context;  
                 this.edit = edit;  
@@ -68,6 +69,7 @@ public class KeyboardUtil {   // 模拟弹出框
                 keyboardView.setPreviewEnabled(false);
                 keyboardView.setOnKeyboardActionListener(listener);  
                 mActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                
         }  
    
         private OnKeyboardActionListener listener = new OnKeyboardActionListener() {  
@@ -292,9 +294,25 @@ public class KeyboardUtil {   // 模拟弹出框
     public void showKeyboard() {  
     	
     	if( edit !=null ) ((InputMethodManager)context.getSystemService(Activity.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(edit.getWindowToken(), 0);
-    	keyboardView.showWithAnimation(animation);
-    	keyboardView.setVisibility(View.VISIBLE);
-    	keyboardView.setEnabled(true);
+    	
+    	new CountDownTimer(100, 100) {
+
+			@Override
+			public void onTick(long millisUntilFinished) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onFinish() {
+				// TODO Auto-generated method stub
+				keyboardView.setVisibility(View.VISIBLE);
+		    	keyboardView.setEnabled(true);
+
+			}
+		}.start();
+		
+    	
     }  
        
     public void hideKeyboard() {  

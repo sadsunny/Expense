@@ -4,9 +4,11 @@ package com.appxy.pocketexpensepro.passcode;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
@@ -300,5 +302,6 @@ public class Activity_Login extends Activity{
 		super.onSaveInstanceState(outState);
 		outState.putString("text", et.getText().toString());
 	}
+	
 
 }

@@ -8,7 +8,7 @@
         android:id="@+id/RelativeLayout1"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:background="@color/bag_gray_color" >
+        android:background="@color/bag_gray1" >
 
         <TextView
             android:id="@+id/category_txt"
@@ -62,11 +62,6 @@
             android:textColor="@color/text_gray1"
             android:textSize="13sp" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_alignParentBottom="true"
-            android:background="@color/line_devide_gray" />
     </RelativeLayout>
 
 </LinearLayout>

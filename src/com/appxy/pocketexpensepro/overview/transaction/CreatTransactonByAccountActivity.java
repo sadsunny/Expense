@@ -23,6 +23,7 @@ import com.appxy.pocketexpensepro.accounts.CreatNewAccountActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.Common;
+import com.appxy.pocketexpensepro.entity.KeyboardUtil;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
@@ -51,12 +52,18 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
+import android.view.View.OnTouchListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -156,7 +163,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	private AutoListAdapter autoListAdapter;
 	private Cursor mCursor;
 	private CharSequence sKey;
-
+	private KeyboardUtil customKeyBoard;
+	
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
@@ -387,76 +395,176 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 
 		});
 
-		amountEditText.setText("0.00");
-		amountEditText.setSelection(4);
-		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
-					private boolean isChanged = false;
-
-					@Override
-					public void onTextChanged(CharSequence s, int start,
-							int before, int count) {
-						// TODO Auto-generated method stub
-
+		amountEditText.setText("0");
+		if (amountEditText != null) {
+	   		 InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+	   		 imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), 0);
+			}
+		
+		
+		customKeyBoard = new KeyboardUtil(CreatTransactonByAccountActivity.this, CreatTransactonByAccountActivity.this, amountEditText); 
+		amountEditText.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				 EditText edittext = (EditText) v;
+			        int inType = edittext.getInputType();       // Backup the input type
+			        edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
+			        edittext.setInputType(inType);              // Restore input type
+		        
+			        View view = getWindow().peekDecorView();
+			          if (view != null) {
+			            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+			            inputmanger.hideSoftInputFromWindow(view.getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+			         }
+			  
+				if (customKeyBoard != null) {
+					
+					if (!customKeyBoard.isCustomKeyboardVisible()) {
+						 customKeyBoard.showKeyboard();
 					}
-
-					@Override
-					public void beforeTextChanged(CharSequence s, int start,
-							int count, int after) {
-						// TODO Auto-generated method stub
+				}
+				
+			}
+		});
+		
+		amountEditText.setInputType(0);
+		amountEditText.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				
+//				  InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);    
+//			      //得到InputMethodManager的实例  
+//			      if (imm.isActive()) {  
+//			      //如果开启  
+//			      imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_NOT_ALWAYS);   
+//			      //关闭软键盘，开启方法相同，这个方法是切换开启与关闭状态的  
+//			      }  
+			      
+//				 View view = getWindow().peekDecorView();
+//		          if (view != null) {
+//		            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//		            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+//		         }
+		          getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		          EditText edittext = (EditText) v;
+			        int inType = edittext.getInputType();       // Backup the input type
+			        edittext.setInputType(InputType.TYPE_NULL); // Disable standard keyboard
+			        edittext.onTouchEvent(event);               // Call native handler
+			        edittext.setInputType(inType);              // Restore input type
+			        
+			        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+			        imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS); 
+			        
+				if (customKeyBoard != null) {
+					
+					if (!customKeyBoard.isCustomKeyboardVisible()) {
+						 customKeyBoard.showKeyboard();
 					}
-
-					@Override
-					public void afterTextChanged(Editable s) {
-						// TODO Auto-generated method stub
-
-						if (isChanged) {// ----->如果字符未改变则返回
-							return;
-						}
-						String str = s.toString();
-
-						isChanged = true;
-						String cuttedStr = str;
-						/* 删除字符串中的dot */
-						for (int i = str.length() - 1; i >= 0; i--) {
-							char c = str.charAt(i);
-							if ('.' == c) {
-								cuttedStr = str.substring(0, i)
-										+ str.substring(i + 1);
-								break;
-							}
-						}
-						/* 删除前面多余的0 */
-						int NUM = cuttedStr.length();
-						int zeroIndex = -1;
-						for (int i = 0; i < NUM - 2; i++) {
-							char c = cuttedStr.charAt(i);
-							if (c != '0') {
-								zeroIndex = i;
-								break;
-							} else if (i == NUM - 3) {
-								zeroIndex = i;
-								break;
-							}
-						}
-						if (zeroIndex != -1) {
-							cuttedStr = cuttedStr.substring(zeroIndex);
-						}
-						/* 不足3位补0 */
-						if (cuttedStr.length() < 3) {
-							cuttedStr = "0" + cuttedStr;
-						}
-						/* 加上dot，以显示小数点后两位 */
-						cuttedStr = cuttedStr.substring(0,
-								cuttedStr.length() - 2)
-								+ "."
-								+ cuttedStr.substring(cuttedStr.length() - 2);
-
-						amountEditText.setText(cuttedStr);
-						amountString = amountEditText.getText().toString();
-						amountEditText.setSelection(cuttedStr.length());
-						isChanged = false;
+					
+				}
+				
+				
+				
+				return true;
+			}
+		});
+		
+		amountEditText.setInputType(InputType.TYPE_NULL); 
+		amountEditText.setInputType( amountEditText.getInputType() | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS );
+		
+		amountEditText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				// TODO Auto-generated method stub
+				if (hasFocus) {
+					
+					if (customKeyBoard != null && !customKeyBoard.isCustomKeyboardVisible()) {
+						customKeyBoard.showKeyboard(); 
 					}
-				});
+					
+				}else {
+					if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+						customKeyBoard.hideKeyboard();
+					}
+					
+				}
+				
+			}
+		});
+		
+//		amountEditText.addTextChangedListener(new TextWatcher() { // 设置保留两位小数
+//					private boolean isChanged = false;
+//
+//					@Override
+//					public void onTextChanged(CharSequence s, int start,
+//							int before, int count) {
+//						// TODO Auto-generated method stub
+//
+//					}
+//
+//					@Override
+//					public void beforeTextChanged(CharSequence s, int start,
+//							int count, int after) {
+//						// TODO Auto-generated method stub
+//					}
+//
+//					@Override
+//					public void afterTextChanged(Editable s) {
+//						// TODO Auto-generated method stub
+//
+//						if (isChanged) {// ----->如果字符未改变则返回
+//							return;
+//						}
+//						String str = s.toString();
+//
+//						isChanged = true;
+//						String cuttedStr = str;
+//						/* 删除字符串中的dot */
+//						for (int i = str.length() - 1; i >= 0; i--) {
+//							char c = str.charAt(i);
+//							if ('.' == c) {
+//								cuttedStr = str.substring(0, i)
+//										+ str.substring(i + 1);
+//								break;
+//							}
+//						}
+//						/* 删除前面多余的0 */
+//						int NUM = cuttedStr.length();
+//						int zeroIndex = -1;
+//						for (int i = 0; i < NUM - 2; i++) {
+//							char c = cuttedStr.charAt(i);
+//							if (c != '0') {
+//								zeroIndex = i;
+//								break;
+//							} else if (i == NUM - 3) {
+//								zeroIndex = i;
+//								break;
+//							}
+//						}
+//						if (zeroIndex != -1) {
+//							cuttedStr = cuttedStr.substring(zeroIndex);
+//						}
+//						/* 不足3位补0 */
+//						if (cuttedStr.length() < 3) {
+//							cuttedStr = "0" + cuttedStr;
+//						}
+//						/* 加上dot，以显示小数点后两位 */
+//						cuttedStr = cuttedStr.substring(0,
+//								cuttedStr.length() - 2)
+//								+ "."
+//								+ cuttedStr.substring(cuttedStr.length() - 2);
+//
+//						amountEditText.setText(cuttedStr);
+//						amountString = amountEditText.getText().toString();
+//						amountEditText.setSelection(cuttedStr.length());
+//						isChanged = false;
+//					}
+//				});
 
 		Calendar c = Calendar.getInstance();
 		c.setTimeInMillis(MainActivity.selectedDate);
@@ -477,7 +585,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 				break;
 
 			case R.id.action_done:
-
+				
+				amountString = amountEditText.getText().toString();
 				try {
 					amountDouble = Double.parseDouble(amountString);
 				} catch (NumberFormatException e) {
@@ -540,24 +649,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 
 										}
 									}).show();
-				} else if(payeeString == null || payeeString.trim().length() == 0 || payeeString.trim().equals("")){
-					
-					new AlertDialog.Builder(CreatTransactonByAccountActivity.this)
-					.setTitle("Warning! ")
-					.setMessage(" Payee is required! ")
-					.setPositiveButton("Retry",
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(
-										DialogInterface dialog,
-										int which) {
-									// TODO Auto-generated method stub
-									dialog.dismiss();
-								}
-					 }).show();
-									
-				}else {
+				} else {
 
 					long rId = 0;
 					if (payeeString != null && payeeString.trim().length() != 0 && !payeeString.trim().equals("")) {
@@ -571,6 +663,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 								payeeId = (int) row;
 							}
 						}
+					}else{
+						payeeId = 0;
 					}
 
 					final String memoString = memoEditText.getText().toString();

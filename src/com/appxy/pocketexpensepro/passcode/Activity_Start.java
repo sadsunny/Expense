@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.passcode;
 import com.crashlytics.android.Crashlytics;
 import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxRecord;
+import com.flurry.android.FlurryAgent;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,13 +17,15 @@ import java.util.Set;
 
 import org.apache.http.util.EncodingUtils;
 
+
 import com.appxy.pocketexpensepro.MainActivity;
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.TransactionRecurringCheck;
 import com.appxy.pocketexpensepro.accounts.AccountActivity;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
-import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.service.NotificationService;
 import com.appxy.pocketexpensepro.service.PastDueService;
 import com.appxy.pocketexpensepro.setting.SettingDao;
@@ -109,6 +112,31 @@ public class Activity_Start extends BaseHomeActivity {
 			}
 		}
 	};
+
+	
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		
+		loadIsPaid();
+		
+		if ( Common.mIsPaid) {
+			FlurryAgent.onStartSession(this, "33T77JQRQZ46VDGSTHN2");
+		} else {
+			FlurryAgent.onStartSession(this, "T7WHZHCBWS3FWWPWXSBN");
+		}
+		
+	}
+
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		
+		FlurryAgent.onEndSession(this);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -277,5 +305,13 @@ public class Activity_Start extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 
 	}
+	
+	
+	  void loadIsPaid() { //查询是否支付
+      	
+		    SharedPreferences sharedPreferences = this.getSharedPreferences(PREFS_NAME, 0);  
+	        Common.mIsPaid = sharedPreferences.getBoolean("isPaid", false);
+	}
+	
 
 }

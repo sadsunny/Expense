@@ -687,6 +687,32 @@ public class AccountDao {
 	}
 
 	
+	public static List<Map<String, Object>> selectAllClearedAmount( // clear = off 的总额
+			Context context, int clear) { // Account查询
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select (total(a.amount) - ( select total(a.amount) from 'Transaction' a where a.isClear = "
+				+ clear
+				+ " and a.childTransactions != 1 and (expenseAccount > 0 or incomeAccount <= 0) ) ) from 'Transaction' a where a.isClear = "
+				+ clear
+				+ " and a.childTransactions != 1 and (expenseAccount <= 0 or incomeAccount > 0)";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			double outstandingAmount = mCursor.getDouble(0);
+			mMap.put("outstandingAmount", outstandingAmount);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+
+	
 	
 	public static List<Map<String, Object>> selectAccountNetworth(Context context) { // Account查询
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();

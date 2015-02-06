@@ -151,14 +151,14 @@ public class GridViewAdapter extends BaseAdapter {
 		}
 
 		if (expense != 0) {
-			viewHolder.expenseTextView.setText(Common.doublepoint2str(expense
+			viewHolder.expenseTextView.setText(Common.doublepoint2strNoPoint(expense
 					+ ""));
 		} else {
 			viewHolder.expenseTextView.setText("");
 		}
 
 		if (income != 0) {
-			viewHolder.incomeTextView.setText(Common.doublepoint2str(income
+			viewHolder.incomeTextView.setText(Common.doublepoint2strNoPoint(income
 					+ ""));
 		} else {
 			viewHolder.incomeTextView.setText("");

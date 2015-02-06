@@ -10,6 +10,8 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 
 import com.appxy.pocketexpensepro.bills.CreatBillsActivity;
 import com.appxy.pocketexpensepro.entity.Common;
@@ -33,6 +35,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -664,6 +667,6 @@ public class SettingActivity extends BaseHomeActivity {
 			Toast.makeText(this, "Dropbox sync successed",
 					Toast.LENGTH_SHORT).show();
 		}
-	 
+		
 
 }

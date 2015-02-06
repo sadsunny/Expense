@@ -4,6 +4,7 @@ import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,9 @@ import android.widget.TextView;
 	             viewholder.textView1 = (TextView)convertView.findViewById(R.id.currency_sign_textView);
 	             viewholder.textView2 = (TextView)convertView.findViewById(R.id.currency_name_textView);
 	             
+	             Typeface tf=Typeface.createFromAsset(context.getAssets(), "fonts/ROBOTO-REGULAR.TTF"); 
+	             viewholder.textView1.setTypeface(tf); 
+	     		
 	             convertView.setTag(viewholder);
 	         }else
 	         {

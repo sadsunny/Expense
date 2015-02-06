@@ -16,6 +16,9 @@
 package com.appxy.pocketexpensepro.keyboard;
 
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.inputmethodservice.KeyboardView;
 import android.util.AttributeSet;
 import android.view.View;
@@ -27,6 +30,7 @@ public class CustomKeyboardView extends KeyboardView {
 	public CustomKeyboardView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
+
 
 	public void showWithAnimation(Animation animation) {
 		animation.setAnimationListener(new AnimationListener() {

@@ -103,10 +103,15 @@ public class AccountsListViewAdapter extends BaseAdapter {
 			viewholder.amountTextView.setTextColor(Color.rgb(208, 47, 58));
 			double amount = 0-mAmount;
 			viewholder.amountTextView.setText( MEntity.doublepoint2str(amount+""));
-		} else {
+		} else if (mAmount > 0) {
 			viewholder.symbolTextView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.currencyTextView.setTextColor(Color.rgb(83, 150, 39));
 			viewholder.amountTextView.setTextColor(Color.rgb(83, 150, 39));
+			viewholder.amountTextView.setText( MEntity.doublepoint2str( (Double)mData.get(position).get("allAmount") +""));
+		}else {
+			viewholder.symbolTextView.setTextColor(Color.parseColor("#36373c"));
+			viewholder.currencyTextView.setTextColor(Color.parseColor("#36373c"));
+			viewholder.amountTextView.setTextColor(Color.parseColor("#36373c"));
 			viewholder.amountTextView.setText( MEntity.doublepoint2str( (Double)mData.get(position).get("allAmount") +""));
 		}
 		

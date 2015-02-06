@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     >
   
     <ScrollView
@@ -284,8 +285,13 @@
         android:layout_height="wrap_content"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:keyBackground="@drawable/circle_button_selector"
-        android:background="@android:color/transparent"
+        android:keyBackground="@drawable/keybord_selector"
+        android:background="@color/keyboard_bag"
+        android:keyTextSize="20sp"
+        android:labelTextSize="20sp"
+        android:shadowColor="@color/white"
+        android:shadowRadius="0.0"
+        android:keyTextColor="@color/keyboard_txt" 
         android:visibility="gone"
          />
     

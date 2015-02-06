@@ -68,17 +68,17 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 					mExpandableListView.expandGroup(i);
 				}
 				
-				// mExpandableListView
-				// .setOnGroupClickListener(new OnGroupClickListener() {
-				//
-				// @Override
-				// public boolean onGroupClick(
-				// ExpandableListView parent, View v,
-				// int groupPosition, long id) {
-				// // TODO Auto-generated method stub
-				// return true;
-				// }
-				// });
+				 mExpandableListView
+				 .setOnGroupClickListener(new OnGroupClickListener() {
+				
+				 @Override
+				 public boolean onGroupClick(
+				 ExpandableListView parent, View v,
+				 int groupPosition, long id) {
+				 // TODO Auto-generated method stub
+				 return true;
+				 }
+				 });
 
 				mExpandableListView.setCacheColorHint(0);
 

@@ -18,6 +18,8 @@ import java.util.TreeMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.LoadMoreListView;
@@ -94,6 +96,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	private TextView symbolTextView2;
 	private TextView outstandingTextView;
 	private TextView balanceTextView;
+	private TextView textView2;
 	private  String item1 = "Reconcile ON               ";
 	private  String item2 = "Hide Cleared";
 	private  List<String> content;
@@ -150,12 +153,15 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		}
 	  	
 		
+		textView2 = (TextView) findViewById(R.id.textView2); 
+		
 		if (type == 0) {
 			accName = "Net Worth";
-			
+			textView2.setText("Balance");
 		} else {
 			hideBoolean = true;
 			accName = "Outstanding";
+			textView2.setText("Cleared");
 		}
 		
 		mChildMap = new HashMap<String, ArrayList<HashMap<String, Object>>>();
@@ -174,6 +180,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 				new DropDownListenser());
 		
 		
+	
 		currencyTextView1= (TextView) findViewById(R.id.currency_txt1);
 		currencyTextView2 = (TextView) findViewById(R.id.currency_txt2);
 		symbolTextView1 =  (TextView) findViewById(R.id.symbol_txt1);
@@ -215,12 +222,26 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 
 	public void getOutAndBanlance(){ // 计算两者总和
 		
-		 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(NetOutActivity.this);
-		 if (newwothList!= null && newwothList.size() >0) {
-			 banlance = (Double) newwothList.get(0).get("allAmount");
-		}else {
-			banlance = 0;
+		if (type == 0) {
+			
+			 List<Map<String, Object>> newwothList = AccountDao.selectAccountNetworth(NetOutActivity.this);
+			 if (newwothList!= null && newwothList.size() >0) {
+				 banlance = (Double) newwothList.get(0).get("allAmount");
+			}else {
+				banlance = 0;
+			}
+			 
+		} else {
+
+			 List<Map<String, Object>> newwothList = AccountDao.selectAllClearedAmount(NetOutActivity.this,1);
+			 if (newwothList!= null && newwothList.size() >0) {
+				 banlance = (Double) newwothList.get(0).get("outstandingAmount");
+			}else {
+				banlance = 0;
+			}
+			 
 		}
+		
 		
 		 List<Map<String, Object>> outList = AccountDao.selectTransactionOutstanding(NetOutActivity.this, 0);
 		 if (outList!= null && outList.size() > 0) {

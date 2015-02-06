@@ -70,11 +70,11 @@ public class ReportDao{
 	
 	
 	public static  ArrayList<HashMap<String, Object>>  selectTransactionSumByNameLikeGroup (
-			Context context, String categoryName,long startTime, long endTime ) { // 根据category的name查询该name下的所有总和，group by name 并且排序
+			Context context, String categoryName,long startTime, long endTime, int categoryType ) { // 根据category的name查询该name下的所有总和，group by name 并且排序
 		ArrayList<HashMap<String,Object>> mList = new ArrayList<HashMap<String,Object>>();
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount) as sumAmount , b.categoryName from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName +"%' and a.childTransactions != 1 group by  b.categoryName order by sumAmount DESC ";
+		String sql = "select total(a.amount) as sumAmount , b.categoryName from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryType = "+categoryType+" and b.categoryName like '" +categoryName +"%'  group by  b.categoryName order by sumAmount DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -95,10 +95,10 @@ public class ReportDao{
 	
 	
 	public static double selectTransactionSumByNameLike(
-			Context context, String categoryName,long startTime, long endTime) { // 根据category的name查询该name下的所有总和
+			Context context, String categoryName,long startTime, long endTime, int categoryType) { // 根据category的name查询该name下的所有总和
 		double sum = 0;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount) from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName+"%' and a.childTransactions != 1 ";
+		String sql = "select total(a.amount) from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName+"%' and b.categoryType = "+categoryType;
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			sum = mCursor.getDouble(0);
@@ -111,12 +111,12 @@ public class ReportDao{
 	
 	
 	public static ArrayList<HashMap<String, Object>> selectTransactionByNameLikeLeftJoin(
-			Context context, String categoryName,long startTime, long endTime) { // CategoryReport list点入后的插叙，根据category名字，查询like
+			Context context, String categoryName,long startTime, long endTime , int mCategoryType) { // CategoryReport list点入后的插叙，根据category名字，查询like
 		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		
-		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName+"%' and a.childTransactions != 1 order by b.dateTime DESC,a._id DESC ";
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryType = "+mCategoryType+" and b.categoryName like '" +categoryName+"%' order by b.dateTime DESC,a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -195,7 +195,6 @@ public class ReportDao{
 		HashMap<String, Double> mChildMap = new HashMap<String, Double>(); 
 		
 		SQLiteDatabase db = getConnection(context);
-		
 		
 		String sqltest = "select total(a.amount) , strftime('%m-%d',datetime( a.dateTime/1000, 'unixepoch'),'localtime') as customDate, b.categoryType from 'Transaction' a,  Category b where  a.dateTime >= "+ startTime +" and a.dateTime <  "+(endTime+DAYMILLIS) +" and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  group by customDate, b.categoryType" ;
 		Cursor mCursortest = db.rawQuery(sqltest, null);

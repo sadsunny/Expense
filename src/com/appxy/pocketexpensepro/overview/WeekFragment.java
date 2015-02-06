@@ -219,28 +219,6 @@ public class WeekFragment extends Fragment implements OnUpdateWeekSelectListener
 		}
 	};
 
-	public long getFirstDayByOffset(int offset) {
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-
-		long returnDate = calendar.getTimeInMillis();
-
-		if (offset == 0) {
-			return returnDate;
-		} else {
-			long offsetDate = offset * 7 * DAYMILLIS;
-			calendar.setTimeInMillis(returnDate + offsetDate);
-			calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-			calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-			returnDate = calendar.getTimeInMillis();
-		}
-
-		return returnDate;
-	}
 
 	public long getWeekByOffset(int offset) {
 

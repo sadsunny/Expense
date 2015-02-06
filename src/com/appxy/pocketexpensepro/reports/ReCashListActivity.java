@@ -339,7 +339,7 @@ public class ReCashListActivity extends BaseHomeActivity {
 	public String turnToDateString(long mills) {
 
 		Date date2 = new Date(mills);
-		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("MMM yyyy");
 		String theDate = sdf.format(date2);
 		return theDate;
 	}

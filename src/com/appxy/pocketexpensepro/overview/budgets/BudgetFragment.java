@@ -16,6 +16,7 @@ import com.appxy.pocketexpensepro.accounts.AccountsFragment.SectionController;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
+import com.appxy.pocketexpensepro.overview.BudgetActivity;
 import com.appxy.pocketexpensepro.overview.BudgetListApdater;
 import com.appxy.pocketexpensepro.overview.BudgetToTransactionActivity;
 import com.appxy.pocketexpensepro.overview.OverViewDao;
@@ -104,6 +105,11 @@ public class BudgetFragment extends Fragment implements OnSyncFinishedListener{
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
+				if ((budgetAmount - transactionAmount) > 0) {
+					mProgressBar.setProgressDrawable(mActivity.getResources().getDrawable(R.drawable.progressbar_bac));
+				} else {
+					mProgressBar.setProgressDrawable(mActivity.getResources().getDrawable(R.drawable.progressbar_bac_over));
+				}
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
 				

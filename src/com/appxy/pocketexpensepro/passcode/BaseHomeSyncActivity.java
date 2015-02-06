@@ -3,7 +3,9 @@ package com.appxy.pocketexpensepro.passcode;
 import java.util.List;
 import java.util.Map;
 
-import com.appxy.pocketexpensepro.entity.MyApplication;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
@@ -116,5 +118,10 @@ public abstract class BaseHomeSyncActivity extends FragmentActivity{
 	        e.printStackTrace();
 	        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
 	    }
+	 
+	 @Override
+		protected void attachBaseContext(Context newBase) {
+		    super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+		}
 	
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -28,6 +30,7 @@ import com.dropbox.sync.android.DbxRecord;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -85,6 +88,11 @@ public class BudgetActivity extends BaseHomeActivity {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
+				if ((budgetAmount - transactionAmount) > 0) {
+					mProgressBar.setProgressDrawable(BudgetActivity.this.getResources().getDrawable(R.drawable.progressbar_bac));
+				} else {
+					mProgressBar.setProgressDrawable(BudgetActivity.this.getResources().getDrawable(R.drawable.progressbar_bac_over));
+				}
 				mProgressBar.setMax((int) budgetAmount);
 				mProgressBar.setProgress((int) transactionAmount);
 				
@@ -124,7 +132,7 @@ public class BudgetActivity extends BaseHomeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_budget);
-
+		
 		mPreferences = getSharedPreferences("Expense", MODE_PRIVATE);
 		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
 
@@ -448,4 +456,5 @@ public class BudgetActivity extends BaseHomeActivity {
 		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
 	}
+	
 }

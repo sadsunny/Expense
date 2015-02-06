@@ -289,6 +289,8 @@
                                 android:layout_toRightOf="@+id/currency_label2"
                                 android:text="@string/zero_label"
                                 android:textColor="@color/text_black"
+                                android:singleLine="true"
+                                android:maxLength="14"
                                 android:textSize="16.5sp" />
                         </LinearLayout>
 

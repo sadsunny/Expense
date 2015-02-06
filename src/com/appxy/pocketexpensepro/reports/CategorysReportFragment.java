@@ -201,6 +201,7 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 		
 		mAdapter = new ReportCategoryListViewAdapter(mActivity);
 		mListView.setAdapter(mAdapter);
+		mListView.setDividerHeight(0);
 		mListView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -210,6 +211,7 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 				
 				Intent intent = new Intent();
 				intent.putExtra("categoryName", (String) mCategoryDataList.get(position).get("categoryName"));
+				intent.putExtra("categoryType", mCategoryType);
 				intent.setClass(mActivity, CategoryListActivity.class);
 				startActivityForResult(intent, 2);
 				
@@ -482,6 +484,7 @@ public class CategorysReportFragment extends Fragment implements OnSyncFinishedL
 
 		PopupListViewAdapter mAdapter = new PopupListViewAdapter(mActivity);
 		mAdapter.setAdapterDate(getPopupData());
+		lvPopupList.setDividerHeight(0);
 		lvPopupList.setAdapter(mAdapter);
 		lvPopupList.setOnItemClickListener(new OnItemClickListener() {
 

@@ -13,6 +13,8 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.accounts.AccountsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragment;
 import com.appxy.pocketexpensepro.bills.BillsFragmentMonth;
@@ -65,9 +67,11 @@ import android.app.AlertDialog;
 import android.app.ActionBar.OnNavigationListener;
 import android.app.ProgressDialog;
 import android.support.v4.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -79,7 +83,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressLint("ResourceAsColor")
@@ -89,6 +95,7 @@ public class MainActivity extends BaseHomeActivity implements
 
 	private static final int MSG_SUCCESS = 1;
 	private static final int MSG_FAILURE = 0;
+	private static final String [] mainText= {"Overview","Accounts","Reports","Bills","Budgets"};
 	private DrawerLayout mDrawerLayout;
 	private ActionBarDrawerToggle mDrawerToggle;
 
@@ -101,12 +108,6 @@ public class MainActivity extends BaseHomeActivity implements
 	private LinearLayout mReportLinearLayout;
 	private LinearLayout mBillsLinearLayout;
 	private LinearLayout mBudgetLinearLayout;
-	
-	private View choose_view1;
-	private View choose_view2;
-	private View choose_view3;
-	private View choose_view4;
-	private View choose_view5;
 	
 	private android.support.v4.app.FragmentManager fragmentManager;
 	private OnUpdateListListener onUpdateListListener;
@@ -131,7 +132,6 @@ public class MainActivity extends BaseHomeActivity implements
 	public static long endCashDate;
 	
 	private ArrayList<LinearLayout> layoutArrayList = new ArrayList<LinearLayout>();
-	private ArrayList<View> viewArrayList = new ArrayList<View>();
     private ProgressDialog mDialog;
 	public static int sqlChange = 0;
 	public static int sqlChange2 = 2;
@@ -218,17 +218,6 @@ public class MainActivity extends BaseHomeActivity implements
 		
 		fragmentManager = getSupportFragmentManager();
 		
-		choose_view1 = (View) findViewById(R.id.choose_view1); 
-		choose_view2 = (View) findViewById(R.id.choose_view2);
-		choose_view3 = (View) findViewById(R.id.choose_view3);
-		choose_view4 = (View) findViewById(R.id.choose_view4);
-		choose_view5 = (View) findViewById(R.id.choose_view5);
-		viewArrayList.add(choose_view1);
-		viewArrayList.add(choose_view2);
-		viewArrayList.add(choose_view3);
-		viewArrayList.add(choose_view4);
-		viewArrayList.add(choose_view5);
-		
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,
 				GravityCompat.START);
@@ -273,11 +262,12 @@ public class MainActivity extends BaseHomeActivity implements
 		};
 		mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-		mOverViewLinearLayout.setOnClickListener(mClickListener);
-		mAccountLinearLayout.setOnClickListener(mClickListener);
-		mReportLinearLayout.setOnClickListener(mClickListener);
-		mBillsLinearLayout.setOnClickListener(mClickListener);
-		mBudgetLinearLayout.setOnClickListener(mClickListener);
+		for (int i = 0; i < layoutArrayList.size(); i++) {
+			LinearLayout mLayout = layoutArrayList.get(i);
+			mLayout.setOnClickListener(mClickListener);
+			TextView mTextView =  (TextView) mLayout.findViewById(R.id.text_view);
+			mTextView.setText(mainText[i]);
+		}
 		
 		mDrawerLayout.closeDrawer(mLinearLayout);
 
@@ -315,18 +305,33 @@ public class MainActivity extends BaseHomeActivity implements
 		// calendar2.set(Calendar.DAY_OF_MONTH, 1);
 		this.selectedMonth = calendar2.getTimeInMillis();
 		
-		for (int i = 0; i < layoutArrayList.size(); i++) {
-			if (i == 0) {
-				layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-				viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-			} else {
-				layoutArrayList.get(i).setBackgroundResource(R.color.white);
-				viewArrayList.get(i).setBackgroundResource(R.color.white);
-			}
-		}
-		
+		reFreshMainView(0);
 
 	}
+	
+	private void reFreshMainView(int mItemPosition) {
+		
+		for (int i = 0; i < layoutArrayList.size(); i++) {
+			
+			LinearLayout mLayout = layoutArrayList.get(i);
+			ImageView mImageView = (ImageView) mLayout.findViewById(R.id.image_View);
+			View mView = (View) mLayout.findViewById(R.id.choose_view);
+			TextView mTextView =  (TextView) mLayout.findViewById(R.id.text_view);
+			
+			if (i == mItemPosition) {
+				mLayout.setBackgroundResource(R.color.main_choose_gray);
+				mImageView.setImageResource(Common.MAIN_ICON_SEL[i]);
+				mTextView.setTextColor(Color.parseColor("#3b7fbb"));
+				mView.setBackgroundResource(R.color.main_choose_blue);
+			} else {
+				mLayout.setBackgroundResource(R.color.white);
+				mImageView.setImageResource(Common.MAIN_ICON[i]);
+				mTextView.setTextColor(Color.parseColor("#5e6168"));
+				mView.setBackgroundResource(R.color.white);
+			}
+		}
+	}
+	
 	
 
 	class DropDownListenser implements OnNavigationListener // overview actionbar下拉菜单监听
@@ -429,16 +434,8 @@ public class MainActivity extends BaseHomeActivity implements
 							new DropDownListenser());
 				}
 				
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == mItemPosition) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
-
+				reFreshMainView(mItemPosition);
+				
 				break;
 			case R.id.account_linearlayout:
 				if (mItemPosition == 1) {
@@ -461,15 +458,7 @@ public class MainActivity extends BaseHomeActivity implements
 							.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				}
 				
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == mItemPosition) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
+				reFreshMainView(mItemPosition);
 
 				break;
 			case R.id.report_linearLayout:
@@ -502,15 +491,7 @@ public class MainActivity extends BaseHomeActivity implements
 					mItemPosition = 2;
 				}
 
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == mItemPosition) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
+				reFreshMainView(mItemPosition);
 				
 				break;
 			case R.id.bills_linearLayout:
@@ -545,15 +526,7 @@ public class MainActivity extends BaseHomeActivity implements
 					mItemPosition = 3;
 
 				}
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == mItemPosition) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
+				reFreshMainView(mItemPosition);
 
 				break;
 			case R.id.budget_linearLayout:
@@ -578,27 +551,11 @@ public class MainActivity extends BaseHomeActivity implements
 					actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
 				}
 				
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == mItemPosition) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
+				reFreshMainView(mItemPosition);
 				
 				break;
 			default:
-				for (int i = 0; i < layoutArrayList.size(); i++) {
-					if (i == 0) {
-						layoutArrayList.get(i).setBackgroundResource(R.color.main_choose_gray);
-						viewArrayList.get(i).setBackgroundResource(R.color.main_choose_blue);
-					} else {
-						layoutArrayList.get(i).setBackgroundResource(R.color.white);
-						viewArrayList.get(i).setBackgroundResource(R.color.white);
-					}
-				}
+				reFreshMainView(mItemPosition);
 				break;
 			}
 		}
@@ -612,7 +569,7 @@ public class MainActivity extends BaseHomeActivity implements
 			if (itemPosition == 0) {
 				overViewNavigationListAdapter.setChoosed(0);
 				overViewNavigationListAdapter
-				.setSubTitle("Categorys");
+				.setSubTitle("Categories");
 				
 				CategorysReportFragment reportOverviewFragment = new CategorysReportFragment();
 				FragmentTransaction fragmentTransaction = fragmentManager
@@ -1099,8 +1056,6 @@ public class MainActivity extends BaseHomeActivity implements
 				mDbxAcctMgr1 = mDbxAcctMgr;
 				mDatastore1 = mDatastore;
 			}
-			
-			
 			
 
 

@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.appxy.pocketexpensepro.entity.MyApplication;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 import com.appxy.pocketexpensepro.table.AccountTypeTable;
 import com.appxy.pocketexpensepro.table.AccountTypeTable.AccountType;
@@ -360,6 +362,12 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 		
 
 		
+	}
+	
+	
+	@Override
+	protected void attachBaseContext(Context newBase) {
+	    super.attachBaseContext(new CalligraphyContextWrapper(newBase));
 	}
 	
 	

@@ -213,6 +213,14 @@ public class ListViewAdapter extends BaseAdapter {
 			
 			viewholder.mTextView2.setText(mAccount);
 			
+		}else {
+			
+			viewholder.currency_textView.setTextColor(Color.rgb(208, 47, 58));
+			viewholder.amount_textView.setTextColor(Color.rgb(208, 47, 58));
+			double amount = mAmount;
+			viewholder.amount_textView.setText(MEntity.doublepoint2str(amount
+					+ ""));
+			
 		}
 
 		return convertView;

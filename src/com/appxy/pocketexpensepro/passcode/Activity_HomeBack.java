@@ -3,8 +3,10 @@ package com.appxy.pocketexpensepro.passcode;
 import java.util.List;
 import java.util.Map;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 
 import android.app.Activity;
@@ -252,5 +254,6 @@ public class Activity_HomeBack extends Activity{
 		super.onSaveInstanceState(outState);
 		outState.putString("text", et.getText().toString());
 	}
+	
 	
 }

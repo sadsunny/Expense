@@ -326,6 +326,7 @@ public class AccountsFragment extends Fragment implements OnSyncFinishedListener
 											// method stub
 											long row = AccountDao.deleteAccount(getActivity(), id, uuid ,MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1);
 											mHandler.post(mTask);
+											getBalance();
 											alertDialog.dismiss();
 										}
 									}).show();

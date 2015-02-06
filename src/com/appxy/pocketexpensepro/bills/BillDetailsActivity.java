@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
@@ -20,6 +22,7 @@ import com.dropbox.sync.android.DbxRecord;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -61,6 +64,7 @@ public class BillDetailsActivity extends BaseHomeActivity {
 	private TextView paidTextView;
 	private TextView remainTextView;
 	private ListView mListView;
+	private View line_label;
 	private LinearLayout paidLayout;
 	
 	private int _id;
@@ -117,6 +121,11 @@ public class BillDetailsActivity extends BaseHomeActivity {
 
 				billPayListViewAdapter.setAdapterDate(pDataList);
 				billPayListViewAdapter.notifyDataSetChanged();
+				if (pDataList.size() > 0) {
+					line_label.setVisibility(View.VISIBLE);
+				} else {
+					line_label.setVisibility(View.GONE);
+				}
 
 				break;
 
@@ -147,6 +156,7 @@ public class BillDetailsActivity extends BaseHomeActivity {
 			finish();
 		}
 
+		line_label = (View)findViewById(R.id.line_label);
 		paidLayout = (LinearLayout) findViewById(R.id.PaidLinearLayout);
 		categoryImageView = (ImageView) findViewById(R.id.category_imageView);
 		nameTextView = (TextView) findViewById(R.id.account_textView);
@@ -376,5 +386,6 @@ public class BillDetailsActivity extends BaseHomeActivity {
 				Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
 	}
+	
 
 }

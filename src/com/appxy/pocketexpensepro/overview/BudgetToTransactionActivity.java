@@ -17,6 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -625,7 +627,7 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			gViewHolder viewholder = null;
 			if (convertView == null) {
 				viewholder = new gViewHolder();
-				convertView = inflater.inflate(R.layout.transaction_group_item,
+				convertView = inflater.inflate(R.layout.budget_to_transaction_group_item,
 						parent, false);
 				viewholder.mTextView = (TextView) convertView
 						.findViewById(R.id.dateTextView);
@@ -692,8 +694,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 						.findViewById(R.id.currency_txt);
 				viewholder.amount_textView = (TextView) convertView
 						.findViewById(R.id.amounttextView);
-				viewholder.mline_label = (View) convertView
-						.findViewById(R.id.mline_label);
 
 				convertView.setTag(viewholder);
 			} else {
@@ -791,7 +791,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 			public TextView symbol_txt;
 			public TextView currency_textView;
 			public TextView amount_textView;
-			public View mline_label;
 		}
 
 		@Override
@@ -870,5 +869,6 @@ public class BudgetToTransactionActivity extends BaseHomeActivity {
 				Toast.LENGTH_SHORT).show();
 		mHandler.post(mTask);
 	}
+	
 
 }

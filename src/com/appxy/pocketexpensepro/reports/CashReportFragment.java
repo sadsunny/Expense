@@ -298,7 +298,7 @@ public class CashReportFragment extends Fragment implements
 
 		renderer.setAxisTitleTextSize(16);// 设置坐标轴标题文本大小
 		renderer.setChartTitleTextSize(20); // 设置图表标题文本大小
-		renderer.setLabelsTextSize(MEntity.dip2px(mActivity, 9)); // 设置轴标签文本大小
+		renderer.setLabelsTextSize(MEntity.dip2px(mActivity, 10)); // 设置轴标签文本大小
 		renderer.setLegendTextSize(MEntity.dip2px(mActivity, 7)); // 设置图例文本大小
 		renderer.setXLabelsColor(Color.parseColor("#acadb2"));
 		renderer.setYLabelsColor(0, Color.parseColor("#acadb2"));
@@ -470,6 +470,7 @@ public class CashReportFragment extends Fragment implements
 
 		PopupListViewAdapter mAdapter = new PopupListViewAdapter(mActivity);
 		mAdapter.setAdapterDate(getPopupData());
+		lvPopupList.setDividerHeight(0);
 		lvPopupList.setAdapter(mAdapter);
 		lvPopupList.setOnItemClickListener(new OnItemClickListener() {
 

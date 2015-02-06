@@ -53,14 +53,15 @@
         android:id="@+id/line1"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
-        android:background="@color/bill_gray" />
+        android:background="@color/devide_gray" />
     
     <RelativeLayout
         android:id="@+id/RelativeLayout4"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="35dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:gravity="center_vertical" >
@@ -71,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:text="MONTH"
-            android:textColor="@color/text_gray1"
+            android:textColor="@color/categoty_report_text"
             android:textSize="12sp" />
 
         <TextView
@@ -80,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="FLOW IN"
-            android:textColor="@color/text_gray1"
+            android:textColor="@color/categoty_report_text"
             android:textSize="12sp" />
 
         <TextView
@@ -89,7 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="FLOW OUT"
-            android:textColor="@color/text_gray1"
+            android:textColor="@color/categoty_report_text"
             android:textSize="12sp" />
     </RelativeLayout>
 

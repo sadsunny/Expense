@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -46,6 +47,7 @@ public class OverViewFragmentMonth extends Fragment {
 	private OnTellUpdateMonthListener onTellUpdateMonthListener;
 	private OnUpdateNavigationListener onUpdateNavigationListener;
 	public static MenuItem item;
+	private Typeface typeFace ;
 	
 	public OverViewFragmentMonth() {
 
@@ -63,6 +65,8 @@ public class OverViewFragmentMonth extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		
+		typeFace = Typeface.createFromAsset(mActivity.getAssets(),"fonts/ROBOTO-REGULAR.TTF");
 		setHasOptionsMenu(true);
 		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		
@@ -160,6 +164,8 @@ public class OverViewFragmentMonth extends Fragment {
 		// 启用抗锯齿和使用设备的文本字距
 		Paint countPaint = new Paint(Paint.ANTI_ALIAS_FLAG
 				| Paint.DEV_KERN_TEXT_FLAG);
+		
+		countPaint.setTypeface(typeFace);
 		countPaint.setColor(Color.WHITE);
 		countPaint.setTextSize(textSize);
 		countPaint.setTextAlign(Paint.Align.CENTER);

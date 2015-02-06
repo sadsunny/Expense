@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
@@ -18,6 +20,7 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ActionBar.LayoutParams;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -314,13 +317,14 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 
 		for (Map<String, Object> mMap : mData) { // 分离父类和子类
 			String categoryName = (String) mMap.get("categoryName");
-
+			int categoryType = (Integer) mMap.get("categoryType");
+			
 			String temp[] = categoryName.split(":");
-			if (temp[0].equals(cName)) {
+			if (temp[0].equals(cName) && mcheck == categoryType) {
 				mCheck = false;
 			}
 			
-			if (temp.length > 1) {
+			if (temp.length > 1 && mcheck == categoryType ) {
 				if (temp[1].equals(cName)) {
 					mCheck = false;
 				}
@@ -335,5 +339,6 @@ public class CreatExpenseActivity extends BaseHomeActivity {
 		// TODO Auto-generated method stub
 		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
+	
 
 }

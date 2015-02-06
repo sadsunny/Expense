@@ -117,6 +117,7 @@ public class OverviewFragment extends Fragment implements
 	private static final int MAX_VALUE = 20000;
 	private static final int MSG_FAILURE = 0;
 	private static final int MSG_SUCCESS = 1;
+	private String currecyLable ;
 
 	private ViewPager mViewPager;
 
@@ -160,11 +161,14 @@ public class OverviewFragment extends Fragment implements
 	private TextView currency_label1;
 	private TextView currency_label2;
 	private TextView networthTextView;
+	private View adsLine;
 	private List<Map<String, Object>> mBudgetList;
 	private RelativeLayout adsLayout;
 	private Button adsButton;
 	private TextView notiTextView;
 	private TellMainBuyPro tellMainBuyPro;
+	
+	private Typeface typeFace ;
 	
 	private double networthDoubel = 0;
 	/*
@@ -274,6 +278,9 @@ public class OverviewFragment extends Fragment implements
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		
+		currecyLable = Common.CURRENCY_SIGN[Common.CURRENCY];
+		typeFace = Typeface.createFromAsset(mActivity.getAssets(),"fonts/ROBOTO-REGULAR.TTF");
+				
 		onBackTimeListener = (OnBackTimeListener) mActivity;
 		onUpdateNavigationListener = (OnUpdateNavigationListener) mActivity;
 		mViewPagerAdapter = new ViewPagerAdapter(mActivity.getSupportFragmentManager());
@@ -285,8 +292,9 @@ public class OverviewFragment extends Fragment implements
 		if (bundle != null) {
 			argumentsDate = bundle.getLong("selectedDate");
 		}
+		Calendar todaCalendar = Calendar.getInstance();
 		int mOffset = MEntity.getWeekOffsetByDay(argumentsDate,
-				System.currentTimeMillis());
+				todaCalendar.getTimeInMillis());
 		currentPosition = MID_VALUE + mOffset;
 		selectedDate = argumentsDate;
 
@@ -313,12 +321,7 @@ public class OverviewFragment extends Fragment implements
 		leftTextView = (TextView) view.findViewById(R.id.left_amount);
 		left_label = (TextView) view.findViewById(R.id.left_label);
 		addView = (Button) view.findViewById(R.id.add_btn);
-		
-		Typeface tf=Typeface.createFromAsset(mActivity.getAssets(), "fonts/ROBOTO-REGULAR.TTF"); 
-		currency_label1.setTypeface(tf); 
-		currency_label2.setTypeface(tf); 
-		leftTextView.setTypeface(tf);
-		left_label.setTypeface(tf);
+		adsLine = (View) view.findViewById(R.id.ads_line);
 		
 		sku_list = new ArrayList<String>();
 		price_list = new ArrayList<String>();
@@ -330,9 +333,10 @@ public class OverviewFragment extends Fragment implements
 		 
 		    if (Common.mIsPaid) {
 				adsLayout.setVisibility(View.GONE);
-				 
+				adsLine.setVisibility(View.GONE);
 			} else {
 				 adsLayout.setVisibility(View.VISIBLE);
+				 adsLine.setVisibility(View.VISIBLE);
 				 try {
 					
 				 mHelper = new IabHelper(mActivity, base64EncodedPublicKey);
@@ -589,6 +593,7 @@ public class OverviewFragment extends Fragment implements
 		loadIsPaid();
 		if (Common.mIsPaid && adsLayout != null) {
 			adsLayout.setVisibility(View.GONE);
+			adsLine.setVisibility(View.GONE);
 		}
 
 		BdgetSetting = mPreferences.getInt("BdgetSetting", 0);
@@ -625,6 +630,11 @@ public class OverviewFragment extends Fragment implements
 				MainActivity.isFirstSync = false;
 			}
 			
+		}
+		
+		
+		if (Common.CURRENCY_SIGN[Common.CURRENCY] != currecyLable) {
+			mListViewAdapter.notifyDataSetChanged();
 		}
 		
 		
@@ -841,6 +851,10 @@ public class OverviewFragment extends Fragment implements
 		// 启用抗锯齿和使用设备的文本字距
 		Paint countPaint = new Paint(Paint.ANTI_ALIAS_FLAG
 				| Paint.DEV_KERN_TEXT_FLAG);
+		
+		// 应用字体
+		countPaint.setTypeface(typeFace);
+		
 		countPaint.setColor(Color.WHITE);
 		countPaint.setTextSize(textSize);
 		countPaint.setTextAlign(Paint.Align.CENTER);
@@ -951,6 +965,7 @@ public class OverviewFragment extends Fragment implements
 			            String sku = jo.getString("productId");
 			            alert("Thank you for upgrading to pro! ");
 			            adsLayout.setVisibility(View.GONE);
+			            adsLine.setVisibility(View.GONE);
 			             SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
 					     SharedPreferences.Editor meditor = sharedPreferences.edit();  
 						 meditor.putBoolean("isPaid",true ); 
@@ -1031,6 +1046,7 @@ public class OverviewFragment extends Fragment implements
 					 
 					 if (Common.mIsPaid) {
 						adsLayout.setVisibility(View.GONE);
+						adsLine.setVisibility(View.GONE);
 					}
 					 
 				}
@@ -1091,6 +1107,7 @@ public class OverviewFragment extends Fragment implements
 		   			 meditor.putBoolean("isPaid",Common.mIsPaid ); 
 		   			 meditor.commit();
 		   			 adsLayout.setVisibility(View.GONE);
+		   			 adsLine.setVisibility(View.GONE);
 		            }
 		        }
 
@@ -1149,6 +1166,7 @@ public class OverviewFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		if (Common.mIsPaid && adsLayout != null) {
 			adsLayout.setVisibility(View.GONE);
+			adsLine.setVisibility(View.GONE);
 		}
 	}
 

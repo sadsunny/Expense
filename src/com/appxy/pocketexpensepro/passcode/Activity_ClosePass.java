@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
-import com.appxy.pocketexpensepro.entity.MyApplication;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 import com.dropbox.sync.android.DbxRecord;
 

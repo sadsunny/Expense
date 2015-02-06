@@ -29,6 +29,7 @@ import com.appxy.pocketexpensepro.reports.ReportDao;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -270,7 +271,6 @@ public class MonthViewFragment extends Fragment implements
 		// TODO Auto-generated method stub
 		super.setUserVisibleHint(isVisibleToUser);
 		
-		long s = System.currentTimeMillis();
 		
 		if (isVisibleToUser) {
 
@@ -286,15 +286,12 @@ public class MonthViewFragment extends Fragment implements
 
 		}
 		
-		long e = System.currentTimeMillis();
-		Log.v("mtag", "UserVisi "+(e-s));
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		long s = System.currentTimeMillis();
 		
 		View view = inflater.inflate(R.layout.fragment_month_view, container,
 				false);
@@ -343,8 +340,10 @@ public class MonthViewFragment extends Fragment implements
 				calendarGridViewAdapter.setCheckDat(selectedDate);
 				calendarGridViewAdapter.notifyDataSetChanged();
 
+				Calendar todaCalendar = Calendar.getInstance();
+				
 				int offset = MEntity.getWeekOffsetByDay(selectedDate,
-						MEntity.getNowMillis());
+						todaCalendar.getTimeInMillis());
 
 				viewPagerPosition = MID_VALUE + offset;
 				onUpdateNavigationListener.OnUpdateNavigation(0, mChooseTime);
@@ -356,9 +355,6 @@ public class MonthViewFragment extends Fragment implements
 		     mThread.start();
 		 }
 
-		long e = System.currentTimeMillis();
-		Log.v("mtag", "onCreateView "+(e-s));
-		
 		return view;
 	}
 
@@ -418,11 +414,26 @@ public class MonthViewFragment extends Fragment implements
 			pamount = pincome - pexpense;
 			
 			mChildMap = ReportDao
-					.selectTransactionGroup(mActivity, beginTime, endTime+7*DAYMILLIS);
+					.selectTransactionGroup(mActivity, beginTime, endTime);
+			
+			if (position == 9998) {
+				Log.v("mtag", "position"+position+" mChildMap "+mChildMap);
+				Log.v("mtag", "position"+position+" mChildMap大小 "+mChildMap.size());
+				Log.v("mtag", "时间范围"+turnToDateKey(beginTime)+"  "+turnToDateKey(endTime));
+			}
 
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
+	
+	
+	public String turnToDateKey(long mills) {
+
+		Date date2 = new Date(mills);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
+		String theDate = sdf.format(date2);
+		return theDate;
+	}
 	
 	
 	public void getCalendarDate( Calendar month) {

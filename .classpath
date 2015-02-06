@@ -5,6 +5,7 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry excluding="com/appxy/pocketexpensepro/report/" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="libs/FlurryAnalytics-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/FlurryAnalytics-4.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/chydan/AndroidWorkPlace/Expense/libs/crashlytics.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="@color/white"
+    >
 
     <ScrollView
         android:id="@+id/mScrollView"
@@ -61,6 +62,7 @@
                         android:id="@+id/amount_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                         style="@style/TextAppearance.EditEvent_SpinnerButton"
                         android:ems="10"
                         android:maxLength="13"
                         android:minHeight="48dip"
@@ -264,5 +266,24 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    
+    
+     <com.appxy.pocketexpensepro.keyboard.CustomKeyboardView
+        android:id="@+id/keyboardview"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:keyBackground="@drawable/keybord_selector"
+        android:background="@color/keyboard_sel"
+        android:keyTextSize="20sp"
+        android:labelTextSize="20sp"
+        android:shadowColor="@color/white"
+        android:shadowRadius="0.0"
+        android:keyTextColor="@color/text_black1" 
+        android:visibility="gone"
+         android:textAppearance = "@style/AppTheme.Widget.TextView"
+         />
 
-</LinearLayout>
+</RelativeLayout>
