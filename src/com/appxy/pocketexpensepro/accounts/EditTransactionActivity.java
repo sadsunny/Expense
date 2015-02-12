@@ -31,6 +31,7 @@ import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
 import com.appxy.pocketexpensepro.setting.payee.PayeeDao;
 import com.appxy.pocketexpensepro.setting.sync.SyncDao;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
+import com.appxy.pocketexpensepro.keyboard.CustomKeyboardView;
 import com.appxy.pocketexpensepro.overview.transaction.AutoListAdapter;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
 import com.appxy.pocketexpensepro.overview.transaction.CreatTransactonByAccountActivity;
@@ -55,10 +56,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.MotionEventCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -176,6 +179,45 @@ public class EditTransactionActivity extends BaseHomeActivity {
 	private String uuid ;
 	private KeyboardUtil customKeyBoard;
 	 
+	private  CustomKeyboardView mKeyboardView;
+	private Rect mRect = new Rect();
+	
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		picPath = "";
+	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		
+		final int action = MotionEventCompat.getActionMasked(ev);
+
+		if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+			
+			   int[] location = new int[2];
+			    mKeyboardView.getLocationOnScreen(location);
+			    mRect.left = location[0];
+			    mRect.top = location[1];
+			    mRect.right = location[0] + mKeyboardView.getWidth();
+			    mRect.bottom = location[1] + mKeyboardView.getHeight();
+
+			    int x = (int) ev.getX();
+			    int y = (int) ev.getY();
+
+			    if (action == MotionEvent.ACTION_DOWN && !mRect.contains(x, y)) {
+			    	customKeyBoard.hideKeyboard();
+			    }
+			    
+		}
+	  
+		
+		return super.dispatchTouchEvent(ev);
+	}
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -194,6 +236,8 @@ public class EditTransactionActivity extends BaseHomeActivity {
 		mActionBar.setDisplayShowHomeEnabled(false);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
+		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
+		
 		View cancelActionView = customActionBarView
 				.findViewById(R.id.action_cancel);
 		cancelActionView.setOnClickListener(mClickListener);
@@ -1395,6 +1439,13 @@ public class EditTransactionActivity extends BaseHomeActivity {
 
 								accountId = (Integer) mAccountList.get(arg2)
 										.get("_id");
+								isCleared = (Integer) mAccountList.get(arg2).get("autoClear");
+								
+								if (isCleared == 1) {
+									clearSpinner.setSelection(0);
+								}else {
+									clearSpinner.setSelection(1);
+								}
 								mAccountDialog.dismiss();
 							}
 						});

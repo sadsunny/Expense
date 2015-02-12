@@ -3,6 +3,7 @@ package com.appxy.pocketexpensepro.passcode;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -11,6 +12,7 @@ import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.setting.SettingActivity;
 import com.appxy.pocketexpensepro.setting.SettingDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -38,7 +40,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class Activity_Login extends Activity{
+public class Activity_Login extends BaseHomeActivity{
 	
 	SharedPreferences sharedPreferences;
 	public static final String PREFS_NAME = "SAVE_INFO";
@@ -52,7 +54,7 @@ public class Activity_Login extends Activity{
 	private String passCode;
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -301,6 +303,12 @@ public class Activity_Login extends Activity{
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		outState.putString("text", et.getText().toString());
+	}
+
+	@Override
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 	
 

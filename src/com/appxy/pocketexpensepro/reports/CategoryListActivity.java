@@ -36,6 +36,7 @@ import com.dropbox.sync.android.DbxRecord;
 import android.R.bool;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -168,6 +169,9 @@ public class CategoryListActivity extends BaseHomeActivity {
 				}
 				
 			}
+			
+			Log.v("mtag", "mChildMap "+mChildMap);
+			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 		}
 	};
@@ -242,11 +246,64 @@ public class CategoryListActivity extends BaseHomeActivity {
 			
 			String categoryNameKey = (String) mGroupList.get(groupPosition).get("categoryName");
 			
+			
 			final int tId  = (Integer) mChildMap.get(categoryNameKey).get(childPosition).get("_id");
 			
 			int expenseAccount = (Integer) mChildMap.get(categoryNameKey).get(childPosition).get("expenseAccount");
 			int incomeAccount =  (Integer) mChildMap.get(categoryNameKey).get(childPosition).get("incomeAccount");
 
+			String childTransactionstring = (String) mChildMap.get(categoryNameKey).get(childPosition).get("childTransactions");
+			int parTransaction =  (Integer) mChildMap.get(categoryNameKey).get(childPosition).get("parTransaction");
+			
+			int childTransactions = 0;
+			
+			if ( childTransactionstring == null) {
+				childTransactions = 0;
+			} else {
+				
+				if (childTransactionstring.length() == 0) {
+					childTransactions = 0;
+				} else {
+
+					try {
+						childTransactions = Integer.parseInt(childTransactionstring);
+						
+					} catch (Exception e) {
+						// TODO: handle exception
+						childTransactions = 1;
+					}
+					
+				}
+
+			}
+
+			
+			if (parTransaction > 0 ) {
+				childTransactions = 1;
+			} 
+			
+			
+			if (childTransactions == 1) {
+
+				new AlertDialog.Builder(CategoryListActivity.this)
+						.setTitle("Warning! ")
+						.setMessage(
+								"This is a part of a transaction splite, and it can not be edited alone! ")
+						.setPositiveButton("Retry",
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										// TODO Auto-generated method stub
+										dialog.dismiss();
+
+									}
+								}).show();
+
+			} else {
+
+			
 			if (expenseAccount > 0 && incomeAccount > 0) {
 
 				Intent intent = new Intent();
@@ -264,6 +321,7 @@ public class CategoryListActivity extends BaseHomeActivity {
 				startActivityForResult(intent, 13);
 
 			}
+		}
 			return true;
 		}
 

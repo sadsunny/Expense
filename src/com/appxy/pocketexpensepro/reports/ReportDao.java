@@ -74,7 +74,7 @@ public class ReportDao{
 		ArrayList<HashMap<String,Object>> mList = new ArrayList<HashMap<String,Object>>();
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount) as sumAmount , b.categoryName from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryType = "+categoryType+" and b.categoryName like '" +categoryName +"%'  group by  b.categoryName order by sumAmount DESC ";
+		String sql = "select total(a.amount) as sumAmount , b.categoryName from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0) and b.categoryType = "+categoryType+" and b.categoryName like '" +categoryName +"%'  group by  b.categoryName order by sumAmount DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			
@@ -98,7 +98,7 @@ public class ReportDao{
 			Context context, String categoryName,long startTime, long endTime, int categoryType) { // 根据category的name查询该name下的所有总和
 		double sum = 0;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount) from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName+"%' and b.categoryType = "+categoryType;
+		String sql = "select total(a.amount) from 'Transaction' a, Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryName like '" +categoryName+"%' and b.categoryType = "+categoryType +" and (a.expenseAccount <= 0  or a.incomeAccount <= 0) ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			sum = mCursor.getDouble(0);
@@ -116,7 +116,7 @@ public class ReportDao{
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		
-		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and b.categoryType = "+mCategoryType+" and b.categoryName like '" +categoryName+"%' order by b.dateTime DESC,a._id DESC ";
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id, a.childTransactions, a.parTransaction from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  and b.categoryType = "+mCategoryType+" and b.categoryName like '" +categoryName+"' order by b.dateTime DESC,a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -130,6 +130,8 @@ public class ReportDao{
 			String category_name = mCursor.getString(6);
 			int categoryType = mCursor.getInt(7);
 			int categoryId = mCursor.getInt(8);
+			String childTransactions = mCursor.getString(9);
+			int parTransaction = mCursor.getInt(10);
 			
 			mMap.put("_id", _id);
 			mMap.put("amount", amount);
@@ -140,6 +142,8 @@ public class ReportDao{
 			mMap.put("categoryName", category_name);
 			mMap.put("categoryType", categoryType);
 			mMap.put("categoryId", categoryId);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
 
 			mList.add(mMap);
 		}
@@ -219,7 +223,7 @@ public class ReportDao{
 	public static List<Map<String, Object>>  selectCategoryAllSum(Context context, long startTime, long endTime) { // Group 查询transaction的总额，通过type，一段时间内的expense和income
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount), b.categoryType from 'Transaction' a , Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id group by b.categoryType";
+		String sql = "select total(a.amount), b.categoryType from 'Transaction' a , Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id  group by b.categoryType";
 		Cursor mCursor = db.rawQuery(sql, null);
 		
 		Map<String, Object> mMap;

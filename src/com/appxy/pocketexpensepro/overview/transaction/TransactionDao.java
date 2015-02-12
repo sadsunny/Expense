@@ -348,8 +348,10 @@ public class TransactionDao {
 
 	}
 	
-	public static void insertTransactionOne(SQLiteDatabase db ,Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
+	public static void insertTransactionOne(Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
 
+		SQLiteDatabase db = getConnection(context);
+		
 		ContentValues cv = new ContentValues();
 		cv.put("amount", amount);
 		cv.put("dateTime", dateTime);
@@ -374,7 +376,7 @@ public class TransactionDao {
 		
 		try {
 			long id = db.insert("'Transaction'", null, cv);
-					
+			db.close();
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
@@ -407,6 +409,7 @@ public class TransactionDao {
 			
 		} catch (Exception e) {
 			// TODO: handle exception
+			db.close();
 		}
 
 	}

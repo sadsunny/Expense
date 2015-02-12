@@ -52,11 +52,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.inputmethodservice.Keyboard;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.MotionEventCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -173,7 +175,8 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	private static final int CAMERA_REQUEST = 1888; 
 	private Uri imageuri;
 	private KeyboardUtil customKeyBoard;
-	
+	private  CustomKeyboardView mKeyboardView;
+	private Rect mRect = new Rect();
 	
 	@Override
 	protected void onDestroy() {
@@ -189,6 +192,36 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 	    	this.finish();
 	    }
 	}
+	
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		
+		final int action = MotionEventCompat.getActionMasked(ev);
+
+		if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+			
+			   int[] location = new int[2];
+			    mKeyboardView.getLocationOnScreen(location);
+			    mRect.left = location[0];
+			    mRect.top = location[1];
+			    mRect.right = location[0] + mKeyboardView.getWidth();
+			    mRect.bottom = location[1] + mKeyboardView.getHeight();
+
+			    int x = (int) ev.getX();
+			    int y = (int) ev.getY();
+
+			    if (action == MotionEvent.ACTION_DOWN && !mRect.contains(x, y)) {
+			    	customKeyBoard.hideKeyboard();
+			    }
+			    
+		}
+	  
+		
+		return super.dispatchTouchEvent(ev);
+	}
+
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -384,8 +417,10 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		if (mAccountList != null && mAccountList.size() > 0) {
 			accountId = (Integer) mAccountList.get(0).get("_id");
 			accountButton.setText((String) mAccountList.get(0).get("accName"));
+			isCleared = (Integer) mAccountList.get(0).get("autoClear");
 		}
 
+		
 		ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter
 				.createFromResource(CreatTransactionActivity.this,
 						R.array.on_off,
@@ -393,6 +428,13 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 		adapterSpinner
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		clearSpinner.setAdapter(adapterSpinner);
+		
+		if (isCleared == 1) {
+			clearSpinner.setSelection(0);
+		}else {
+			clearSpinner.setSelection(1);
+		}
+		
 		clearSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -446,8 +488,9 @@ public class CreatTransactionActivity extends BaseHomeActivity {
    		 imm.hideSoftInputFromWindow(amountEditText.getWindowToken(), 0);
 		}
 		
+		
 //		Keyboard mKeyboard = new Keyboard(this, R.xml.keycontent);
-//		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
+		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
 //		mKeyboardView.setKeyboard(mKeyboard);
 //		mKeyboardView.setOnKeyboardActionListener(new BasicOnKeyboardActionListener(
 //						this));
@@ -1323,6 +1366,15 @@ public class CreatTransactionActivity extends BaseHomeActivity {
 
 								accountId = (Integer) mAccountList.get(arg2)
 										.get("_id");
+								
+								isCleared = (Integer) mAccountList.get(arg2).get("autoClear");
+								
+								if (isCleared == 1) {
+									clearSpinner.setSelection(0);
+								}else {
+									clearSpinner.setSelection(1);
+								}
+								
 								mAccountDialog.dismiss();
 							}
 						});

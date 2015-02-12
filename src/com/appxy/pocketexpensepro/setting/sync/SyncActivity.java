@@ -478,7 +478,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 								// TODO Auto-generated method stub
 								try {
 									upLoadAllDate();
-									// deleteAllRecod();
+//									 deleteAllRecod();
 								} catch (DbxException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();

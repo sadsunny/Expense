@@ -25,6 +25,7 @@ import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.KeyboardUtil;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.keyboard.CustomKeyboardView;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.setting.payee.CreatPayeeActivity;
 import com.appxy.pocketexpensepro.setting.payee.DialogExpandableListViewAdapter;
@@ -47,10 +48,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.MotionEventCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -164,6 +167,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 	private Cursor mCursor;
 	private CharSequence sKey;
 	private KeyboardUtil customKeyBoard;
+	private  CustomKeyboardView mKeyboardView;
+	private Rect mRect = new Rect();
 	
 	@Override
 	protected void onDestroy() {
@@ -172,6 +177,33 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 		picPath = "";
 	}
 	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		
+		final int action = MotionEventCompat.getActionMasked(ev);
+
+		if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+			
+			   int[] location = new int[2];
+			    mKeyboardView.getLocationOnScreen(location);
+			    mRect.left = location[0];
+			    mRect.top = location[1];
+			    mRect.right = location[0] + mKeyboardView.getWidth();
+			    mRect.bottom = location[1] + mKeyboardView.getHeight();
+
+			    int x = (int) ev.getX();
+			    int y = (int) ev.getY();
+
+			    if (action == MotionEvent.ACTION_DOWN && !mRect.contains(x, y)) {
+			    	customKeyBoard.hideKeyboard();
+			    }
+			    
+		}
+	  
+		
+		return super.dispatchTouchEvent(ev);
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -210,6 +242,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 		mReturnList = new ArrayList<Map<String, Object>>();
 
+		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
 		mImageView = (ImageView) findViewById(R.id.imageView1);
 		payeeEditText = (AutoCompleteTextView) findViewById(R.id.payee_edit);
 		categoryButton = (Button) findViewById(R.id.category_btn);
@@ -329,6 +362,7 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 					accountCheckItem = i;
 					accountId = account_id;
 					accountButton.setText((String) iMap.get("accName"));
+					isCleared = (Integer) mAccountList.get(0).get("autoClear");
 				} 
 				i++;
 			}
@@ -1244,6 +1278,15 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 
 								accountId = (Integer) mAccountList.get(arg2)
 										.get("_id");
+								
+								isCleared = (Integer) mAccountList.get(arg2).get("autoClear");
+								
+								if (isCleared == 1) {
+									clearSpinner.setSelection(0);
+								}else {
+									clearSpinner.setSelection(1);
+								}
+								
 								mAccountDialog.dismiss();
 							}
 						});

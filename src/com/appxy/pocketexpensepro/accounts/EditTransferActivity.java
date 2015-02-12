@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import com.appxy.pocketexpensepro.keyboard.CustomKeyboardView;
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
@@ -50,10 +51,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.MotionEventCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -171,6 +174,36 @@ public class EditTransferActivity extends BaseHomeActivity {
 	private List<Map<String, Object>> mDataList1;
 	private KeyboardUtil customKeyBoard;
 	
+	private  CustomKeyboardView mKeyboardView;
+	private Rect mRect = new Rect();
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		
+		final int action = MotionEventCompat.getActionMasked(ev);
+
+		if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+			
+			   int[] location = new int[2];
+			    mKeyboardView.getLocationOnScreen(location);
+			    mRect.left = location[0];
+			    mRect.top = location[1];
+			    mRect.right = location[0] + mKeyboardView.getWidth();
+			    mRect.bottom = location[1] + mKeyboardView.getHeight();
+
+			    int x = (int) ev.getX();
+			    int y = (int) ev.getY();
+
+			    if (action == MotionEvent.ACTION_DOWN && !mRect.contains(x, y)) {
+			    	customKeyBoard.hideKeyboard();
+			    }
+			    
+		}
+	  
+		
+		return super.dispatchTouchEvent(ev);
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -190,6 +223,8 @@ public class EditTransferActivity extends BaseHomeActivity {
 		mActionBar.setDisplayShowHomeEnabled(false);
 		mActionBar.setDisplayShowTitleEnabled(false);
 
+		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
+		
 		View cancelActionView = customActionBarView
 				.findViewById(R.id.action_cancel);
 		cancelActionView.setOnClickListener(mClickListener);

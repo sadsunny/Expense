@@ -2,8 +2,10 @@ package com.appxy.pocketexpensepro.overview.related;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +33,7 @@ import com.appxy.pocketexpensepro.accounts.DialogItemAdapter;
 import com.appxy.pocketexpensepro.accounts.EditTransactionActivity;
 import com.appxy.pocketexpensepro.accounts.EditTransferActivity;
 import com.appxy.pocketexpensepro.expinterface.OnSyncFinishedListener;
+import com.appxy.pocketexpensepro.overview.OverViewDao;
 import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.setting.category.CategoryDao;
 
@@ -43,7 +46,7 @@ public class AccountFragment extends Fragment implements OnSyncFinishedListener 
 	private LayoutInflater mInflater;
 	private ListView mListView;
 	private ListViewAdapter mAdapter;
-	private List<Map<String, Object>> mDataList;
+	private ArrayList<HashMap<String, Object>> mDataList;
 	private AlertDialog alertDialog;
 	
 	public AccountFragment() {
@@ -132,7 +135,7 @@ public class AccountFragment extends Fragment implements OnSyncFinishedListener 
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			mDataList = AccountDao.selectTransactionByAccount(mActivity, accountId);
+			mDataList = OverViewDao.selectTransactionByAccountId(mActivity, accountId);
 			if (mDataList != null) {
 				reFillData(mDataList);
 			}
@@ -264,39 +267,40 @@ public class AccountFragment extends Fragment implements OnSyncFinishedListener 
 
 	};
 	
-	public void reFillData(List<Map<String, Object>> mData) {
+	public void reFillData( ArrayList<HashMap<String, Object>> mData) {
 
 		for (Map<String, Object> mMap : mData) {
-			int category = (Integer) mMap.get("category");
-			int payee = (Integer) mMap.get("payee");
-
-			if (category > 0) {
-				List<Map<String, Object>> mList = AccountDao
-						.selectCategoryById(mActivity, category);
-				if (mList != null && mList.size() > 0) {
-					int iconName = (Integer) mList.get(0).get("iconName");
-					mMap.put("iconName", iconName);
-				} else {
+			
+			String payeeName = (String) mMap.get("payeeName");
+			int categoryId = (Integer) mMap.get("categoryId");
+			if (categoryId <= 0) {
+				int expenseAccount = (Integer) mMap.get("expenseAccount");
+				int incomeAccount = (Integer) mMap.get("incomeAccount");
+				
+				if (expenseAccount > 0 && incomeAccount > 0) {
 					mMap.put("iconName", 69);
-				}
-			} else {
-				mMap.put("iconName", 69); // 设置为not sure
-			}
-
-			if (payee > 0) {
-				List<Map<String, Object>> mList = AccountDao.selectPayeeById(
-						mActivity, payee);
-				if (mList != null && mList.size() > 0) {
-					String payeeName = (String) mList.get(0).get("name");
-					mMap.put("payeeName", payeeName);
 				} else {
-					mMap.put("payeeName", "--");
+					mMap.put("iconName", 56);
 				}
-			} else {
-				mMap.put("payeeName", "--");
+				
 			}
-
+			
+			if (payeeName == null) {
+				String memoString = (String) mMap.get("notes");
+				if (memoString == null ) {
+					mMap.put("payeeName", "--");
+				} else {
+					
+					if (memoString.length() > 0) {
+						mMap.put("payeeName", memoString);
+					} else {
+						mMap.put("payeeName", "--");
+					}
+					
+				}
+			} 
 		}
+		
 	}
 	
 	@Override

@@ -60,6 +60,7 @@ import com.appxy.pocketexpensepro.util.SkuDetails;
 import com.appxy.pocketexpensepro.R;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
+import com.dropbox.sync.android.DbxException;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -637,6 +638,9 @@ public class OverviewFragment extends Fragment implements
 			mListViewAdapter.notifyDataSetChanged();
 		}
 		
+		TransactionRecurringCheck.recurringCheck(mActivity,
+				MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
+		
 		
 	}
 
@@ -898,8 +902,6 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 
-				TransactionRecurringCheck.recurringCheck(mActivity,
-						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);
 			}
@@ -908,8 +910,6 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 //				mHandler.post(mTask);
-				TransactionRecurringCheck.recurringCheck(mActivity,
-						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);
 			}
@@ -918,8 +918,6 @@ public class OverviewFragment extends Fragment implements
 		case 13:
 
 			if (data != null) {
-				TransactionRecurringCheck.recurringCheck(mActivity,
-						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
@@ -929,8 +927,6 @@ public class OverviewFragment extends Fragment implements
 		case 2:
 
 			if (data != null) {
-				TransactionRecurringCheck.recurringCheck(mActivity,
-						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
@@ -941,8 +937,6 @@ public class OverviewFragment extends Fragment implements
 
 			if (data != null) {
 
-				TransactionRecurringCheck.recurringCheck(mActivity,
-						MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
 				onBackTimeListener.OnBackTime(MainActivity.selectedDate,
 						viewPagerPosition);// viewPagerPosition用于判断具体的fragment
 			}
@@ -1039,7 +1033,7 @@ public class OverviewFragment extends Fragment implements
 					 Purchase premiumPurchase = inv.getPurchase(Paid_Id_VF);
 					
 					 Common.mIsPaid = (premiumPurchase != null && verifyDeveloperPayload(premiumPurchase));
-				     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);   //已经设置密码 
+				     SharedPreferences sharedPreferences = mActivity.getSharedPreferences(PREFS_NAME,0);  
 				     SharedPreferences.Editor meditor = sharedPreferences.edit();  
 					 meditor.putBoolean("isPaid",Common.mIsPaid ); 
 					 meditor.commit();

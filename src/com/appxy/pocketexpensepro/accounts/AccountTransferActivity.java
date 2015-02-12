@@ -17,6 +17,7 @@ import java.util.Set;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import com.appxy.pocketexpensepro.keyboard.CustomKeyboardView;
 import com.appxy.pocketexpensepro.overview.transaction.ViewPhotoActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.CreatAccountTypeActivity;
@@ -48,10 +49,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.view.MotionEventCompat;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -167,6 +170,36 @@ public class AccountTransferActivity extends BaseHomeActivity {
 	private CharSequence sKey;
 	private KeyboardUtil customKeyBoard;
 	
+	private  CustomKeyboardView mKeyboardView;
+	private Rect mRect = new Rect();
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		
+		final int action = MotionEventCompat.getActionMasked(ev);
+
+		if (customKeyBoard != null && customKeyBoard.isCustomKeyboardVisible()) {
+			
+			   int[] location = new int[2];
+			    mKeyboardView.getLocationOnScreen(location);
+			    mRect.left = location[0];
+			    mRect.top = location[1];
+			    mRect.right = location[0] + mKeyboardView.getWidth();
+			    mRect.bottom = location[1] + mKeyboardView.getHeight();
+
+			    int x = (int) ev.getX();
+			    int y = (int) ev.getY();
+
+			    if (action == MotionEvent.ACTION_DOWN && !mRect.contains(x, y)) {
+			    	customKeyBoard.hideKeyboard();
+			    }
+			    
+		}
+	  
+		
+		return super.dispatchTouchEvent(ev);
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -193,6 +226,8 @@ public class AccountTransferActivity extends BaseHomeActivity {
 				.findViewById(R.id.action_done);
 		doneActionView.setOnClickListener(mClickListener);
 
+		mKeyboardView = (CustomKeyboardView) findViewById(R.id.keyboardview);
+		
 		groupDataList = new ArrayList<Map<String, Object>>();
 		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 

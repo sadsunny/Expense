@@ -107,7 +107,7 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 		// TODO Auto-generated method stub
 		super.onResume();
 
-
+		
 		mDbxAcctMgr = DbxAccountManager.getInstance(getApplicationContext(),
 				APP_KEY, APP_SECRET);
 		try {

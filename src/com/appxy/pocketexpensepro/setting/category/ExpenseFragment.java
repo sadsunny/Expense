@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ListView;
@@ -59,28 +60,18 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 		public void handleMessage(Message msg) {// 此方法在ui线程运行
 			switch (msg.what) {
 			case MSG_SUCCESS:
-
+			
 				mAdapter.setAdapterData(groupDataList, childrenAllDataList);
-				mAdapter.notifyDataSetChanged();
+				
 				int groupCount = groupDataList.size();
 
 				for (int i = 0; i < groupCount; i++) {
 					mExpandableListView.expandGroup(i);
 				}
 				
-				 mExpandableListView
-				 .setOnGroupClickListener(new OnGroupClickListener() {
-				
-				 @Override
-				 public boolean onGroupClick(
-				 ExpandableListView parent, View v,
-				 int groupPosition, long id) {
-				 // TODO Auto-generated method stub
-				 return true;
-				 }
-				 });
-
+				mAdapter.notifyDataSetChanged();
 				mExpandableListView.setCacheColorHint(0);
+				
 
 				break;
 
@@ -119,7 +110,7 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 		mExpandableListView.setOnItemLongClickListener(listener);
 		mExpandableListView.setOnChildClickListener(onChildClickListener);
 		mExpandableListView.setOnGroupClickListener(onGroupClickListener);
-
+		
 		Thread mThread = new Thread(mTask);
 		mThread.start();
 
@@ -404,6 +395,8 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 
 		groupDataList.clear();
 		childrenAllDataList.clear();
+		groupDataList = new ArrayList<Map<String, Object>>();
+		childrenAllDataList = new ArrayList<List<Map<String, Object>>>();
 
 		for (Map<String, Object> mMap : mData) { // 分离父类和子类
 			String categoryName = (String) mMap.get("categoryName");
@@ -432,6 +425,8 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 			childrenAllDataList.add(tempList);
 
 		}
+		mAdapter.setAdapterData(groupDataList, childrenAllDataList);
+
 	}
 
 	@Override
@@ -457,6 +452,9 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 		case 3:
 
 			if (data != null) {
+				
+				((BaseExpandableListAdapter) mExpandableListView.getExpandableListAdapter()).notifyDataSetInvalidated();
+				((BaseExpandableListAdapter) mExpandableListView.getExpandableListAdapter()).notifyDataSetChanged();
 				mHandler.post(mTask);
 			}
 			break;

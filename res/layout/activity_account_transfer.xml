@@ -60,9 +60,9 @@
 
                     <EditText
                         android:id="@+id/amount_edit"
+                        style="@style/TextAppearance.EditEvent_Value"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                         style="@style/TextAppearance.EditEvent_SpinnerButton"
                         android:ems="10"
                         android:maxLength="13"
                         android:minHeight="48dip"

@@ -113,7 +113,6 @@ public class IncomeFragment extends Fragment implements OnSyncFinishedListener {
 		public void run() {
 			// TODO Auto-generated method stub
 			mDataList = CategoryDao.selectCategory(getActivity(), 1);
-			Log.v("mtag", "Category mDataList"+mDataList);
 			if (mDataList != null) {
 				filterData(mDataList);
 			}

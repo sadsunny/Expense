@@ -134,6 +134,124 @@ public class OverViewDao {
 		return mList;
 	}
 	
+	
+	public static  ArrayList<HashMap<String, Object>> selectTransactionByAccountId(
+			Context context, int accountId) { // Account查询
+		 ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		 HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* , Payee.name, Category.iconName, Category._id from 'Transaction' a left join Payee on a.payee = Payee._id left join Category on a.category = Category._id where (a.expenseAccount = " + accountId + " or a.incomeAccount = "+ accountId + ") and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);                               
+			String amount = mCursor.getString(1);                      
+			long dateTime = mCursor.getLong(2);                        
+			int isClear = mCursor.getInt(5);                           
+			String notes = mCursor.getString(6);                       
+			String photoName = mCursor.getString(9);                   
+			int recurringType = mCursor.getInt(10);                    
+			int category = mCursor.getInt(18);                         
+			String childTransactions = mCursor.getString(19);          
+			int expenseAccount = mCursor.getInt(20);                   
+			int incomeAccount = mCursor.getInt(21);                    
+			int parTransaction = mCursor.getInt(22);                   
+			int payee = mCursor.getInt(23);                            
+			int transactionHasBillItem = mCursor.getInt(24);           
+			int transactionHasBillRule = mCursor.getInt(25);           
+			String uuid =  mCursor.getString(16); 
+			String payeeName = mCursor.getString(27); 
+			int iconName = mCursor.getInt(28);                                                                               
+			int categoryId = mCursor.getInt(29);    
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("notes", notes);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("uuid", uuid);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", categoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
+	
+	public static  ArrayList<HashMap<String, Object>> selectTransactionByCategoryIdJoin(
+			Context context, int categoryId) { // Account查询
+		 ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
+		 HashMap<String, Object> mMap;
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.* , Payee.name, b.iconName, b._id from 'Transaction' a left join Payee on a.payee = Payee._id ,Category b where a.category = b._id and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		Cursor mCursor = db.rawQuery(sql, null);
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+
+			int _id = mCursor.getInt(0);                               
+			String amount = mCursor.getString(1);                      
+			long dateTime = mCursor.getLong(2);                        
+			int isClear = mCursor.getInt(5);                           
+			String notes = mCursor.getString(6);                       
+			String photoName = mCursor.getString(9);                   
+			int recurringType = mCursor.getInt(10);                    
+			int category = mCursor.getInt(18);                         
+			String childTransactions = mCursor.getString(19);          
+			int expenseAccount = mCursor.getInt(20);                   
+			int incomeAccount = mCursor.getInt(21);                    
+			int parTransaction = mCursor.getInt(22);                   
+			int payee = mCursor.getInt(23);                            
+			int transactionHasBillItem = mCursor.getInt(24);           
+			int transactionHasBillRule = mCursor.getInt(25);           
+			String uuid =  mCursor.getString(16); 
+			String payeeName = mCursor.getString(27); 
+			int iconName = mCursor.getInt(28);                                                                               
+			int mCategoryId = mCursor.getInt(29);    
+			
+			mMap.put("_id", _id);
+			mMap.put("amount", amount);
+			mMap.put("dateTime", dateTime);
+			mMap.put("isClear", isClear);
+			mMap.put("photoName", photoName);
+			mMap.put("notes", notes);
+			mMap.put("recurringType", recurringType);
+			mMap.put("category", category);
+			mMap.put("childTransactions", childTransactions);
+			mMap.put("parTransaction", parTransaction);
+			mMap.put("expenseAccount", expenseAccount);
+			mMap.put("incomeAccount", incomeAccount);
+			mMap.put("payee", payee);
+			mMap.put("transactionHasBillItem", transactionHasBillItem);
+			mMap.put("transactionHasBillRule", transactionHasBillRule);
+			mMap.put("uuid", uuid);
+			mMap.put("payeeName", payeeName);
+			mMap.put("iconName", iconName);
+			mMap.put("categoryId", mCategoryId);
+
+			mList.add(mMap);
+		}
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 
 	public static List<Map<String, Object>> selectTransactionByTimeBE(
 			Context context, long beginTime, long endTime) { // Account查询
@@ -246,7 +364,7 @@ public class OverViewDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select b.categoryType ,b.categoryName, sum(a.amount) from 'Transaction' a , Category b where b.categoryType = "+type+"  and a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id group by b._id";
+		String sql = "select b.categoryType ,b.categoryName, sum(a.amount) from 'Transaction' a , Category b where b.categoryType = "+type+"  and a.dateTime >= "+ beginTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  group by b._id";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

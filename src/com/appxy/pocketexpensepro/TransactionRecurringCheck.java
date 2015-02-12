@@ -27,12 +27,6 @@ public class TransactionRecurringCheck {
 	public static void recurringCheck(Context context, long today, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		List<Map<String, Object>> mList = AccountDao.selectTransactionRecurringOverToday(context, today);
 		
-		
-		ExpenseDBHelper helper = new ExpenseDBHelper(context);
-		SQLiteDatabase db = helper.getWritableDatabase();
-		
-		db.beginTransaction();  //手动设置开始事务
-		
 		try {
 
 			for (Map<String, Object> mMap : mList) {
@@ -88,7 +82,7 @@ public class TransactionRecurringCheck {
 
 					String transactionstring1 = uuid
 							+ MEntity.turnMilltoDate(dateTime);
-					updateTransactionRecurring(db, context, id, uuid,
+					updateTransactionRecurring(context, id, uuid,
 							transactionstring1, mDbxAcctMgr, mDatastore);
 
 					// 批量处理操作
@@ -98,7 +92,7 @@ public class TransactionRecurringCheck {
 								+ MEntity.turnMilltoDate(calendar
 										.getTimeInMillis());
 
-						TransactionDao.insertTransactionOne(db, context,
+						TransactionDao.insertTransactionOne(context,
 								amount, calendar.getTimeInMillis(), isClear,
 								notes, photoName, 0, category,
 								childTransactions + "", expenseAccount,
@@ -134,7 +128,7 @@ public class TransactionRecurringCheck {
 						}
 					}
 
-					TransactionDao.insertTransactionOne(db, context, amount,
+					TransactionDao.insertTransactionOne( context, amount,
 							calendar.getTimeInMillis(), isClear, notes,
 							photoName, recurringTpye, category,
 							childTransactions + "", expenseAccount,
@@ -145,19 +139,22 @@ public class TransactionRecurringCheck {
 
 			}
 			
-			db.setTransactionSuccessful(); 
 
 		}catch(Exception e){
 			
-          }finally{
-              db.endTransaction(); 
-              db.close();
-          }
+       }
 		
 		long end = System.currentTimeMillis();
 	}
 	
-	public static long updateTransactionRecurring(SQLiteDatabase db, Context context, int _id,String uuid, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
+	
+	public static SQLiteDatabase getConnection(Context context) {
+		ExpenseDBHelper helper = new ExpenseDBHelper(context);
+		SQLiteDatabase db = helper.getReadableDatabase();
+		return db;
+	}
+	
+	public static long updateTransactionRecurring( Context context, int _id,String uuid, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
 
 		long syncTime = System.currentTimeMillis();
 		
@@ -166,11 +163,12 @@ public class TransactionRecurringCheck {
 		cv.put("transactionstring",transactionstring);
 		cv.put("dateTime_sync", syncTime);
 		
+		SQLiteDatabase db = getConnection(context);
 		
 		String mId = _id + "";
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?", new String[] { mId });
-			
+			db.close();
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
@@ -194,6 +192,7 @@ public class TransactionRecurringCheck {
 			return id;
 		} catch (Exception e) {
 			// TODO: handle exception
+			db.close();
 			return 0;
 		}
 

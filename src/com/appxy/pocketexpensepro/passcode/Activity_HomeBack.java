@@ -2,12 +2,14 @@ package com.appxy.pocketexpensepro.passcode;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import com.appxy.pocketexpensepro.MyApplication;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.setting.SettingDao;
+import com.dropbox.sync.android.DbxRecord;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -35,7 +37,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-public class Activity_HomeBack extends Activity{
+public class Activity_HomeBack extends BaseHomeActivity{
 	EditText et;
 	LinearLayout ll;
 	ImageView line1,line2,line3,line4,point1,point2,point3,point4;
@@ -43,7 +45,7 @@ public class Activity_HomeBack extends Activity{
 	String password;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -253,6 +255,12 @@ public class Activity_HomeBack extends Activity{
 		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
 		outState.putString("text", et.getText().toString());
+	}
+
+	@Override
+	public void syncDateChange(Map<String, Set<DbxRecord>> mMap) {
+		// TODO Auto-generated method stub
+		Toast.makeText(this, "Dropbox sync successed",Toast.LENGTH_SHORT).show();
 	}
 	
 	

@@ -240,7 +240,7 @@ public class MainActivity extends BaseHomeActivity implements
 					if (mItemPosition == 1) {
 						getActionBar().setTitle("Accounts");
 					}else if (mItemPosition == 4) {
-						getActionBar().setTitle("Budget");
+						getActionBar().setTitle("Budgets");
 					}
 					
 				} else {
@@ -826,8 +826,12 @@ public class MainActivity extends BaseHomeActivity implements
 		overViewNavigationListAdapter
 				.setSubTitle(turnToDate(this.selectedMonth));
 		overViewNavigationListAdapter.notifyDataSetChanged();
-		OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener) (billsFragmentMonth);
-		onActivityToBillListener.OnActivityToBill();
+		
+		if (billsFragmentMonth != null) {
+			OnActivityToBillListener onActivityToBillListener = (OnActivityToBillListener) (billsFragmentMonth);
+			onActivityToBillListener.OnActivityToBill();
+		}
+		
 
 	}
 

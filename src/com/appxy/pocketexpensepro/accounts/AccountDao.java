@@ -971,11 +971,7 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* from 'Transaction' a where (a.expenseAccount = "
-				+ accountId
-				+ " or a.incomeAccount = "
-				+ accountId
-				+ ") and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* from 'Transaction' a where (a.expenseAccount = " + accountId + " or a.incomeAccount = "+ accountId + ") and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

@@ -105,7 +105,7 @@ public class BudgetFragment extends Fragment implements OnSyncFinishedListener{
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				if ((budgetAmount - transactionAmount) > 0) {
+				if ((budgetAmount - transactionAmount) >= 0) {
 					mProgressBar.setProgressDrawable(mActivity.getResources().getDrawable(R.drawable.progressbar_bac));
 				} else {
 					mProgressBar.setProgressDrawable(mActivity.getResources().getDrawable(R.drawable.progressbar_bac_over));

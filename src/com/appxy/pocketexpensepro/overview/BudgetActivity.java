@@ -88,7 +88,7 @@ public class BudgetActivity extends BaseHomeActivity {
 			switch (msg.what) {
 			case MSG_SUCCESS:
 
-				if ((budgetAmount - transactionAmount) > 0) {
+				if ((budgetAmount - transactionAmount) >= 0) {
 					mProgressBar.setProgressDrawable(BudgetActivity.this.getResources().getDrawable(R.drawable.progressbar_bac));
 				} else {
 					mProgressBar.setProgressDrawable(BudgetActivity.this.getResources().getDrawable(R.drawable.progressbar_bac_over));

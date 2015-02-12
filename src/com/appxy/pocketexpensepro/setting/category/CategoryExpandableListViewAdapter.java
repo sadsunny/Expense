@@ -135,8 +135,13 @@ public class CategoryExpandableListViewAdapter extends
 			viewholder = (cViewHolder) convertView.getTag();
 
 		}
-		viewholder.mImageView
-		.setImageResource(Common.CATEGORY_ICON[(Integer) childList.get(groupPosition).get(childPosition).get("iconName")]);
+		
+		int iconName = 56;
+			 iconName = (Integer) childList.get(groupPosition).get(childPosition).get("iconName");
+		
+		
+		viewholder.mImageView.setImageResource(Common.CATEGORY_ICON[iconName]);
+		
 		
 		String cName = (String) childList.get(groupPosition).get(childPosition)
 				.get("categoryName");
@@ -181,5 +186,12 @@ public class CategoryExpandableListViewAdapter extends
 		// TODO Auto-generated method stub
 		return true;
 	}
+	
+	  @Override
+	    public void onGroupCollapsed(int groupPosition) {
+
+	        notifyDataSetInvalidated();
+
+	    }
 
 }
