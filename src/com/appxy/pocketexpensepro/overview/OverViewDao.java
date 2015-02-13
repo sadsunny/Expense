@@ -199,7 +199,7 @@ public class OverViewDao {
 		 ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
 		 HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.* , Payee.name, b.iconName, b._id from 'Transaction' a left join Payee on a.payee = Payee._id ,Category b where a.category = b._id and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
+		String sql = "select a.* , Payee.name, b.iconName, b._id from 'Transaction' a left join Payee on a.payee = Payee._id ,Category b where a.category = b._id and a.category = "+categoryId+" and a.childTransactions != 1 order by a.dateTime DESC , a._id DESC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

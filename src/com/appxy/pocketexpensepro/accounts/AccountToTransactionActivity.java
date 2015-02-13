@@ -130,6 +130,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		mExpandableListViewAdapter.setSyncMgr(mDbxAcctMgr, mDatastore);
 		getOutAndBanlance();
 	}
 
@@ -210,7 +211,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 		mExpandableListView.setOnItemLongClickListener(onLongClickListener);
 		mExpandableListViewAdapter.setReconcile(reconcileBoolean);
 		mExpandableListViewAdapter.setShowClear(hideClear);
-		mExpandableListViewAdapter.setAdapterData(mGroupList, mChildMap, mDbxAcctMgr, mDatastore);
+		mExpandableListViewAdapter.setAdapterData(mGroupList, mChildMap);
 		
 		getOutAndBanlance(); 
 		setData();

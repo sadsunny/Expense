@@ -186,6 +186,9 @@ public class BillsFragmentMonth extends Fragment implements
 
 		int mOffset = MEntity.getOffsetByMonth(MainActivity.selectedMonth);
 		mViewPager.setCurrentItem(MID_VALUE + mOffset);
+		Log.v("mtag", "bill mOffset"+mOffset);
+		Log.v("mtag", "bill 月"+MEntity.turnToDateString(MainActivity.selectedMonth));
+		
 		mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 					@Override
 					public void onPageSelected(int position) {

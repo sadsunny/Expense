@@ -195,7 +195,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 		mExpandableListView.setXListViewListener(this);
 		
 		mExpandableListViewAdapter = new ExpandableListViewAdapter(this, -1);
-		mExpandableListViewAdapter.setAdapterData(mGroupList, mChildMap, mDbxAcctMgr, mDatastore);
+		mExpandableListViewAdapter.setAdapterData(mGroupList, mChildMap);
 		mExpandableListView.setAdapter(mExpandableListViewAdapter);
 		mExpandableListView.setGroupIndicator(null);
 		mExpandableListView.setDividerHeight(0);
@@ -213,7 +213,7 @@ public class NetOutActivity extends BaseHomeActivity implements AgendaListenerIn
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		
+		mExpandableListViewAdapter.setSyncMgr(mDbxAcctMgr, mDatastore);
 		getOutAndBanlance();
 		currencyTextView1.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);
 		currencyTextView2.setText(Common.CURRENCY_SIGN[Common.CURRENCY]);

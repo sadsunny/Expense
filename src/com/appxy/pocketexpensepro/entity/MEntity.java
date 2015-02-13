@@ -538,7 +538,7 @@ public class MEntity {
 		} else {
 			if (endMonth < beginMonth) {
 				calendar.add(Calendar.MONTH, 3);
-			} else {
+			} else if(endMonth > beginMonth){
 				calendar.add(Calendar.MONTH, -3);
 			}
 		}

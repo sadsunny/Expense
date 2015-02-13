@@ -56,11 +56,6 @@ public class MyApplication extends Application {
 		
 		 CalligraphyConfig.initDefault("fonts/ROBOTO-REGULAR.TTF",R.attr.fontPath);
 	}
-	
-	@Override
-	protected void attachBaseContext(Context newBase) {
-	    super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-	}
 
 	public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
 		if (getBitmapFromMemCache(key) == null) {

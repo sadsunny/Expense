@@ -815,10 +815,10 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select (total(a.amount) - ( select total(a.amount)  from 'Transaction' a where a.isClear = "+ clear+ " and a.childTransactions != 1 and (expenseAccount > 0 and incomeAccount <= 0) ) ) " +
+		String sql = "select (total(a.amount) - ( select total(a.amount)  from 'Transaction' a where a.isClear = "+ clear+ " and a.childTransactions != 1 and (expenseAccount = "+id+"  and incomeAccount <= 0) ) ) " +
 				"from 'Transaction' a where a.isClear = "
 				+ clear
-				+ " and a.childTransactions != 1 and (expenseAccount <= 0 and incomeAccount > 0)";
+				+ " and a.childTransactions != 1 and (expenseAccount <= 0 and incomeAccount = "+id+" )";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -2009,7 +2009,10 @@ public class AccountDao {
 			long id = db.update("'Transaction'", cv, "_id = ?",
 					new String[] { mId });
 			rId = id;
+			
 			Log.v("mtag", "updateTransactionClear1"+id);
+			Log.v("mtag", "mDbxAcctMgr"+mDbxAcctMgr);
+			Log.v("mtag", "mDatastore"+mDatastore);
 			
 			if (id > 0) {
 				

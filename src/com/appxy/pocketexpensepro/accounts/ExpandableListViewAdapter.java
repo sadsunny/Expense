@@ -56,7 +56,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 	
 	private OnAtoBListenner a2bAtoBListenner ;
 	
-	public ExpandableListViewAdapter(Context context,int accountId) {
+	public ExpandableListViewAdapter(Context context,int accountId ) {
 		this.context = context;
 		inflater = LayoutInflater.from(context);
 		currencyLable = Common.CURRENCY_SIGN[Common.CURRENCY] ;
@@ -68,13 +68,17 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 		
 	}
 
+	public void setSyncMgr(DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+		this.mDbxAcctMgr = mDbxAcctMgr;
+		this.mDatastore = mDatastore;
+	}
+	
 	public void setAdapterData(ArrayList<String> mGroupList,
-			HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
+			HashMap<String, ArrayList<HashMap<String, Object>>> mChildMap) {
 
 		this.mGroupList = mGroupList;
 		this.mChildMap = mChildMap;
-		this.mDbxAcctMgr = mDbxAcctMgr;
-		this.mDatastore = mDatastore;
+		
 		
 	}
 

@@ -406,7 +406,7 @@ int id add_but 0x7f060164
 int id ads_button 0x7f060158
 int id ads_layout 0x7f060157
 int id ads_line 0x7f060159
-int id amonut_txt 0x7f060197
+int id amonut_txt 0x7f060198
 int id amount_edit 0x7f06001d
 int id amount_txt 0x7f060105
 int id amounttextView 0x7f06000b
@@ -451,7 +451,7 @@ int id circle2 0x7f06011e
 int id clear_btn 0x7f060093
 int id clear_spin 0x7f060025
 int id clickRemove 0x7f060000
-int id color_view 0x7f060196
+int id color_view 0x7f060197
 int id column_spin 0x7f0600aa
 int id confirm 0x7f06019c
 int id content_frame 0x7f0600ae
@@ -503,7 +503,7 @@ int id end_layout 0x7f06009e
 int id event_info_reminders_label 0x7f060058
 int id event_info_reminders_label4 0x7f06005a
 int id everytextView 0x7f06011f
-int id examount_txt 0x7f060195
+int id examount_txt 0x7f060196
 int id expandableListView1 0x7f060132
 int id expenseAmount 0x7f060179
 int id expenseLayout 0x7f060176
@@ -536,7 +536,7 @@ int id imageView1 0x7f06002b
 int id image_View 0x7f0600bb
 int id image_item 0x7f06017f
 int id imageview1 0x7f0600f1
-int id inamount_txt 0x7f060194
+int id inamount_txt 0x7f060195
 int id incomeAmount 0x7f06017d
 int id incomeLayout 0x7f06017a
 int id income_btn 0x7f06010b
@@ -590,7 +590,7 @@ int id mExpandableListView 0x7f06000d
 int id mGridView 0x7f060083
 int id mGridview 0x7f060135
 int id mImageView 0x7f06018f
-int id mImageView1 0x7f060191
+int id mImageView1 0x7f060193
 int id mImageView2 0x7f060192
 int id mLineView 0x7f060077
 int id mLinearLayout 0x7f060050
@@ -664,7 +664,7 @@ int id paydate_label 0x7f06004e
 int id payee_edit 0x7f06001b
 int id payee_rel 0x7f0600d1
 int id payee_txt 0x7f0600f5
-int id percentTextView 0x7f060198
+int id percentTextView 0x7f060199
 int id percent_txt 0x7f060106
 int id percent_txt1 0x7f060143
 int id percent_txt2 0x7f06014a
@@ -725,7 +725,7 @@ int id sync_switch 0x7f0600f3
 int id take_btn 0x7f060118
 int id test_txt 0x7f06016a
 int id text1 0x7f060127
-int id textLayout 0x7f060199
+int id textLayout 0x7f060191
 int id textView1 0x7f060010
 int id textView2 0x7f060015
 int id textView4 0x7f06003d
@@ -749,7 +749,7 @@ int id type_icon 0x7f06010d
 int id type_name 0x7f06010e
 int id type_spin 0x7f0600a8
 int id type_txt 0x7f060008
-int id up_down_img 0x7f060193
+int id up_down_img 0x7f060194
 int id update_layout 0x7f0600eb
 int id update_layout_visi 0x7f0600e9
 int id upgrade_but 0x7f060168

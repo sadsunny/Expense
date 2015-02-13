@@ -638,7 +638,7 @@ containing a value of this type.
         public static final int ads_button=0x7f060158;
         public static final int ads_layout=0x7f060157;
         public static final int ads_line=0x7f060159;
-        public static final int amonut_txt=0x7f060197;
+        public static final int amonut_txt=0x7f060198;
         public static final int amount_edit=0x7f06001d;
         public static final int amount_txt=0x7f060105;
         public static final int amounttextView=0x7f06000b;
@@ -683,7 +683,7 @@ containing a value of this type.
         public static final int clear_btn=0x7f060093;
         public static final int clear_spin=0x7f060025;
         public static final int clickRemove=0x7f060000;
-        public static final int color_view=0x7f060196;
+        public static final int color_view=0x7f060197;
         public static final int column_spin=0x7f0600aa;
         public static final int confirm=0x7f06019c;
         public static final int content_frame=0x7f0600ae;
@@ -735,7 +735,7 @@ containing a value of this type.
         public static final int event_info_reminders_label=0x7f060058;
         public static final int event_info_reminders_label4=0x7f06005a;
         public static final int everytextView=0x7f06011f;
-        public static final int examount_txt=0x7f060195;
+        public static final int examount_txt=0x7f060196;
         public static final int expandableListView1=0x7f060132;
         public static final int expenseAmount=0x7f060179;
         public static final int expenseLayout=0x7f060176;
@@ -768,7 +768,7 @@ containing a value of this type.
         public static final int image_View=0x7f0600bb;
         public static final int image_item=0x7f06017f;
         public static final int imageview1=0x7f0600f1;
-        public static final int inamount_txt=0x7f060194;
+        public static final int inamount_txt=0x7f060195;
         public static final int incomeAmount=0x7f06017d;
         public static final int incomeLayout=0x7f06017a;
         public static final int income_btn=0x7f06010b;
@@ -822,7 +822,7 @@ containing a value of this type.
         public static final int mGridView=0x7f060083;
         public static final int mGridview=0x7f060135;
         public static final int mImageView=0x7f06018f;
-        public static final int mImageView1=0x7f060191;
+        public static final int mImageView1=0x7f060193;
         public static final int mImageView2=0x7f060192;
         public static final int mLineView=0x7f060077;
         public static final int mLinearLayout=0x7f060050;
@@ -896,7 +896,7 @@ containing a value of this type.
         public static final int payee_edit=0x7f06001b;
         public static final int payee_rel=0x7f0600d1;
         public static final int payee_txt=0x7f0600f5;
-        public static final int percentTextView=0x7f060198;
+        public static final int percentTextView=0x7f060199;
         public static final int percent_txt=0x7f060106;
         public static final int percent_txt1=0x7f060143;
         public static final int percent_txt2=0x7f06014a;
@@ -957,7 +957,7 @@ containing a value of this type.
         public static final int take_btn=0x7f060118;
         public static final int test_txt=0x7f06016a;
         public static final int text1=0x7f060127;
-        public static final int textLayout=0x7f060199;
+        public static final int textLayout=0x7f060191;
         public static final int textView1=0x7f060010;
         public static final int textView2=0x7f060015;
         public static final int textView4=0x7f06003d;
@@ -981,7 +981,7 @@ containing a value of this type.
         public static final int type_name=0x7f06010e;
         public static final int type_spin=0x7f0600a8;
         public static final int type_txt=0x7f060008;
-        public static final int up_down_img=0x7f060193;
+        public static final int up_down_img=0x7f060194;
         public static final int update_layout=0x7f0600eb;
         public static final int update_layout_visi=0x7f0600e9;
         public static final int upgrade_but=0x7f060168;

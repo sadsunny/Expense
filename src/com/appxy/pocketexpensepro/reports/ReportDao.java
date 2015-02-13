@@ -116,7 +116,7 @@ public class ReportDao{
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
 		
-		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id, a.childTransactions, a.parTransaction from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  and b.categoryType = "+mCategoryType+" and b.categoryName like '" +categoryName+"' order by b.dateTime DESC,a._id DESC ";
+		String sql = "select a._id, a.amount, a.dateTime, a.expenseAccount, a.incomeAccount, Payee.name, b.categoryName, b.categoryType, b._id, a.childTransactions, a.parTransaction from  Category b, 'Transaction' a left join Payee on a.payee = Payee._id where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  and b.categoryType = "+mCategoryType+" and b.categoryName like '" +categoryName+"' order by a.dateTime DESC";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -223,7 +223,7 @@ public class ReportDao{
 	public static List<Map<String, Object>>  selectCategoryAllSum(Context context, long startTime, long endTime) { // Group 查询transaction的总额，通过type，一段时间内的expense和income
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount), b.categoryType from 'Transaction' a , Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id  group by b.categoryType";
+		String sql = "select total(a.amount), b.categoryType from 'Transaction' a , Category b where a.dateTime >= "+ startTime+ " and a.dateTime <= "+ (endTime+DAYMILLIS) + " and a.parTransaction != -1 and a.category = b._id and (a.expenseAccount <= 0  or a.incomeAccount <= 0)  group by b.categoryType";
 		Cursor mCursor = db.rawQuery(sql, null);
 		
 		Map<String, Object> mMap;
