@@ -147,7 +147,6 @@ public class AccountTypeTable {
 			}
 			
 			if (iRecord.hasField("accounttype_isdefault")) {
-				accounttype_isdefault = (int)iRecord.getLong("accounttype_isdefault");
 				
 				if (iRecord.getFieldType("accounttype_isdefault") == ValueType.LONG) {
 					accounttype_isdefault = (int) iRecord

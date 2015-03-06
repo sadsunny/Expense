@@ -343,6 +343,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 			
 		}
+		
+		Log.d("mtag", "BudgetTemplateList");
 
 		List<Map<String, Object>> BudgetItemList = SyncDao
 				.selectBudgetItem(SyncActivity.this);
@@ -360,6 +362,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			
 		}
 
+		Log.d("mtag", "BudgetItemList");
+		
 		List<Map<String, Object>> BudgetTransferList = SyncDao
 				.selectBudgetTransfer(SyncActivity.this);
 		for (Map<String, Object> iMap : BudgetTransferList) {
@@ -376,6 +380,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 			
 		}
+		
+		Log.d("mtag", "BudgetTransferList");
 
 		List<Map<String, Object>> EP_BillRuleList = SyncDao
 				.selectEP_BillRule(SyncActivity.this);
@@ -392,6 +398,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 			
 		}
+		
+		Log.d("mtag", "EP_BillRuleList");
 
 		List<Map<String, Object>> EP_BillItemList = SyncDao
 				.selectEP_BillItem(SyncActivity.this);
@@ -409,6 +417,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 			
 		}
+		
+		Log.d("mtag", "EP_BillItemList");
 
 		List<Map<String, Object>> TransactionList = SyncDao
 				.selectTransaction(SyncActivity.this);
@@ -426,9 +436,11 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 			
 		}
+		
+		Log.d("mtag", "TransactionList");
 
 		mDatastore.sync();
-		Log.e("mtag", "pageSize"+pageSize);
+		Log.e("mtag", "Local pageSize"+pageSize);
 		
 		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 
