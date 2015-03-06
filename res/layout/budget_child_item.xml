@@ -27,10 +27,9 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/category_img"
-            android:maxLength="15"
+            android:maxLength="11"
             android:singleLine="true"
             android:textSize="16sp"
-            android:text="Auto"
             android:textColor="@color/text_black1" />
 
         <TextView

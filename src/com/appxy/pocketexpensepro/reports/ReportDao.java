@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 
 import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 public class ReportDao{
 	
@@ -112,6 +113,9 @@ public class ReportDao{
 	
 	public static ArrayList<HashMap<String, Object>> selectTransactionByNameLikeLeftJoin(
 			Context context, String categoryName,long startTime, long endTime , int mCategoryType) { // CategoryReport list点入后的插叙，根据category名字，查询like
+		
+		categoryName = MEntity.sqliteEscape(categoryName);
+		
 		ArrayList<HashMap<String, Object>> mList = new ArrayList<HashMap<String, Object>>();
 		HashMap<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);

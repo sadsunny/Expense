@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.passcode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import com.appxy.pocketexpensepro.MyApplication;
+import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.setting.SettingDao;
 import com.appxy.pocketexpensepro.table.AccountTypeTable;
 import com.appxy.pocketexpensepro.table.AccountTypeTable.AccountType;
@@ -343,22 +345,51 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 			
 		}
 		
+		List<DbxRecord> tempList = new ArrayList<DbxRecord>();
+		
 		if (mMap.containsKey("db_transaction_table")) {
 			
 			Set<DbxRecord> incomeDate = mMap.get("db_transaction_table");
-			for (DbxRecord iRecord:incomeDate) {
-				if(!iRecord.isDeleted()){
+			for (DbxRecord iRecord : incomeDate) {
+				
+				if (iRecord.hasField("trans_partransaction")) {
 					
-					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
-					Transaction transaction = transactionTable.getTransaction();
-					transaction.setIncomingData(iRecord);
-					transaction.insertOrUpdate();
+					tempList.add(iRecord);
+					
+				} else {
+					
+					if (!iRecord.isDeleted()) {
+
+						TransactionTable transactionTable = new TransactionTable(
+								mDatastore, this);
+						Transaction transaction = transactionTable.getTransaction();
+						transaction.setIncomingData(iRecord);
+						transaction.insertOrUpdate();
+
+					}
 					
 				}
+				
 			}
 			
 		}
 		
+		if (tempList != null && tempList.size() > 0) {
+			
+			for (DbxRecord iRecord:tempList) {
+				
+				TransactionTable transactionTable = new TransactionTable(
+						mDatastore, this);
+				Transaction transaction = transactionTable.getTransaction();
+				transaction.setIncomingData(iRecord);
+				transaction.insertOrUpdate();
+				
+				if (iRecord.hasField("trans_partransaction")) {
+					TransactionDao.updateParTransactionByUUID(this, iRecord.getString("trans_partransaction"));
+				}
+			}
+			
+		}
 		
 
 		

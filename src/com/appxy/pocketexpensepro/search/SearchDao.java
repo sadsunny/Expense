@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
+import com.appxy.pocketexpensepro.entity.MEntity;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -21,6 +22,9 @@ public class SearchDao {
 
 	public static List<Map<String, Object>> selectTransactionByKeywords(
 			Context context, String keyString) { // Account查询
+		
+		keyString = MEntity.sqliteEscape(keyString);
+		
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);

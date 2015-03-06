@@ -21,6 +21,7 @@ import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
 import com.dropbox.sync.android.DbxRecord;
 import com.dropbox.sync.android.DbxTable;
+import com.dropbox.sync.android.DbxFields.ValueType;
 
 public class TransactionTable {
 
@@ -170,20 +171,35 @@ public class TransactionTable {
 			
 			if (iRecord.hasField("trans_datetime")) {
 				trans_datetime = iRecord.getDate("trans_datetime");
+			}else{
+				trans_datetime = new Date();
 			}
 			
-			
-			try {
 				if (iRecord.hasField("trans_isclear")) {
-					trans_isclear = (int)iRecord.getLong("trans_isclear");
+					
+					if (iRecord.getFieldType("trans_isclear") == ValueType.LONG) {
+						trans_isclear = (int) iRecord
+								.getLong("trans_isclear");
+					} else if (iRecord.getFieldType("trans_isclear") == ValueType.BOOLEAN) {
+
+						boolean mBool = iRecord
+								.getBoolean("trans_isclear");
+
+						if (mBool) {
+							trans_isclear = 1;
+						} else {
+							trans_isclear = 0;
+						}
+
+					} else {
+						trans_isclear = 0;
+					}
+					
+					
 				}else {
 					trans_isclear = 0;
 				}
 				
-			} catch (Exception e) {
-				// TODO: handle exception
-				trans_isclear = 0;
-			}
 			
 			if (iRecord.hasField("trans_partransaction")) {
 				trans_partransaction = iRecord.getString("trans_partransaction");
@@ -208,6 +224,11 @@ public class TransactionTable {
 					
 				} else if (state.equals("1")){
 					
+					String isChild = "0";
+					if (trans_partransaction != null && trans_partransaction.length() > 0) {
+						isChild = "1";
+					}
+					
 					List<Map<String, Object>> mList= TransactionDao.checkTransactionByUUid(context, uuid);
 					if ( mList.size() > 0) {
 						
@@ -216,7 +237,7 @@ public class TransactionTable {
 					    	
 					    	 TransactionDao.updateTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
 										trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
-										new String(), TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
+										isChild, TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
 										TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
 										PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
 										dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
@@ -228,7 +249,7 @@ public class TransactionTable {
 						
 					    TransactionDao.insertTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
 						trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
-						new String(), TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
+						isChild, TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
 						TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
 						PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
 						dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
@@ -250,6 +271,7 @@ public class TransactionTable {
 			trans_payee = SyncDao.selectPayeeUUid(context, Integer.parseInt((String) mMap.get("trans_payee")) );
 			trans_string = (String) mMap.get("trans_string");
 			trans_category =SyncDao.selectCategoryUUid(context, Integer.parseInt( (String) mMap.get("trans_category") ));
+			
 			dateTime_sync = MEntity.getMilltoDateFormat((Long) mMap.get("dateTime_sync"));
 			
 			state = (String) mMap.get("state");
@@ -363,6 +385,8 @@ public class TransactionTable {
 			
 			if (dateTime_sync != null) {
 				accountsFields.set("dateTime_sync",dateTime_sync);
+			}else {
+				accountsFields.set("dateTime_sync",new Date());
 			}
 			
 			if (state !=  null) {
@@ -473,7 +497,15 @@ public class TransactionTable {
 		if (it.hasNext()) {
 			
 			DbxRecord firstResult = it.next();
-			if (firstResult.getDate("dateTime_sync").getTime() <= thisFields.getDate(
+			
+			Date firstDate ;
+			if (firstResult.hasField("dateTime_sync")) {
+				firstDate = firstResult.getDate("dateTime_sync");
+			}else {
+				firstDate = new Date();
+			}
+			
+			if (firstDate.getTime() <= thisFields.getDate(
 					"dateTime_sync").getTime()) { 
 
 				firstResult.setAll(thisFields);
@@ -495,7 +527,16 @@ public class TransactionTable {
 			if (it1.hasNext()) {
 				
 				DbxRecord firstResult = it1.next();
-				if (firstResult.getDate("dateTime_sync").getTime() <= thisFields.getDate(
+				
+				Date firstDate ;
+				if (firstResult.hasField("dateTime_sync")) {
+					firstDate = firstResult.getDate("dateTime_sync");
+				}else {
+					firstDate = new Date();
+				}
+				
+				
+				if (firstDate.getTime() <= thisFields.getDate(
 						"dateTime_sync").getTime()) {
 
 					firstResult.setAll(thisFields);

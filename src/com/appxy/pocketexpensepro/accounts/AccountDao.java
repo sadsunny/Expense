@@ -631,7 +631,7 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a.*, b.iconName, b.typeName, (a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id order by a.orderIndex ASC ";
+		String sql = "select a.*, b.iconName, b.typeName, (a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id and c.parTransaction != -1 )) as allAmount from Accounts a,AccountType b where a.accountType = b._id order by a.orderIndex ASC ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -670,7 +670,7 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id and a._id = "+ id;
+		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id and c.parTransaction != -1 )) as allAmount from Accounts a,AccountType b where a.accountType = b._id and a._id = "+ id;
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();
@@ -718,7 +718,7 @@ public class AccountDao {
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id)) as allAmount from Accounts a,AccountType b where a.accountType = b._id ";
+		String sql = "select total(a.amount + (select total(c.amount) from 'Transaction' c where c.incomeAccount = a._id) - (select total(c.amount) from 'Transaction' c where c.expenseAccount = a._id and c.parTransaction != -1 )) as allAmount from Accounts a,AccountType b where a.accountType = b._id ";
 		Cursor mCursor = db.rawQuery(sql, null);
 		while (mCursor.moveToNext()) {
 			mMap = new HashMap<String, Object>();

@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.setting.sync;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,6 +9,8 @@ import com.appxy.pocketexpensepro.MainActivity;
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.entity.Common;
 import com.appxy.pocketexpensepro.entity.MEntity;
+import com.appxy.pocketexpensepro.overview.transaction.CreatTransactionActivity;
+import com.appxy.pocketexpensepro.overview.transaction.TransactionDao;
 import com.appxy.pocketexpensepro.passcode.BaseHomeActivity;
 import com.appxy.pocketexpensepro.passcode.BaseHomeSyncActivity;
 import com.appxy.pocketexpensepro.table.AccountTypeTable;
@@ -45,6 +48,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -261,11 +265,14 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			categoryTable.insertRecords(category.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
 		}
+		
+		Log.d("mtag", "CategoryList");
+		
 
 		List<Map<String, Object>> AccountTypeList = SyncDao
 				.selectAccountType(SyncActivity.this);
@@ -277,11 +284,13 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			accountTypeTable.insertRecords(accountType.getFields());
 			pageSize ++;
 			
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
 		}
+		
+		Log.d("mtag", "AccountTypeList");
 
 		List<Map<String, Object>> AccountsList = SyncDao
 				.selectAccount(SyncActivity.this);
@@ -292,11 +301,13 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			accountsTable.insertRecords(accounts.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
 		}
+		
+		Log.d("mtag", "AccountsList");
 
 		List<Map<String, Object>> PayeeList = SyncDao
 				.selectPayee(SyncActivity.this);
@@ -307,11 +318,14 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			payeeTable.insertRecords(payee.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
 		}
+		
+		Log.d("mtag", "PayeeList");
+		
 
 		List<Map<String, Object>> BudgetTemplateList = SyncDao
 				.selectBudgetTemplate(SyncActivity.this);
@@ -324,7 +338,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetTemplateTable.insertRecords(budgetTemplate.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
@@ -340,7 +354,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetItemTable.insertRecords(budgetItem.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
@@ -357,7 +371,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			budgetTransferTable.insertRecords(budgetTransfer.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
@@ -373,7 +387,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			ep_BillRuleTable.insertRecords(ep_BillRule.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
@@ -390,7 +404,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			ep_BillItemTable.insertRecords(ep_BillItem.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
@@ -407,13 +421,15 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			transactionTable.insertRecords(transaction.getFields());
 			
 			pageSize ++;
-			if (pageSize%1000 == 0 ) {
+			if (pageSize%500 == 0 ) {
 				mDatastore.sync();
 			}
 			
 		}
 
 		mDatastore.sync();
+		Log.e("mtag", "pageSize"+pageSize);
+		
 		mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
 
 	}
@@ -573,6 +589,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 	private void dataHasIncoming(Map<String, Set<DbxRecord>> mMap)
 			throws DbxException {// 处理同步数据incoming
 
+		Log.d("mtag", "Data size" + mMap.size());
+		
 		if (mMap.containsKey("db_category_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_category_table");
@@ -588,6 +606,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 				}
 			}
 		}
+		
+		Log.d("mtag", "db_category_table");
 
 		if (mMap.containsKey("db_accounttype_table")) {
 			Set<DbxRecord> incomeDate = mMap.get("db_accounttype_table");
@@ -603,6 +623,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 				}
 			}
 		}
+		
+		Log.d("mtag", "db_accounttype_table");
 
 		
 		if (mMap.containsKey("db_payee_table")) {
@@ -620,6 +642,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 		}
 
+		Log.d("mtag", "db_payee_table");
+		
 		if (mMap.containsKey("db_account_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_account_table");
@@ -635,6 +659,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
+		
+		Log.d("mtag", "db_account_table");
 
 		if (mMap.containsKey("db_budgettemplate_table")) {
 
@@ -652,6 +678,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
+		
+		Log.d("mtag", "db_budgettemplate_table");
 
 		if (mMap.containsKey("db_budgetitem_table")) {
 
@@ -669,6 +697,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 			}
 
 		}
+		
+		Log.d("mtag", "db_budgetitem_table");
 
 		if (mMap.containsKey("db_budgettransfer_table")) {
 
@@ -688,6 +718,8 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 		}
 		
+		Log.d("mtag", "db_budgettransfer_table");
+		
 		if (mMap.containsKey("db_ep_billrule_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_ep_billrule_table");
@@ -705,6 +737,7 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 		}
 
+		Log.d("mtag", "db_ep_billrule_table");
 		
 		if (mMap.containsKey("db_ep_billitem_table")) {
 
@@ -723,22 +756,56 @@ public class SyncActivity extends BaseHomeSyncActivity {
 
 		}
 		
+		Log.d("mtag", "db_ep_billitem_table");
+		
+		List<DbxRecord> tempList = new ArrayList<DbxRecord>();
+		
 		if (mMap.containsKey("db_transaction_table")) {
 
 			Set<DbxRecord> incomeDate = mMap.get("db_transaction_table");
 			for (DbxRecord iRecord : incomeDate) {
-				if (!iRecord.isDeleted()) {
+				
+				if (iRecord.hasField("trans_partransaction")) {
+					
+					tempList.add(iRecord);
+					
+				} else {
+					
+					if (!iRecord.isDeleted()) {
 
-					TransactionTable transactionTable = new TransactionTable(
-							mDatastore, this);
-					Transaction transaction = transactionTable.getTransaction();
-					transaction.setIncomingData(iRecord);
-					transaction.insertOrUpdate();
+						TransactionTable transactionTable = new TransactionTable(
+								mDatastore, this);
+						Transaction transaction = transactionTable.getTransaction();
+						transaction.setIncomingData(iRecord);
+						transaction.insertOrUpdate();
 
+					}
+					
 				}
+				
 			}
 
 		}
+		
+		if (tempList != null && tempList.size() > 0) {
+			
+			for (DbxRecord iRecord:tempList) {
+				
+				TransactionTable transactionTable = new TransactionTable(
+						mDatastore, this);
+				Transaction transaction = transactionTable.getTransaction();
+				transaction.setIncomingData(iRecord);
+				transaction.insertOrUpdate();
+				
+				if (iRecord.hasField("trans_partransaction")) {
+					TransactionDao.updateParTransactionByUUID(this, iRecord.getString("trans_partransaction"));
+				}
+			}
+			
+		}
+		
+		Log.d("mtag", "db_transaction_table");
+		
 		
 	}
 

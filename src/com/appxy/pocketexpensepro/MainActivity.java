@@ -355,7 +355,7 @@ public class MainActivity extends BaseHomeActivity implements
 						.beginTransaction();
 				fragmentTransaction1.replace(R.id.content_frame,
 						overviewFragment);
-				fragmentTransaction1.commit();
+				fragmentTransaction1.commitAllowingStateLoss();
 				mItemPosition = 0;
 				actionBar.setDisplayHomeAsUpEnabled(true);
 				actionBar.setDisplayShowTitleEnabled(false);
@@ -908,9 +908,7 @@ public class MainActivity extends BaseHomeActivity implements
 				if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
 					super.onActivityResult(requestCode, resultCode, data);
 					 if (requestCode == RC_REQUEST) {     
-					      int responseCode = data.getIntExtra("RESPONSE_CODE", 0);
 					      String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
-					      String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
 					        
 					      if (resultCode == RESULT_OK) {
 					         try {

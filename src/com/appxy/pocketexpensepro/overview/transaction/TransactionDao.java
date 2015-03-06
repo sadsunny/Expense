@@ -431,6 +431,22 @@ public class TransactionDao {
 		}
 	}
 	
+	public static long updateParTransactionByUUID(Context context, String uuid) { // Account更新排序字段
+		SQLiteDatabase db = getConnection(context);
+		ContentValues cv = new ContentValues();
+		cv.put("childTransactions", "1,2,3");
+		cv.put("parTransaction", -1);
+		try {
+			long id = db.update("'Transaction'", cv, "uuid = ?", new String[] { uuid });
+			db.close();
+			return id;
+		} catch (Exception e) {
+			// TODO: handle exception
+			db.close();
+			return 0;
+		}
+	}
+	
 	
 	public static long insertTransaction(Context context, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, int expenseAccount, int payee) { // AccountType插入
 

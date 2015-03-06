@@ -19,6 +19,7 @@ import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
 import com.dropbox.sync.android.DbxRecord;
 import com.dropbox.sync.android.DbxTable;
+import com.dropbox.sync.android.DbxFields.ValueType;
 
 public class BudgetItemTable {
 
@@ -145,7 +146,24 @@ public class BudgetItemTable {
 			}
 			
 			if (iRecord.hasField("budgetitem_isrollover")) {
-				budgetitem_isrollover = (int)iRecord.getLong("budgetitem_isrollover");
+				
+				if (iRecord.getFieldType("budgetitem_isrollover") == ValueType.LONG) {
+					budgetitem_isrollover = (int) iRecord
+							.getLong("budgetitem_isrollover");
+				} else if (iRecord.getFieldType("budgetitem_isrollover") == ValueType.BOOLEAN) {
+
+					boolean mBool = iRecord
+							.getBoolean("budgetitem_isrollover");
+
+					if (mBool) {
+						budgetitem_isrollover = 1;
+					} else {
+						budgetitem_isrollover = 0;
+					}
+
+				} else {
+					budgetitem_isrollover = 0;
+				}
 			}
 			
 			

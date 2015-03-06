@@ -418,11 +418,13 @@ public class PayeeDao {
 	
 	public static List<Map<String, Object>>  checkPayeeByNameAndCaegory(Context context,String pName,int category) {
 		
+		pName = MEntity.sqliteEscape(pName);
+		
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		
 		SQLiteDatabase db = getConnection(context);
-		String sql = "select a._id from Payee a where a.name = "+"'"+pName+"'" + "and a.category = " +category;
+		String sql = "select a._id from Payee a where a.name = "+"'"+pName+"'" + " and a.category = " +category;
 		Cursor mCursor = db.rawQuery(sql, null);
 		
 		while (mCursor.moveToNext()) {

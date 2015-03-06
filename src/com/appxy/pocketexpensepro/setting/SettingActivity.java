@@ -578,7 +578,7 @@ public class SettingActivity extends BaseHomeActivity {
 				         try {
 				            JSONObject jo = new JSONObject(purchaseData);
 				            String sku = jo.getString("productId");
-				            alert("You have bought the " + sku + ". Excellent choice, adventurer!");
+				            alert("Thanks for upgrading to Pro");
 				             SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME,MODE_PRIVATE);   //已经设置密码 
 				   		     SharedPreferences.Editor meditor = sharedPreferences.edit();  
 				   			 meditor.putBoolean("isPaid",true );  

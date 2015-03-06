@@ -16,6 +16,7 @@ import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
 import com.dropbox.sync.android.DbxRecord;
 import com.dropbox.sync.android.DbxTable;
+import com.dropbox.sync.android.DbxFields.ValueType;
 import com.itextpdf.text.pdf.PdfStructTreeController.returnType;
 
 public class AccountsTable {
@@ -133,7 +134,26 @@ public class AccountsTable {
 			}
 			
 			if (iRecord.hasField("autoclear")) {
-				autoclear = (int) iRecord.getLong("autoclear");
+				
+				if (iRecord.getFieldType("autoclear") == ValueType.LONG) {
+					autoclear = (int) iRecord
+							.getLong("autoclear");
+				} else if (iRecord.getFieldType("autoclear") == ValueType.BOOLEAN) {
+
+					boolean mBool = iRecord
+							.getBoolean("autoclear");
+
+					if (mBool) {
+						autoclear = 1;
+					} else {
+						autoclear = 0;
+					}
+
+				} else {
+					autoclear = 0;
+				}
+				
+				
 			} else {
 				autoclear = 1;
 			}

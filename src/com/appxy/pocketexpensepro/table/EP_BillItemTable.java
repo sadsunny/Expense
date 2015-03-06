@@ -392,7 +392,6 @@ public class EP_BillItemTable {
 			billitem_ep_billitemenddate = MEntity
 					.getMilltoDateFormat((Long) mMap
 							.get("billitem_ep_billitemenddate"));
-			Log.v("mtag", "billitem_ep_billitemenddate "+billitem_ep_billitemenddate);
 			
 			state = (String) mMap.get("state");
 

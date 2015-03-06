@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.accounts.AccountDao;
 import com.appxy.pocketexpensepro.entity.Common;
@@ -14,6 +15,7 @@ import com.appxy.pocketexpensepro.setting.category.CategoryDao;
 import com.dropbox.sync.android.DbxDatastore;
 import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
+import com.dropbox.sync.android.DbxFields.ValueType;
 import com.dropbox.sync.android.DbxRecord;
 import com.dropbox.sync.android.DbxTable;
 
@@ -157,7 +159,35 @@ public class CategoryTable {
 			uuid = iRecord.getString("uuid") ;
 			
 			if (iRecord.hasField("category_isdefault")) {
-				category_isdefault = (int)iRecord.getLong("category_isdefault");
+				
+				if (iRecord.getFieldType("category_isdefault") == ValueType.LONG) {
+					
+					category_isdefault = (int)iRecord.getLong("category_isdefault");
+					
+				}else if (iRecord.getFieldType("category_isdefault") == ValueType.BOOLEAN) {
+					
+					boolean category_isdefaultBool = (Boolean)iRecord.getBoolean("category_isdefault");
+					
+					if (category_isdefaultBool) {
+						category_isdefault = 1;
+					} else {
+						category_isdefault = 0;
+					}
+					
+				}else if(iRecord.getFieldType("category_isdefault") == ValueType.STRING){
+					
+					String category_isdefaultString = (String)iRecord.getString("category_isdefault");
+					
+					if (category_isdefaultString.equals("1")) {
+						category_isdefault = 1;
+					} else {
+						category_isdefault = 0;
+					}
+					
+				}else {
+					category_isdefault = 0;
+				}
+				
 			}else {
 				category_isdefault = 0;
 			}
@@ -171,8 +201,33 @@ public class CategoryTable {
 				state = "1";
 			}
 			
-			category_issystemrecord = (int)iRecord.getLong("category_issystemrecord");
-			category_categorytype = iRecord.getString("category_categorytype");
+			if (iRecord.hasField("category_issystemrecord")) {
+				
+				
+				if (iRecord.getFieldType("category_issystemrecord") == ValueType.LONG) {
+					category_issystemrecord = (int) iRecord
+							.getLong("category_issystemrecord");
+				} else if (iRecord.getFieldType("category_issystemrecord") == ValueType.BOOLEAN) {
+
+					boolean category_issystemrecordBool = iRecord
+							.getBoolean("category_issystemrecord");
+
+					if (category_issystemrecordBool) {
+						category_issystemrecord = 1;
+					} else {
+						category_issystemrecord = 0;
+					}
+
+				} else {
+					category_issystemrecord = 0;
+				}
+				
+			} 
+			
+			if (iRecord.hasField("category_categorytype")) {
+				category_categorytype = iRecord.getString("category_categorytype");
+			} 
+			
 			
 		}
 

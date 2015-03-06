@@ -244,20 +244,7 @@ public class Activity_Start extends BaseHomeActivity {
 			TransactionRecurringCheck.recurringCheck(Activity_Start.this,
 					MEntity.getNowMillis(), mDbxAcctMgr, mDatastore); // Check
 																		// transaction
-																		// Recurring
-			try {
-				
-				if (mDatastore != null) {
-					mDatastore.sync();
-				}
-
-			} catch (DbxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
 			mHandler.obtainMessage(MSG_SUCCESS).sendToTarget();
-
 		}
 	};
 

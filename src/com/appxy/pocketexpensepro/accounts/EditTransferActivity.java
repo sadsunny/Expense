@@ -692,7 +692,8 @@ public class EditTransferActivity extends BaseHomeActivity {
 					if (payeeString != null && payeeString.trim().length() != 0
 							&& !payeeString.trim().equals("")) {
 
-						boolean check = checkPayee(payeeString);
+						boolean check = judgMentPayee(payeeString,categoryId );
+						
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									EditTransferActivity.this, payeeString,
@@ -1044,6 +1045,17 @@ public class EditTransferActivity extends BaseHomeActivity {
 			}
 		}
 	};
+	
+public boolean judgMentPayee(String pName,int category){
+		
+		boolean tag = false;
+		List<Map<String, Object>> mList = PayeeDao.checkPayeeByNameAndCaegory(EditTransferActivity.this, pName, category);
+		if (mList.size() > 0) {
+			tag = true;
+			payeeId = (Integer)mList.get(0).get("_id");
+		}
+		return tag;
+	}
 
 	private boolean checkPayee(String pName) {
 		boolean check = false;

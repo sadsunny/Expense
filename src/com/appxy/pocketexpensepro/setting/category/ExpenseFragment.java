@@ -89,6 +89,15 @@ public class ExpenseFragment extends Fragment implements OnSyncFinishedListener{
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 	}
+	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+//		((BaseExpandableListAdapter) mExpandableListView.getExpandableListAdapter()).notifyDataSetInvalidated();
+//		((BaseExpandableListAdapter) mExpandableListView.getExpandableListAdapter()).notifyDataSetChanged();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

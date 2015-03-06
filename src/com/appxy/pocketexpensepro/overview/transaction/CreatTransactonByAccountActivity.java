@@ -688,7 +688,8 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 					long rId = 0;
 					if (payeeString != null && payeeString.trim().length() != 0 && !payeeString.trim().equals("")) {
 
-						boolean check = checkPayee(payeeString);
+						boolean check = judgMentPayee(payeeString,categoryId );
+						
 						if (!check) {
 							long row = PayeeDao.insertPayee(
 									CreatTransactonByAccountActivity.this, payeeString,
@@ -1089,10 +1090,21 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 						}
 						mExpandableListView.setCacheColorHint(0);
 
-						mExpandableListView.setSelectedChild(gCheckedItem,
-								cCheckedItem, true);
-						mDialogExpandableListViewAdapter.setSelectedPosition(
-								gCheckedItem, cCheckedItem);
+						try {
+							mExpandableListView.setSelectedChild(gCheckedItem,
+									cCheckedItem, true);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						try {
+							mDialogExpandableListViewAdapter.setSelectedPosition(
+									gCheckedItem, cCheckedItem);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						mDialogExpandableListViewAdapter.notifyDataSetChanged();
 					} else if (mCategoryType == 1) {
 						List<Map<String, Object>> mDataList = PayeeDao
@@ -1453,6 +1465,17 @@ public class CreatTransactonByAccountActivity extends BaseHomeActivity {
 		}
 	};
 
+	 public boolean judgMentPayee(String pName,int category){
+			
+			boolean tag = false;
+			List<Map<String, Object>> mList = PayeeDao.checkPayeeByNameAndCaegory(CreatTransactonByAccountActivity.this, pName, category);
+			if (mList.size() > 0) {
+				tag = true;
+				payeeId = (Integer)mList.get(0).get("_id");
+			}
+			return tag;
+		}
+	 
 	private boolean checkPayee(String pName) {
 		boolean check = false;
 		List<Map<String, Object>> mList = TransactionDao

@@ -115,7 +115,7 @@ public class CategoryDao {
 	public static List<Map<String, Object>> checkCategoryByName(Context context,
 			String categoryName) { // 检查accout的uuid，以及时间
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
-
+		categoryName = MEntity.sqliteEscape(categoryName);
 		SQLiteDatabase db = getConnection(context);
 		String sql = "select a.dateTime, a.uuid from Category a where a.categoryName = " + "'"+categoryName+"'";
 		Cursor mCursor = db.rawQuery(sql, null);
@@ -570,6 +570,8 @@ public class CategoryDao {
 	
 	
 	public static List<Map<String, Object>> selectCategoryLikeName(Context context, String name) { // 查询Category
+		
+		name = MEntity.sqliteEscape(name);
 		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
 		Map<String, Object> mMap;
 		SQLiteDatabase db = getConnection(context);

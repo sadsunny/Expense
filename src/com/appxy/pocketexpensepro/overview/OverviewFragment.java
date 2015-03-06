@@ -363,7 +363,12 @@ public class OverviewFragment extends Fragment implements
 								}
 							}).start();
 						 
-						 mHelper.queryInventoryAsync(mGotInventoryListener);
+						try {
+							mHelper.queryInventoryAsync(mGotInventoryListener);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				});
 				 } catch (Exception e) {

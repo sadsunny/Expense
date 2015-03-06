@@ -404,12 +404,22 @@ public class EditCategoryActivity extends BaseHomeActivity {
 				String uuid = (String)iMap.get("uuid");
 				
 				CategoryDao.updateCategoryName(EditCategoryActivity.this, id, newString, uuid, mDbxAcctMgr, mDatastore);
-				try {
-					mDatastore.sync();
-				} catch (DbxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				
+				if (mDbxAcctMgr.hasLinkedAccount()) {
+					
+					try {
+						
+						if (mDatastore == null) {
+							mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
+						}
+						mDatastore.sync();
+					} catch (DbxException e) {
+					 // TODO Auto-generated catch block
+					 e.printStackTrace();
+					}
+					
 				}
+				
 			}
 		}
 	}

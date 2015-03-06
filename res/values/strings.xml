@@ -101,6 +101,7 @@
 	<string name="payee_category">PAYEE &amp; CATEGORY</string>
 	<string name="sync">Sync</string>
 	<string name="related">Related</string>
+	<string name="export_sync">EXPORT &amp; SYNC</string>
 	
 	
 </resources>

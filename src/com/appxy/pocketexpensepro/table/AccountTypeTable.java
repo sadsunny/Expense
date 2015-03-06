@@ -16,6 +16,7 @@ import com.dropbox.sync.android.DbxException;
 import com.dropbox.sync.android.DbxFields;
 import com.dropbox.sync.android.DbxRecord;
 import com.dropbox.sync.android.DbxTable;
+import com.dropbox.sync.android.DbxFields.ValueType;
 
 public class AccountTypeTable {
 
@@ -147,6 +148,25 @@ public class AccountTypeTable {
 			
 			if (iRecord.hasField("accounttype_isdefault")) {
 				accounttype_isdefault = (int)iRecord.getLong("accounttype_isdefault");
+				
+				if (iRecord.getFieldType("accounttype_isdefault") == ValueType.LONG) {
+					accounttype_isdefault = (int) iRecord
+							.getLong("accounttype_isdefault");
+				} else if (iRecord.getFieldType("accounttype_isdefault") == ValueType.BOOLEAN) {
+
+					boolean mBool = iRecord
+							.getBoolean("accounttype_isdefault");
+
+					if (mBool) {
+						accounttype_isdefault = 1;
+					} else {
+						accounttype_isdefault = 0;
+					}
+
+				} else {
+					accounttype_isdefault = 0;
+				}
+				
 			} else {
 				accounttype_isdefault = 1;
 			}
