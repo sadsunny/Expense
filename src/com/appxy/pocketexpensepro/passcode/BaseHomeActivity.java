@@ -64,11 +64,12 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 	private DbxDatastore.SyncStatusListener mDatastoreListener = new DbxDatastore.SyncStatusListener() {
 		@Override
 		public void onDatastoreStatusChange(DbxDatastore ds) {
-
+			
 			if (ds.getSyncStatus().hasIncoming) {
 				try {
-
+					
 					Map<String, Set<DbxRecord>> mMap = mDatastore.sync();
+					
 					dataHasIncoming(mMap);
 					
 					mDatastore.sync();

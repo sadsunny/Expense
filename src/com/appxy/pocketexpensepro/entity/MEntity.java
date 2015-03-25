@@ -1,5 +1,6 @@
 package com.appxy.pocketexpensepro.entity;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -15,11 +16,57 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.util.Log;
 
 public class MEntity {
 
 	private final static long DAYMILLIS = 86400000L;
+
+	public static boolean isNetworkAvailable(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if ((cm == null)) {
+			return false;
+		} else {
+			try {
+				return cm.getActiveNetworkInfo().isAvailable();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		}
+	}
+	
+	public static boolean pingDropBox( )  {
+		String ip = "www.dropbox.com";
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec("ping -c 1 -w 1 " + ip);
+			int status;
+			
+			try {
+				status = p.waitFor();
+				if (status == 0) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 
 	public static int calculateInSampleSize( // 根据图片的尺寸，返回一个合适的大小
 			BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -224,7 +271,7 @@ public class MEntity {
 		@Override
 		public int compare(Map<String, Object> o1, Map<String, Object> o2) {
 			// TODO Auto-generated method stub
-			
+
 			long due1 = (Long) o1.get("dateTime");
 			long due2 = (Long) o2.get("dateTime");
 			if (due1 > due2) {
@@ -236,8 +283,7 @@ public class MEntity {
 			}
 		}
 	}
-	
-	
+
 	public static long getMilltoDate(String date) {
 		Calendar calendar = Calendar.getInstance();
 		try {
@@ -249,16 +295,15 @@ public class MEntity {
 		}
 		return calendar.getTimeInMillis();
 	}
-	
 
 	public static class MapComparatorGroupTime implements // sort Group list
 			Comparator<String> {
 		@Override
 		public int compare(String o1, String o2) {
 			// TODO Auto-generated method stub
-			
-			long due1 = getMilltoDate( o1 );
-			long due2 = getMilltoDate( o2 );
+
+			long due1 = getMilltoDate(o1);
+			long due2 = getMilltoDate(o2);
 			if (due1 > due2) {
 				return -1;
 			} else if (due1 < due2) {
@@ -538,7 +583,7 @@ public class MEntity {
 		} else {
 			if (endMonth < beginMonth) {
 				calendar.add(Calendar.MONTH, 3);
-			} else if(endMonth > beginMonth){
+			} else if (endMonth > beginMonth) {
 				calendar.add(Calendar.MONTH, -3);
 			}
 		}

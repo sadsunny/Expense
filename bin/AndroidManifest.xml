@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.appxy.pocketexpensepro"
     android:versionCode="13"
-    android:versionName="2.1.1" >
+    android:versionName="2.2" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -96,7 +96,7 @@
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
         android:theme="@style/myTheme" 
-        android:name=".MyApplication"
+        android:name="com.appxy.pocketexpensepro.MyApplication"
         >
         
         <activity android:name="com.dropbox.sync.android.DbxAuthActivity" />

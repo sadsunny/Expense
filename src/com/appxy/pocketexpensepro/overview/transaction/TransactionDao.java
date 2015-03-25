@@ -65,6 +65,28 @@ public class TransactionDao {
 		return mList;
 	}
 	
+	public static List<Map<String, Object>> checkTransactionByTransString(Context context,
+			String trans_string) { // 检查accout的uuid，以及时间
+		List<Map<String, Object>> mList = new ArrayList<Map<String, Object>>();
+
+		SQLiteDatabase db = getConnection(context);
+		String sql = "select a.dateTime_sync from 'Transaction' a where a.transactionstring = " + "'"+trans_string+"'";
+		Cursor mCursor = db.rawQuery(sql, null);
+		Map<String, Object> mMap;
+
+		while (mCursor.moveToNext()) {
+			mMap = new HashMap<String, Object>();
+			long dateTime_sync = mCursor.getLong(0);
+			mMap.put("dateTime_sync", dateTime_sync);
+			mList.add(mMap);
+		}
+
+		mCursor.close();
+		db.close();
+
+		return mList;
+	}
+	
 	
 	public static Cursor selectPayee(Context context, String keyWord) { 
 		SQLiteDatabase db = getConnection(context);

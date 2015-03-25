@@ -7,6 +7,7 @@ import java.util.Map;
 
 import android.R.integer;
 import android.content.Context;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.R;
 import com.appxy.pocketexpensepro.accounts.AccountDao;
@@ -247,18 +248,36 @@ public class TransactionTable {
 						
 					}else {
 						
+						
+						List<Map<String, Object>> mListTran = TransactionDao.checkTransactionByTransString(context, trans_string);
+						 
+						if (mListTran.size() > 0) {
+							  long localDateTime_sync = (Long) mListTran.get(0).get("dateTime_sync");
+							   
+							  if (localDateTime_sync < dateTime_sync.getTime()) {
+							    	
+							    	 TransactionDao.updateTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
+												trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
+												isChild, TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
+												TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
+												PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
+												dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
+												
+
+								}
+						} else {
+
 					    TransactionDao.insertTransactionAllData(context, trans_amount+"", trans_datetime.getTime(), trans_isclear,
 						trans_notes, MEntity.positionTransactionRecurring(trans_recurringtype), PayeeDao.selectCategoryIdByUUid(context, trans_category),
 						isChild, TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount), 
 						TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount), TransactionDao.selectTransactionIdByUUid(context, trans_partransaction),
 						PayeeDao.selectPayeeIdByUUid(context, trans_payee), trans_string,
 						dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
-						
+						}
 					}
 				}
 			  }
 			}
-		 
 		 
 
 		public void setTransactionData(Map<String, Object> mMap) {

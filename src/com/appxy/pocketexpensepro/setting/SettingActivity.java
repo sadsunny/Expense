@@ -230,7 +230,7 @@ public class SettingActivity extends BaseHomeActivity {
 					Log.v("mtest", "Setting5");
 					 mHelper.launchPurchaseFlow(SettingActivity.this, Paid_Id_VF, RC_REQUEST, mPurchaseFinishedListener);
 				}else{
-//					showMessage("提示", "Google Play初始化失败,当前无法进行支付，请确定您所在地区支持Google Play支付或重启游戏再试！");
+//					showMessage("提示", "Google Play！");
 				}
 					
 				 

@@ -133,7 +133,7 @@ public class CategoryTable {
 					
 				}else {
 					
-					   List<Map<String, Object>> mNameList= CategoryDao.checkCategoryByName(context, category_categoryname);
+					   List<Map<String, Object>> mNameList= CategoryDao.checkCategoryByNameAndType(context, category_categoryname,ConversionType(category_categorytype));
 					   if (mNameList.size() <= 0) {
 					   CategoryDao.insertCategoryAll(context, category_categoryname, ConversionType(category_categorytype), Common.positionCategory(category_iconname), category_issystemrecord, category_isdefault, dateTime.getTime(), state, uuid);
 					  }
@@ -330,7 +330,7 @@ public class CategoryTable {
 		return accounts;
 	}
 
-	public CategoryTable(DbxDatastore datastore, Context context) {
+	public CategoryTable(DbxDatastore datastore, Context context)  {
 
 		mDatastore = datastore;
 		mTable = datastore.getTable("db_category_table");
@@ -373,7 +373,7 @@ public class CategoryTable {
 		if (it.hasNext()) {
 			DbxRecord firstResult = it.next();
 			if (firstResult.getDate("dateTime").getTime() <= thisFields.getDate(
-					"dateTime").getTime()) { // 姣�瀵瑰��姝ユ�堕��
+					"dateTime").getTime()) {
 
 				firstResult.setAll(thisFields);
 				while (it.hasNext()) {
