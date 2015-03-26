@@ -438,8 +438,35 @@ public class TransactionTable {
 			
 			return accountsFields;
 		}
+		
+		public DbxFields getFieldsUpdate() {
 
-	}
+			DbxFields accountsFields = new DbxFields();
+			
+			
+			if (trans_string != null && trans_string.length()  > 0) {
+				accountsFields.set("trans_string", trans_string);
+			}
+			
+			if (dateTime_sync != null) {
+				accountsFields.set("dateTime_sync",dateTime_sync);
+			}else {
+				accountsFields.set("dateTime_sync",new Date());
+			}
+			
+			if (trans_recurringtype != null && trans_recurringtype.length() > 0) {
+				accountsFields.set("trans_recurringtype",trans_recurringtype);
+			}
+			
+			if (uuid != null) {
+				accountsFields.set("uuid",uuid);
+			}
+			
+			return accountsFields;
+		}
+
+
+}
 
 	public void updateState(String uuid, String trans_string, String state) throws DbxException {// ��存�圭�舵��
 
@@ -487,7 +514,16 @@ public class TransactionTable {
 	public TransactionTable(DbxDatastore datastore,Context context) {
 
 		mDatastore = datastore;
-		mTable = datastore.getTable("db_transaction_table");
+		try {
+			
+			if (mDatastore != null) {
+				mTable = datastore.getTable("db_transaction_table");
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.context = context;
 	}
 	
@@ -527,6 +563,7 @@ public class TransactionTable {
 			if (firstDate.getTime() <= thisFields.getDate(
 					"dateTime_sync").getTime()) { 
 
+				
 				firstResult.setAll(thisFields);
 				while (it.hasNext()) {
 					DbxRecord r = it.next();

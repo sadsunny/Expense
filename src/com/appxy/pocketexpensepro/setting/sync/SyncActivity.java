@@ -91,10 +91,6 @@ public class SyncActivity extends BaseHomeSyncActivity {
 		public void onDatastoreStatusChange(DbxDatastore ds) {
 			
 			
-			Log.e("mtag", "ds.getSyncStatus().hasIncoming SyncStatusListener "+ds.getSyncStatus().hasIncoming);
-			Log.e("mtag", "ds.getSyncStatus().isDownloading SyncStatusListener"+ds.getSyncStatus().isDownloading);
-			Log.e("mtag", "ds.getSyncStatus().isConnected SyncStatusListener"+ds.getSyncStatus().isConnected);
-			
 			if (ds.getSyncStatus().hasIncoming) {
 
 				Thread mThread = new Thread(new Runnable() {

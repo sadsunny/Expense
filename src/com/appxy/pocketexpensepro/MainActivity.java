@@ -1057,6 +1057,7 @@ public class MainActivity extends BaseHomeActivity implements
 				super.onResume();
 				mDbxAcctMgr1 = mDbxAcctMgr;
 				mDatastore1 = mDatastore;
+				Log.e("mtag", "main onResume" + mDatastore1);
 			}
 			
 

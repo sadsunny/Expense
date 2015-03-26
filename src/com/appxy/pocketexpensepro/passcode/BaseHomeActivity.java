@@ -122,6 +122,7 @@ public abstract class BaseHomeActivity extends FragmentActivity {
 				}
 				mDatastore.addSyncStatusListener(mDatastoreListener);
 			}
+			Log.e("mtag", "Base onResume" +mDatastore)  ;
 
 		} catch (DbxException e) {
 			// TODO Auto-generated catch block

@@ -642,6 +642,7 @@ public class OverviewFragment extends Fragment implements
 		if (Common.CURRENCY_SIGN[Common.CURRENCY] != currecyLable) {
 			mListViewAdapter.notifyDataSetChanged();
 		}
+		Log.e("mtag", "fragment onResume" +  MainActivity.mDbxAcctMgr1);
 		
 		TransactionRecurringCheck.recurringCheck(mActivity,
 				MEntity.getNowMillis(), MainActivity.mDbxAcctMgr1, MainActivity.mDatastore1); //  need find a To find a suitable place
