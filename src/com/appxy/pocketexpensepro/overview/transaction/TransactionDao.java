@@ -1,6 +1,7 @@
 package com.appxy.pocketexpensepro.overview.transaction;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.appxy.pocketexpensepro.db.ExpenseDBHelper;
 import com.appxy.pocketexpensepro.entity.MEntity;
@@ -329,6 +331,42 @@ public class TransactionDao {
 			long id = db.insert("'Transaction'", null, cv);
 			
 			rId = id;
+			
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(dateTime);
+
+				if (recurringType == 1) {
+					calendar.add(Calendar.DAY_OF_MONTH, 1);
+				} else if (recurringType == 2) {
+					calendar.add(Calendar.DAY_OF_MONTH, 7);
+				} else if (recurringType == 3) {
+					calendar.add(Calendar.DAY_OF_MONTH, 14);
+				} else if (recurringType == 4) {
+					calendar.add(Calendar.DAY_OF_MONTH, 21);
+				} else if (recurringType == 5) {
+					calendar.add(Calendar.DAY_OF_MONTH, 28);
+				} else if (recurringType == 6) {
+					calendar.add(Calendar.DAY_OF_MONTH, 15);
+				} else if (recurringType == 7) {
+					calendar.add(Calendar.MONTH, 1);
+				} else if (recurringType == 8) {
+					calendar.add(Calendar.MONTH, 2);
+				} else if (recurringType == 9) {
+					calendar.add(Calendar.MONTH, 3);
+				} else if (recurringType == 10) {
+					calendar.add(Calendar.MONTH, 4);
+				} else if (recurringType == 11) {
+					calendar.add(Calendar.MONTH, 5);
+				} else if (recurringType == 12) {
+					calendar.add(Calendar.MONTH, 6);
+				} else if (recurringType == 13) {
+					calendar.add(Calendar.YEAR, 1);
+				}
+				
+		     if ( recurringType > 0 && ( calendar.getTimeInMillis() <= MEntity.getNowMillis() )) {
+				
+			}else{
+			
 			if (id > 0) {
 				
 				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
@@ -360,7 +398,7 @@ public class TransactionDao {
 				}
 				
 			}
-			
+		}
 			db.close();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -406,6 +444,9 @@ public class TransactionDao {
 					if (mDatastore == null) {
 						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
 					}
+					
+					Log.e("mtag", "确定插入时间"+MEntity.turnToDateString(dateTime));
+					
 					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
 					Transaction transaction = transactionTable.getTransaction();
 					
@@ -432,6 +473,7 @@ public class TransactionDao {
 		} catch (Exception e) {
 			// TODO: handle exception
 			db.close();
+			Log.e("mtag", "上传异常"+e);
 		}
 
 	}

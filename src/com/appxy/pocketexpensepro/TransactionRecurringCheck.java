@@ -15,6 +15,7 @@ import com.appxy.pocketexpensepro.table.TransactionTable.Transaction;
 import com.dropbox.sync.android.DbxAccountManager;
 import com.dropbox.sync.android.DbxDatastore;
 
+import android.R.integer;
 import android.accounts.Account;
 import android.content.ContentValues;
 import android.content.Context;
@@ -26,7 +27,7 @@ public class TransactionRecurringCheck {
 	
 	public static void recurringCheck(Context context, long today, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) {
 		List<Map<String, Object>> mList = AccountDao.selectTransactionRecurringOverToday(context, today);
-		Log.e("mtag", " recurringCheck" +  mDbxAcctMgr.hasLinkedAccount());
+		
 		try {
 
 			for (Map<String, Object> mMap : mList) {
@@ -39,8 +40,7 @@ public class TransactionRecurringCheck {
 				String photoName = (String) mMap.get("photoName");
 				int recurringTpye = (Integer) mMap.get("recurringType");
 				int category = (Integer) mMap.get("category");
-				String childTransactions = (String) mMap
-						.get("childTransactions");
+				String childTransactions = (String) mMap.get("childTransactions");
 				int expenseAccount = (Integer) mMap.get("expenseAccount");
 				int incomeAccount = (Integer) mMap.get("incomeAccount");
 				int parTransaction = (Integer) mMap.get("parTransaction");
@@ -77,24 +77,24 @@ public class TransactionRecurringCheck {
 				} else if (recurringTpye == 13) {
 					calendar.add(Calendar.YEAR, 1);
 				}
-
-				if (calendar.getTimeInMillis() <= MEntity.getNowMillis()) {
-
-					String transactionstring1 = uuid
-							+ MEntity.turnMilltoDate(dateTime);
+				
+				
+				if (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
 					
-					Log.e("mtag", "updateTransactionRecurring" +  0);
-					
-					updateTransactionRecurring(context, id, uuid,
-							transactionstring1, mDbxAcctMgr, mDatastore);
+					String transactionstring = uuid+ MEntity.turnMilltoDate(dateTime);
+					TransactionDao.insertTransactionOne(context,
+							amount, dateTime, isClear,
+							notes, photoName, 0, category,
+							childTransactions + "", expenseAccount,
+							incomeAccount, parTransaction, payee,
+							transactionstring, mDbxAcctMgr, mDatastore);
+					 
+				}
 
 					// 批量处理操作
 					while (calendar.getTimeInMillis() < MEntity.getNowMillis()) {
-
-						String transactionstring = uuid
-								+ MEntity.turnMilltoDate(calendar
-										.getTimeInMillis());
-
+						
+						String transactionstring = uuid+ MEntity.turnMilltoDate(calendar.getTimeInMillis());
 						TransactionDao.insertTransactionOne(context,
 								amount, calendar.getTimeInMillis(), isClear,
 								notes, photoName, 0, category,
@@ -130,24 +130,16 @@ public class TransactionRecurringCheck {
 							calendar.add(Calendar.YEAR, 1);
 						}
 					}
-
-					TransactionDao.insertTransactionOne( context, amount,
-							calendar.getTimeInMillis(), isClear, notes,
-							photoName, recurringTpye, category,
+					
+					updateTransactionRecurring(context,id,uuid,
+							amount, calendar.getTimeInMillis(), isClear,
+							notes, photoName, recurringTpye, category,
 							childTransactions + "", expenseAccount,
-							incomeAccount, parTransaction, payee, null,
-							mDbxAcctMgr, mDatastore);
-
-				}
+							incomeAccount, parTransaction, payee, mDbxAcctMgr, mDatastore);
 
 			}
 			
 
-			if (mDbxAcctMgr.hasLinkedAccount()) {
-				if (mDatastore != null ) {
-					mDatastore.sync();
-				}
-			}
 			
 		}catch(Exception e){
 			
@@ -163,56 +155,67 @@ public class TransactionRecurringCheck {
 		return db;
 	}
 	
-	public static long updateTransactionRecurring( Context context, int _id,String uuid, String transactionstring, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
+	public static long updateTransactionRecurring( Context context, int _id,String uuid, String amount,long dateTime, int isClear, String notes, String photoName, int recurringType, int category, String childTransactions, int expenseAccount , int incomeAccount, int parTransaction, int payee, DbxAccountManager mDbxAcctMgr, DbxDatastore mDatastore) { // AccountType插入
 
-		Log.e("mtag", "updateTransactionRecurring" + 1);
-		
-		long syncTime = System.currentTimeMillis();
 		
 		ContentValues cv = new ContentValues();
-		cv.put("recurringType", 0);
-		cv.put("transactionstring",transactionstring);
-		cv.put("dateTime_sync", syncTime);
+		
+		cv.put("amount", amount);
+		cv.put("dateTime", dateTime);
+		cv.put("isClear", isClear);
+		cv.put("notes", notes);
+		cv.put("photoName", photoName);
+		cv.put("recurringType", recurringType);
+		cv.put("category", category);
+		cv.put("childTransactions", childTransactions);
+		cv.put("expenseAccount", expenseAccount);
+		cv.put("incomeAccount", incomeAccount);
+		cv.put("parTransaction", parTransaction);
+		cv.put("payee", payee);
+		
+		long dateTime_sync =  System.currentTimeMillis();
+		
+		cv.put("dateTime_sync", dateTime_sync);
+		cv.put("state", 1);
+		cv.put("uuid", uuid);
 		
 		SQLiteDatabase db = getConnection(context);
 		
 		String mId = _id + "";
 		
-		Log.e("mtag", "recurringCheck" +  1 );
 		
 		try {
 			long id = db.update("'Transaction'", cv, "_id = ?", new String[] { mId });
-			Log.e("mtag", "recurringCheck 本地id" + id );
 			db.close();
 			if (id > 0) {
 				
-				if (mDbxAcctMgr.hasLinkedAccount()) { //如果连接状态开始同步 
+				if (mDbxAcctMgr.hasLinkedAccount()) { 
 					
-					Log.e("mtag", "recurringCheck" +  2 );
 					
 					if (mDatastore == null) {
 						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
 					}
-					
-					Log.e("mtag", "recurringCheck" +  3 );
-					
-					Log.e("mtag", "recurringCheck" +  4 +mDatastore);
+					Log.e("mtag", "更新时间"+MEntity.turnToDateString(dateTime));
 					
 					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
 					Transaction transaction = transactionTable.getTransaction();
 					
+					transaction.setDateTime_sync( MEntity.getMilltoDateFormat(dateTime_sync) );
+					transaction.setState("1");
+					transaction.setTrans_amount(Double.valueOf(amount));
+					transaction.setTrans_category(category);
+					transaction.setTrans_datetime(MEntity.getMilltoDateFormat(dateTime));
+					transaction.setTrans_expenseaccount(expenseAccount);
+					transaction.setTrans_incomeaccount(incomeAccount);
+					transaction.setTrans_isclear(isClear);
+					transaction.setTrans_notes(notes);
+					transaction.setTrans_partransaction(parTransaction);
+					transaction.setTrans_payee(payee);
+					transaction.setTrans_recurringtype(recurringType);
 					transaction.setUuid(uuid);
-					transaction.setDateTime_sync(MEntity.getMilltoDateFormat(syncTime));
-					transaction.setTrans_recurringtype(0);
-					transaction.setTrans_string(transactionstring);
-					transactionTable.insertRecords(transaction.getFieldsUpdate());
+					transactionTable.insertRecords(transaction.getFields());
 					
-					if (mDbxAcctMgr.hasLinkedAccount()) {
-						if (mDatastore != null ) {
-							mDatastore.sync();
-							Log.e("mtag", "recurringCheck 是否提交" );
-						}
-					}
+					mDatastore.sync();
 					
 				}
 					
@@ -221,7 +224,7 @@ public class TransactionRecurringCheck {
 			return id;
 		} catch (Exception e) {
 			// TODO: handle exception
-			Log.e("mtag", "上传异常"+e );
+			Log.e("mtag", "Exception in recurring"+e);
 			db.close();
 			return 0;
 		}

@@ -443,11 +443,6 @@ public class TransactionTable {
 
 			DbxFields accountsFields = new DbxFields();
 			
-			
-			if (trans_string != null && trans_string.length()  > 0) {
-				accountsFields.set("trans_string", trans_string);
-			}
-			
 			if (dateTime_sync != null) {
 				accountsFields.set("dateTime_sync",dateTime_sync);
 			}else {
