@@ -195,7 +195,6 @@ public class TransactionRecurringCheck {
 					if (mDatastore == null) {
 						mDatastore = DbxDatastore.openDefault(mDbxAcctMgr.getLinkedAccount());
 					}
-					Log.e("mtag", "更新时间"+MEntity.turnToDateString(dateTime));
 					
 					TransactionTable transactionTable = new TransactionTable(mDatastore, context);
 					Transaction transaction = transactionTable.getTransaction();

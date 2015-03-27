@@ -230,6 +230,14 @@ public class TransactionTable {
 						isChild = "1";
 					}
 					
+					int transExpenseAcc = TransactionDao.selectAccountsIdByUUid(context, trans_expenseaccount);
+					int transIncomeAcc = TransactionDao.selectAccountsIdByUUid(context, trans_incomeaccount);
+					
+					if (transExpenseAcc <=0 && transIncomeAcc <= 0) {
+						
+					}else{
+						
+					
 					List<Map<String, Object>> mList= TransactionDao.checkTransactionByUUid(context, uuid);
 					if ( mList.size() > 0) {
 						
@@ -275,6 +283,10 @@ public class TransactionTable {
 						dateTime_sync.getTime(), state, uuid, TransactionDao.selectEP_BillRuleIdByUUid(context, trans_billrule), TransactionDao.selectEP_BillItemIdByUUid(context, trans_billitem));
 						}
 					}
+					
+				}
+					
+					
 				}
 			  }
 			}

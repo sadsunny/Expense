@@ -527,7 +527,7 @@ public class AccountToTransactionActivity extends BaseHomeActivity implements Ag
 				if (expenseAccount > 0 && incomeAccount > 0) {
 					mMap.put("iconName", 69);
 				} else {
-					mMap.put("iconName", 56);
+					mMap.put("iconName", 48);
 				}
 				
 			}
